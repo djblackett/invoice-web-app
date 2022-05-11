@@ -9,6 +9,17 @@ const HeaderContainer = styled.div`
   align-items: center;
   background: #373b53;
   // needs background color dynamically
+
+  @media (min-width: 1200px) {
+    flex-direction: column;
+    display: flex;
+    width: 103px;
+    height: 800px;
+    max-height: 100vh;
+    grid-area: 1 / 1 / 4 / 2;
+
+    border-radius: 0 20px 20px 0;
+  }
 `;
 
 const Logo = styled.div`
@@ -22,12 +33,24 @@ const Logo = styled.div`
   background-color: #7c5dfa;
   z-index: 0;
   border-radius: 0 20px 20px 0;
+
+  @media (min-width: 1200px) {
+    width: 100%;
+    height: 103px;
+  }
 `;
 
 const DarkModeProfileContainer = styled.div`
   display: flex;
   flex-direction: row;
   height: 100%;
+
+  @media (min-width: 1200px) {
+    flex-direction: column;
+    width: 100%;
+    height: 117px;
+    align-items: center;
+  }
 `;
 
 const BottomColorBoxForLogo = styled.div`
@@ -46,6 +69,12 @@ const AvatarBox = styled.div`
   justify-content: center;
   align-items: center;
   border-left: 1px solid #494e6e;
+
+  @media (min-width: 1200px) {
+    border-left: initial;
+    width: 100%;
+    border-top: 1px solid #494e6e;
+  }
 `;
 
 const DarkLightBox = styled.div`
@@ -61,7 +90,7 @@ const moon = (
     <path
       d="M19.502 11.342a.703.703 0 00-.588.128 7.499 7.499 0 01-2.275 1.33 7.123 7.123 0 01-2.581.46A7.516 7.516 0 018.74 11.06a7.516 7.516 0 01-2.198-5.316c0-.87.153-1.713.41-2.48.28-.817.69-1.559 1.226-2.197a.652.652 0 00-.102-.92.703.703 0 00-.588-.128C5.316.607 3.425 1.91 2.07 3.649A10.082 10.082 0 000 9.783C0 12.57 1.125 15.1 2.965 16.94a10.04 10.04 0 007.156 2.965c2.352 0 4.524-.818 6.262-2.173a10.078 10.078 0 003.579-5.597.62.62 0 00-.46-.793z"
       fill="#7E88C3"
-      fill-rule="nonzero"
+      fillRule="nonzero"
     />
   </svg>
 );
@@ -80,7 +109,7 @@ const logo = (
   </svg>
 );
 
-function Header() {
+function Header({ themeToggler }) {
   return (
     <HeaderContainer>
       <Logo>
@@ -88,7 +117,7 @@ function Header() {
         {logo}
       </Logo>
       <DarkModeProfileContainer>
-        <DarkLightBox>{moon}</DarkLightBox>
+        <DarkLightBox onClick={themeToggler}>{moon}</DarkLightBox>
 
         <AvatarBox>
           <img

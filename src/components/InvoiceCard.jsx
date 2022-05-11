@@ -1,8 +1,11 @@
 import styled from "styled-components";
+import InvoicePaid from "./InvoicePaid";
+import InvoicePending from "./InvoicePending";
+import InvoiceDraft from "./InvoiceDraft";
 
 const Card = styled.div`
   height: 134px;
-  max-width: 90%;
+  width: 100%;
   background-color: white;
   display: grid;
   grid-template-columns: 1fr 1fr;
@@ -15,6 +18,7 @@ const Card = styled.div`
   line-height: 15px;
   font-size: 12px;
   border-radius: 8px;
+  box-shadow: 0px 10px 10px -10px rgba(72, 84, 159, 0.100397);
 
   @media (min-width: 768px) {
     grid-template-rows: 1fr;
@@ -25,6 +29,12 @@ const Card = styled.div`
     max-width: initial;
     margin: 8px 48px 8px 48px;
     align-content: center;
+  }
+
+  @media (min-width: 1200px) {
+    max-width: 730px;
+    margin-left: 355px;
+    margin-right: 355px;
   }
 `;
 
@@ -43,10 +53,8 @@ const DueDateAmountBox = styled.div`
   flex-direction: column;
   grid-area: 2 / 1 / 3 / 2;
 
-  
   @media (min-width: 768px) {
     display: contents;
-
   }
 `;
 
@@ -64,59 +72,89 @@ const CustomerName = styled.p`
   text-align: right;
 `;
 
-const InvoiceStatusBox = styled.div`
-  padding: 13px 23px 12px 24px;
-  background-color: rgba(173, 216, 230, 0.2);
-  border-radius: 8px;
-  height: 40px;
-  width: 104px;
-  display: flex;
+const SVGContainer = styled.div`
+  width: 100%;
+  display: none;
   justify-content: center;
   align-items: center;
-  justify-self: end;
-`;
+  display: none;
 
-const TextCircleBox = styled.div`
-  display: flex;
-  flex-direction: row;
-  align-items: baseline;
-  justify-content: space-between;
-`;
+  @media (min-width: 768px) {
+    display: flex;
 
-const StatusText = styled.p`
-  margin: 0;
-  color: #33d69f;
-  font-weight: bold;
-  margin-left: 4px;
-`;
+  }
+`
+const arrowRightSVG = <svg width="7" height="10" xmlns="http://www.w3.org/2000/svg"><path d="M1 1l4 4-4 4" stroke="#7C5DFA" strokeWidth="2" fill="none" fillRule="evenodd"/></svg>
 
-const Circle = styled.div`
-  border-radius: 50%;
-  height: 8px;
-  width: 8px;
-  margin-right: 4px;
-  background: #33d69f;
-`;
+function InvoiceCard({invoice}) {
 
-function InvoiceCard() {
+  const invoiceStatus = () => {
+    if (invoice.status === "paid") {
+      return <InvoicePaid />
+    } else if (invoice.status === "pending") {
+      return <InvoicePending />
+    } else if (invoice.status === "draft") {
+      return  <InvoiceDraft />
+    }  
+  }
+
+  
+
+  const convertedDate = () => {
+    const date = invoice.paymentDue.split("-");
+    const dateObj = new Date(Date.UTC(date[0], date[1], date[2]));
+    return dateObj.toDateString().substring(4);
+
+  };
+
   return (
     <Card>
       <IDNumber>
-        <span style={{ color: "#888eb0" }}>#</span>43209
+        <span style={{ color: "#888eb0" }}>#</span>{invoice.id}
       </IDNumber>
       <DueDateAmountBox>
-        <DueDate>Due 28 August 2022</DueDate>
-        <InvoiceAmount>$ 2400.32</InvoiceAmount>
+        <DueDate>Due {convertedDate()}</DueDate>
+        <InvoiceAmount>£ {invoice.total}</InvoiceAmount>
       </DueDateAmountBox>
-      <CustomerName>Jensen Huang</CustomerName>
-      <InvoiceStatusBox>
-        <TextCircleBox>
-          <Circle />
-          <StatusText>Paid</StatusText>
-        </TextCircleBox>
-      </InvoiceStatusBox>
+      <CustomerName>{invoice.clientName}</CustomerName>
+      {invoiceStatus()}
+      <SVGContainer>
+      {arrowRightSVG}
+      </SVGContainer>
     </Card>
   );
 }
 
 export default InvoiceCard;
+
+// {
+//     "id": "FV2353",
+//     "createdAt": "2021-11-05",
+//     "paymentDue": "2021-11-12",
+//     "description": "Logo Re-design",
+//     "paymentTerms": 7,
+//     "clientName": "Anita Wainwright",
+//     "clientEmail": "",
+//     "status": "draft",
+//     "senderAddress": {
+//       "street": "19 Union Terrace",
+//       "city": "London",
+//       "postCode": "E1 3EZ",
+//       "country": "United Kingdom"
+//     },
+//     "clientAddress": {
+//       "street": "",
+//       "city": "",
+//       "postCode": "",
+//       "country": ""
+//     },
+//     "items": [
+//       {
+//         "name": "Logo Re-design",
+//         "quantity": 1,
+//         "price": 3102.04,
+//         "total": 3102.04
+//       }
+//     ],
+//     "total": 3102.04
+//   }

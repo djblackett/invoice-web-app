@@ -1,4 +1,5 @@
 import styled from "styled-components";
+import DropDown from "./DropDown";
 
 const GridContainer = styled.div`
   display: grid;
@@ -8,6 +9,16 @@ const GridContainer = styled.div`
   grid-template-columns: 1fr 1fr;
   margin-top: 32px;
   margin-bottom: 25px;
+
+  @media (min-width: 1200px) {
+    /* display: inline-grid; */
+    width: 730px;
+    justify-self: center;
+    margin-top: 72px;
+    height: 59px;
+    margin-bottom: 65px;
+    /* margin-right: 355px; */
+  }
 `;
 
 const TitleBox = styled.div`
@@ -19,6 +30,10 @@ const TitleBox = styled.div`
 
   @media (min-width: 768px) {
     margin-left: 48px;
+  }
+
+  @media (min-width: 1200px) {
+    margin-left: 0;
   }
 `;
 
@@ -34,10 +49,21 @@ const InvoicesLeft = styled.p`
 
 const ControlBox = styled.div`
   display: flex;
+  justify-self: end;
   flex-direction: row;
   align-items: center;
   margin-right: 24px;
   justify-content: space-between;
+
+  @media (min-width: 768px) {
+    margin-right: 48px;
+    width: 308px;
+  }
+
+  @media (min-width: 1200px) {
+    margin-right: 0;
+    justify-content: flex-end;
+  }
 `;
 
 const NewInvoiceButton = styled.div`
@@ -47,6 +73,7 @@ const NewInvoiceButton = styled.div`
   width: 90px;
   display: flex;
   align-items: center;
+  margin-left: 40px;
 `;
 
 const arrowDownSVG = (
@@ -54,9 +81,9 @@ const arrowDownSVG = (
     <path
       d="M1 1l4.228 4.228L9.456 1"
       stroke="#7C5DFA"
-      stroke-width="2"
+      strokeWidth="2"
       fill="none"
-      fill-rule="evenodd"
+      fillRule="evenodd"
     />
   </svg>
 );
@@ -89,10 +116,12 @@ const plusSignSVG = (
     <path
       d="M6.313 10.023v-3.71h3.71v-2.58h-3.71V.023h-2.58v3.71H.023v2.58h3.71v3.71z"
       fill="#7C5DFA"
-      fill-rule="nonzero"
+      fillRule="nonzero"
     />
   </svg>
 );
+
+// change filter text dynamically
 
 function TitleGrid() {
   return (
@@ -103,7 +132,7 @@ function TitleGrid() {
       </TitleBox>
       <ControlBox>
         <Filter>Filter</Filter>
-        {arrowDownSVG}
+        <DropDown icon={arrowDownSVG}></DropDown>
         <NewInvoiceButton>
           <WhiteCircle>{plusSignSVG}</WhiteCircle>
 
