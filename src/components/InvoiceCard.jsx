@@ -2,11 +2,13 @@ import styled from "styled-components";
 import InvoicePaid from "./InvoicePaid";
 import InvoicePending from "./InvoicePending";
 import InvoiceDraft from "./InvoiceDraft";
+import PropTypes from "prop-types";
 
 const Card = styled.div`
   height: 134px;
   width: 100%;
-  background-color: white;
+  max-width: 100%;
+  background-color: ${({ theme }) => theme.background};
   display: grid;
   grid-template-columns: 1fr 1fr;
   grid-template-rows: 43px 43px;
@@ -19,11 +21,19 @@ const Card = styled.div`
   font-size: 12px;
   border-radius: 8px;
   box-shadow: 0px 10px 10px -10px rgba(72, 84, 159, 0.100397);
+  transition: width 0.5s ease-in-out;
+
+  &:hover {
+    border: 1px solid ${({ theme }) => theme.outline};
+  }
 
   @media (min-width: 768px) {
     grid-template-rows: 1fr;
-    grid-template-columns: repeat(6, auto);
+    grid-template-columns: repeat(5, 1fr) 60px;
+    padding-left: 0;
+    padding-right: 0;
     align-items: center;
+    justify-items: center;
     height: 72px;
     width: 100%;
     max-width: initial;
@@ -45,7 +55,7 @@ const IDNumber = styled.p`
 
 const DueDate = styled.p`
   margin: 0;
-  color: #888eb0;
+  color: ${({ theme }) => theme.greyText};
 `;
 
 const DueDateAmountBox = styled.div`
@@ -81,36 +91,42 @@ const SVGContainer = styled.div`
 
   @media (min-width: 768px) {
     display: flex;
-
   }
-`
-const arrowRightSVG = <svg width="7" height="10" xmlns="http://www.w3.org/2000/svg"><path d="M1 1l4 4-4 4" stroke="#7C5DFA" strokeWidth="2" fill="none" fillRule="evenodd"/></svg>
+`;
+const arrowRightSVG = (
+  <svg width="7" height="10" xmlns="http://www.w3.org/2000/svg">
+    <path
+      d="M1 1l4 4-4 4"
+      stroke="#7C5DFA"
+      strokeWidth="2"
+      fill="none"
+      fillRule="evenodd"
+    />
+  </svg>
+);
 
-function InvoiceCard({invoice}) {
-
+function InvoiceCard({ invoice }) {
   const invoiceStatus = () => {
     if (invoice.status === "paid") {
-      return <InvoicePaid />
+      return <InvoicePaid />;
     } else if (invoice.status === "pending") {
-      return <InvoicePending />
+      return <InvoicePending />;
     } else if (invoice.status === "draft") {
-      return  <InvoiceDraft />
-    }  
-  }
-
-  
+      return <InvoiceDraft />;
+    }
+  };
 
   const convertedDate = () => {
     const date = invoice.paymentDue.split("-");
     const dateObj = new Date(Date.UTC(date[0], date[1], date[2]));
     return dateObj.toDateString().substring(4);
-
   };
 
   return (
     <Card>
       <IDNumber>
-        <span style={{ color: "#888eb0" }}>#</span>{invoice.id}
+        <span style={{ color: "#7E88C3" }}>#</span>
+        {invoice.id}
       </IDNumber>
       <DueDateAmountBox>
         <DueDate>Due {convertedDate()}</DueDate>
@@ -118,12 +134,14 @@ function InvoiceCard({invoice}) {
       </DueDateAmountBox>
       <CustomerName>{invoice.clientName}</CustomerName>
       {invoiceStatus()}
-      <SVGContainer>
-      {arrowRightSVG}
-      </SVGContainer>
+      <SVGContainer>{arrowRightSVG}</SVGContainer>
     </Card>
   );
 }
+
+InvoiceCard.propTypes = {
+  invoice: PropTypes.object.isRequired,
+};
 
 export default InvoiceCard;
 

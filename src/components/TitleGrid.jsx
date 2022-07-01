@@ -1,5 +1,6 @@
 import styled from "styled-components";
 import DropDown from "./DropDown";
+import PropTypes from "prop-types";
 
 const GridContainer = styled.div`
   display: grid;
@@ -44,7 +45,17 @@ const Title = styled.h1`
 const InvoicesLeft = styled.p`
   margin: 0;
   margin-top: 4px;
-  color: #888eb0;
+  color: ${({ theme }) => theme.greyText};
+
+  .wideScreenText {
+    display: none;
+  }
+
+  @media (min-width: 768px) {
+    .wideScreenText {
+      display: inline;
+    }
+  }
 `;
 
 const ControlBox = styled.div`
@@ -109,6 +120,16 @@ const Filter = styled.p`
   font-weight: bold;
   margin: 0;
   margin-bottom: 5px;
+
+  .wideScreenText {
+    display: none;
+  }
+
+  @media (min-width: 768px) {
+    .wideScreenText {
+      display: inline;
+    }
+  }
 `;
 
 const plusSignSVG = (
@@ -123,16 +144,25 @@ const plusSignSVG = (
 
 // change filter text dynamically
 
-function TitleGrid() {
+function TitleGrid({ handleChangeFilter, invoiceList }) {
   return (
     <GridContainer>
       <TitleBox>
         <Title>Invoices</Title>
-        <InvoicesLeft>7 invoices</InvoicesLeft>
+        <InvoicesLeft>
+          <span className="wideScreenText">There are </span>
+          {invoiceList.length} <span className="wideScreenText"> total </span>
+          invoices
+        </InvoicesLeft>
       </TitleBox>
       <ControlBox>
-        <Filter>Filter</Filter>
-        <DropDown icon={arrowDownSVG}></DropDown>
+        <Filter>
+          Filter <span className="wideScreenText">by status</span>
+        </Filter>
+        <DropDown
+          icon={arrowDownSVG}
+          handleChangeFilter={handleChangeFilter}
+        ></DropDown>
         <NewInvoiceButton>
           <WhiteCircle>{plusSignSVG}</WhiteCircle>
 
@@ -142,5 +172,10 @@ function TitleGrid() {
     </GridContainer>
   );
 }
+
+TitleGrid.propTypes = {
+  handleChangeFilter: PropTypes.func.isRequired,
+  invoiceList: PropTypes.array.isRequired,
+};
 
 export default TitleGrid;

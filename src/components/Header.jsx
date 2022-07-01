@@ -1,4 +1,5 @@
 import styled from "styled-components";
+import PropTypes from "prop-types";
 
 const HeaderContainer = styled.div`
   width: 100%;
@@ -8,6 +9,7 @@ const HeaderContainer = styled.div`
   justify-content: space-between;
   align-items: center;
   background: #373b53;
+  z-index: 1000;
   // needs background color dynamically
 
   @media (min-width: 1200px) {
@@ -133,4 +135,7 @@ function Header({ themeToggler }) {
   );
 }
 
+Header.propTypes = {
+  themeToggler: PropTypes.func.isRequired,
+};
 export default Header;

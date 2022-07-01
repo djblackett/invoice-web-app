@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import styled from "styled-components";
 // import IonIcon from "@reacticons/ionicons";
 // import { useSearchParams } from "react-router-dom";
+import PropTypes from "prop-types";
 
 const Main = styled("div")`
   align-self: center;
@@ -39,6 +40,7 @@ const DropDownContainer = styled("div")`
   margin: 0 auto;
   z-index: 10;
   filter: drop-shadow(2px 2px 2px bottom);
+  background: transparent;
 `;
 
 const DropDownHeader = styled.div.attrs({
@@ -56,7 +58,7 @@ const DropDownHeader = styled.div.attrs({
   font-size: 1.2rem;
   color: ${({ theme }) => theme.text};
   border-radius: 6px;
-  /* filter: drop-shadow(2px 2px 2px black); */
+
   color: ${({ theme }) => theme.text};
   /* background-color: ${({ theme }) => theme.background}; */
 `;
@@ -64,52 +66,72 @@ const DropDownHeader = styled.div.attrs({
 const DropDownListContainer = styled("div")`
   position: absolute;
   width: 150px;
-  left: -80px;
-  background: transparent;
+  left: -75px;
+  /* background: transparent; */
+  background-color: ${({ theme }) => theme.background};
   border-radius: 10px;
+  overflow: hidden;
+  filter: drop-shadow(2px 2px 2px gray);
 `;
 
 const DropDownList = styled("ul")`
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
   width: 100%;
   padding: 0;
   margin: 0;
-
+  /* background: transparent; */
   background-color: ${({ theme }) => theme.background};
-  padding-bottom: 5px;
+  /* padding-bottom: 5px; */
   box-sizing: border-box;
-  border-radius: 4px;
+  border-radius: 10px;
   color: ${({ theme }) => theme.text};
   font-size: 1.2rem;
   font-weight: 600;
 
-  &:first-child {
-    padding-top: 0.8em;
-    border-top: none;
+  > * {
+    &:not(:first-child) {
+      /* padding-top: 0.8em; */
+      /* border-top: initial; */
+      border-top: 1px solid #888eb0;
+    }
   }
 `;
 
 const ListItem = styled.li.attrs({
   // tabIndex: "0",
 })`
+  display: flex;
+
+  align-items: center;
+  justify-content: center;
   list-style: none;
-  margin-bottom: 0.8em;
-  border-top: 1px solid #888eb0;
+  padding: 0.5rem;
+  cursor: pointer;
   width: 100%;
+  background-color: ${({ theme }) => theme.background};
+  transition: all 0.2s;
+
+  &:hover {
+    filter: brightness(90%);
+  }
 `;
 
 const ItemButton = styled.button`
   height: 100%;
   width: 100%;
-  background-color: transparent;
+  background-color: ${({ theme }) => theme.background};
   border: none;
   color: ${({ theme }) => theme.text};
 `;
 
 const options = ["All", "Paid", "Pending", "Draft"];
 
-export default function DropDown({ icon }) {
+export default function DropDown({ icon, handleChangeFilter }) {
   const [isOpen, setIsOpen] = useState(false);
-  const [regionState, setRegionState] = useState(null);
+  // const [regionState, setRegionState] = useState(null);
   // const [searchParams, setSearchParams] = useSearchParams();
 
   const toggling = () => setIsOpen(!isOpen);
@@ -119,9 +141,11 @@ export default function DropDown({ icon }) {
     }
   };
 
-  const onOptionClicked = (region) => () => {
+  const onOptionClicked = (status) => () => {
     // setRegionState(region);
     setIsOpen(false);
+    handleChangeFilter(status);
+    console.log(status);
     // if (regionState !== "Filter by Region") {
     //   setSearchParams({ region });
     // } else {
@@ -151,10 +175,8 @@ export default function DropDown({ icon }) {
           <DropDownListContainer>
             <DropDownList>
               {options.map((option, index) => (
-                <ListItem key={index + "-li"}>
-                  <ItemButton onClick={onOptionClicked(option)}>
-                    {option}
-                  </ItemButton>
+                <ListItem key={index + "-li"} onClick={onOptionClicked(option)}>
+                  <ItemButton>{option}</ItemButton>
                 </ListItem>
               ))}
             </DropDownList>
@@ -164,3 +186,8 @@ export default function DropDown({ icon }) {
     </Main>
   );
 }
+
+DropDown.propTypes = {
+  icon: PropTypes.object,
+  handleChangeFilter: PropTypes.func.isRequired,
+};

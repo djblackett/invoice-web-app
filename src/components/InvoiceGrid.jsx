@@ -1,5 +1,5 @@
 import styled from "styled-components";
-
+import PropTypes from "prop-types";
 const FlexContainer = styled.div`
   display: flex;
   flex-direction: column;
@@ -18,4 +18,7 @@ function InvoiceGrid({ children }) {
   return <FlexContainer>{children}</FlexContainer>;
 }
 
+InvoiceGrid.propTypes = {
+  children: PropTypes.node,
+};
 export default InvoiceGrid;

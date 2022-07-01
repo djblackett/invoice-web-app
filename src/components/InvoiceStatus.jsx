@@ -1,4 +1,5 @@
 import styled from "styled-components";
+import PropTypes from "prop-types";
 
 const InvoiceStatusBox = styled.div`
   padding: 13px 23px 12px 24px;
@@ -45,4 +46,9 @@ function InvoiceStatus({ text, textColor, backgroundColor }) {
   );
 }
 
+InvoiceStatus.propTypes = {
+  text: PropTypes.string.isRequired,
+  textColor: PropTypes.string.isRequired,
+  backgroundColor: PropTypes.string.isRequired,
+};
 export default InvoiceStatus;
