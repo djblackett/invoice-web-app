@@ -63,6 +63,7 @@ function ViewInvoice() {
 
   function toggleEditTab() {
     if (isEditOpen) {
+      
       setIsEditOpen(false);
     } else {
       setIsEditOpen(true);

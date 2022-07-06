@@ -15,7 +15,7 @@ root.render(
   <React.StrictMode>
     {/* <ThemeProvider> */}
     <Provider store={store}>
-      <BrowserRouter>
+      <BrowserRouter basename="./invoice-web-app">
         <App />
       </BrowserRouter>
     </Provider>
