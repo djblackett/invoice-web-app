@@ -72,9 +72,9 @@ function ViewInvoice() {
 
   // console.log(typeof toggleEditTab);
 
-  useLayoutEffect(() => {
-    setInvoice(getInvoiceById(id));
-  }, [id]);
+  // useLayoutEffect(() => {
+  //   setInvoice(getInvoiceById(id));
+  // }, [id]);
 
   
   return (
