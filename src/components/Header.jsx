@@ -16,11 +16,12 @@ const HeaderContainer = styled.div`
     flex-direction: column;
     display: flex;
     width: 103px;
-    height: 800px;
+    height: 100%;
     max-height: 100vh;
     grid-area: 1 / 1 / 4 / 2;
 
     border-radius: 0 20px 20px 0;
+    /* position: absolute; */
   }
 `;
 

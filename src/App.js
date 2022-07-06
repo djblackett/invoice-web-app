@@ -1,22 +1,23 @@
-import React, { useState, useEffect } from 'react';
-import './App.css';
-import data from './data.json';
-import Header from './components/Header';
-import styled from 'styled-components';
-import TitleGrid from './components/TitleGrid';
-import InvoiceCard from './components/InvoiceCard';
-import InvoiceGrid from './components/InvoiceGrid';
-import { GlobalStyles } from './components/GlobalStyles';
-import { ThemeProvider } from 'styled-components';
-import { lightTheme, darkTheme } from './components/Themes';
-import EmptyList from './components/EmptyList';
-import Modal from './components/Modal';
-import EditForm from './components/EditForm';
-import { useWindowWidth } from './hooks/useWindowWidth';
- import { doc, getDoc } from "firebase/firestore";
- import { firestoreDb } from './utils/firebase';
- import { collection, getDocs } from "firebase/firestore"; 
+/* eslint-disable no-unused-vars */
+import React, { useState, useEffect } from "react";
+import "./App.css";
+import Header from "./components/Header";
+import styled from "styled-components";
+import { GlobalStyles } from "./components/GlobalStyles";
+import { ThemeProvider } from "styled-components";
+import { lightTheme, darkTheme } from "./components/Themes";
 
+import Modal from "./components/Modal";
+import EditForm from "./components/EditForm";
+import { useWindowWidth } from "./hooks/useWindowWidth";
+import { doc, getDoc } from "firebase/firestore";
+import { firestoreDb } from "./utils/firebase";
+import { collection, getDocs } from "firebase/firestore";
+// import EditButton from "./components/buttons/EditButton";
+import { useRoutes } from "react-router-dom";
+import ViewInvoice from "./components/ViewInvoice";
+import Layout from "./components/Layout";
+import AllInvoices from "./components/AllInvoices";
 
 const Main = styled.div`
   height: 100%;
@@ -31,12 +32,7 @@ const Main = styled.div`
 `;
 
 function App() {
-  const [filter, setFilter] = useState('All');
-  // eslint-disable-next-line no-unused-vars
-  const [unfilteredList, setUnfilteredList] = useState(data);
-  const [invoiceList, setInvoiceList] = useState(data);
-
-  const [theme, setTheme] = useState('light');
+  const [theme, setTheme] = useState("light");
   const [isOpen, setIsOpen] = useState(false);
   const [isEditOpen, setIsEditOpen] = useState(true);
   const [padding, setPadding] = useState(0);
@@ -52,7 +48,7 @@ function App() {
   }
 
   const themeToggler = () => {
-    theme === 'light' ? setTheme('dark') : setTheme('light');
+    theme === "light" ? setTheme("dark") : setTheme("light");
   };
 
   // const themeTogglerEnter = (e) => {
@@ -61,91 +57,97 @@ function App() {
   //   }
   // };
 
-  const handleChangeFilter = (status) => {
-    setFilter(status);
-  };
-
-  useEffect(() => {
-    setInvoiceList(
-      unfilteredList.filter((invoice) => {
-        if (filter === 'All') {
-          return true;
-        } else if (filter === 'Paid') {
-          return invoice.status === 'paid';
-        } else if (filter === 'Pending') {
-          return invoice.status === 'pending';
-        } else if (filter === 'Draft') {
-          return invoice.status === 'draft';
-        }
-      })
-    );
-  }, [filter, unfilteredList]);
-
- 
-
   async function testDBFunction() {
-const docRef = doc(firestoreDb, "cities", "SF");
-const docSnap = await getDoc(docRef);
+    const docRef = doc(firestoreDb, "cities", "SF");
+    const docSnap = await getDoc(docRef);
 
-if (docSnap.exists()) {
-  console.log("Document data:", docSnap.data());
-} else {
-  // doc.data() will be undefined in this case
-  console.log("No such document!");
-}
+    if (docSnap.exists()) {
+      console.log("Document data:", docSnap.data());
+    } else {
+      // doc.data() will be undefined in this case
+      console.log("No such document!");
+    }
 
-const querySnapshot = await getDocs(collection(firestoreDb, "invoices"));
-querySnapshot.forEach((doc) => {
-  console.log(`${doc.id} => ${doc.data()}`);
-});
+    const querySnapshot = await getDocs(collection(firestoreDb, "invoices"));
+    querySnapshot.forEach((doc) => {
+      console.log(`${doc.id} => ${doc.data()}`);
+    });
   }
 
   const handleClose = () => {
     setIsOpen(false);
     setPadding(0);
-    }
+  };
 
   useEffect(() => {
     testDBFunction();
-  }, [])
+  }, []);
+
+  const routes = [
+    {
+      path: "/",
+      element: <Layout />,
+      children: [
+        // { index: true, element: <ToolBar /> },  Experiemental feature for putting the filters outisde of the CountryGrid
+        {
+          index: true,
+          element: <AllInvoices />,
+          // element: <CountryGridWindow />, //  Experimental feature for use with list/grid virtualization
+        },
+
+        {
+          path: ":id",
+          element: <ViewInvoice />,
+        },
+      ],
+    },
+  ];
+
+  const element = useRoutes(routes);
 
   return (
-    <ThemeProvider theme={theme === 'light' ? lightTheme : darkTheme}>
+    <ThemeProvider theme={theme === "light" ? lightTheme : darkTheme}>
       <GlobalStyles />
 
       <Main id="container">
         <Header themeToggler={themeToggler} />
-        <button
-          style={{ padding: '5px', position: 'absolute', right: '10px', top: '10px' }}
-          onClick={() => toggleEditTab()}>
-          Edit
-        </button>
-        <p
+        {/* <button
           style={{
-            padding: '5px',
-            position: 'absolute',
-            right: '10px',
-            top: '30px',
-            border: '1px solid black'
-          }}>
+            padding: "5px",
+            position: "absolute",
+            right: "10px",
+            top: "10px",
+          }}
+          onClick={() => toggleEditTab()}
+        >
+          Edit
+        </button> */}
+        {/* <p
+          style={{
+            padding: "5px",
+            position: "absolute",
+            right: "10px",
+            top: "30px",
+            border: "1px solid black",
+          }}
+        >
           width: ${width}px
-        </p>
-        <EditForm isEditOpen={isEditOpen} handleClose={handleClose} padding={padding} setPadding={setPadding}  />
-        <TitleGrid handleChangeFilter={handleChangeFilter} invoiceList={invoiceList} />
-        {invoiceList.length > 0 && (
-          <InvoiceGrid>
-            {invoiceList.map((invoice) => {
-              return <InvoiceCard invoice={invoice} key={invoice.id} />;
-            })}
-          </InvoiceGrid>
-        )}
+        </p> */}
 
-        {invoiceList.length === 0 && <EmptyList />}
-        <button onClick={() => setIsOpen(true)}>Click to Open Modal</button>
+        {/* <EditForm
+          isEditOpen={isEditOpen}
+          handleClose={handleClose}
+          padding={padding}
+          setPadding={setPadding}
+        /> */}
+        {/* <EditButton /> */}
+        {element}
 
-        <Modal handleClose={() => setIsEditOpen(false)} isOpen={isOpen}>
+        {/* <button onClick={() => setIsOpen(true)}>Click to Open Modal</button> */}
+
+        {/* <Modal handleClose={() => setIsEditOpen(false)} isOpen={isOpen}>
           This is Modal Content!
-        </Modal>
+        </Modal> */}
       </Main>
     </ThemeProvider>
   );

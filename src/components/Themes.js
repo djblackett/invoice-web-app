@@ -9,7 +9,9 @@ export const lightTheme = {
   greyText: "#888EB0",
   formFieldOutline: "#DFE3FA",
   newButton: "#7C5DFA",
-  newButtonFocus: "#9277FF",
+  newButtonHover: "#9277FF",
+  editButton: "#F9FAFE",
+  editButtonHover: "#DFE3FA",
 };
 export const darkTheme = {
   body: "#141625",
@@ -21,7 +23,9 @@ export const darkTheme = {
   greyText: "#DFE3FA",
   formFieldOutline: "",
   newButton: "#7C5DFA",
-  newButtonFocus: "#9277FF",
+  newButtonHover: "#9277FF",
+  editButton: "#252945",
+  editButtonHover: "#FFFFFF",
 };
 
 export const colors = {

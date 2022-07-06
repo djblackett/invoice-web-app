@@ -3,6 +3,7 @@ import InvoicePaid from "./InvoicePaid";
 import InvoicePending from "./InvoicePending";
 import InvoiceDraft from "./InvoiceDraft";
 import PropTypes from "prop-types";
+import { useMemo } from "react";
 
 const Card = styled.div`
   height: 134px;
@@ -42,9 +43,9 @@ const Card = styled.div`
   }
 
   @media (min-width: 1200px) {
-    max-width: 730px;
-    margin-left: 355px;
-    margin-right: 355px;
+    width: 730px;
+    margin-left: 0;
+    margin-right: 0;
   }
 `;
 
@@ -106,7 +107,7 @@ const arrowRightSVG = (
 );
 
 function InvoiceCard({ invoice }) {
-  const invoiceStatus = () => {
+  const invoiceStatus = useMemo(() => {
     if (invoice.status === "paid") {
       return <InvoicePaid />;
     } else if (invoice.status === "pending") {
@@ -114,7 +115,7 @@ function InvoiceCard({ invoice }) {
     } else if (invoice.status === "draft") {
       return <InvoiceDraft />;
     }
-  };
+  }, [invoice.status]);
 
   const convertedDate = () => {
     const date = invoice.paymentDue.split("-");
@@ -133,7 +134,7 @@ function InvoiceCard({ invoice }) {
         <InvoiceAmount>£ {invoice.total}</InvoiceAmount>
       </DueDateAmountBox>
       <CustomerName>{invoice.clientName}</CustomerName>
-      {invoiceStatus()}
+      {invoiceStatus}
       <SVGContainer>{arrowRightSVG}</SVGContainer>
     </Card>
   );

@@ -2,15 +2,15 @@
 /* eslint-disable react/display-name */
 /* eslint-disable react/prop-types */
 /* eslint-disable no-unused-vars */
-import styled from 'styled-components';
-import React, { useState, useEffect, useLayoutEffect, forwardRef } from 'react';
-import { useForm } from 'react-hook-form';
-import DatePicker from 'react-datepicker';
-import PropTypes from 'prop-types';
+import styled from "styled-components";
+import React, { useState, useEffect, useLayoutEffect, forwardRef } from "react";
+import { useForm } from "react-hook-form";
+import DatePicker from "react-datepicker";
+import PropTypes from "prop-types";
 
-import '../react-datepicker.css';
-import AddressBox from './AddressBox';
-import { useWindowWidth } from '../hooks/useWindowWidth';
+import "../react-datepicker.css";
+import AddressBox from "./AddressBox";
+import { useWindowWidth } from "../hooks/useWindowWidth";
 
 const EditTitle = styled.h1`
   font-size: 1.5rem;
@@ -21,6 +21,7 @@ const FormContainer = styled.div`
   height: 100%;
   /* min-width: 300px; */
   max-width: 700px;
+  left: 0;
   background-color: ${({ theme }) => theme.background};
   background-size: cover;
   position: absolute;
@@ -33,9 +34,12 @@ const FormContainer = styled.div`
   overflow-x: hidden;
   filter: drop-shadow(2px 2px 2px bottom);
 
+  align-self: flex-start;
+
   @media (min-width: 1200px) {
     left: 90px;
     padding-left: 5rem;
+    top: 0px;
   }
 `;
 
@@ -77,9 +81,8 @@ const Input = styled.input`
     border-color: black;
   }
 
-  .custom-input { 
+  .custom-input {
     padding: 0;
-
   }
 `;
 
@@ -94,7 +97,7 @@ const inputStyles = {
   fontWeight: "700",
   fontSize: "12px",
   lineHeight: "15px",
-}
+};
 
 const AddressDetailInput = styled(Input)`
   max-width: 9.5rem;
@@ -106,25 +109,26 @@ const Label = styled.label`
   font-size: 0.75rem;
 `;
 
-function EditForm({ isEditOpen, handleClose, padding, setPadding }) {
+function EditForm({ isEditOpen, handleClose, padding, setPadding, invoice }) {
   const {
     register,
     handleSubmit,
     watch,
-    formState: { errors }
+    formState: { errors },
   } = useForm();
 
   const ExampleCustomInput = forwardRef(({ value, onClick }, ref) => (
-    
-    <Input className="custom-input" onClick={onClick} ref={ref} defaultValue={value}/>
-
-    
+    <Input
+      className="custom-input"
+      onClick={onClick}
+      ref={ref}
+      defaultValue={value}
+    />
   ));
 
   const width = useWindowWidth();
 
   const [editPageWidth, setEditPageWidth] = useState(null);
-  
 
   const [startDate, setStartDate] = useState(new Date());
   const onSubmit = (data) => console.log(data);
@@ -147,20 +151,26 @@ function EditForm({ isEditOpen, handleClose, padding, setPadding }) {
   // })
 
   useEffect(() => {
-    const closeOnEscapeKey = (e) => (e.key === 'Escape' ? handleClose() : null);
-    document.body.addEventListener('keydown', closeOnEscapeKey);
+    const closeOnEscapeKey = (e) => (e.key === "Escape" ? handleClose() : null);
+    document.body.addEventListener("keydown", closeOnEscapeKey);
     return () => {
-      document.body.removeEventListener('keydown', closeOnEscapeKey);
-      
+      document.body.removeEventListener("keydown", closeOnEscapeKey);
     };
   }, [handleClose]);
 
-  console.log(watch('example')); // watch input value by passing the name of it
+  // console.log(watch("example")); // watch input value by passing the name of it
   return (
     <>
-      <FormContainer style={{ width: isEditOpen ? `${editPageWidth}px` : '0px' , paddingLeft: `${padding}px`, paddingRight: `${padding}px`, paddingTop: "2rem" }}>
+      <FormContainer
+        style={{
+          width: isEditOpen ? `${editPageWidth}px` : "0px",
+          paddingLeft: `${padding}px`,
+          paddingRight: `${padding}px`,
+          paddingTop: "2rem",
+        }}
+      >
         <EditTitle>
-          Edit <span style={{ color: '#7E88C3' }}>#</span>XM9141
+          Edit <span style={{ color: "#7E88C3" }}>#</span>XM9141
         </EditTitle>
         {/* "handleSubmit" will validate your inputs before invoking "onSubmit" */}
         <form onSubmit={handleSubmit(onSubmit)}>
@@ -168,88 +178,132 @@ function EditForm({ isEditOpen, handleClose, padding, setPadding }) {
           <BillText>Bill From</BillText>
           <FormEntry>
             <Label htmlFor="streetAddress">Street Address</Label>
-            <Input placeholder="19 Union Terrace" {...register('streetAddress')} />
+            <Input
+              defaultValue={invoice.senderAddress.street}
+              {...register("streetAddress")}
+            />
           </FormEntry>
-
           <AddressBox>
             <FormEntry>
               <Label htmlFor="city">City</Label>
-              <AddressDetailInput type="text" placeholder="London" {...register('city')} />
+              <AddressDetailInput
+                type="text"
+                defaultValue={invoice.senderAddress.city}
+                {...register("city")}
+              />
             </FormEntry>
 
             <FormEntry>
               <Label htmlFor="postalCode">Post Code</Label>
-              <AddressDetailInput type="text" placeholder="E1 3EZ" {...register('postalCode')} />
+              <AddressDetailInput
+                type="text"
+                defaultValue={invoice.senderAddress.postCode}
+                {...register("postalCode")}
+              />
             </FormEntry>
 
             <FormEntry>
               <Label htmlFor="country">Country</Label>
-              <AddressDetailInput type="text" placeholder="UK" {...register('country')} />
+              <AddressDetailInput
+                type="text"
+                defaultValue={invoice.senderAddress.country}
+                {...register("country")}
+              />
             </FormEntry>
           </AddressBox>
+
+          {/*   client details */}
 
           <BillText>Bill To</BillText>
-
           <FormEntry>
             <Label htmlFor="clientName">Client's Name</Label>
-            <Input type="text" placeholder="Alex Grim" {...register('clientName')} />
+            <Input
+              type="text"
+              defaultValue={invoice.clientName}
+              {...register("clientName")}
+            />
           </FormEntry>
-
           <FormEntry>
             <Label htmlFor="clientEmail">Client's Email</Label>
-            <Input defaultValue="alexgrim@mail.com" {...register('clientEmail')} />
+            <Input
+              defaultValue={invoice.clientEmail}
+              {...register("clientEmail")}
+            />
           </FormEntry>
-
           <FormEntry>
-            <Label htmlFor="streetAddress">Street Address</Label>
-            <Input defaultValue="19 Union Terrace" {...register('streetAddress')} />
+            <Label htmlFor="clientStreetAddress">Street Address</Label>
+            <Input
+              defaultValue={invoice.clientAddress.street}
+              {...register("clientStreetAddress")}
+            />
           </FormEntry>
-
           <AddressBox>
             <FormEntry>
-              <Label htmlFor="city">City</Label>
-              <AddressDetailInput type="text" placeholder="London" {...register('city')} />
+              <Label htmlFor="clientCity">City</Label>
+              <AddressDetailInput
+                type="text"
+                defaultValue={invoice.clientAddress.city}
+                {...register("clientCity")}
+              />
             </FormEntry>
 
             <FormEntry>
-              <Label htmlFor="postalCode">Post Code</Label>
-              <AddressDetailInput type="text" placeholder="E1 3EZ" {...register('postalCode')} />
+              <Label htmlFor="clientPostalCode">Post Code</Label>
+              <AddressDetailInput
+                type="text"
+                defaultValue={invoice.clientAddress.postCode}
+                {...register("clientPostalCode")}
+              />
             </FormEntry>
 
             <FormEntry>
               <Label htmlFor="country">Country</Label>
-              <AddressDetailInput type="text" placeholder="UK" {...register('country')} />
+              <AddressDetailInput
+                type="text"
+                defaultValue={invoice.clientAddress.country}
+                {...register("clientCountry")}
+              />
             </FormEntry>
           </AddressBox>
-         
-         
-         
-         <div style={{display: "flex", justifyContent: "space-between", width: "100%"}}>
+          <div
+            style={{
+              display: "flex",
+              justifyContent: "space-between",
+              width: "100%",
+            }}
+          >
+            <FormEntry>
+              <Label htmlFor="invoiceDate">Invoice Date</Label>
+              <DatePicker
+                customInput={<ExampleCustomInput />}
+                selected={startDate}
+                onChange={(date) => setStartDate(date)}
+              />
+            </FormEntry>
+
+            <FormEntry>
+              <Label htmlFor="paymentTerms">Payment Terms</Label>
+              <Input
+                type="select"
+                defaultValue=""
+                {...register("paymentTerms")}
+              />
+            </FormEntry>
+
+            {/* include validation with required or other standard HTML validation rules */}
+            {/* <Input type="text" {...register('exampleRequired', { required: true })} /> */}
+            {/* errors will return when field validation fails  */}
+            {/* {errors.exampleRequired && <span>This field is required</span>} */}
+          </div>
           <FormEntry>
-            <Label htmlFor="invoiceDate">Invoice Date</Label>
-            <DatePicker customInput={<ExampleCustomInput/>} selected={startDate} onChange={(date) => setStartDate(date)} />
-          </FormEntry>
-
-        <FormEntry>
-            <Label htmlFor="paymentTerms">Payment Terms</Label>
-            <Input type="select" placeholder="" {...register('paymentTerms')} />
-          </FormEntry>
-
-          {/* include validation with required or other standard HTML validation rules */}
-          {/* <Input type="text" {...register('exampleRequired', { required: true })} /> */}
-          {/* errors will return when field validation fails  */}
-          {/* {errors.exampleRequired && <span>This field is required</span>} */}
-         
-</div>
-
- 
-
-           <FormEntry>
             <Label htmlFor="projectDescription">Project Description</Label>
-            <Input type="text" placeholder="" {...register('projectDescription')} />
+            <Input
+              type="text"
+              defaultValue={invoice.description}
+              {...register("projectDescription")}
+            />
           </FormEntry>
-
-          <Input type="submit" style={{marginLeft: "5px"}} />
+          <Input type="submit" style={{ marginLeft: "5px" }} />
         </form>
       </FormContainer>
     </>
@@ -258,7 +312,7 @@ function EditForm({ isEditOpen, handleClose, padding, setPadding }) {
 
 EditForm.propTypes = {
   isEditOpen: PropTypes.bool.isRequired,
-  handleClose: PropTypes.func.isRequired,
-}
+  // handleClose: PropTypes.func.isRequired,
+};
 
 export default EditForm;
