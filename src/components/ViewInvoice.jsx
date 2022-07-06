@@ -5,6 +5,7 @@ import data from "../data.json";
 import styled from "styled-components";
 import FullInvoice from "./FullInvoice";
 import EditForm from "./EditForm";
+import ErrorBoundary from "./ErrorBoundary";
 
 
 const ViewContainer = styled.div`
@@ -80,6 +81,7 @@ function ViewInvoice() {
 
 //  {!invoice && <h1>Loading</h1>} 
 <ViewContainer>
+  <ErrorBoundary>
   <EditForm
           isEditOpen={isEditOpen}
           // handleClose={handleClose}
@@ -87,6 +89,7 @@ function ViewInvoice() {
           setPadding={setPadding}
           invoice={invoice}
         />
+        </ErrorBoundary>
   <GoBackButton onClick={() => navigate(-1)}>
     <Icon>{"<"}</Icon>
     <GoBack>Go back</GoBack>
