@@ -1,5 +1,5 @@
 import InvoiceToolbar from "./InvoiceToolbar";
-import React, { useState, useEffect } from "react";
+import React, { useState, useLayoutEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import data from "../data.json";
 import styled from "styled-components";
@@ -72,7 +72,7 @@ function ViewInvoice() {
 
   // console.log(typeof toggleEditTab);
 
-  useEffect(() => {
+  useLayoutEffect(() => {
     setInvoice(getInvoiceById(id));
   }, [id]);
 
