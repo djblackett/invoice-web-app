@@ -9,7 +9,6 @@
     "@testing-library/user-event": "^14.1.1",
     "eslint-plugin-react-hooks": "^4.5.0",
     "firebase": "^9.8.2",
-    "gh-pages": "^3.2.3",
     "prettier-eslint": "^15.0.1",
     "prettier-eslint-cli": "^6.0.1",
     "react": "^18.1.0",
@@ -33,7 +32,9 @@
     "eject": "react-scripts eject",
     "lint": "eslint . --ext .js",
     "lint:fix": "eslint --fix",
-    "format": "prettier-eslint --eslint-config-path ./.eslintrc.json --write '**/*.js'"
+    "format": "prettier-eslint --eslint-config-path ./.eslintrc.json --write '**/*.js'",
+    "predeploy": "npm run build",
+    "deploy": "gh-pages -d build"
   },
   "browserslist": {
     "production": [
@@ -67,5 +68,6 @@
     "plugins": [
       "babel-plugin-styled-components"
     ]
-  }
+  },
+  "homepage": "./invoice-web-app"
 }

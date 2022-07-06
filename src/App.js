@@ -37,16 +37,6 @@ function App() {
   const [isEditOpen, setIsEditOpen] = useState(true);
   const [padding, setPadding] = useState(0);
 
-  const width = useWindowWidth();
-
-  function toggleEditTab() {
-    if (isEditOpen) {
-      setIsEditOpen(false);
-    } else {
-      setIsEditOpen(true);
-    }
-  }
-
   const themeToggler = () => {
     theme === "light" ? setTheme("dark") : setTheme("light");
   };
@@ -74,25 +64,19 @@ function App() {
     });
   }
 
-  const handleClose = () => {
-    setIsOpen(false);
-    setPadding(0);
-  };
-
-  useEffect(() => {
-    testDBFunction();
-  }, []);
+  // must fix credentials for db connection
+  // useEffect(() => {
+  //   testDBFunction();
+  // }, []);
 
   const routes = [
     {
       path: "/",
       element: <Layout />,
       children: [
-        // { index: true, element: <ToolBar /> },  Experiemental feature for putting the filters outisde of the CountryGrid
         {
           index: true,
           element: <AllInvoices />,
-          // element: <CountryGridWindow />, //  Experimental feature for use with list/grid virtualization
         },
 
         {
@@ -111,36 +95,7 @@ function App() {
 
       <Main id="container">
         <Header themeToggler={themeToggler} />
-        {/* <button
-          style={{
-            padding: "5px",
-            position: "absolute",
-            right: "10px",
-            top: "10px",
-          }}
-          onClick={() => toggleEditTab()}
-        >
-          Edit
-        </button> */}
-        {/* <p
-          style={{
-            padding: "5px",
-            position: "absolute",
-            right: "10px",
-            top: "30px",
-            border: "1px solid black",
-          }}
-        >
-          width: ${width}px
-        </p> */}
 
-        {/* <EditForm
-          isEditOpen={isEditOpen}
-          handleClose={handleClose}
-          padding={padding}
-          setPadding={setPadding}
-        /> */}
-        {/* <EditButton /> */}
         {element}
 
         {/* <button onClick={() => setIsOpen(true)}>Click to Open Modal</button> */}
