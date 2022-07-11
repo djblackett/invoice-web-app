@@ -31,6 +31,7 @@ const Card = styled.div`
   @media (min-width: 768px) {
     grid-template-rows: 1fr;
     grid-template-columns: repeat(5, 1fr) 60px;
+    grid-auto-flow: dense;
     padding-left: 0;
     padding-right: 0;
     align-items: center;
@@ -52,6 +53,7 @@ const Card = styled.div`
 const IDNumber = styled.p`
   margin: 0;
   font-weight: bold;
+  color: ${({ theme }) => theme.textPlain};
 `;
 
 const DueDate = styled.p`
@@ -75,12 +77,17 @@ const InvoiceAmount = styled.p`
   margin: 0;
   line-height: 24px;
   font-size: 16px;
+  color: ${({ theme }) => theme.textPlain};
 `;
 
 const CustomerName = styled.p`
   margin: 0;
   color: #888eb0;
   text-align: right;
+
+  @media (min-width: 768px) {
+    grid-column: 3 / 4;
+  }
 `;
 
 const SVGContainer = styled.div`
@@ -115,7 +122,7 @@ function InvoiceCard({ invoice }) {
     } else if (invoice.status === "draft") {
       return <InvoiceDraft />;
     }
-  }, [invoice.status]);
+  }, [invoice]);
 
   const convertedDate = () => {
     const date = invoice.paymentDue.split("-");
@@ -129,11 +136,13 @@ function InvoiceCard({ invoice }) {
         <span style={{ color: "#7E88C3" }}>#</span>
         {invoice.id}
       </IDNumber>
+      <CustomerName>{invoice.clientName}</CustomerName>
       <DueDateAmountBox>
         <DueDate>Due {convertedDate()}</DueDate>
+
         <InvoiceAmount>£ {invoice.total}</InvoiceAmount>
       </DueDateAmountBox>
-      <CustomerName>{invoice.clientName}</CustomerName>
+
       {invoiceStatus}
       <SVGContainer>{arrowRightSVG}</SVGContainer>
     </Card>
@@ -145,35 +154,3 @@ InvoiceCard.propTypes = {
 };
 
 export default InvoiceCard;
-
-// {
-//     "id": "FV2353",
-//     "createdAt": "2021-11-05",
-//     "paymentDue": "2021-11-12",
-//     "description": "Logo Re-design",
-//     "paymentTerms": 7,
-//     "clientName": "Anita Wainwright",
-//     "clientEmail": "",
-//     "status": "draft",
-//     "senderAddress": {
-//       "street": "19 Union Terrace",
-//       "city": "London",
-//       "postCode": "E1 3EZ",
-//       "country": "United Kingdom"
-//     },
-//     "clientAddress": {
-//       "street": "",
-//       "city": "",
-//       "postCode": "",
-//       "country": ""
-//     },
-//     "items": [
-//       {
-//         "name": "Logo Re-design",
-//         "quantity": 1,
-//         "price": 3102.04,
-//         "total": 3102.04
-//       }
-//     ],
-//     "total": 3102.04
-//   }

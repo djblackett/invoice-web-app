@@ -3,6 +3,7 @@ import styled from "styled-components";
 // import IonIcon from "@reacticons/ionicons";
 // import { useSearchParams } from "react-router-dom";
 import PropTypes from "prop-types";
+import CheckboxSelection from "./CheckboxSelection";
 
 const Main = styled("div")`
   align-self: center;
@@ -10,17 +11,14 @@ const Main = styled("div")`
   background: transparent;
   height: 50px;
   z-index: 10;
-  /* grid-area: 2 / 1 / 3 / 2; */
+
   width: 8px;
   cursor: pointer;
   filter: drop-shadow(2px 2px 2px bottom);
   margin-left: 16px;
   position: relative;
-  /* margin: 20px 5%; */ /* margin-bottom: 30px; */
+
   @media (min-width: 600px) {
-    /* grid-area: 1 / 2 / 2 / 3;
-    justify-self: start; */
-    /* margin: 0; */
   }
 
   @media (min-width: 900px) {
@@ -52,7 +50,6 @@ const DropDownHeader = styled.div.attrs({
   align-self: center;
   box-sizing: border-box;
   height: 50px;
-  /* padding: 20px; */
   width: 12px;
   font-weight: 600;
   font-size: 1.2rem;
@@ -67,7 +64,6 @@ const DropDownListContainer = styled("div")`
   position: absolute;
   width: 150px;
   left: -75px;
-  /* background: transparent; */
   background-color: ${({ theme }) => theme.background};
   border-radius: 10px;
   overflow: hidden;
@@ -82,27 +78,16 @@ const DropDownList = styled("ul")`
   width: 100%;
   padding: 0;
   margin: 0;
-  /* background: transparent; */
+
   background-color: ${({ theme }) => theme.background};
-  /* padding-bottom: 5px; */
   box-sizing: border-box;
   border-radius: 10px;
   color: ${({ theme }) => theme.text};
   font-size: 1.2rem;
   font-weight: 600;
-
-  > * {
-    &:not(:first-child) {
-      /* padding-top: 0.8em; */
-      /* border-top: initial; */
-      border-top: 1px solid #888eb0;
-    }
-  }
 `;
 
-const ListItem = styled.li.attrs({
-  // tabIndex: "0",
-})`
+const ListItem = styled.li.attrs({})`
   display: flex;
 
   align-items: center;
@@ -114,25 +99,39 @@ const ListItem = styled.li.attrs({
   background-color: ${({ theme }) => theme.background};
   transition: all 0.2s;
 
-  &:hover {
+  /* &:hover {
     filter: brightness(90%);
-  }
+  } */
 `;
 
 const ItemButton = styled.button`
+  display: flex;
+  align-items: center;
   height: 100%;
   width: 100%;
   background-color: ${({ theme }) => theme.background};
   border: none;
   color: ${({ theme }) => theme.text};
+  box-sizing: border-box;
 `;
 
-const options = ["All", "Paid", "Pending", "Draft"];
+const options = ["Draft", "Pending", "Paid"];
+
+const OptionLabel = styled.label`
+  margin-left: 0.5rem;
+  font-family: "Spartan";
+  font-style: normal;
+  font-weight: 700;
+  font-size: 12px;
+  line-height: 15px;
+  /* identical to box height, or 125% */
+
+  letter-spacing: -0.25px;
+  color: ${({ theme }) => theme.textPlain};
+`;
 
 export default function DropDown({ icon, handleChangeFilter }) {
   const [isOpen, setIsOpen] = useState(false);
-  // const [regionState, setRegionState] = useState(null);
-  // const [searchParams, setSearchParams] = useSearchParams();
 
   const toggling = () => setIsOpen(!isOpen);
   const togglingButton = (e) => {
@@ -142,33 +141,16 @@ export default function DropDown({ icon, handleChangeFilter }) {
   };
 
   const onOptionClicked = (status) => () => {
-    // setRegionState(region);
-    setIsOpen(false);
     handleChangeFilter(status);
     console.log(status);
-    // if (regionState !== "Filter by Region") {
-    //   setSearchParams({ region });
-    // } else {
-    //   setSearchParams({});
-    // }
   };
 
   // todo make the drop down from scratch so I can style it correctly
-
-  // function handleChange(event) {
-  //   if (regionState && regionState !== "Filter by Region") {
-  //     setSearchParams({ regionState });
-  //   } else {
-  //     setSearchParams({});
-  //   }
-  // }
 
   return (
     <Main>
       <DropDownContainer>
         <DropDownHeader onClick={toggling} onKeyPress={togglingButton}>
-          {/* {regionState || "Filter by Region"} */}
-          {/* <IonIcon name="chevron-down-outline"></IonIcon> */}
           {icon}
         </DropDownHeader>
         {isOpen && (
@@ -176,7 +158,9 @@ export default function DropDown({ icon, handleChangeFilter }) {
             <DropDownList>
               {options.map((option, index) => (
                 <ListItem key={index + "-li"} onClick={onOptionClicked(option)}>
-                  <ItemButton>{option}</ItemButton>
+                  <ItemButton>
+                    <CheckboxSelection option={option} />
+                  </ItemButton>
                 </ListItem>
               ))}
             </DropDownList>

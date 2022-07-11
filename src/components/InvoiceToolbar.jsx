@@ -3,7 +3,9 @@ import Proptypes from "prop-types";
 import InvoicePaid from "./InvoicePaid";
 import InvoicePending from "./InvoicePending";
 import InvoiceDraft from "./InvoiceDraft";
-import { useMemo } from "react";
+import { useMemo, useState, useEffect } from "react";
+import { useDispatch } from "react-redux";
+import { removeInvoice } from "../features/invoices/invoicesSlice";
 
 import EditButton from "./buttons/EditButton";
 import DeleteButton from "./buttons/DeleteButton";
@@ -43,15 +45,19 @@ const ButtonsContainer = styled.div`
 `;
 
 function InvoiceToolbar({ invoice, setEdit }) {
-  const invoiceStatus = useMemo(() => {
+  const [invoiceStatus, setInvoiceStatus] = useState(null);
+
+  useEffect(() => {
     if (invoice.status === "paid") {
-      return <InvoicePaid />;
+      setInvoiceStatus(<InvoicePaid />);
     } else if (invoice.status === "pending") {
-      return <InvoicePending />;
+      setInvoiceStatus(<InvoicePending />);
     } else if (invoice.status === "draft") {
-      return <InvoiceDraft />;
+      setInvoiceStatus(<InvoiceDraft />);
     }
-  }, [invoice.status]);
+  }, [invoice]);
+
+  const dispatch = useDispatch();
 
   console.log(typeof setEdit);
 
@@ -63,8 +69,8 @@ function InvoiceToolbar({ invoice, setEdit }) {
       </StatusContainer>
       <ButtonsContainer>
         <EditButton toggleEditTab={setEdit} />
-        <DeleteButton />
-        <MarkAsPaidButton />
+        <DeleteButton invoice={invoice} />
+        <MarkAsPaidButton invoice={invoice} />
       </ButtonsContainer>
     </Toolbar>
   );

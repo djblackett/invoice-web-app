@@ -2,12 +2,14 @@
 import InvoiceToolbar from "./InvoiceToolbar";
 import React, { useState, useLayoutEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
-import data from "../data.json";
+// import data from "../data.json";
 import styled from "styled-components";
 import FullInvoice from "./FullInvoice";
 import EditForm from "./EditForm";
 import ErrorBoundary from "./ErrorBoundary";
-
+import { useSelector } from "react-redux";
+import { selectInvoices } from "../features/invoices/invoicesSlice";
+import { useEffect } from "react";
 
 const ViewContainer = styled.div`
   
@@ -32,6 +34,7 @@ const GoBackButton = styled.div`
   border: none;
   flex-direction: row;
   cursor: pointer;
+  margin-bottom: 2rem;
 
 `
 
@@ -45,25 +48,35 @@ const Icon = styled.p`
 
 const GoBack = styled.p`
   font-weight: bold;
+  padding:0;
+  margin: 0;
   margin-left: 1rem;
 `
 
-function getInvoiceById(id) {
-  return data.find((invoice) => invoice.id === id);
-}
+
 
 function ViewInvoice() {
 
+  const data = useSelector(selectInvoices);
   const { id } = useParams();
   const navigate = useNavigate();
   const [invoice, setInvoice] = useState(getInvoiceById(id));
+  
 
   const [isEditOpen, setIsEditOpen] = useState(false);
   const [padding, setPadding] = useState(0);
 
+  useEffect(() => {
+    setInvoice(getInvoiceById(id));
+  }, [data, invoice])
+
+  function getInvoiceById(id) {
+  return data.find((invoice) => invoice.id === id);
+}
+
   function toggleEditTab() {
     if (isEditOpen) {
-      
+
       setIsEditOpen(false);
     } else {
       setIsEditOpen(true);

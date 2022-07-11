@@ -4,6 +4,7 @@ import Proptypes from "prop-types";
 const PrimaryButton = styled.button`
   background-color: ${({ theme }) => theme.buttonBackground};
   border-radius: 24px;
+  cursor: pointer;
 `;
 
 function Button({ children }) {

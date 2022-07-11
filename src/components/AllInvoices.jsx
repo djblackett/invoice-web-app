@@ -1,36 +1,50 @@
 import TitleGrid from "./TitleGrid";
 import InvoiceGrid from "./InvoiceGrid";
-import data from "../data.json";
+// import data from "../data.json";
 import React, { useState, useEffect } from "react";
+import { useSelector } from "react-redux";
 import InvoiceCard from "./InvoiceCard";
 import EmptyList from "./EmptyList";
-import {Link} from 'react-router-dom'
+import { Link } from "react-router-dom";
+import { selectInvoices } from "../features/invoices/invoicesSlice";
+import { selectFilter } from "../features/invoices/filterSlice";
 
 function AllInvoices() {
-  const [filter, setFilter] = useState("All");
+  // const [filter, setFilter] = useState("All");
+  const filter = useSelector(selectFilter);
+
+  const data = useSelector(selectInvoices);
   // eslint-disable-next-line no-unused-vars
-  const [unfilteredList, setUnfilteredList] = useState(data);
+  // const [unfilteredList, setUnfilteredList] = useState(data);
   const [invoiceList, setInvoiceList] = useState(data);
 
   const handleChangeFilter = (status) => {
-    setFilter(status);
+    // setFilter(status);
   };
 
   useEffect(() => {
     setInvoiceList(
-      unfilteredList.filter((invoice) => {
-        if (filter === "All") {
+      data.filter((invoice) => {
+        if (!filter.draft && !filter.pending && !filter.paid) {
           return true;
-        } else if (filter === "Paid") {
+        } else if (filter.draft && filter.pending && filter.paid) {
+          return true;
+        } else if (filter.draft && filter.paid) {
+          return invoice.status === "paid" || invoice.status === "draft";
+        } else if (filter.draft && filter.pending) {
+          return invoice.status === "pending" || invoice.status === "draft";
+        } else if (filter.pending && filter.paid) {
+          return invoice.status === "paid" || invoice.status === "pending";
+        } else if (filter.paid) {
           return invoice.status === "paid";
-        } else if (filter === "Pending") {
+        } else if (filter.pending) {
           return invoice.status === "pending";
-        } else if (filter === "Draft") {
+        } else if (filter.draft) {
           return invoice.status === "draft";
         }
       })
     );
-  }, [filter, unfilteredList]);
+  }, [filter, data]);
 
   return (
     <>
@@ -38,30 +52,24 @@ function AllInvoices() {
         handleChangeFilter={handleChangeFilter}
         invoiceList={invoiceList}
       />
-      
-        {invoiceList.length > 0 && 
-          <InvoiceGrid>
-            {invoiceList.map((invoice) => {
-              return (
-              <Link
-              key={invoice.id}
-              to={`/${invoice.id}`}
-              // style={{
-              //   textDecoration: "none",
-              //   display: "flex",
-              //   justifyContent: "center",
-              //   alignItems: "center",
-              //   height: "375px",
-              // }}
-            >
-              <InvoiceCard invoice={invoice} key={invoice.id} />
-              </Link>
-              )
-            })}
 
-        {invoiceList.length === 0 && <EmptyList />}
-      </InvoiceGrid>
-}
+      {invoiceList.length > 0 && (
+        <InvoiceGrid>
+          {invoiceList.map((invoice) => {
+            return (
+              <Link
+                key={invoice.id}
+                to={`/${invoice.id}`}
+                style={{ textDecoration: "none" }}
+              >
+                <InvoiceCard invoice={invoice} key={invoice.id} />
+              </Link>
+            );
+          })}
+
+          {invoiceList.length === 0 && <EmptyList />}
+        </InvoiceGrid>
+      )}
     </>
   );
 }

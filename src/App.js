@@ -24,6 +24,7 @@ const Main = styled.div`
   width: 100%;
   min-height: 100vh;
   background-color: ${({ theme }) => theme.body};
+  transition: all 0.4s ease;
 
   @media (min-width: 1200px) {
     display: grid;
@@ -94,7 +95,7 @@ function App() {
       <GlobalStyles />
 
       <Main id="container">
-        <Header themeToggler={themeToggler} />
+        <Header themeToggler={themeToggler} theme={theme} />
 
         {element}
 

@@ -25,6 +25,14 @@ const StatusText = styled.p`
   color: #33d69f;
   font-weight: bold;
   margin-left: 4px;
+  font-family: "Spartan";
+  font-style: normal;
+  font-weight: 700;
+  font-size: 12px;
+  line-height: 15px;
+  /* identical to box height, or 125% */
+
+  letter-spacing: -0.25px;
 `;
 
 const Circle = styled.div`

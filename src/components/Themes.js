@@ -1,6 +1,7 @@
 export const lightTheme = {
   body: "#F2F2F2",
   text: "hsl(200, 15%, 8%)",
+  textPlain: "black",
   toggleBorder: "#FFF",
   background: "#FFFFFF",
   font: "League Spartan",
@@ -16,6 +17,7 @@ export const lightTheme = {
 export const darkTheme = {
   body: "#141625",
   text: "hsl(0, 0%, 100%)",
+  textPlain: "white",
   toggleBorder: "#6B8096",
   background: "#1E2139",
   elements: "hsl(209, 23%, 22%)",

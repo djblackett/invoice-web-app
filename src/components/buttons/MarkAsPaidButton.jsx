@@ -1,4 +1,7 @@
 import styled from "styled-components";
+import { useDispatch } from "react-redux";
+import { markAsPaid } from "../../features/invoices/invoicesSlice";
+import PropTypes from "prop-types";
 
 const Button = styled.button`
   background-color: ${({ theme }) => theme.newButton};
@@ -6,6 +9,7 @@ const Button = styled.button`
   padding: 16px 24px 17px 24px;
   color: white;
   border: none;
+  cursor: pointer;
   font-family: "Spartan";
   font-style: normal;
   font-weight: 700;
@@ -20,8 +24,17 @@ const Button = styled.button`
     background-color: ${({ theme }) => theme.newButtonHover};
   }
 `;
-function MarkAsPaidButton() {
-  return <Button>Mark as Paid</Button>;
+function MarkAsPaidButton({ invoice }) {
+  const dispatch = useDispatch();
+  return (
+    <Button onClick={() => dispatch(markAsPaid(invoice.id))}>
+      Mark as Paid
+    </Button>
+  );
 }
 
 export default MarkAsPaidButton;
+
+MarkAsPaidButton.propTypes = {
+  invoice: PropTypes.object.isRequired,
+};

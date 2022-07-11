@@ -21,7 +21,7 @@ const Card = styled.div`
   padding: 24px;
   margin: 24px;
   margin-bottom: 8px;
-  margin-top: 8px;
+  margin-top: 24px;
   letter-spacing: -0.25px;
   line-height: 15px;
   font-size: 12px;
@@ -35,24 +35,17 @@ const Card = styled.div`
   }
 
   @media (min-width: 768px) {
-    /* grid-template-rows: 1fr;
-    grid-template-columns: repeat(5, 1fr) 60px; */
-    /* padding-left: 0; */
-    /* padding-right: 0; */
-    /* align-items: center; */
     justify-items: center;
     /* height: 72px; */
     width: 100%;
     max-width: initial;
-    margin: 8px 48px 8px 48px;
+    /* margin: 8px 48px 8px 48px; */
     align-content: center;
     padding: 3rem;
   }
 
   @media (min-width: 1200px) {
     max-width: 730px;
-    /* margin-left: 355px;
-    margin-right: 355px; */
   }
 `;
 
@@ -97,8 +90,16 @@ const GenericInvoiceEntry = styled.div`
   }
 `;
 
+const NamePlusAddress = styled.div`
+  display: flex;
+  flex-direction: column;
+  grid-column: 2 / 3;
+  grid-row: 1 / 3;
+`;
+
 const BottomEntry = styled.p`
   margin: 0;
+  margin-top: 8px;
 
   font-family: "Spartan";
   font-style: normal;
@@ -127,8 +128,13 @@ const Description = styled.p`
 `;
 
 const Address = styled.div`
+  justify-self: flex-start;
   display: flex;
   flex-direction: column;
+`;
+
+const EmbeddedAddress = styled(Address)`
+  margin-top: 0.5rem;
 `;
 
 const AddressEntry = styled.p`
@@ -176,6 +182,7 @@ const InfoGrid = styled.div`
   display: grid;
   grid-template: repeat(2, 65px) / 1fr 1fr 1fr;
   grid-auto-flow: column;
+  margin-top: 1.3rem;
 `;
 
 function FullInvoice({ invoice }) {
@@ -221,15 +228,17 @@ function FullInvoice({ invoice }) {
           <TopEntry>Payment Due</TopEntry>
           <BottomEntry>{convertedDate(invoice.paymentDue)}</BottomEntry>
         </GenericInvoiceEntry>
-        <GenericInvoiceEntry>
-          <TopEntry>Bill To</TopEntry>
-          <BottomEntry>{invoice.clientName}</BottomEntry>
-        </GenericInvoiceEntry>
-        <Address>
-          {Object.values(invoice.clientAddress).map((line) => (
-            <AddressEntry key={"key" + line}>{line}</AddressEntry>
-          ))}
-        </Address>
+        <NamePlusAddress>
+          <GenericInvoiceEntry>
+            <TopEntry>Bill To</TopEntry>
+            <BottomEntry>{invoice.clientName}</BottomEntry>
+          </GenericInvoiceEntry>
+          <EmbeddedAddress>
+            {Object.values(invoice.clientAddress).map((line) => (
+              <AddressEntry key={"key" + line}>{line}</AddressEntry>
+            ))}
+          </EmbeddedAddress>
+        </NamePlusAddress>
         <GenericInvoiceEntry>
           <TopEntry>Sent to</TopEntry>
           <BottomEntry>{invoice.clientEmail}</BottomEntry>

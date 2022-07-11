@@ -1,4 +1,8 @@
 import styled from "styled-components";
+import { useDispatch } from "react-redux";
+import { removeInvoice } from "../../features/invoices/invoicesSlice";
+import { PropTypes } from "prop-types";
+import { useNavigate } from "react-router-dom";
 
 const Button = styled.button`
   background-color: #ec5757;
@@ -6,6 +10,7 @@ const Button = styled.button`
   padding: 16px 24px 17px 24px;
   color: white;
   border: none;
+  cursor: pointer;
   font-family: "Spartan";
   font-style: normal;
   font-weight: 700;
@@ -20,8 +25,17 @@ const Button = styled.button`
     background-color: #ff9797;
   }
 `;
-function DeleteButton() {
-  return <Button>Delete</Button>;
+function DeleteButton({ invoice }) {
+  const dispatch = useDispatch();
+  const navigate = useNavigate();
+
+  const handleClick = () => {
+    dispatch(removeInvoice(invoice.id));
+    navigate(-1);
+  };
+  return <Button onClick={() => handleClick()}>Delete</Button>;
 }
 
 export default DeleteButton;
+
+DeleteButton.propTypes = { invoice: PropTypes.object.isRequired };
