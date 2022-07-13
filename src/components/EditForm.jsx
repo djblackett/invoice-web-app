@@ -7,10 +7,12 @@ import React, { useState, useEffect, useLayoutEffect, forwardRef } from "react";
 import { useForm } from "react-hook-form";
 import DatePicker from "react-datepicker";
 import PropTypes from "prop-types";
+// import { DarkenScreen } from "./DeleteModal";
 
 import "../react-datepicker.css";
 import AddressBox from "./AddressBox";
 import { useWindowWidth } from "../hooks/useWindowWidth";
+import EditBottomMenu from "./EditBottomMenu";
 
 const EditTitle = styled.h1`
   font-size: 1.5rem;
@@ -22,12 +24,14 @@ const FormContainer = styled.div`
   /* min-width: 300px; */
   max-width: 700px;
   left: 0;
+  right: 616px;
   background-color: ${({ theme }) => theme.background};
   background-size: cover;
   position: absolute;
   padding-left: 5rem;
-  padding-right: 5rem;
+  padding-right: 2rem;
   padding-top: 1rem;
+  padding-bottom: 2rem;
   display: flex;
   flex-direction: column;
   transition: all 250ms ease-in-out;
@@ -36,10 +40,16 @@ const FormContainer = styled.div`
 
   align-self: flex-start;
 
+  @media (min-width: 768px) {
+    top: 72px;
+    max-height: calc(100vh - 72px);
+  }
+
   @media (min-width: 1200px) {
     left: 90px;
     padding-left: 5rem;
     top: 0px;
+    max-height: initial;
   }
 `;
 
@@ -75,7 +85,9 @@ const Input = styled.input`
   /* identical to box height, or 125% */
 
   letter-spacing: -0.25px;
-  color: #0c0e16;
+  /* color: #0c0e16; */
+  color: ${({ theme }) => theme.textPlain};
+  background-color: ${({ theme }) => theme.editButton};
 
   &:focus {
     border-color: black;
@@ -109,7 +121,20 @@ const Label = styled.label`
   font-size: 0.75rem;
 `;
 
-function EditForm({ isEditOpen, handleClose, padding, setPadding, invoice }) {
+export const DarkenScreen = styled.div`
+  /* display: flex;
+  align-items: center;
+  justify-content: center; */
+  position: fixed;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  background-color: rgba(0, 0, 0, 0.5);
+  transition: all 0.5s linear;
+`;
+
+function EditForm({ isEditOpen, setIsEditOpen, handleClose, padding, setPadding, invoice }) {
   const {
     register,
     handleSubmit,
@@ -136,19 +161,15 @@ function EditForm({ isEditOpen, handleClose, padding, setPadding, invoice }) {
   useLayoutEffect(() => {
     if (width > 1200 && isEditOpen) {
       setEditPageWidth(616);
-      setPadding(90);
+      setPadding("2.5rem 2.5rem 2rem calc(2.5rem + 17px)");
     } else if (width < 1200 && isEditOpen) {
-      setEditPageWidth(520);
-      setPadding(10);
+      setEditPageWidth(616);
+      setPadding("2.5rem 2.5rem 2.5rem 2.5rem");
     } else if (!isEditOpen) {
-      setEditPageWidth(0);
-      setPadding(0);
+      // setEditPageWidth(0);
+      setPadding("0px");
     }
   }, [width, padding, isEditOpen]);
-
-  // useEffect(() => {
-  //   if ()
-  // })
 
   useEffect(() => {
     const closeOnEscapeKey = (e) => (e.key === "Escape" ? handleClose() : null);
@@ -160,13 +181,14 @@ function EditForm({ isEditOpen, handleClose, padding, setPadding, invoice }) {
 
   // console.log(watch("example")); // watch input value by passing the name of it
   return (
-    <>
+    <DarkenScreen style={{display: isEditOpen ? "block" : "none"}}>
       <FormContainer
         style={{
           width: isEditOpen ? `${editPageWidth}px` : "0px",
-          paddingLeft: `${padding}px`,
-          paddingRight: `${padding}px`,
-          paddingTop: "2rem",
+          // paddingLeft: `${padding}px`,
+          // paddingRight: `${padding}px`,
+          padding: padding,
+          // paddingTop: "2rem",
         }}
       >
         <EditTitle>
@@ -304,14 +326,17 @@ function EditForm({ isEditOpen, handleClose, padding, setPadding, invoice }) {
             />
           </FormEntry>
           <Input type="submit" style={{ marginLeft: "5px" }} />
+          
         </form>
+        <EditBottomMenu setIsEditOpen={setIsEditOpen}/>
       </FormContainer>
-    </>
+    </DarkenScreen>
   );
 }
 
 EditForm.propTypes = {
   isEditOpen: PropTypes.bool.isRequired,
+  setIsEditOpen: PropTypes.func.isRequired
   // handleClose: PropTypes.func.isRequired,
 };
 

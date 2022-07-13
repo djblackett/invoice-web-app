@@ -1,6 +1,7 @@
 import styled from "styled-components";
 import DropDown from "./DropDown";
 import PropTypes from "prop-types";
+import { useState } from "react";
 
 const GridContainer = styled.div`
   display: grid;
@@ -8,8 +9,12 @@ const GridContainer = styled.div`
   width: 100%;
   grid-template-rows: auto;
   grid-template-columns: 1fr 1fr;
-  margin-top: 32px;
+  margin-top: 104px;
   margin-bottom: 25px;
+
+  @media (min-width: 768px) {
+    width: 672px;
+  }
 
   @media (min-width: 1200px) {
     /* display: inline-grid; */
@@ -30,7 +35,7 @@ const TitleBox = styled.div`
   margin-left: 24px;
 
   @media (min-width: 768px) {
-    margin-left: 48px;
+    margin-left: 0;
   }
 
   @media (min-width: 1200px) {
@@ -65,10 +70,20 @@ const ControlBox = styled.div`
   align-items: center;
   margin-right: 24px;
   justify-content: space-between;
+  /* cursor: pointer; */
+
+  .largeScreenText {
+    display: none;
+  }
 
   @media (min-width: 768px) {
-    margin-right: 48px;
+    margin-right: 0;
     width: 308px;
+
+    .largeScreenText {
+      display: inline;
+      white-space: nowrap;
+    }
   }
 
   @media (min-width: 1200px) {
@@ -84,11 +99,27 @@ const NewInvoiceButton = styled.div`
   width: 90px;
   display: flex;
   align-items: center;
+  /* justify-content: space-between; */
   margin-left: 40px;
+  cursor: pointer;
+  padding-left: 0.5rem;
+  @media (min-width: 768px) {
+    height: 48px;
+    width: 150px;
+    padding-right: 1rem;
+  }
+
+  @media (min-width: 1200px) {
+  }
 `;
 
 const arrowDownSVG = (
-  <svg width="11" height="7" xmlns="http://www.w3.org/2000/svg">
+  <svg
+    width="11"
+    height="7"
+    cursor="pointer"
+    xmlns="http://www.w3.org/2000/svg"
+  >
     <path
       d="M1 1l4.228 4.228L9.456 1"
       stroke="#7C5DFA"
@@ -104,7 +135,8 @@ const WhiteCircle = styled.div`
   border-radius: 50%;
   height: 32px;
   width: 32px;
-  margin: 6px;
+  margin: 8px;
+  margin-left: 0;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -114,12 +146,15 @@ const NewText = styled.p`
   color: white;
   font-weight: bold;
   letter-spacing: -0.25px;
+  white-space: nowrap;
 `;
 
 const Filter = styled.p`
   font-weight: bold;
   margin: 0;
   margin-bottom: 5px;
+  cursor: pointer;
+  white-space: nowrap;
 
   .wideScreenText {
     display: none;
@@ -144,7 +179,19 @@ const plusSignSVG = (
 
 // change filter text dynamically
 
-function TitleGrid({ handleChangeFilter, invoiceList }) {
+function TitleGrid({ invoiceList }) {
+  const [isOpen, setIsOpen] = useState(false);
+
+  const toggling = (e) => {
+    setIsOpen(!isOpen);
+    e.stopPropagation();
+    console.log("toggle function called. isOpen: " + isOpen);
+  };
+  const togglingButton = (e) => {
+    if (e.charCode === 13 || e.keyCode === 13) {
+      setIsOpen(!isOpen);
+    }
+  };
   return (
     <GridContainer>
       <TitleBox>
@@ -156,17 +203,21 @@ function TitleGrid({ handleChangeFilter, invoiceList }) {
         </InvoicesLeft>
       </TitleBox>
       <ControlBox>
-        <Filter>
+        <Filter onClick={toggling} onKeyPress={togglingButton}>
           Filter <span className="wideScreenText">by status</span>
         </Filter>
         <DropDown
           icon={arrowDownSVG}
-          handleChangeFilter={handleChangeFilter}
-        ></DropDown>
+          isOpen={isOpen}
+          handleClick={toggling}
+          onKeyPress={togglingButton}
+        />
         <NewInvoiceButton>
           <WhiteCircle>{plusSignSVG}</WhiteCircle>
 
-          <NewText>New</NewText>
+          <NewText>
+            New <span className="largeScreenText">Invoice</span>
+          </NewText>
         </NewInvoiceButton>
       </ControlBox>
     </GridContainer>
@@ -174,7 +225,7 @@ function TitleGrid({ handleChangeFilter, invoiceList }) {
 }
 
 TitleGrid.propTypes = {
-  handleChangeFilter: PropTypes.func.isRequired,
+  handleChangeFilter: PropTypes.func,
   invoiceList: PropTypes.array.isRequired,
 };
 

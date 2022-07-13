@@ -1,9 +1,11 @@
-import React, { useState } from "react";
+import React, { useCallback, useEffect, useState } from "react";
 import styled from "styled-components";
 // import IonIcon from "@reacticons/ionicons";
 // import { useSearchParams } from "react-router-dom";
 import PropTypes from "prop-types";
 import CheckboxSelection from "./CheckboxSelection";
+import { useDispatch } from "react-redux";
+import { changeFilter } from "../features/invoices/filterSlice";
 
 const Main = styled("div")`
   align-self: center;
@@ -130,36 +132,51 @@ const OptionLabel = styled.label`
   color: ${({ theme }) => theme.textPlain};
 `;
 
-export default function DropDown({ icon, handleChangeFilter }) {
-  const [isOpen, setIsOpen] = useState(false);
+export default function DropDown({ icon, handleClick, isOpen }) {
+  // const [isOpen, setIsOpen] = useState(false);
 
-  const toggling = () => setIsOpen(!isOpen);
-  const togglingButton = (e) => {
-    if (e.charCode === 13 || e.keyCode === 13) {
-      setIsOpen(!isOpen);
-    }
+  // const toggling = () => setIsOpen(!isOpen);
+  // const togglingButton = (e) => {
+  //   if (e.charCode === 13 || e.keyCode === 13) {
+  //     setIsOpen(!isOpen);
+  //   }
+  // };
+
+  useEffect(() => {
+    console.log(isOpen);
+  }, [isOpen]);
+
+  const dispatch = useDispatch();
+  const onOptionClicked = (option) => () => {
+    // handleChangeFilter(status);
+    dispatch(changeFilter(option.toLowerCase()));
+    console.log(option + "line 153");
   };
 
-  const onOptionClicked = (status) => () => {
-    handleChangeFilter(status);
-    console.log(status);
-  };
+  const clickCallback = useCallback(
+    (option) => () => {
+      // handleChangeFilter(status);
+      dispatch(changeFilter(option.toLowerCase()));
+      console.log(option);
+    },
+    []
+  );
 
   // todo make the drop down from scratch so I can style it correctly
 
   return (
     <Main>
       <DropDownContainer>
-        <DropDownHeader onClick={toggling} onKeyPress={togglingButton}>
-          {icon}
-        </DropDownHeader>
+        <DropDownHeader onClick={handleClick}>{icon}</DropDownHeader>
         {isOpen && (
           <DropDownListContainer>
             <DropDownList>
               {options.map((option, index) => (
-                <ListItem key={index + "-li"} onClick={onOptionClicked(option)}>
+                <ListItem key={index + "-li"} onClick={clickCallback(option)}>
                   <ItemButton>
-                    <CheckboxSelection option={option} />
+                    <CheckboxSelection
+                      option={option}
+                    />
                   </ItemButton>
                 </ListItem>
               ))}
@@ -173,5 +190,6 @@ export default function DropDown({ icon, handleChangeFilter }) {
 
 DropDown.propTypes = {
   icon: PropTypes.object,
-  handleChangeFilter: PropTypes.func.isRequired,
+  handleClick: PropTypes.func.isRequired,
+  isOpen: PropTypes.bool.isRequired,
 };

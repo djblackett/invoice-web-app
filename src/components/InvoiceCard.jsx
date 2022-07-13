@@ -8,13 +8,13 @@ import { useMemo } from "react";
 const Card = styled.div`
   height: 134px;
   width: 100%;
-  max-width: 100%;
+  /* max-width: 100%; */
   background-color: ${({ theme }) => theme.background};
   display: grid;
   grid-template-columns: 1fr 1fr;
   grid-template-rows: 43px 43px;
   padding: 24px;
-  margin: 24px;
+  /* margin: 24px; */
   margin-bottom: 8px;
   margin-top: 8px;
   letter-spacing: -0.25px;
@@ -37,9 +37,9 @@ const Card = styled.div`
     align-items: center;
     justify-items: center;
     height: 72px;
-    width: 100%;
+    width: 672px;
     max-width: initial;
-    margin: 8px 48px 8px 48px;
+    margin: 8px 0 8px 0;
     align-content: center;
   }
 

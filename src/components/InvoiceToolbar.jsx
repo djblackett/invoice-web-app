@@ -3,13 +3,14 @@ import Proptypes from "prop-types";
 import InvoicePaid from "./InvoicePaid";
 import InvoicePending from "./InvoicePending";
 import InvoiceDraft from "./InvoiceDraft";
-import { useMemo, useState, useEffect } from "react";
+import { useMemo, useState, useEffect, useCallback } from "react";
 import { useDispatch } from "react-redux";
 import { removeInvoice } from "../features/invoices/invoicesSlice";
 
 import EditButton from "./buttons/EditButton";
 import DeleteButton from "./buttons/DeleteButton";
 import MarkAsPaidButton from "./buttons/MarkAsPaidButton";
+import ToolbarButtons from "./ToolbarButtons";
 
 const Toolbar = styled.div`
   height: 88px;
@@ -37,15 +38,10 @@ const StatusText = styled.p`
   margin-right: 1rem;
 `;
 
-const ButtonsContainer = styled.div`
-  display: flex;
-  flex-direction: row;
-  justify-content: space-evenly;
-  align-items: center;
-`;
-
-function InvoiceToolbar({ invoice, setEdit }) {
+function InvoiceToolbar({ invoice, setEdit, setIsModalOpen }) {
   const [invoiceStatus, setInvoiceStatus] = useState(null);
+
+  const openModal = () => setIsModalOpen(true);
 
   useEffect(() => {
     if (invoice.status === "paid") {
@@ -67,11 +63,11 @@ function InvoiceToolbar({ invoice, setEdit }) {
         <StatusText>Status</StatusText>
         {invoiceStatus}
       </StatusContainer>
-      <ButtonsContainer>
-        <EditButton toggleEditTab={setEdit} />
-        <DeleteButton invoice={invoice} />
-        <MarkAsPaidButton invoice={invoice} />
-      </ButtonsContainer>
+      <ToolbarButtons
+        toggleEditTab={setEdit}
+        invoice={invoice}
+        handleClick={openModal}
+      />
     </Toolbar>
   );
 }
@@ -81,4 +77,5 @@ export default InvoiceToolbar;
 InvoiceToolbar.propTypes = {
   invoice: Proptypes.object.isRequired,
   setEdit: Proptypes.func.isRequired,
+  setIsModalOpen: Proptypes.func.isRequired,
 };

@@ -23,7 +23,7 @@ export const darkTheme = {
   elements: "hsl(209, 23%, 22%)",
   outline: "#7C5DFA",
   greyText: "#DFE3FA",
-  formFieldOutline: "",
+  formFieldOutline: "#252945",
   newButton: "#7C5DFA",
   newButtonHover: "#9277FF",
   editButton: "#252945",

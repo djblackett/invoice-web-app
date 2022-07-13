@@ -18,9 +18,9 @@ function AllInvoices() {
   // const [unfilteredList, setUnfilteredList] = useState(data);
   const [invoiceList, setInvoiceList] = useState(data);
 
-  const handleChangeFilter = (status) => {
-    // setFilter(status);
-  };
+  // const handleChangeFilter = (status) => {
+  //   // setFilter(status);
+  // };
 
   useEffect(() => {
     setInvoiceList(
@@ -48,10 +48,7 @@ function AllInvoices() {
 
   return (
     <>
-      <TitleGrid
-        handleChangeFilter={handleChangeFilter}
-        invoiceList={invoiceList}
-      />
+      <TitleGrid invoiceList={invoiceList} />
 
       {invoiceList.length > 0 && (
         <InvoiceGrid>
@@ -60,7 +57,7 @@ function AllInvoices() {
               <Link
                 key={invoice.id}
                 to={`/${invoice.id}`}
-                style={{ textDecoration: "none" }}
+                style={{ textDecoration: "none", width: "100%" }}
               >
                 <InvoiceCard invoice={invoice} key={invoice.id} />
               </Link>
@@ -70,6 +67,8 @@ function AllInvoices() {
           {invoiceList.length === 0 && <EmptyList />}
         </InvoiceGrid>
       )}
+
+      {invoiceList.length === 0 && <EmptyList />}
     </>
   );
 }

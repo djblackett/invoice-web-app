@@ -10,18 +10,19 @@ const HeaderContainer = styled.div`
   align-items: center;
   background: #373b53;
   z-index: 1000;
+  position: fixed;
   // needs background color dynamically
 
   @media (min-width: 1200px) {
     flex-direction: column;
     display: flex;
+    justify-self: start;
     width: 103px;
     height: 100%;
     max-height: 100vh;
     grid-area: 1 / 1 / 4 / 2;
 
     border-radius: 0 20px 20px 0;
-    /* position: absolute; */
   }
 `;
 
@@ -86,6 +87,7 @@ const DarkLightBox = styled.div`
   display: flex;
   justify-content: center;
   align-items: center;
+  cursor: pointer;
 `;
 
 const moon = (

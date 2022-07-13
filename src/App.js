@@ -28,7 +28,9 @@ const Main = styled.div`
 
   @media (min-width: 1200px) {
     display: grid;
-    grid-template: repeat(3, auto) / 103px 1fr;
+    /* grid-template: repeat(3, auto) / 103px 1fr; */
+    grid-template: repeat(3, auto) / 1fr;
+    justify-items: center;
   }
 `;
 

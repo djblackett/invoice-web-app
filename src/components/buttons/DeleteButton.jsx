@@ -25,17 +25,13 @@ const Button = styled.button`
     background-color: #ff9797;
   }
 `;
-function DeleteButton({ invoice }) {
-  const dispatch = useDispatch();
-  const navigate = useNavigate();
-
-  const handleClick = () => {
-    dispatch(removeInvoice(invoice.id));
-    navigate(-1);
-  };
-  return <Button onClick={() => handleClick()}>Delete</Button>;
+function DeleteButton({ invoice, handleClick }) {
+  return <Button onClick={handleClick}>Delete</Button>;
 }
 
 export default DeleteButton;
 
-DeleteButton.propTypes = { invoice: PropTypes.object.isRequired };
+DeleteButton.propTypes = {
+  invoice: PropTypes.object,
+  handleClick: PropTypes.func.isRequired,
+};

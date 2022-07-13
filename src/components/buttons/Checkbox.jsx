@@ -65,8 +65,6 @@ const StyledCheckbox = styled.div`
   ${Icon} {
     visibility: ${(props) => (props.checked ? "visible" : "hidden")};
   }
-
- 
 `;
 
 const Checkbox = ({ className, checked, ...props }) => (

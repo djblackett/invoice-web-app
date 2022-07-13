@@ -10,6 +10,7 @@ import ErrorBoundary from "./ErrorBoundary";
 import { useSelector } from "react-redux";
 import { selectInvoices } from "../features/invoices/invoicesSlice";
 import { useEffect } from "react";
+import DeleteModal from "./DeleteModal";
 
 const ViewContainer = styled.div`
   
@@ -17,8 +18,12 @@ const ViewContainer = styled.div`
   flex-direction: column;
   align-items: center;
   max-width: 730px;
+  /* width: 100%; */
   justify-self: center;
   align-self: center;
+  margin-top: 104px;
+
+margin-bottom: 3.25rem;
 
 @media (min-width: 1200px) {
   margin-top: 4rem;
@@ -64,7 +69,8 @@ function ViewInvoice() {
   
 
   const [isEditOpen, setIsEditOpen] = useState(false);
-  const [padding, setPadding] = useState(0);
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [padding, setPadding] = useState("");
 
   useEffect(() => {
     setInvoice(getInvoiceById(id));
@@ -75,15 +81,8 @@ function ViewInvoice() {
 }
 
   function toggleEditTab() {
-    if (isEditOpen) {
-
-      setIsEditOpen(false);
-    } else {
-      setIsEditOpen(true);
+    setIsEditOpen(!isEditOpen);
     }
-
-    console.log("xin meow")
-  }
 
   // console.log(typeof toggleEditTab);
 
@@ -99,7 +98,7 @@ function ViewInvoice() {
   <ErrorBoundary>
   <EditForm
           isEditOpen={isEditOpen}
-          // handleClose={handleClose}
+          setIsEditOpen={setIsEditOpen}
           padding={padding}
           setPadding={setPadding}
           invoice={invoice}
@@ -109,9 +108,10 @@ function ViewInvoice() {
     <Icon>{"<"}</Icon>
     <GoBack>Go back</GoBack>
   </GoBackButton>
-  <InvoiceToolbar invoice={invoice} setEdit={toggleEditTab}/>
+  <InvoiceToolbar invoice={invoice} setEdit={toggleEditTab} setIsModalOpen={setIsModalOpen} />
   <FullInvoice invoice={invoice} />
   
+  <DeleteModal setIsModalOpen={setIsModalOpen} invoice={invoice} isModalOpen={isModalOpen}/>
   </ViewContainer>
   )
 }
