@@ -11,10 +11,10 @@ const ButtonsContainer = styled.div`
   align-items: center;
 `;
 
-function ToolbarButtons({ setEdit, invoice, openModal }) {
+function ToolbarButtons({ toggleEditTab, invoice, openModal }) {
   return (
     <ButtonsContainer>
-      <EditButton toggleEditTab={setEdit} />
+      <EditButton toggleEditTab={toggleEditTab} />
       <DeleteButton invoice={invoice} handleClick={openModal} />
       <MarkAsPaidButton invoice={invoice} />
     </ButtonsContainer>
@@ -24,7 +24,7 @@ function ToolbarButtons({ setEdit, invoice, openModal }) {
 export default ToolbarButtons;
 
 ToolbarButtons.propTypes = {
-  setEdit: PropTypes.func.isRequired,
+  toggleEditTab: PropTypes.func.isRequired,
   invoice: PropTypes.object.isRequired,
   openModal: PropTypes.func.isRequired,
 };
