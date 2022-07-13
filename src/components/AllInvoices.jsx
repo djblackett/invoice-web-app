@@ -57,7 +57,7 @@ function AllInvoices() {
               <Link
                 key={invoice.id}
                 to={`/${invoice.id}`}
-                style={{ textDecoration: "none", width: "100%" }}
+                style={{ textDecoration: "none", width: "fit-content" }}
               >
                 <InvoiceCard invoice={invoice} key={invoice.id} />
               </Link>
