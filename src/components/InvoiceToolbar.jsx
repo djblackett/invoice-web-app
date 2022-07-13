@@ -66,7 +66,7 @@ function InvoiceToolbar({ invoice, setEdit, setIsModalOpen }) {
       <ToolbarButtons
         toggleEditTab={setEdit}
         invoice={invoice}
-        handleClick={openModal}
+        openModal={openModal}
       />
     </Toolbar>
   );
