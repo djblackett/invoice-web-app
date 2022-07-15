@@ -1,26 +1,22 @@
 /* eslint-disable no-unused-vars */
 import styled from "styled-components";
-import InvoicePaid from "./InvoicePaid";
-import InvoicePending from "./InvoicePending";
-import InvoiceDraft from "./InvoiceDraft";
+
 import PropTypes from "prop-types";
 import { useMemo } from "react";
 import ItemList from "./ItemList";
+import { useWindowWidth } from "../hooks/useWindowWidth";
 
 const Card = styled.div`
-  min-height: 630px;
+  /* min-height: 630px; */
   width: 100%;
   max-width: 100%;
   background-color: ${({ theme }) => theme.background};
-  /* display: grid;s
-  grid-template-columns: 1fr 1fr;
-  grid-template-rows: 43px 43px; */
-  padding: 15px;
   display: flex;
   flex-direction: column;
   padding: 24px;
+  padding-bottom: 1.5rem;
   margin: 24px;
-  margin-bottom: 8px;
+  margin-bottom: calc(3.5rem + 91px);
   margin-top: 24px;
   letter-spacing: -0.25px;
   line-height: 15px;
@@ -37,7 +33,7 @@ const Card = styled.div`
   @media (min-width: 768px) {
     justify-items: center;
     /* height: 72px; */
-    width: 100%;
+    width: 730px;
     max-width: initial;
     /* margin: 8px 48px 8px 48px; */
     align-content: center;
@@ -63,7 +59,13 @@ const IDNumber = styled.p`
 
 const TopRow = styled.div`
   display: flex;
+
+  flex-direction: column;
+  align-items: flex-start;
   justify-content: space-between;
+  @media (min-width: 768px) {
+    flex-direction: row;
+  }
 `;
 
 const TopEntry = styled.p`
@@ -113,7 +115,7 @@ const BottomEntry = styled.p`
 
 const Description = styled.p`
   margin: 0;
-  margin-top: 0.3rem;
+
   padding: 0;
   color: ${({ theme }) => theme.greyText};
 
@@ -125,6 +127,10 @@ const Description = styled.p`
   /* identical to box height, or 125% */
 
   letter-spacing: -0.25px;
+
+  @media (min-width: 768px) {
+    margin-top: 0.3rem;
+  }
 `;
 
 const Address = styled.div`
@@ -140,8 +146,12 @@ const EmbeddedAddress = styled(Address)`
 const AddressEntry = styled.p`
   color: ${({ theme }) => theme.greyText};
   margin: 0;
-  margin-bottom: 0.3rem;
+
   padding: 0;
+
+  @media (min-width: 768px) {
+    margin-bottom: 0.3rem;
+  }
 `;
 
 const CustomerName = styled.p`
@@ -176,25 +186,27 @@ const arrowRightSVG = (
 const IdAndDescription = styled.div`
   display: flex;
   flex-direction: column;
+  margin-bottom: 1.9rem;
+
+  @media (min-width: 768px) {
+    margin: 0;
+  }
 `;
 
 const InfoGrid = styled.div`
   display: grid;
-  grid-template: repeat(2, 65px) / 1fr 1fr 1fr;
-  grid-auto-flow: column;
+  grid-template: repeat(2, 65px) / 1fr 1fr;
+
   margin-top: 1.3rem;
+
+  @media (min-width: 768px) {
+    grid-template: repeat(2, 65px) / 1fr 1fr 1fr;
+    grid-auto-flow: column;
+  }
 `;
 
 function FullInvoice({ invoice }) {
-  // const invoiceStatus = useMemo(() => {
-  //   if (invoice.status === "paid") {
-  //     return <InvoicePaid />;
-  //   } else if (invoice.status === "pending") {
-  //     return <InvoicePending />;
-  //   } else if (invoice.status === "draft") {
-  //     return <InvoiceDraft />;
-  //   }
-  // }, [invoice.status]);
+  const width = useWindowWidth();
 
   const convertedDate = (dateString) => {
     const date = dateString.split("-");
@@ -212,7 +224,7 @@ function FullInvoice({ invoice }) {
           </IDNumber>
           <Description>{invoice.description}</Description>
         </IdAndDescription>
-        <Address style={{ textAlign: "right" }}>
+        <Address style={{ textAlign: width >= 768 ? "right" : "left" }}>
           {Object.values(invoice.senderAddress).map((line) => (
             <AddressEntry key={"key" + line}>{line}</AddressEntry>
           ))}

@@ -8,6 +8,16 @@ import EmptyList from "./EmptyList";
 import { Link } from "react-router-dom";
 import { selectInvoices } from "../features/invoices/invoicesSlice";
 import { selectFilter } from "../features/invoices/filterSlice";
+import styled from "styled-components";
+
+const AllInvoicesContainer = styled.div`
+  width: 100%;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin-bottom: 6.5rem;
+`;
 
 function AllInvoices() {
   // const [filter, setFilter] = useState("All");
@@ -47,7 +57,7 @@ function AllInvoices() {
   }, [filter, data]);
 
   return (
-    <>
+    <AllInvoicesContainer>
       <TitleGrid invoiceList={invoiceList} />
 
       {invoiceList.length > 0 && (
@@ -57,7 +67,13 @@ function AllInvoices() {
               <Link
                 key={invoice.id}
                 to={`/${invoice.id}`}
-                style={{ textDecoration: "none", width: "fit-content" }}
+                style={{
+                  textDecoration: "none",
+                  width: "100%",
+                  display: "flex",
+                  justifyContent: "center",
+                  alignItems: "center",
+                }}
               >
                 <InvoiceCard invoice={invoice} key={invoice.id} />
               </Link>
@@ -69,7 +85,7 @@ function AllInvoices() {
       )}
 
       {invoiceList.length === 0 && <EmptyList />}
-    </>
+    </AllInvoicesContainer>
   );
 }
 

@@ -28,6 +28,24 @@ const AmountDueTitle = styled.p`
   /* identical to box height, or 164% */
 
   letter-spacing: -0.229167px;
+
+  .grand-total {
+    display: inline;
+  }
+
+  .amount-due {
+    display: none;
+  }
+
+  @media (min-width: 768px) {
+    .grand-total {
+      display: none;
+    }
+
+    .amount-due {
+      display: inline;
+    }
+  }
 `;
 
 const AmountDueTotal = styled.p`
@@ -45,14 +63,18 @@ const AmountDueTotal = styled.p`
 `;
 
 const ItemsHeader = styled.div`
-  display: grid;
-  grid-template: 1fr / 2fr 1fr 1fr 1fr;
-  color: ${({ theme }) => theme.greyText};
-  background-color: ${({ theme }) => theme.editButton};
-  margin-top: 3rem;
-  padding: 2rem;
-  border-radius: 8px 8px 0 0;
-  justify-items: end;
+  display: none;
+
+  @media (min-width: 768px) {
+    display: grid;
+    grid-template: 1fr / 2fr 1fr 1fr 1fr;
+    color: ${({ theme }) => theme.greyText};
+    background-color: ${({ theme }) => theme.editButton};
+    margin-top: 3rem;
+    padding: 2rem;
+    border-radius: 8px 8px 0 0;
+    justify-items: end;
+  }
 `;
 
 const Col = styled.p`
@@ -73,6 +95,24 @@ const Col1 = styled(Col)`
   justify-self: start;
 `;
 
+const ItemsContainer = styled.div`
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  /* padding: 2rem;
+   */
+
+  margin-top: 2.5rem;
+  border-radius: 8px 8px 0 0;
+  background-color: ${({ theme }) => theme.editButton};
+
+  @media (min-width: 768px) {
+    padding: 0;
+    border-radius: initial;
+    margin-top: initial;
+  }
+`;
+
 function ItemList({ invoice }) {
   return (
     <ListContainer>
@@ -82,11 +122,16 @@ function ItemList({ invoice }) {
         <Col>Price</Col>
         <Col>Total</Col>
       </ItemsHeader>
-      {invoice.items.map((item) => (
-        <Item item={item} key={"item-" + item.name} />
-      ))}
+      <ItemsContainer>
+        {invoice.items.map((item) => (
+          <Item item={item} key={"item-" + item.name} />
+        ))}
+      </ItemsContainer>
       <AmountDue>
-        <AmountDueTitle>Amount Due</AmountDueTitle>
+        <AmountDueTitle>
+          <span className="amount-due">Amount Due</span>
+          <span className="grand-total">Grand Total</span>
+        </AmountDueTitle>
         <AmountDueTotal>£ {invoice.total.toFixed(2)}</AmountDueTotal>
       </AmountDue>
     </ListContainer>

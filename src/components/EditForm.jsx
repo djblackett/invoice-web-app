@@ -22,9 +22,10 @@ const EditTitle = styled.h1`
 const FormContainer = styled.div`
   height: 100%;
   /* min-width: 300px; */
-  max-width: 700px;
+  top: 0;
+  bottom: 0;
   left: 0;
-  right: 616px;
+  right: 0;
   background-color: ${({ theme }) => theme.background};
   background-size: cover;
   position: absolute;
@@ -39,9 +40,12 @@ const FormContainer = styled.div`
   filter: drop-shadow(2px 2px 2px bottom);
 
   align-self: flex-start;
+  z-index: 100;
 
   @media (min-width: 768px) {
+    max-width: 700px;
     top: 72px;
+    right: 616px;
     max-height: calc(100vh - 72px);
   }
 
@@ -134,7 +138,14 @@ export const DarkenScreen = styled.div`
   transition: all 0.5s linear;
 `;
 
-function EditForm({ isEditOpen, setIsEditOpen, handleClose, padding, setPadding, invoice }) {
+function EditForm({
+  isEditOpen,
+  setIsEditOpen,
+  handleClose,
+  padding,
+  setPadding,
+  invoice,
+}) {
   const {
     register,
     handleSubmit,
@@ -181,7 +192,7 @@ function EditForm({ isEditOpen, setIsEditOpen, handleClose, padding, setPadding,
 
   // console.log(watch("example")); // watch input value by passing the name of it
   return (
-    <DarkenScreen style={{display: isEditOpen ? "block" : "none"}}>
+    <DarkenScreen style={{ display: isEditOpen ? "block" : "none" }}>
       <FormContainer
         style={{
           width: isEditOpen ? `${editPageWidth}px` : "0px",
@@ -326,9 +337,8 @@ function EditForm({ isEditOpen, setIsEditOpen, handleClose, padding, setPadding,
             />
           </FormEntry>
           <Input type="submit" style={{ marginLeft: "5px" }} />
-          
         </form>
-        <EditBottomMenu setIsEditOpen={setIsEditOpen}/>
+        <EditBottomMenu setIsEditOpen={setIsEditOpen} />
       </FormContainer>
     </DarkenScreen>
   );
@@ -336,7 +346,7 @@ function EditForm({ isEditOpen, setIsEditOpen, handleClose, padding, setPadding,
 
 EditForm.propTypes = {
   isEditOpen: PropTypes.bool.isRequired,
-  setIsEditOpen: PropTypes.func.isRequired
+  setIsEditOpen: PropTypes.func.isRequired,
   // handleClose: PropTypes.func.isRequired,
 };
 

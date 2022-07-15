@@ -20,22 +20,28 @@ const Toolbar = styled.div`
   justify-content: space-between;
   align-items: center;
   border-radius: 8px;
+  width: 100%;
 
-  /* @media (min-width: 1000px) { */
-  width: 730px;
-  /* } */
+  @media (min-width: 768px) {
+    width: 730px;
+  }
 
   box-shadow: 0px 10px 10px -10px rgba(72, 84, 159, 0.100397);
 `;
 
 const StatusContainer = styled.div`
-  display: flex;
+  display: contents;
   justify-content: space-between;
   align-items: center;
+
+  @media (min-width: 768px) {
+    display: flex;
+  }
 `;
 
 const StatusText = styled.p`
   margin-right: 1rem;
+  color: ${({ theme }) => theme.greyText};
 `;
 
 function InvoiceToolbar({ invoice, setEdit, setIsModalOpen }) {

@@ -17,15 +17,23 @@ const ViewContainer = styled.div`
   display: flex;
   flex-direction: column;
   align-items: center;
-  max-width: 730px;
-  /* width: 100%; */
+  /* max-width: 730px; */
+  width: 100%;
   justify-self: center;
   align-self: center;
   margin-top: 104px;
+  padding-left: 1.5rem;
+  padding-right: 1.5rem;
 
-margin-bottom: 3.25rem;
+  /* margin-bottom: 3.25rem; */
+  position: relative;
+
+@media (min-width: 768px) {
+  max-width: 730px;
+}
 
 @media (min-width: 1200px) {
+  /* width: 730px; */
   margin-top: 4rem;
 }
 

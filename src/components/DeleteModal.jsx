@@ -29,6 +29,7 @@ const ModalContainer = styled.div`
   max-width: 480px;
   border-radius: 8px;
   box-shadow: 0px 10px 10px -10px rgba(72, 84, 159, 0.100397);
+  margin: 0 1.5rem;
 `;
 
 const Confirm = styled.h1`

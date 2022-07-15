@@ -9,6 +9,23 @@ const ButtonsContainer = styled.div`
   flex-direction: row;
   justify-content: space-evenly;
   align-items: center;
+  height: 91px;
+  padding: 1.4rem 1.5rem;
+  width: 100%;
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  background-color: ${({ theme }) => theme.background};
+  margin-top: 3.5rem;
+
+  @media (min-width: 768px) {
+    /* justify-self: initial; */
+    height: initial;
+    width: initial;
+    position: static;
+    margin-top: initial;
+    background-color: initial;
+  }
 `;
 
 function ToolbarButtons({ toggleEditTab, invoice, openModal }) {
