@@ -13,6 +13,7 @@ import "../react-datepicker.css";
 import AddressBox from "./AddressBox";
 import { useWindowWidth } from "../hooks/useWindowWidth";
 import EditBottomMenu from "./EditBottomMenu";
+import EditFormItemList from "./EditFormItemList";
 
 const EditTitle = styled.h1`
   font-size: 1.5rem;
@@ -62,7 +63,7 @@ const FormEntry = styled.div`
   flex-direction: column;
 
   align-items: flex-start;
-  margin: 5px;
+
   font-style: ${({ theme }) => theme.font};
 `;
 
@@ -70,16 +71,18 @@ const BillText = styled.p`
   color: ${({ theme }) => theme.outline};
   font-weight: bold;
   font-size: 0.75rem;
-  margin: 5px;
+  /* margin: 5px; */
+  margin-bottom: 1.5rem;
 `;
 
 const Input = styled.input`
-  max-width: 504px;
+  width: 240px;
   height: 48px;
   border-radius: 4px;
   border-color: ${({ theme }) => theme.formFieldOutline};
   /* outline: none; */
   padding: 17px 20px 16px 20px;
+  margin-bottom: 1.5rem;
   font-family: ${({ theme }) => theme.font};
   font-style: normal;
   font-weight: 700;
@@ -102,6 +105,12 @@ const Input = styled.input`
   }
 `;
 
+const StreetAddressInput = styled(Input)`
+  @media (min-width: 768px) {
+    width: 504px;
+  }
+`;
+
 const inputStyles = {
   height: "48px",
   borderRadius: "4px",
@@ -116,7 +125,7 @@ const inputStyles = {
 };
 
 const AddressDetailInput = styled(Input)`
-  max-width: 9.5rem;
+  width: 152px;
 `;
 
 const Label = styled.label`
@@ -136,6 +145,11 @@ export const DarkenScreen = styled.div`
   right: 0;
   background-color: rgba(0, 0, 0, 0.5);
   transition: all 0.5s linear;
+`;
+
+const ProjectDescription = styled(FormEntry)`
+  margin-bottom: 0;
+  width: 504px;
 `;
 
 function EditForm({
@@ -211,7 +225,7 @@ function EditForm({
           <BillText>Bill From</BillText>
           <FormEntry>
             <Label htmlFor="streetAddress">Street Address</Label>
-            <Input
+            <StreetAddressInput
               defaultValue={invoice.senderAddress.street}
               {...register("streetAddress")}
             />
@@ -265,7 +279,7 @@ function EditForm({
           </FormEntry>
           <FormEntry>
             <Label htmlFor="clientStreetAddress">Street Address</Label>
-            <Input
+            <StreetAddressInput
               defaultValue={invoice.clientAddress.street}
               {...register("clientStreetAddress")}
             />
@@ -302,15 +316,22 @@ function EditForm({
             style={{
               display: "flex",
               justifyContent: "space-between",
-              width: "100%",
+              width: "504px",
             }}
           >
-            <FormEntry>
+            <FormEntry
+            // style={{
+            //   display: "flex",
+            //   justifyContent: "space-between",
+            //   width: "504px",
+            // }}
+            >
               <Label htmlFor="invoiceDate">Invoice Date</Label>
               <DatePicker
                 customInput={<ExampleCustomInput />}
                 selected={startDate}
                 onChange={(date) => setStartDate(date)}
+                style={{ width: "240px" }}
               />
             </FormEntry>
 
@@ -328,16 +349,18 @@ function EditForm({
             {/* errors will return when field validation fails  */}
             {/* {errors.exampleRequired && <span>This field is required</span>} */}
           </div>
-          <FormEntry>
+          <ProjectDescription>
             <Label htmlFor="projectDescription">Project Description</Label>
             <Input
               type="text"
               defaultValue={invoice.description}
               {...register("projectDescription")}
+              style={{ marginBottom: 0, width: "504px" }}
             />
-          </FormEntry>
-          <Input type="submit" style={{ marginLeft: "5px" }} />
+          </ProjectDescription>
+          {/* <Input type="submit" style={{ marginLeft: "5px" }} /> */}
         </form>
+        <EditFormItemList invoice={invoice} />
         <EditBottomMenu setIsEditOpen={setIsEditOpen} />
       </FormContainer>
     </DarkenScreen>

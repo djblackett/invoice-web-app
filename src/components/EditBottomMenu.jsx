@@ -8,6 +8,8 @@ const MenuContainer = styled.div`
   flex-direction: row;
   align-items: center;
   justify-content: flex-end;
+
+  margin-top: 2.6rem;
 `;
 
 const NewInvoiceButton = styled.button`

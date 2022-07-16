@@ -103,7 +103,7 @@ function ViewInvoice() {
 
 //  {!invoice && <h1>Loading</h1>} 
 <ViewContainer>
-  <ErrorBoundary>
+  {/* <ErrorBoundary> */}
   <EditForm
           isEditOpen={isEditOpen}
           setIsEditOpen={setIsEditOpen}
@@ -111,7 +111,7 @@ function ViewInvoice() {
           setPadding={setPadding}
           invoice={invoice}
         />
-        </ErrorBoundary>
+        {/* </ErrorBoundary> */}
   <GoBackButton onClick={() => navigate(-1)}>
     <Icon>{"<"}</Icon>
     <GoBack>Go back</GoBack>
