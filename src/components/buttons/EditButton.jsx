@@ -22,14 +22,11 @@ const Button = styled.button`
     background-color: ${({ theme }) => theme.editButtonHover};
   }
 `;
-function EditButton({toggleEditTab}) {
-  console.log(typeof toggleEditTab);
-
+function EditButton({ toggleEditTab }) {
   return <Button onClick={toggleEditTab}>Edit</Button>;
 }
 
 export default EditButton;
-
 
 EditButton.propTypes = {
   toggleEditTab: Proptypes.func.isRequired,

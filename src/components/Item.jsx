@@ -118,7 +118,6 @@ const MobileHelperContainer = styled.div`
 `;
 
 function Item({ item }) {
-  console.log(item);
   return (
     <ItemContainer>
       <MobileHelperContainer>

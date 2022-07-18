@@ -1,16 +1,16 @@
 /* eslint-disable no-unused-vars */
-import InvoiceToolbar from "./InvoiceToolbar";
+import InvoiceToolbar from "../components/InvoiceToolbar";
 import React, { useState, useLayoutEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 // import data from "../data.json";
 import styled from "styled-components";
-import FullInvoice from "./FullInvoice";
+import FullInvoice from "../components/FullInvoice";
 import EditForm from "./EditForm";
-import ErrorBoundary from "./ErrorBoundary";
+import ErrorBoundary from "../components/ErrorBoundary";
 import { useSelector } from "react-redux";
 import { selectInvoices } from "../features/invoices/invoicesSlice";
 import { useEffect } from "react";
-import DeleteModal from "./DeleteModal";
+import DeleteModal from "../components/DeleteModal";
 
 const ViewContainer = styled.div`
   

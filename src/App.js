@@ -1,23 +1,18 @@
 /* eslint-disable no-unused-vars */
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import "./App.css";
 import Header from "./components/Header";
 import styled from "styled-components";
 import { GlobalStyles } from "./components/GlobalStyles";
 import { ThemeProvider } from "styled-components";
 import { lightTheme, darkTheme } from "./components/Themes";
-
-import Modal from "./components/Modal";
-import EditForm from "./components/EditForm";
-import { useWindowWidth } from "./hooks/useWindowWidth";
 import { doc, getDoc } from "firebase/firestore";
 import { firestoreDb } from "./utils/firebase";
 import { collection, getDocs } from "firebase/firestore";
-// import EditButton from "./components/buttons/EditButton";
 import { useRoutes } from "react-router-dom";
-import ViewInvoice from "./components/ViewInvoice";
+import ViewInvoice from "./pages/ViewInvoice";
 import Layout from "./components/Layout";
-import AllInvoices from "./components/AllInvoices";
+import AllInvoices from "./pages/AllInvoices";
 
 const Main = styled.div`
   height: 100%;

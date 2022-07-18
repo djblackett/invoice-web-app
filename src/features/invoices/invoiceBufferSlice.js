@@ -6,8 +6,8 @@ const initialState = {
   data: data,
 };
 
-export const invoicesSlice = createSlice({
-  name: "invoices",
+export const invoiceBufferSlice = createSlice({
+  name: "invoiceBuffer",
   initialState,
   // The `reducers` field lets us define reducers and generate associated actions
   reducers: {
@@ -56,8 +56,8 @@ export const invoicesSlice = createSlice({
 });
 
 export const { addInvoice, removeInvoice, updateInvoice, markAsPaid, addItem } =
-  invoicesSlice.actions;
+  invoiceBufferSlice.actions;
 
 export const selectInvoices = (state) => state.invoices.data;
 
-export default invoicesSlice.reducer;
+export default invoiceBufferSlice.reducer;

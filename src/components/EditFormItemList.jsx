@@ -2,6 +2,9 @@ import styled from "styled-components";
 import PropTypes from "prop-types";
 import EditFormItem from "./EditFormItem";
 import NewItemButton from "./buttons/NewItemButton";
+import { addItem } from "../features/invoices/invoicesSlice";
+import { useDispatch } from "react-redux";
+import { v4 as uuidv4 } from "uuid";
 
 const ListContainer = styled.div`
   display: grid;
@@ -81,7 +84,19 @@ const ItemTitle = styled.h1`
   margin-bottom: 1rem;
 `;
 
-function EditFormItemList({ invoice }) {
+function EditFormItemList({ invoice, items, setItems }) {
+  const handleAddNewItem = () => {
+    setItems([
+      ...items,
+      { id: uuidv4(), name: "", quantity: 0, price: 0, total: 0 },
+    ]);
+  };
+
+  const handleSyncItemFields = (id, name) => {
+    let currentItem = items.find((currentItem) => currentItem.id === id);
+    // currentItem[name] =
+  };
+
   return (
     <ListContainer>
       <ItemTitle>Item List</ItemTitle>
@@ -92,11 +107,17 @@ function EditFormItemList({ invoice }) {
         <Col>Total</Col>
       </ItemsHeader>
       <ItemsContainer>
-        {invoice.items.map((item) => (
-          <EditFormItem item={item} key={"item-" + item.name} />
+        {items.map((item) => (
+          <EditFormItem
+            item={item}
+            items={items}
+            key={item.name || item.id}
+            id={item.id}
+            setItems={setItems}
+          />
         ))}
       </ItemsContainer>
-      <NewItemButton />
+      <NewItemButton handleAddNewItem={handleAddNewItem} />
     </ListContainer>
   );
 }
@@ -105,4 +126,6 @@ export default EditFormItemList;
 
 EditFormItemList.propTypes = {
   invoice: PropTypes.object.isRequired,
+  items: PropTypes.arrayOf(PropTypes.object).isRequired,
+  setItems: PropTypes.func.isRequired,
 };

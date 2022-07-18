@@ -7,20 +7,23 @@ import React, { useState, useEffect, useLayoutEffect, forwardRef } from "react";
 import { useForm } from "react-hook-form";
 import DatePicker from "react-datepicker";
 import PropTypes from "prop-types";
+import { useDispatch } from "react-redux";
+import { updateInvoice } from "../features/invoices/invoicesSlice";
 // import { DarkenScreen } from "./DeleteModal";
+import { v4 as uuidv4 } from "uuid";
 
 import "../react-datepicker.css";
-import AddressBox from "./AddressBox";
+import AddressBox from "../components/AddressBox";
 import { useWindowWidth } from "../hooks/useWindowWidth";
-import EditBottomMenu from "./EditBottomMenu";
-import EditFormItemList from "./EditFormItemList";
+import EditBottomMenu from "../components/EditBottomMenu";
+import EditFormItemList from "../components/EditFormItemList";
 
-const EditTitle = styled.h1`
+export const EditTitle = styled.h1`
   font-size: 1.5rem;
   color: ${({ theme }) => theme.text};
 `;
 
-const FormContainer = styled.div`
+export const FormContainer = styled.div`
   height: 100%;
   /* min-width: 300px; */
   top: 0;
@@ -58,7 +61,7 @@ const FormContainer = styled.div`
   }
 `;
 
-const FormEntry = styled.div`
+export const FormEntry = styled.div`
   display: flex;
   flex-direction: column;
 
@@ -67,7 +70,7 @@ const FormEntry = styled.div`
   font-style: ${({ theme }) => theme.font};
 `;
 
-const BillText = styled.p`
+export const BillText = styled.p`
   color: ${({ theme }) => theme.outline};
   font-weight: bold;
   font-size: 0.75rem;
@@ -75,7 +78,7 @@ const BillText = styled.p`
   margin-bottom: 1.5rem;
 `;
 
-const Input = styled.input`
+export const Input = styled.input`
   width: 240px;
   height: 48px;
   border-radius: 4px;
@@ -105,13 +108,13 @@ const Input = styled.input`
   }
 `;
 
-const StreetAddressInput = styled(Input)`
+export const StreetAddressInput = styled(Input)`
   @media (min-width: 768px) {
     width: 504px;
   }
 `;
 
-const inputStyles = {
+export const inputStyles = {
   height: "48px",
   borderRadius: "4px",
   borderColor: ({ theme }) => theme.formFieldOutline,
@@ -124,11 +127,11 @@ const inputStyles = {
   lineHeight: "15px",
 };
 
-const AddressDetailInput = styled(Input)`
+export const AddressDetailInput = styled(Input)`
   width: 152px;
 `;
 
-const Label = styled.label`
+export const Label = styled.label`
   color: ${({ theme }) => theme.greyText};
   margin-bottom: 0.5rem;
   font-size: 0.75rem;
@@ -147,7 +150,7 @@ export const DarkenScreen = styled.div`
   transition: all 0.5s linear;
 `;
 
-const ProjectDescription = styled(FormEntry)`
+export const ProjectDescription = styled(FormEntry)`
   margin-bottom: 0;
   width: 504px;
 `;
@@ -181,7 +184,50 @@ function EditForm({
   const [editPageWidth, setEditPageWidth] = useState(null);
 
   const [startDate, setStartDate] = useState(new Date());
-  const onSubmit = (data) => console.log(data);
+
+  const [items, setItems] = useState(invoice.items || []);
+
+  const dispatch = useDispatch();
+
+  // todo add items to newInvoice
+  //todo figure out which invoice date goes with what
+
+  const onSubmit = (data) => {
+    console.log(data);
+
+    const newInvoice = {
+      ...invoice,
+      clientName: data.clientName,
+      clientAddress: {
+        city: data.clientCity,
+        country: data.clientCountry,
+        postCode: data.clientPostalCode,
+        street: data.clientStreet,
+      },
+      senderAddress: {
+        city: data.city,
+        country: data.country,
+        postCode: data.postalCode,
+        street: data.streetAddress,
+      },
+      clientEmail: data.clientEmail,
+      createdAt: invoice.createdAt,
+      paymentTerms: data.paymentTerms,
+      description: data.projectDescription,
+      items: [...items],
+    };
+
+    // for (const [key, value] of Object.entries(data)) {
+    //   if (invoiceBuffer[key]) {
+    //     setInvoiceBuffer({ ...invoiceBuffer, [key]: value });
+    //   }
+    // }
+
+    console.log(newInvoice);
+    dispatch(updateInvoice(newInvoice));
+  };
+
+  console.log(watch("streetAddress"));
 
   useLayoutEffect(() => {
     if (width > 1200 && isEditOpen) {
@@ -203,6 +249,14 @@ function EditForm({
       document.body.removeEventListener("keydown", closeOnEscapeKey);
     };
   }, [handleClose]);
+
+  useLayoutEffect(() => {
+    const newItems = items.map((item) => {
+      return { ...item, id: uuidv4() };
+    });
+    setItems(newItems);
+    // console.log(items);
+  }, []);
 
   // console.log(watch("example")); // watch input value by passing the name of it
   return (
@@ -319,13 +373,7 @@ function EditForm({
               width: "504px",
             }}
           >
-            <FormEntry
-            // style={{
-            //   display: "flex",
-            //   justifyContent: "space-between",
-            //   width: "504px",
-            // }}
-            >
+            <FormEntry>
               <Label htmlFor="invoiceDate">Invoice Date</Label>
               <DatePicker
                 customInput={<ExampleCustomInput />}
@@ -359,9 +407,14 @@ function EditForm({
             />
           </ProjectDescription>
           {/* <Input type="submit" style={{ marginLeft: "5px" }} /> */}
+
+          <EditFormItemList
+            invoice={invoice}
+            items={items}
+            setItems={setItems}
+          />
+          <EditBottomMenu setIsEditOpen={setIsEditOpen} />
         </form>
-        <EditFormItemList invoice={invoice} />
-        <EditBottomMenu setIsEditOpen={setIsEditOpen} />
       </FormContainer>
     </DarkenScreen>
   );

@@ -61,8 +61,6 @@ function InvoiceToolbar({ invoice, setEdit, setIsModalOpen }) {
 
   const dispatch = useDispatch();
 
-  console.log(typeof setEdit);
-
   return (
     <Toolbar>
       <StatusContainer>

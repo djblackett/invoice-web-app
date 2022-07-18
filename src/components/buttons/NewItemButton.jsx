@@ -1,4 +1,5 @@
 import styled from "styled-components";
+import PropTypes from "prop-types";
 
 const Button = styled.button`
   display: flex;
@@ -37,9 +38,13 @@ const plusIcon = (
   />
 );
 
-function NewItemButton() {
+function NewItemButton({ handleAddNewItem }) {
+  const handleClick = (e) => {
+    e.preventDefault();
+    handleAddNewItem();
+  };
   return (
-    <Button>
+    <Button onClick={handleClick}>
       <SVG>{plusIcon}</SVG>
       <ButtonText>Add New Item</ButtonText>
     </Button>
@@ -47,3 +52,7 @@ function NewItemButton() {
 }
 
 export default NewItemButton;
+
+NewItemButton.propTypes = {
+  handleAddNewItem: PropTypes.func.isRequired,
+};

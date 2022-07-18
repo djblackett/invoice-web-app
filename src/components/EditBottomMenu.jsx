@@ -12,7 +12,7 @@ const MenuContainer = styled.div`
   margin-top: 2.6rem;
 `;
 
-const NewInvoiceButton = styled.button`
+const NewInvoiceButton = styled.input`
   border-radius: 24px;
   background-color: #7c5dfa;
   border: none;
@@ -50,7 +50,7 @@ function EditBottomMenu({ setIsEditOpen }) {
   return (
     <MenuContainer>
       <CancelButton handleClick={closeEditMenu} />
-      <NewInvoiceButton>Save Changes</NewInvoiceButton>
+      <NewInvoiceButton type="submit" value={"Save Changes"} />
     </MenuContainer>
   );
 }

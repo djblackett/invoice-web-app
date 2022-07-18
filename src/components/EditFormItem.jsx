@@ -1,5 +1,8 @@
 import styled from "styled-components";
 import PropTypes from "prop-types";
+import { useState } from "react";
+import { useDispatch } from "react-redux";
+import { addItem } from "../features/invoices/invoicesSlice";
 
 const ItemContainer = styled.div`
   display: grid;
@@ -191,22 +194,41 @@ export const SVG = styled.svg`
 
 const deleteIcon = <path d="M11.583 3.556v10.666c0 .982-.795 1.778-1.777 1.778H2.694a1.777 1.777 0 01-1.777-1.778V3.556h10.666zM8.473 0l.888.889h3.111v1.778H.028V.889h3.11L4.029 0h4.444z" fill="#888EB0" fillRule="nonzero"/>
 
-function EditFormItem({ item }) {
-  console.log(item);
+function EditFormItem({ item, id, items, setItems }) {
+
+  const [item1, setItem1] = useState({name: item.name, quantity: item.quantity, price: item.price, total: item.total});
+
+
+  const handleChange = (e) => {
+    const name1 = e.target.name;
+    const newItem = {...item1, [name1]: e.target.value};
+    setItem1(newItem);
+    
+    console.log( items);
+
+//     // console.log(item.name);
+//     const items2 = items.filter(currentItem => currentItem.id != item.id);
+//     const index = items.indexOf(item1);
+//     console.log(items2);
+//     items2.splice(index, 1, newItem)
+//     setItems(items2); 
+// console.log("new items Array: " + items2);
+  }
+
   return (
     <ItemContainer>
       
         <MobileHelperContainer>
-          <ItemName defaultValue={item.name} />
+          <ItemName   name={"name"} onChange={handleChange} value={item1.name}/>
           <QuantityPriceContainer>
-            <Quantity defaultValue={item.quantity} />
-            <Price defaultValue={item.price.toFixed(2)} />
+            <Quantity   name={"quantity"} onChange={handleChange} value={item1.quantity}/>
+            <Price   name={"price"} onChange={handleChange} value={item1.price}/>
           </QuantityPriceContainer>
           <MobileQuantityPrice>
             {item.quantity + " x £ " + item.price.toFixed(2)}{" "}
           </MobileQuantityPrice>
         </MobileHelperContainer>
-        <Total>{item.total.toFixed(2)}</Total>
+        <Total name={"total"}   onChange={handleChange} value={item1.total}>{(item1.quantity * item1.price).toFixed(2)}</Total>
         <SVG>{deleteIcon}</SVG>
     
     </ItemContainer>
@@ -217,11 +239,9 @@ export default EditFormItem;
 
 EditFormItem.propTypes = {
   item: PropTypes.object.isRequired,
+  id: PropTypes.string,
+  items: PropTypes.arrayOf(PropTypes.object).isRequired,
+  setItems: PropTypes.func.isRequired,
 };
 
-// {
-//         "name": "Brand Guidelines",
-//         "quantity": 1,
-//         "price": 1800.90,
-//         "total": 1800.90
-//       }
+

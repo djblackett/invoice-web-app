@@ -1,10 +1,10 @@
-import TitleGrid from "./TitleGrid";
-import InvoiceGrid from "./InvoiceGrid";
+import TitleGrid from "../components/TitleGrid";
+import InvoiceGrid from "../components/InvoiceGrid";
 // import data from "../data.json";
 import React, { useState, useEffect } from "react";
 import { useSelector } from "react-redux";
-import InvoiceCard from "./InvoiceCard";
-import EmptyList from "./EmptyList";
+import InvoiceCard from "../components/InvoiceCard";
+import EmptyList from "../components/EmptyList";
 import { Link } from "react-router-dom";
 import { selectInvoices } from "../features/invoices/invoicesSlice";
 import { selectFilter } from "../features/invoices/filterSlice";
