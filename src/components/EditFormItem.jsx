@@ -196,39 +196,40 @@ const deleteIcon = <path d="M11.583 3.556v10.666c0 .982-.795 1.778-1.777 1.778H2
 
 function EditFormItem({ item, id, items, setItems }) {
 
-  const [item1, setItem1] = useState({name: item.name, quantity: item.quantity, price: item.price, total: item.total});
+  // const [item1, setItem1] = useState({name: item.name, quantity: item.quantity, price: item.price, total: item.total});
 
 
   const handleChange = (e) => {
+    e.preventDefault();
     const name1 = e.target.name;
-    const newItem = {...item1, [name1]: e.target.value};
-    setItem1(newItem);
+    const newItem = {...item, [name1]: e.target.value};
+    // setItem1(newItem);
     
     console.log( items);
 
 //     // console.log(item.name);
-//     const items2 = items.filter(currentItem => currentItem.id != item.id);
-//     const index = items.indexOf(item1);
-//     console.log(items2);
-//     items2.splice(index, 1, newItem)
-//     setItems(items2); 
-// console.log("new items Array: " + items2);
+    const items2 = items.filter(currentItem => currentItem.id != item.id);
+    const index = items.indexOf(item);
+    console.log(items2);
+    items2.splice(index, 1, newItem)
+    setItems(items2); 
+console.log("new items Array: " + items2);
   }
 
   return (
     <ItemContainer>
       
         <MobileHelperContainer>
-          <ItemName   name={"name"} onChange={handleChange} value={item1.name}/>
+          <ItemName   name={"name"} onChange={handleChange} value={item.name}/>
           <QuantityPriceContainer>
-            <Quantity   name={"quantity"} onChange={handleChange} value={item1.quantity}/>
-            <Price   name={"price"} onChange={handleChange} value={item1.price}/>
+            <Quantity   name={"quantity"} onChange={handleChange} value={item.quantity}/>
+            <Price   name={"price"} onChange={handleChange} value={item.price}/>
           </QuantityPriceContainer>
           <MobileQuantityPrice>
             {item.quantity + " x £ " + item.price.toFixed(2)}{" "}
           </MobileQuantityPrice>
         </MobileHelperContainer>
-        <Total name={"total"}   onChange={handleChange} value={item1.total}>{(item1.quantity * item1.price).toFixed(2)}</Total>
+        <Total name={"total"}   onChange={handleChange} value={item.total}>{(item.quantity * item.price).toFixed(2)}</Total>
         <SVG>{deleteIcon}</SVG>
     
     </ItemContainer>
