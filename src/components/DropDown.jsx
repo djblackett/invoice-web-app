@@ -143,21 +143,21 @@ export default function DropDown({ icon, handleClick, isOpen }) {
   // };
 
   useEffect(() => {
-    console.log(isOpen);
+    // console.log(isOpen);
   }, [isOpen]);
 
   const dispatch = useDispatch();
   const onOptionClicked = (option) => () => {
     // handleChangeFilter(status);
     dispatch(changeFilter(option.toLowerCase()));
-    console.log(option + "line 153");
+    // console.log(option + "line 153");
   };
 
   const clickCallback = useCallback(
     (option) => () => {
       // handleChangeFilter(status);
       dispatch(changeFilter(option.toLowerCase()));
-      console.log(option);
+      // console.log(option);
     },
     []
   );
@@ -174,9 +174,7 @@ export default function DropDown({ icon, handleClick, isOpen }) {
               {options.map((option, index) => (
                 <ListItem key={index + "-li"} onClick={clickCallback(option)}>
                   <ItemButton>
-                    <CheckboxSelection
-                      option={option}
-                    />
+                    <CheckboxSelection option={option} />
                   </ItemButton>
                 </ListItem>
               ))}

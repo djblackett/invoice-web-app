@@ -7,10 +7,12 @@ const MenuContainer = styled.div`
   display: flex;
   flex-direction: row;
   align-items: center;
-  justify-content: flex-end;
+  justify-content: space-between;
 
   margin-top: 2.6rem;
 `;
+
+
 
 const NewInvoiceButton = styled.input`
   border-radius: 24px;
@@ -18,7 +20,7 @@ const NewInvoiceButton = styled.input`
   border: none;
   height: 44px;
   width: 90px;
-  display: inline-flex;
+  display: flex;
   align-items: center;
   justify-content: center;
   text-align: center;
@@ -42,13 +44,39 @@ const NewInvoiceButton = styled.input`
     /* padding-right: 1rem; */
     /* padding-left: 0.5rem; */
   }
+
+  &:hover {
+    background-color: #9277FF;
+  }
 `;
 
-function EditBottomMenu({ setIsOpen, saveText, closeText, justifyCancel }) {
+const SaveDraft = styled(NewInvoiceButton)`
+  background-color: #373B53;
+  color: #888EB0;
+  margin-right: 8px;
+  width: 133px;
+
+  &:hover {
+    background-color: #0C0E16;
+  }
+
+`;
+
+const SaveAndDraftContainer = styled.div`
+  display: flex;
+  flex-direction: row;
+
+`
+
+function NewInvoiceBottomMenu({ setIsDraft, setIsOpen, saveText, closeText, justifyCancel }) {
   const closeMenu = (e) => {
     e.preventDefault();
     setIsOpen(false);
   };
+
+  const setToDraft = () => {
+    setIsDraft(true);
+  }
 
   return (
     <MenuContainer>
@@ -57,14 +85,18 @@ function EditBottomMenu({ setIsOpen, saveText, closeText, justifyCancel }) {
         text={closeText}
         justifySelf={justifyCancel}
       />
+      <SaveAndDraftContainer>
+      <SaveDraft type="submit" value="Save as draft" onClick={setToDraft}/>
       <NewInvoiceButton type="submit" value={saveText} />
+      </SaveAndDraftContainer>
     </MenuContainer>
   );
 }
 
-export default EditBottomMenu;
+export default NewInvoiceBottomMenu;
 
-EditBottomMenu.propTypes = {
+NewInvoiceBottomMenu.propTypes = {
+  setIsDraft: PropTypes.func,
   setIsOpen: PropTypes.func.isRequired,
   saveText: PropTypes.string.isRequired,
   closeText: PropTypes.string.isRequired,

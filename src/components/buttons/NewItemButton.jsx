@@ -39,12 +39,12 @@ const plusIcon = (
 );
 
 function NewItemButton({ handleAddNewItem }) {
-  const handleClick = (e) => {
-    e.preventDefault();
-    handleAddNewItem();
-  };
+  // const handleClick = (e) => {
+  //   e.preventDefault();
+  //   handleAddNewItem();
+  // };
   return (
-    <Button onClick={handleClick}>
+    <Button onClick={handleAddNewItem} type="button">
       <SVG>{plusIcon}</SVG>
       <ButtonText>Add New Item</ButtonText>
     </Button>

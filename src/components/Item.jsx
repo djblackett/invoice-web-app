@@ -118,19 +118,22 @@ const MobileHelperContainer = styled.div`
 `;
 
 function Item({ item }) {
+  console.log(item.total);
+  console.log(typeof item.total);
+  // console.log(item.total.toFixed(2));
   return (
     <ItemContainer>
       <MobileHelperContainer>
         <ItemName>{item.name}</ItemName>
         <QuantityPriceContainer>
           <Quantity>{item.quantity}</Quantity>
-          <Quantity>£ {item.price.toFixed(2)}</Quantity>
+          <Quantity>£ {Number(item.price).toFixed(2)}</Quantity>
         </QuantityPriceContainer>
         <MobileQuantityPrice>
-          {item.quantity + " x £ " + item.price.toFixed(2)}{" "}
+          {item.quantity + " x £ " + Number(item.price).toFixed(2)}{" "}
         </MobileQuantityPrice>
       </MobileHelperContainer>
-      <Total>£ {item.total.toFixed(2)}</Total>
+      <Total>£ {Number(item.total).toFixed(2)}</Total>
     </ItemContainer>
   );
 }

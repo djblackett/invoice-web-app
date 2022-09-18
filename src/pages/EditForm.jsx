@@ -9,7 +9,6 @@ import DatePicker from "react-datepicker";
 import PropTypes from "prop-types";
 import { useDispatch } from "react-redux";
 import { updateInvoice } from "../features/invoices/invoicesSlice";
-// import { DarkenScreen } from "./DeleteModal";
 import { v4 as uuidv4 } from "uuid";
 
 import "../react-datepicker.css";
@@ -17,6 +16,7 @@ import AddressBox from "../components/AddressBox";
 import { useWindowWidth } from "../hooks/useWindowWidth";
 import EditBottomMenu from "../components/EditBottomMenu";
 import EditFormItemList from "../components/EditFormItemList";
+import FormEntry from "../components/FormEntry";
 
 export const EditTitle = styled.h1`
   font-size: 1.5rem;
@@ -61,14 +61,14 @@ export const FormContainer = styled.div`
   }
 `;
 
-export const FormEntry = styled.div`
-  display: flex;
-  flex-direction: column;
+// export const FormEntry = styled.div`
+//   display: flex;
+//   flex-direction: column;
+//   position: relative;
+//   align-items: flex-start;
 
-  align-items: flex-start;
-
-  font-style: ${({ theme }) => theme.font};
-`;
+//   font-style: ${({ theme }) => theme.font};
+// `;
 
 export const BillText = styled.p`
   color: ${({ theme }) => theme.outline};
@@ -155,6 +155,21 @@ export const ProjectDescription = styled(FormEntry)`
   width: 504px;
 `;
 
+export const LongEntry = styled(Input)`
+  width: 504px;
+`;
+
+const ErrorText = styled.p`
+  color: red;
+
+  margin-top: 0;
+`;
+
+const ErrorTextInline = styled(ErrorText)`
+  position: absolute;
+  right: 1.5rem;
+`;
+
 function EditForm({
   isEditOpen,
   setIsEditOpen,
@@ -187,14 +202,43 @@ function EditForm({
 
   const [items, setItems] = useState(invoice.items || []);
 
+  const [hasEmptyField, setHasEmptyField] = useState(false);
+
   const dispatch = useDispatch();
 
-  // todo add items to newInvoice
+  useEffect(() => {
+    const inputs = document.querySelectorAll("input");
+    // console.log(inputs);
+    let count = 0;
+    for (let i = 0; i < inputs.length; i++) {
+      // console.log(inputs.item(i));
+      if (
+        inputs.item(i).value.length === 0 &&
+        inputs.item(i).defaultValue.length === 0
+      ) {
+        count++;
+        break;
+      }
+    }
+
+    if (count > 0) {
+      setHasEmptyField(true);
+    } else {
+      setHasEmptyField(false);
+    }
+  });
+
   //todo figure out which invoice date goes with what
 
   const onSubmit = (data) => {
-    console.log(data);
+    // check for empty fields or items before submitting
+    // console.log(data);
+    if (hasEmptyField || items.length === 0) {
+      console.log("Has an empty field or no items");
+      return;
+    }
 
+    // build updated invoice from form data
     const newInvoice = {
       ...invoice,
       clientName: data.clientName,
@@ -202,7 +246,7 @@ function EditForm({
         city: data.clientCity,
         country: data.clientCountry,
         postCode: data.clientPostalCode,
-        street: data.clientStreet,
+        street: data.clientStreetAddress,
       },
       senderAddress: {
         city: data.city,
@@ -214,20 +258,23 @@ function EditForm({
       createdAt: invoice.createdAt,
       paymentTerms: data.paymentTerms,
       description: data.projectDescription,
-      items: [...items],
+      items: items,
     };
 
-    // for (const [key, value] of Object.entries(data)) {
-    //   if (invoiceBuffer[key]) {
-    //     setInvoiceBuffer({ ...invoiceBuffer, [key]: value });
-    //   }
-    // }
+    let total = 0;
 
-    console.log(newInvoice);
+    for (let i of items) {
+      total += Number(i.total);
+    }
+
+    newInvoice.total = total;
+
+    // console.log(newInvoice);
     dispatch(updateInvoice(newInvoice));
+    setIsEditOpen(false);
   };
 
-  console.log(watch("streetAddress"));
+  // console.log(watch("streetAddress"));
 
   useLayoutEffect(() => {
     if (width > 1200 && isEditOpen) {
@@ -258,6 +305,15 @@ function EditForm({
     // console.log(items);
   }, []);
 
+  const handleChange = (e) => {
+    // console.log(e.target);
+    if (e.target.value.length === 0 && e.target.defaultValue.length === 0) {
+      e.target.style.setProperty("border", "1px solid red");
+    } else {
+      e.target.style.setProperty("border", "none");
+    }
+  };
+
   // console.log(watch("example")); // watch input value by passing the name of it
   return (
     <DarkenScreen style={{ display: isEditOpen ? "block" : "none" }}>
@@ -271,44 +327,68 @@ function EditForm({
         }}
       >
         <EditTitle>
-          Edit <span style={{ color: "#7E88C3" }}>#</span>XM9141
+          Edit <span style={{ color: "#7E88C3" }}>#</span>
+          {invoice.id}
         </EditTitle>
         {/* "handleSubmit" will validate your inputs before invoking "onSubmit" */}
         <form onSubmit={handleSubmit(onSubmit)}>
           {/* register your input into the hook by invoking the "register" function */}
           <BillText>Bill From</BillText>
           <FormEntry>
-            <Label htmlFor="streetAddress">Street Address</Label>
+            <Label
+              htmlFor="streetAddress"
+              style={{ color: errors.streetAddress ? "red" : "" }}
+            >
+              Street Address
+            </Label>
             <StreetAddressInput
+              style={{ border: errors.streetAddress ? "1px solid red" : "" }}
               defaultValue={invoice.senderAddress.street}
-              {...register("streetAddress")}
+              {...register("streetAddress", { required: true })}
             />
           </FormEntry>
           <AddressBox>
             <FormEntry>
-              <Label htmlFor="city">City</Label>
+              <Label htmlFor="city" style={{ color: errors.city ? "red" : "" }}>
+                City
+              </Label>
               <AddressDetailInput
+                style={{ border: errors.city ? "1px solid red" : "" }}
+                onChange={handleChange}
                 type="text"
                 defaultValue={invoice.senderAddress.city}
-                {...register("city")}
+                {...register("city", { required: true })}
               />
             </FormEntry>
 
             <FormEntry>
-              <Label htmlFor="postalCode">Post Code</Label>
+              <Label
+                htmlFor="postalCode"
+                style={{ color: errors.postalCode ? "red" : "" }}
+              >
+                Post Code
+              </Label>
               <AddressDetailInput
+                style={{ border: errors.postalCode ? "1px solid red" : "" }}
                 type="text"
                 defaultValue={invoice.senderAddress.postCode}
-                {...register("postalCode")}
+                {...register("postalCode", { required: true })}
               />
             </FormEntry>
 
             <FormEntry>
-              <Label htmlFor="country">Country</Label>
+              <Label
+                htmlFor="country"
+                style={{ color: errors.country ? "red" : "" }}
+              >
+                Country
+              </Label>
               <AddressDetailInput
+                onChange={() => handleChange}
                 type="text"
                 defaultValue={invoice.senderAddress.country}
-                {...register("country")}
+                style={{ border: errors.country ? "1px solid red" : "" }}
+                {...register("country", { required: true })}
               />
             </FormEntry>
           </AddressBox>
@@ -317,52 +397,101 @@ function EditForm({
 
           <BillText>Bill To</BillText>
           <FormEntry>
-            <Label htmlFor="clientName">Client's Name</Label>
-            <Input
+            <Label
+              htmlFor="clientName"
+              style={{ color: errors.clientName ? "red" : "" }}
+            >
+              Client's Name
+            </Label>
+            {/* <p className>can't be empty</p> */}
+            {errors.clientName?.type === "required" && (
+              <ErrorTextInline>can't be empty</ErrorTextInline>
+            )}
+            <LongEntry
+              style={{ border: errors.clientName ? "1px solid red" : "" }}
               type="text"
               defaultValue={invoice.clientName}
-              {...register("clientName")}
+              {...register("clientName", { required: true })}
             />
           </FormEntry>
           <FormEntry>
-            <Label htmlFor="clientEmail">Client's Email</Label>
-            <Input
+            <Label
+              htmlFor="clientEmail"
+              style={{ color: errors.clientEmail ? "red" : "" }}
+            >
+              Client's Email
+            </Label>
+            <LongEntry
+              style={{ border: errors.clientEmail ? "1px solid red" : "" }}
               defaultValue={invoice.clientEmail}
-              {...register("clientEmail")}
+              {...register("clientEmail", { required: true })}
             />
           </FormEntry>
           <FormEntry>
-            <Label htmlFor="clientStreetAddress">Street Address</Label>
+            <Label
+              htmlFor="clientStreetAddress"
+              style={{ color: errors.clientStreetAddress ? "red" : "" }}
+            >
+              Street Address
+            </Label>
             <StreetAddressInput
+              style={{
+                border: errors.clientStreetAddress ? "1px solid red" : "",
+              }}
               defaultValue={invoice.clientAddress.street}
-              {...register("clientStreetAddress")}
+              {...register("clientStreetAddress", { required: true })}
             />
           </FormEntry>
           <AddressBox>
             <FormEntry>
-              <Label htmlFor="clientCity">City</Label>
+              <Label
+                htmlFor="clientCity"
+                style={{ color: errors.clientCity ? "red" : "" }}
+              >
+                City
+              </Label>
               <AddressDetailInput
+                style={{
+                  border: errors.clientCity ? "1px solid red" : "",
+                }}
                 type="text"
                 defaultValue={invoice.clientAddress.city}
-                {...register("clientCity")}
+                {...register("clientCity", { required: true })}
               />
             </FormEntry>
 
             <FormEntry>
-              <Label htmlFor="clientPostalCode">Post Code</Label>
+              <Label
+                htmlFor="clientPostalCode"
+                style={{ color: errors.clientPostalCode ? "red" : "" }}
+              >
+                Post Code
+              </Label>
               <AddressDetailInput
+                style={{
+                  border: errors.clientPostalCode ? "1px solid red" : "",
+                }}
                 type="text"
                 defaultValue={invoice.clientAddress.postCode}
-                {...register("clientPostalCode")}
+                {...register("clientPostalCode", { required: true })}
               />
             </FormEntry>
 
             <FormEntry>
-              <Label htmlFor="country">Country</Label>
+              <Label
+                htmlFor="country"
+                style={{ color: errors.country ? "red" : "" }}
+              >
+                Country
+              </Label>
+
               <AddressDetailInput
+                style={{
+                  border: errors.clientCountry ? "1px solid red" : "",
+                }}
                 type="text"
                 defaultValue={invoice.clientAddress.country}
-                {...register("clientCountry")}
+                {...register("clientCountry", { required: true })}
               />
             </FormEntry>
           </AddressBox>
@@ -374,21 +503,35 @@ function EditForm({
             }}
           >
             <FormEntry>
-              <Label htmlFor="invoiceDate">Invoice Date</Label>
+              <Label
+                htmlFor="invoiceDate"
+                // style={{ color: errors.invoiceDate ? "red" : "" }}
+              >
+                Invoice Date
+              </Label>
               <DatePicker
                 customInput={<ExampleCustomInput />}
                 selected={startDate}
                 onChange={(date) => setStartDate(date)}
-                style={{ width: "240px" }}
+                {...register("invoiceDate", { required: true })}
+                style={{
+                  width: "240px",
+                  border: errors.invoiceDate ? "1px solid red" : "",
+                }}
               />
             </FormEntry>
 
             <FormEntry>
-              <Label htmlFor="paymentTerms">Payment Terms</Label>
+              <Label
+                htmlFor="paymentTerms"
+                style={{ color: errors.paymentTerms ? "red" : "" }}
+              >
+                Payment Terms
+              </Label>
               <Input
                 type="select"
                 defaultValue=""
-                {...register("paymentTerms")}
+                {...register("paymentTerms", { required: true })}
               />
             </FormEntry>
 
@@ -398,12 +541,21 @@ function EditForm({
             {/* {errors.exampleRequired && <span>This field is required</span>} */}
           </div>
           <ProjectDescription>
-            <Label htmlFor="projectDescription">Project Description</Label>
+            <Label
+              htmlFor="projectDescription"
+              style={{ color: errors.projectDescription ? "red" : "" }}
+            >
+              Project Description
+            </Label>
             <Input
               type="text"
               defaultValue={invoice.description}
-              {...register("projectDescription")}
-              style={{ marginBottom: 0, width: "504px" }}
+              {...register("projectDescription", { required: true })}
+              style={{
+                marginBottom: 0,
+                width: "504px",
+                border: errors.projectDescription ? "1px solid red" : "",
+              }}
             />
           </ProjectDescription>
           {/* <Input type="submit" style={{ marginLeft: "5px" }} /> */}
@@ -413,7 +565,13 @@ function EditForm({
             items={items}
             setItems={setItems}
           />
-          <EditBottomMenu setIsEditOpen={setIsEditOpen} />
+          {hasEmptyField && <ErrorText>- All fields must be added</ErrorText>}
+          {items.length === 0 && <ErrorText>- An item must be added</ErrorText>}
+          <EditBottomMenu
+            setIsOpen={setIsEditOpen}
+            saveText={"Save Changes"}
+            closeText={"Cancel"}
+          />
         </form>
       </FormContainer>
     </DarkenScreen>

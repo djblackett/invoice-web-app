@@ -28,10 +28,10 @@ const ButtonsContainer = styled.div`
   }
 `;
 
-function ToolbarButtons({ toggleEditTab, invoice, openModal }) {
+function ToolbarButtons({ toggleEditTab, invoice, openModal, setItems }) {
   return (
     <ButtonsContainer>
-      <EditButton toggleEditTab={toggleEditTab} />
+      <EditButton toggleEditTab={toggleEditTab} setItems={setItems} />
       <DeleteButton invoice={invoice} handleClick={openModal} />
       <MarkAsPaidButton invoice={invoice} />
     </ButtonsContainer>
@@ -44,4 +44,5 @@ ToolbarButtons.propTypes = {
   toggleEditTab: PropTypes.func.isRequired,
   invoice: PropTypes.object.isRequired,
   openModal: PropTypes.func.isRequired,
+  setItems: PropTypes.func,
 };

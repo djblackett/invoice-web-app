@@ -2,6 +2,7 @@ import styled from "styled-components";
 import Proptypes from "prop-types";
 
 const Button = styled.button`
+  display: inline;
   background-color: ${({ theme }) => theme.editButton};
   border-radius: 24px;
   padding: 16px 24px 17px 24px;
@@ -22,12 +23,22 @@ const Button = styled.button`
     background-color: ${({ theme }) => theme.editButtonHover};
   }
 `;
-function CancelButton({ handleClick }) {
-  return <Button onClick={handleClick}>Cancel</Button>;
+function CancelButton({ handleClick, text, justifySelf }) {
+  return (
+    <Button
+      style={{ justifySelf: justifySelf ? justifySelf : "auto" }}
+      onClick={handleClick}
+      type="button"
+    >
+      {text}
+    </Button>
+  );
 }
 
 export default CancelButton;
 
 CancelButton.propTypes = {
   handleClick: Proptypes.func,
+  text: Proptypes.string.isRequired,
+  justifySelf: Proptypes.string,
 };

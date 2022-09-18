@@ -125,22 +125,24 @@ function InvoiceCard({ invoice }) {
   }, [invoice]);
 
   const convertedDate = () => {
-    const date = invoice.paymentDue.split("-");
-    const dateObj = new Date(Date.UTC(date[0], date[1], date[2]));
-    return dateObj.toDateString().substring(4);
+    if (invoice.paymentDue) {
+      const date = invoice.paymentDue.split("-");
+      const dateObj = new Date(Date.UTC(date[0], date[1], date[2]));
+      return dateObj.toDateString().substring(4);
+    }
   };
 
   return (
     <Card>
       <IDNumber>
         <span style={{ color: "#7E88C3" }}>#</span>
-        {invoice.id}
+        {invoice.id.substring(0, 6)}
       </IDNumber>
       <CustomerName>{invoice.clientName}</CustomerName>
       <DueDateAmountBox>
         <DueDate>Due {convertedDate()}</DueDate>
 
-        <InvoiceAmount>£ {invoice.total}</InvoiceAmount>
+        <InvoiceAmount>£ {invoice.total.toFixed(2)}</InvoiceAmount>
       </DueDateAmountBox>
 
       {invoiceStatus}

@@ -189,6 +189,7 @@ export const SVG = styled.svg`
   width: 13px;
   height: 16px;
   justify-self: end;
+  cursor: pointer;
 
 `
 
@@ -198,22 +199,28 @@ function EditFormItem({ item, id, items, setItems }) {
 
   // const [item1, setItem1] = useState({name: item.name, quantity: item.quantity, price: item.price, total: item.total});
 
-
   const handleChange = (e) => {
     e.preventDefault();
     const name1 = e.target.name;
     const newItem = {...item, [name1]: e.target.value};
+    newItem.total = (newItem.quantity * newItem.price).toFixed(2);
     // setItem1(newItem);
     
     console.log( items);
 
 //     // console.log(item.name);
-    const items2 = items.filter(currentItem => currentItem.id != item.id);
+    // const items2 = items.filter(currentItem => currentItem.id != item.id);
+    const items2 = [...items];
     const index = items.indexOf(item);
     console.log(items2);
     items2.splice(index, 1, newItem)
     setItems(items2); 
-console.log("new items Array: " + items2);
+    console.log("new items Array: " + items2);
+  }
+
+  const removeItem = () => {
+    const items2 = items.filter(currentItem => currentItem.id != item.id);
+    setItems(items2);
   }
 
   return (
@@ -226,11 +233,11 @@ console.log("new items Array: " + items2);
             <Price   name={"price"} onChange={handleChange} value={item.price}/>
           </QuantityPriceContainer>
           <MobileQuantityPrice>
-            {item.quantity + " x £ " + item.price.toFixed(2)}{" "}
+            {item.quantity + " x £ " + Number(item.price).toFixed(2)}
           </MobileQuantityPrice>
         </MobileHelperContainer>
         <Total name={"total"}   onChange={handleChange} value={item.total}>{(item.quantity * item.price).toFixed(2)}</Total>
-        <SVG>{deleteIcon}</SVG>
+        <SVG name="removeButton" onClick={removeItem} >{deleteIcon}</SVG>
     
     </ItemContainer>
   );

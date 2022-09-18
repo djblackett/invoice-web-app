@@ -13,7 +13,6 @@ import { useEffect } from "react";
 import DeleteModal from "../components/DeleteModal";
 
 const ViewContainer = styled.div`
-  
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -22,21 +21,20 @@ const ViewContainer = styled.div`
   justify-self: center;
   align-self: center;
   margin-top: 104px;
-  padding-left: 1.5rem;
-  padding-right: 1.5rem;
+  /* padding-left: 1.5rem;
+  padding-right: 1.5rem; */
 
   /* margin-bottom: 3.25rem; */
-  position: relative;
+  /* position: relative; */
 
-@media (min-width: 768px) {
-  max-width: 730px;
-}
+  @media (min-width: 768px) {
+    max-width: 730px;
+  }
 
-@media (min-width: 1200px) {
-  /* width: 730px; */
-  margin-top: 4rem;
-}
-
+  @media (min-width: 1200px) {
+    /* width: 730px; */
+    margin-top: 4rem;
+  }
 `;
 
 const GoBackButton = styled.div`
@@ -48,80 +46,77 @@ const GoBackButton = styled.div`
   flex-direction: row;
   cursor: pointer;
   margin-bottom: 2rem;
-
-`
+`;
 
 const Icon = styled.p`
-  color: ${({theme}) => theme.outline};
+  color: ${({ theme }) => theme.outline};
   padding: 0;
   margin: 0;
   font-weight: 900;
-
-`
+`;
 
 const GoBack = styled.p`
   font-weight: bold;
-  padding:0;
+  padding: 0;
   margin: 0;
   margin-left: 1rem;
-`
-
-
+`;
 
 function ViewInvoice() {
-
   const data = useSelector(selectInvoices);
   const { id } = useParams();
   const navigate = useNavigate();
   const [invoice, setInvoice] = useState(getInvoiceById(id));
-  
 
   const [isEditOpen, setIsEditOpen] = useState(false);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [padding, setPadding] = useState("");
+  const [items, setItems] = useState(invoice.items);
 
   useEffect(() => {
     setInvoice(getInvoiceById(id));
-  }, [data, invoice])
+  }, [data, invoice]);
 
   function getInvoiceById(id) {
-  return data.find((invoice) => invoice.id === id);
-}
+    return data.find((invoice) => invoice.id === id);
+  }
 
   function toggleEditTab() {
     setIsEditOpen(!isEditOpen);
-    }
+  }
 
-  // console.log(typeof toggleEditTab);
-
-  // useLayoutEffect(() => {
-  //   setInvoice(getInvoiceById(id));
-  // }, [id]);
-
-  
   return (
+    //  {!invoice && <h1>Loading</h1>}
+    <ViewContainer>
+      {/* <ErrorBoundary> */}
+      <EditForm
+        isEditOpen={isEditOpen}
+        setIsEditOpen={setIsEditOpen}
+        padding={padding}
+        setPadding={setPadding}
+        invoice={invoice}
+        items={items}
+      />
+      {/* </ErrorBoundary> */}
+      <GoBackButton onClick={() => navigate(-1)}>
+        <Icon>{"<"}</Icon>
+        <GoBack>Go back</GoBack>
+      </GoBackButton>
+      <InvoiceToolbar
+        invoice={invoice}
+        setEdit={toggleEditTab}
+        setIsModalOpen={setIsModalOpen}
+        setItems={setItems}
+      />
+      <FullInvoice invoice={invoice} />
 
-//  {!invoice && <h1>Loading</h1>} 
-<ViewContainer>
-  {/* <ErrorBoundary> */}
-  <EditForm
-          isEditOpen={isEditOpen}
-          setIsEditOpen={setIsEditOpen}
-          padding={padding}
-          setPadding={setPadding}
-          invoice={invoice}
-        />
-        {/* </ErrorBoundary> */}
-  <GoBackButton onClick={() => navigate(-1)}>
-    <Icon>{"<"}</Icon>
-    <GoBack>Go back</GoBack>
-  </GoBackButton>
-  <InvoiceToolbar invoice={invoice} setEdit={toggleEditTab} setIsModalOpen={setIsModalOpen} />
-  <FullInvoice invoice={invoice} />
-  
-  <DeleteModal setIsModalOpen={setIsModalOpen} invoice={invoice} isModalOpen={isModalOpen}/>
-  </ViewContainer>
-  )
+      <DeleteModal
+        setIsModalOpen={setIsModalOpen}
+        invoice={invoice}
+        isModalOpen={isModalOpen}
+      />
+    </ViewContainer>
+  );
 }
 
 export default ViewInvoice;

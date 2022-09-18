@@ -2,13 +2,17 @@ import TitleGrid from "../components/TitleGrid";
 import InvoiceGrid from "../components/InvoiceGrid";
 // import data from "../data.json";
 import React, { useState, useEffect } from "react";
-import { useSelector } from "react-redux";
+import { useSelector, useDispatch } from "react-redux";
 import InvoiceCard from "../components/InvoiceCard";
 import EmptyList from "../components/EmptyList";
 import { Link } from "react-router-dom";
-import { selectInvoices } from "../features/invoices/invoicesSlice";
+import {
+  selectInvoices,
+  addIdToExistingInvoices,
+} from "../features/invoices/invoicesSlice";
 import { selectFilter } from "../features/invoices/filterSlice";
 import styled from "styled-components";
+import NewInvoice from "./NewInvoice";
 
 const AllInvoicesContainer = styled.div`
   width: 100%;
@@ -22,15 +26,23 @@ const AllInvoicesContainer = styled.div`
 function AllInvoices() {
   // const [filter, setFilter] = useState("All");
   const filter = useSelector(selectFilter);
-
+  const dispatch = useDispatch();
   const data = useSelector(selectInvoices);
   // eslint-disable-next-line no-unused-vars
   // const [unfilteredList, setUnfilteredList] = useState(data);
   const [invoiceList, setInvoiceList] = useState(data);
 
+  const [isNewOpen, setIsNewOpen] = useState(false);
+  const [padding, setPadding] = useState("");
+
   // const handleChangeFilter = (status) => {
   //   // setFilter(status);
   // };
+  useEffect(() => {
+    dispatch(addIdToExistingInvoices());
+    // console.log("adding ids");
+    // data.forEach((invoice) => console.log(invoice.items));
+  }, []);
 
   useEffect(() => {
     setInvoiceList(
@@ -58,14 +70,19 @@ function AllInvoices() {
 
   return (
     <AllInvoicesContainer>
-      <TitleGrid invoiceList={invoiceList} />
-
+      <TitleGrid invoiceList={invoiceList} setIsNewOpen={setIsNewOpen} />
+      <NewInvoice
+        isNewOpen={isNewOpen}
+        setIsNewOpen={setIsNewOpen}
+        padding={padding}
+        setPadding={setPadding}
+      />
       {invoiceList.length > 0 && (
         <InvoiceGrid>
           {invoiceList.map((invoice) => {
             return (
               <Link
-                key={invoice.id}
+                key={invoice.id + "-link"}
                 to={`/${invoice.id}`}
                 style={{
                   textDecoration: "none",

@@ -2,7 +2,7 @@
 import styled from "styled-components";
 
 import PropTypes from "prop-types";
-import { useMemo } from "react";
+import { useMemo, useState } from "react";
 import ItemList from "./ItemList";
 import { useWindowWidth } from "../hooks/useWindowWidth";
 
@@ -209,9 +209,11 @@ function FullInvoice({ invoice }) {
   const width = useWindowWidth();
 
   const convertedDate = (dateString) => {
-    const date = dateString.split("-");
-    const dateObj = new Date(Date.UTC(date[0], date[1], date[2]));
-    return dateObj.toDateString().substring(4);
+    if (dateString) {
+      const date = dateString.split("-");
+      const dateObj = new Date(Date.UTC(date[0], date[1], date[2]));
+      return dateObj.toDateString().substring(4);
+    }
   };
 
   return (
@@ -220,7 +222,7 @@ function FullInvoice({ invoice }) {
         <IdAndDescription>
           <IDNumber>
             <span style={{ color: "#7E88C3" }}>#</span>
-            {invoice.id}
+            {invoice.id.substring(0, 6)}
           </IDNumber>
           <Description>{invoice.description}</Description>
         </IdAndDescription>

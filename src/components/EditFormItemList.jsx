@@ -85,7 +85,8 @@ const ItemTitle = styled.h1`
 `;
 
 function EditFormItemList({ invoice, items, setItems }) {
-  const handleAddNewItem = () => {
+  const handleAddNewItem = (e) => {
+    e.preventDefault();
     setItems([
       ...items,
       { id: uuidv4(), name: "", quantity: 0, price: 0, total: 0 },
@@ -111,7 +112,7 @@ function EditFormItemList({ invoice, items, setItems }) {
           <EditFormItem
             item={item}
             items={items}
-            key={item.name || item.id}
+            key={item.id}
             id={item.id}
             setItems={setItems}
           />
@@ -125,7 +126,7 @@ function EditFormItemList({ invoice, items, setItems }) {
 export default EditFormItemList;
 
 EditFormItemList.propTypes = {
-  invoice: PropTypes.object.isRequired,
+  invoice: PropTypes.object,
   items: PropTypes.arrayOf(PropTypes.object).isRequired,
   setItems: PropTypes.func.isRequired,
 };

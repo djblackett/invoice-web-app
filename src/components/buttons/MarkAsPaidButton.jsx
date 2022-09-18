@@ -26,8 +26,14 @@ const Button = styled.button`
 `;
 function MarkAsPaidButton({ invoice }) {
   const dispatch = useDispatch();
+  const handleClick = () => {
+    if (invoice.status === "pending") {
+      dispatch(markAsPaid(invoice.id));
+    }
+  }
+
   return (
-    <Button onClick={() => dispatch(markAsPaid(invoice.id))}>
+    <Button onClick={handleClick}>
       Mark as Paid
     </Button>
   );

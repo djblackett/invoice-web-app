@@ -11,7 +11,8 @@ export const DarkenScreen = styled.div`
   display: flex;
   align-items: center;
   justify-content: center;
-  position: absolute;
+  position: fixed;
+  min-height: 100%;
   top: 0;
   bottom: 0;
   left: 0;
@@ -84,7 +85,7 @@ function DeleteModal({ isModalOpen, setIsModalOpen, invoice }) {
           undone.
         </Description>
         <ButtonContainer>
-          <CancelButton handleClick={closeModal} />
+          <CancelButton handleClick={closeModal} text={"Cancel"} />
           <DeleteButton handleClick={handleClick} />
         </ButtonContainer>
       </ModalContainer>

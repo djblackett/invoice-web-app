@@ -44,7 +44,7 @@ const StatusText = styled.p`
   color: ${({ theme }) => theme.greyText};
 `;
 
-function InvoiceToolbar({ invoice, setEdit, setIsModalOpen }) {
+function InvoiceToolbar({ invoice, setEdit, setIsModalOpen, setItems }) {
   const [invoiceStatus, setInvoiceStatus] = useState(null);
 
   const openModal = () => setIsModalOpen(true);
@@ -71,6 +71,7 @@ function InvoiceToolbar({ invoice, setEdit, setIsModalOpen }) {
         toggleEditTab={setEdit}
         invoice={invoice}
         openModal={openModal}
+        setItems={setItems}
       />
     </Toolbar>
   );
@@ -82,4 +83,5 @@ InvoiceToolbar.propTypes = {
   invoice: Proptypes.object.isRequired,
   setEdit: Proptypes.func.isRequired,
   setIsModalOpen: Proptypes.func.isRequired,
+  setItems: Proptypes.func,
 };

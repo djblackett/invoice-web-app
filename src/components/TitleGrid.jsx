@@ -179,8 +179,12 @@ const plusSignSVG = (
 
 // change filter text dynamically
 
-function TitleGrid({ invoiceList }) {
+function TitleGrid({ invoiceList, setIsNewOpen }) {
   const [isOpen, setIsOpen] = useState(false);
+
+  const openNewInvoice = () => {
+    setIsNewOpen(true);
+  };
 
   const toggling = (e) => {
     setIsOpen(!isOpen);
@@ -212,7 +216,7 @@ function TitleGrid({ invoiceList }) {
           handleClick={toggling}
           onKeyPress={togglingButton}
         />
-        <NewInvoiceButton>
+        <NewInvoiceButton onClick={openNewInvoice}>
           <WhiteCircle>{plusSignSVG}</WhiteCircle>
 
           <NewText>
@@ -227,6 +231,7 @@ function TitleGrid({ invoiceList }) {
 TitleGrid.propTypes = {
   handleChangeFilter: PropTypes.func,
   invoiceList: PropTypes.array.isRequired,
+  setIsNewOpen: PropTypes.func,
 };
 
 export default TitleGrid;
