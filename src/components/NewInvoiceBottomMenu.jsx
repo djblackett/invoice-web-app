@@ -78,6 +78,10 @@ function NewInvoiceBottomMenu({ setIsDraft, setIsOpen, saveText, closeText, just
     setIsDraft(true);
   }
 
+  const setToPending = () => {
+    setIsDraft(false);
+  }
+
   return (
     <MenuContainer>
       <CancelButton
@@ -87,7 +91,7 @@ function NewInvoiceBottomMenu({ setIsDraft, setIsOpen, saveText, closeText, just
       />
       <SaveAndDraftContainer>
       <SaveDraft type="submit" value="Save as draft" onClick={setToDraft}/>
-      <NewInvoiceButton type="submit" value={saveText} />
+      <NewInvoiceButton type="submit" value={saveText} onClick={setToPending}/>
       </SaveAndDraftContainer>
     </MenuContainer>
   );

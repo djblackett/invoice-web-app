@@ -17,6 +17,7 @@ import { useWindowWidth } from "../hooks/useWindowWidth";
 import EditBottomMenu from "../components/EditBottomMenu";
 import EditFormItemList from "../components/EditFormItemList";
 import FormEntry from "../components/FormEntry";
+import FormDropDown from "../components/FormDropDown";
 
 export const EditTitle = styled.h1`
   font-size: 1.5rem;
@@ -170,6 +171,40 @@ const ErrorTextInline = styled(ErrorText)`
   right: 1.5rem;
 `;
 
+export const Select = styled.select`
+  width: 240px;
+  height: 48px;
+  border-radius: 4px;
+  border-color: ${({ theme }) => theme.formFieldOutline};
+  /* outline: none; */
+  padding: 17px 20px 16px 20px;
+  margin-bottom: 1.5rem;
+  font-family: ${({ theme }) => theme.font};
+  font-style: normal;
+  font-weight: 700;
+  font-size: 12px;
+  line-height: 15px;
+  /* margin-left:5px; */
+  /* identical to box height, or 125% */
+
+  letter-spacing: -0.25px;
+  /* color: #0c0e16; */
+  color: ${({ theme }) => theme.textPlain};
+  background-color: ${({ theme }) => theme.editButton};
+
+  &:focus {
+    border-color: black;
+  }
+
+  .custom-input {
+    padding: 0;
+  }
+`;
+
+export const Option = styled.option`
+  padding: 10px;
+`;
+
 function EditForm({
   isEditOpen,
   setIsEditOpen,
@@ -256,7 +291,7 @@ function EditForm({
       },
       clientEmail: data.clientEmail,
       createdAt: invoice.createdAt,
-      paymentTerms: data.paymentTerms,
+      paymentTerms: selectedPaymentOption,
       description: data.projectDescription,
       items: items,
     };
@@ -312,6 +347,28 @@ function EditForm({
     } else {
       e.target.style.setProperty("border", "none");
     }
+  };
+
+  const [selectedPaymentOption, setSelectedPaymentOption] = useState(
+    invoice.paymentTerms || "Net 1 Day"
+  );
+
+  const [isPaymentOpen, setIsPaymentOpen] = useState(false);
+
+  const handleChangeSelectedOption = (option) => {
+    setSelectedPaymentOption(option);
+  };
+
+  const handlePaymentClick = (e) => {
+    console.log("button pressed");
+    e.preventDefault();
+
+    setIsPaymentOpen(true);
+    console.log("isPaymentOpen: " + isPaymentOpen);
+  };
+
+  const handlePaymentSelect = (e) => {
+    setIsPaymentOpen(false);
   };
 
   // console.log(watch("example")); // watch input value by passing the name of it
@@ -528,11 +585,19 @@ function EditForm({
               >
                 Payment Terms
               </Label>
-              <Input
+
+              <FormDropDown
+                handlePaymentSelect={handlePaymentSelect}
+                isPaymentOpen={isPaymentOpen}
+                handlePaymentClick={handlePaymentClick}
+                selectedPaymentOption={selectedPaymentOption}
+                handleChangeSelectedOption={handleChangeSelectedOption}
+              />
+              {/* <Input
                 type="select"
                 defaultValue=""
                 {...register("paymentTerms", { required: true })}
-              />
+              /> */}
             </FormEntry>
 
             {/* include validation with required or other standard HTML validation rules */}

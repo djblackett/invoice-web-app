@@ -1,7 +1,9 @@
 import styled from "styled-components";
-import DropDown from "./DropDown";
+import FilterDropDown from "./FilterDropDown";
 import PropTypes from "prop-types";
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import { selectFilter } from "../features/invoices/filterSlice";
+import { useSelector } from "react-redux";
 
 const GridContainer = styled.div`
   display: grid;
@@ -103,6 +105,11 @@ const NewInvoiceButton = styled.div`
   margin-left: 40px;
   cursor: pointer;
   padding-left: 0.5rem;
+
+  &:hover {
+    background-color: #9277ff;
+  }
+
   @media (min-width: 768px) {
     height: 48px;
     width: 150px;
@@ -181,6 +188,7 @@ const plusSignSVG = (
 
 function TitleGrid({ invoiceList, setIsNewOpen }) {
   const [isOpen, setIsOpen] = useState(false);
+  const [filterText, setFilterText] = useState("total");
 
   const openNewInvoice = () => {
     setIsNewOpen(true);
@@ -196,13 +204,29 @@ function TitleGrid({ invoiceList, setIsNewOpen }) {
       setIsOpen(!isOpen);
     }
   };
+
+  const filter = useSelector(selectFilter);
+
+  useEffect(() => {
+    if (filter.pending && !filter.draft && !filter.paid) {
+      setFilterText("pending");
+    } else if (!filter.pending && filter.draft && !filter.paid) {
+      setFilterText("draft");
+    } else if (!filter.pending && !filter.draft && filter.paid) {
+      setFilterText("paid");
+    } else {
+      setFilterText("total");
+    }
+  }, [filter]);
+
   return (
     <GridContainer>
       <TitleBox>
         <Title>Invoices</Title>
         <InvoicesLeft>
           <span className="wideScreenText">There are </span>
-          {invoiceList.length} <span className="wideScreenText"> total </span>
+          {invoiceList.length}{" "}
+          <span className="wideScreenText"> {filterText} </span>
           invoices
         </InvoicesLeft>
       </TitleBox>
@@ -210,11 +234,12 @@ function TitleGrid({ invoiceList, setIsNewOpen }) {
         <Filter onClick={toggling} onKeyPress={togglingButton}>
           Filter <span className="wideScreenText">by status</span>
         </Filter>
-        <DropDown
+        <FilterDropDown
           icon={arrowDownSVG}
           isOpen={isOpen}
           handleClick={toggling}
           onKeyPress={togglingButton}
+          options={["Draft", "Pending", "Paid"]}
         />
         <NewInvoiceButton onClick={openNewInvoice}>
           <WhiteCircle>{plusSignSVG}</WhiteCircle>

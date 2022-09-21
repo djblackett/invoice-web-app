@@ -12,18 +12,10 @@ export const filterSlice = createSlice({
     changeFilter: (state, action) => {
       state.filter[action.payload] = !state.filter[action.payload];
     },
-    decrement: (state) => {
-      state.value -= 1;
-    },
-    // Use the PayloadAction type to declare the contents of `action.payload`
-    incrementByAmount: (state, action) => {
-      state.value += action.payload;
-    },
   },
 });
 
-export const { changeFilter, increment, decrement, incrementByAmount } =
-  filterSlice.actions;
+export const { changeFilter } = filterSlice.actions;
 
 // The function below is called a selector and allows us to select a value from
 // the state. Selectors can also be defined inline where they're used instead of

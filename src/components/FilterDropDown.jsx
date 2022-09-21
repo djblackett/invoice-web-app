@@ -117,8 +117,6 @@ const ItemButton = styled.button`
   box-sizing: border-box;
 `;
 
-const options = ["Draft", "Pending", "Paid"];
-
 const OptionLabel = styled.label`
   margin-left: 0.5rem;
   font-family: "Spartan";
@@ -132,7 +130,7 @@ const OptionLabel = styled.label`
   color: ${({ theme }) => theme.textPlain};
 `;
 
-export default function DropDown({ icon, handleClick, isOpen }) {
+export default function FilterDropDown({ icon, handleClick, isOpen, options }) {
   // const [isOpen, setIsOpen] = useState(false);
 
   // const toggling = () => setIsOpen(!isOpen);
@@ -186,8 +184,9 @@ export default function DropDown({ icon, handleClick, isOpen }) {
   );
 }
 
-DropDown.propTypes = {
+FilterDropDown.propTypes = {
   icon: PropTypes.object,
   handleClick: PropTypes.func.isRequired,
   isOpen: PropTypes.bool.isRequired,
+  options: PropTypes.array.isRequired,
 };

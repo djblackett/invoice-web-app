@@ -2,6 +2,10 @@
 /* eslint-disable react/display-name */
 /* eslint-disable react/prop-types */
 /* eslint-disable no-unused-vars */
+import FormDropDown from '../components/FormDropDown';
+import Dropdown from 'rc-dropdown';
+import Menu, { Item as MenuItem, Divider } from 'rc-menu';
+import 'rc-dropdown/assets/index.css';
 
 import styled from "styled-components";
 import React, { useState, useEffect, useLayoutEffect, forwardRef } from "react";
@@ -9,7 +13,7 @@ import { useForm } from "react-hook-form";
 import DatePicker from "react-datepicker";
 import PropTypes from "prop-types";
 import { useDispatch } from "react-redux";
-import { updateInvoice } from "../features/invoices/invoicesSlice";
+import { updateInvoice, addInvoice } from "../features/invoices/invoicesSlice";
 // import { DarkenScreen } from "./DeleteModal";
 import { v4 as uuidv4 } from "uuid";
 
@@ -32,7 +36,10 @@ import {
   Input,
   EditTitle,
   ProjectDescription,
+  Select,
+  Option
 } from "./EditForm";
+// import DropDown from "../components/DropDown";
 
 function NewInvoice({
   isNewOpen,
@@ -46,6 +53,7 @@ function NewInvoice({
     handleSubmit,
     watch,
     formState: { errors },
+    reset
   } = useForm();
 
   const ExampleCustomInput = forwardRef(({ value, onClick }, ref) => (
@@ -62,12 +70,29 @@ function NewInvoice({
   const [isDraft, setIsDraft] = useState(false);
 
   const [editPageWidth, setEditPageWidth] = useState(null);
+  const [isPaymentOpen, setIsPaymentOpen] = useState(false);
 
   const [startDate, setStartDate] = useState(new Date());
 
   const [items, setItems] = useState([]);
+  const [selectedPaymentOption, setSelectedPaymentOption] = useState("Net 1 Day");
+  const handleChangeSelectedOption = (option) => {
+    setSelectedPaymentOption(option);
+  }
 
   const dispatch = useDispatch();
+
+   const handlePaymentClick = (e) => {
+    console.log("button pressed");
+    e.preventDefault();
+
+    setIsPaymentOpen(true);
+    console.log("isPaymentOpen: " + isPaymentOpen);
+  };
+
+  const handlePaymentSelect = (e) => {
+    setIsPaymentOpen(false);
+  }
 
   // todo add items to newInvoice
   //todo figure out which invoice date goes with what
@@ -75,7 +100,7 @@ function NewInvoice({
   const onSubmit = (data) => {
     // console.log(data);
 
-    const newInvoice = {
+    let newInvoice = {
       // ...invoice,
       clientName: data.clientName,
       clientAddress: {
@@ -91,8 +116,7 @@ function NewInvoice({
         street: data.streetAddress,
       },
       clientEmail: data.clientEmail,
-      // createdAt: invoice.createdAt,
-      paymentTerms: data.paymentTerms,
+      // createdAt: invoice.createdAt, 
       description: data.projectDescription,
       items: items,
     };
@@ -105,12 +129,14 @@ function NewInvoice({
 
     newInvoice.total = total;
     newInvoice.id = newInvoice.id ? newInvoice.id : uuidv4();
-
+    newInvoice.paymentTerms = selectedPaymentOption,
     newInvoice.status = isDraft ?  "draft" : "pending";
 
     // console.log(newInvoice);
-    dispatch(updateInvoice(newInvoice));
+    dispatch(addInvoice(newInvoice));
     setIsNewOpen(false);
+    reset();
+    // newInvoice = {};
   };
 
   // console.log(watch("streetAddress"));
@@ -143,6 +169,26 @@ function NewInvoice({
     setItems(newItems);
     // console.log(items);
   }, []);
+
+  function onSelect({ key }) {
+  console.log(`${key} selected`);
+}
+
+function onVisibleChange(visible) {
+  console.log(visible);
+}
+
+  const menu = (
+  <Menu onSelect={onSelect}>
+    {/* <MenuItem disabled>disabled</MenuItem> */}
+    <MenuItem key="1">Net 1 Day</MenuItem>
+    <Divider />
+    <MenuItem key="2">Net 7 Days</MenuItem>
+    <Divider />
+    <MenuItem key="3">Net 14 Days</MenuItem>
+    <Divider />
+    <MenuItem key="4">Net 30 Days</MenuItem>
+  </Menu>)
 
   // console.log(watch("example")); // watch input value by passing the name of it
   return (
@@ -272,11 +318,35 @@ function NewInvoice({
 
             <FormEntry>
               <Label htmlFor="paymentTerms">Payment Terms</Label>
-              <Input
+              {/* <Select
                 type="select"
                 defaultValue=""
                 {...register("paymentTerms")}
+              >
+
+                <Option value="Net 1 Day">Net 1 Day</Option>
+                <Option value="Net 7 Days">Net 7 Days</Option>
+                <Option value="Net 14 Days">Net 14 Days</Option>
+                <Option value="Net 30 Days">Net 30 Days</Option>
+              </Select> */}
+              <FormDropDown 
+                handlePaymentSelect={handlePaymentSelect} 
+                isPaymentOpen={isPaymentOpen} 
+                handlePaymentClick={handlePaymentClick}
+                selectedPaymentOption={selectedPaymentOption}
+                handleChangeSelectedOption={handleChangeSelectedOption}
+
               />
+
+
+               {/* <Dropdown
+        trigger={['click']}
+        overlay={menu}
+        animation="slide-up"
+        onVisibleChange={onVisibleChange}
+      >
+        <button style={{ width: 100 }}>open</button>
+      </Dropdown> */}
             </FormEntry>
 
             {/* include validation with required or other standard HTML validation rules */}

@@ -57,7 +57,7 @@ function EditBottomMenu({ setIsOpen, saveText, closeText, justifyCancel }) {
         text={closeText}
         justifySelf={justifyCancel}
       />
-      <NewInvoiceButton type="submit" value={saveText} />
+      <NewInvoiceButton type="submit" value={saveText} onClick={closeMenu} />
     </MenuContainer>
   );
 }
