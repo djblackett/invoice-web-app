@@ -1,15 +1,15 @@
 {
   "files": {
-    "main.css": "/invoice-web-app/static/css/main.81d27e7e.css",
-    "main.js": "/invoice-web-app/static/js/main.465bdce6.js",
+    "main.css": "/invoice-web-app/static/css/main.760046e2.css",
+    "main.js": "/invoice-web-app/static/js/main.9d768822.js",
     "static/js/787.71a9dd40.chunk.js": "/invoice-web-app/static/js/787.71a9dd40.chunk.js",
     "index.html": "/invoice-web-app/index.html",
-    "main.81d27e7e.css.map": "/invoice-web-app/static/css/main.81d27e7e.css.map",
-    "main.465bdce6.js.map": "/invoice-web-app/static/js/main.465bdce6.js.map",
+    "main.760046e2.css.map": "/invoice-web-app/static/css/main.760046e2.css.map",
+    "main.9d768822.js.map": "/invoice-web-app/static/js/main.9d768822.js.map",
     "787.71a9dd40.chunk.js.map": "/invoice-web-app/static/js/787.71a9dd40.chunk.js.map"
   },
   "entrypoints": [
-    "static/css/main.81d27e7e.css",
-    "static/js/main.465bdce6.js"
+    "static/css/main.760046e2.css",
+    "static/js/main.9d768822.js"
   ]
 }
