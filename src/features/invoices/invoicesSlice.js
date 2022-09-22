@@ -56,14 +56,9 @@ export const invoicesSlice = createSlice({
           }
         }
       }
-
-      // state.data = state.data.forEach((invoice) => {
-      //   invoice.items.forEach((item) => {
-      //     if (!item.id) {
-      //       item["id"] = uuidv4();
-      //     }
-      //   });
-      // });
+    },
+    clearInvoices: (state, action) => {
+      state.data = [];
     },
   },
   // The `extraReducers` field lets the slice handle actions defined elsewhere,
@@ -86,6 +81,7 @@ export const {
   markAsPaid,
   addItem,
   addIdToExistingInvoices,
+  clearInvoices,
 } = invoicesSlice.actions;
 
 export const selectInvoices = (state) => state.invoices.data;

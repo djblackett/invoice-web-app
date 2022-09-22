@@ -27,17 +27,14 @@ export const EditTitle = styled.h1`
 export const FormContainer = styled.div`
   height: 100%;
   /* min-width: 300px; */
-  top: 0;
-  bottom: 0;
+  top: 72px;
+  bottom: 91px;
   left: 0;
   right: 0;
   background-color: ${({ theme }) => theme.background};
   background-size: cover;
   position: absolute;
-  padding-left: 5rem;
-  padding-right: 2rem;
-  padding-top: 1rem;
-  padding-bottom: 2rem;
+
   display: flex;
   flex-direction: column;
   transition: all 250ms ease-in-out;
@@ -47,9 +44,15 @@ export const FormContainer = styled.div`
   align-self: flex-start;
   z-index: 100;
 
+  max-width: 100%;
+
   @media (min-width: 768px) {
+    padding-left: 5rem;
+    padding-right: 2rem;
+    padding-top: 1rem;
+    padding-bottom: 2rem;
     max-width: 700px;
-    top: 72px;
+    /* top: 72px; */
     right: 616px;
     max-height: calc(100vh - 72px);
   }
@@ -110,6 +113,8 @@ export const Input = styled.input`
 `;
 
 export const StreetAddressInput = styled(Input)`
+  width: 100%;
+
   @media (min-width: 768px) {
     width: 504px;
   }
@@ -153,11 +158,20 @@ export const DarkenScreen = styled.div`
 
 export const ProjectDescription = styled(FormEntry)`
   margin-bottom: 0;
-  width: 504px;
+  max-width: 100%;
+  width: 100%;
+  @media (min-width: 768px) {
+    width: 504px;
+    max-width: initial;
+  }
 `;
 
 export const LongEntry = styled(Input)`
-  width: 504px;
+  max-width: 100%;
+  @media (min-width: 768px) {
+    max-width: initial;
+    width: 504px;
+  }
 `;
 
 const ErrorText = styled.p`
@@ -203,6 +217,20 @@ export const Select = styled.select`
 
 export const Option = styled.option`
   padding: 10px;
+`;
+
+export const DateAndPaymentContainer = styled.div`
+  /* display: contents; */
+  display: flex;
+  justify-content: space-between;
+  max-width: 100%;
+  flex-wrap: wrap;
+  @media (min-width: 768px) {
+    display: flex;
+    justify-content: space-between;
+    width: 504px;
+    max-width: initial;
+  }
 `;
 
 function EditForm({
@@ -385,7 +413,7 @@ function EditForm({
       >
         <EditTitle>
           Edit <span style={{ color: "#7E88C3" }}>#</span>
-          {invoice.id}
+          {invoice.id.substring(0, 6)}
         </EditTitle>
         {/* "handleSubmit" will validate your inputs before invoking "onSubmit" */}
         <form onSubmit={handleSubmit(onSubmit)}>
@@ -552,7 +580,7 @@ function EditForm({
               />
             </FormEntry>
           </AddressBox>
-          <div
+          <DateAndPaymentContainer
             style={{
               display: "flex",
               justifyContent: "space-between",
@@ -604,7 +632,7 @@ function EditForm({
             {/* <Input type="text" {...register('exampleRequired', { required: true })} /> */}
             {/* errors will return when field validation fails  */}
             {/* {errors.exampleRequired && <span>This field is required</span>} */}
-          </div>
+          </DateAndPaymentContainer>
           <ProjectDescription>
             <Label
               htmlFor="projectDescription"
@@ -612,13 +640,11 @@ function EditForm({
             >
               Project Description
             </Label>
-            <Input
+            <LongEntry
               type="text"
               defaultValue={invoice.description}
               {...register("projectDescription", { required: true })}
               style={{
-                marginBottom: 0,
-                width: "504px",
                 border: errors.projectDescription ? "1px solid red" : "",
               }}
             />

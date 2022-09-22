@@ -170,27 +170,9 @@ function NewInvoice({
     // console.log(items);
   }, []);
 
-  function onSelect({ key }) {
-  console.log(`${key} selected`);
-}
 
-function onVisibleChange(visible) {
-  console.log(visible);
-}
-
-  const menu = (
-  <Menu onSelect={onSelect}>
-    {/* <MenuItem disabled>disabled</MenuItem> */}
-    <MenuItem key="1">Net 1 Day</MenuItem>
-    <Divider />
-    <MenuItem key="2">Net 7 Days</MenuItem>
-    <Divider />
-    <MenuItem key="3">Net 14 Days</MenuItem>
-    <Divider />
-    <MenuItem key="4">Net 30 Days</MenuItem>
-  </Menu>)
-
-  // console.log(watch("example")); // watch input value by passing the name of it
+  
+              // todo make this input not editable - doesn't have to be a DatePicker component
   return (
     <DarkenScreen style={{ display: isNewOpen ? "block" : "none" }}>
       <FormContainer
@@ -205,6 +187,7 @@ function onVisibleChange(visible) {
         <EditTitle>
           New Invoice
         </EditTitle>
+
         {/* "handleSubmit" will validate your inputs before invoking "onSubmit" */}
         <form onSubmit={handleSubmit(onSubmit)}>
           {/* register your input into the hook by invoking the "register" function */}
@@ -307,46 +290,27 @@ function onVisibleChange(visible) {
           >
             <FormEntry>
               <Label htmlFor="invoiceDate">Invoice Date</Label>
+
               <DatePicker
                 disabled
                 customInput={<ExampleCustomInput />}
                 selected={startDate}
-                onChange={(date) => setStartDate(date)}
+                value={startDate}
+                // onChange={(date) => setStartDate(date)}
                 style={{ width: "240px" }}
               />
             </FormEntry>
 
             <FormEntry>
               <Label htmlFor="paymentTerms">Payment Terms</Label>
-              {/* <Select
-                type="select"
-                defaultValue=""
-                {...register("paymentTerms")}
-              >
-
-                <Option value="Net 1 Day">Net 1 Day</Option>
-                <Option value="Net 7 Days">Net 7 Days</Option>
-                <Option value="Net 14 Days">Net 14 Days</Option>
-                <Option value="Net 30 Days">Net 30 Days</Option>
-              </Select> */}
               <FormDropDown 
                 handlePaymentSelect={handlePaymentSelect} 
                 isPaymentOpen={isPaymentOpen} 
                 handlePaymentClick={handlePaymentClick}
                 selectedPaymentOption={selectedPaymentOption}
                 handleChangeSelectedOption={handleChangeSelectedOption}
-
               />
 
-
-               {/* <Dropdown
-        trigger={['click']}
-        overlay={menu}
-        animation="slide-up"
-        onVisibleChange={onVisibleChange}
-      >
-        <button style={{ width: 100 }}>open</button>
-      </Dropdown> */}
             </FormEntry>
 
             {/* include validation with required or other standard HTML validation rules */}

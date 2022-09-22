@@ -6,8 +6,9 @@ const EmptyListContainer = styled.div`
   display: flex;
   flex-direction: column;
   align-items: center;
+  margin-top: 6.3rem;
 
-  @media (min-width: 1200px) {
+  @media (min-width: 768px) {
     margin-top: 4rem;
   }
 `;

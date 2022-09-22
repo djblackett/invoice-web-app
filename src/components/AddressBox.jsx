@@ -11,8 +11,12 @@ const AddressDetails = styled.div`
   display: flex;
   flex-direction: row;
   justify-content: space-between;
+  flex-wrap: wrap;
 
-  max-width: 504px;
+  max-width: 100vw;
+  @media (min-width: 768px) {
+    max-width: 504px;
+  }
 `;
 
 function AddressBox({ children }) {

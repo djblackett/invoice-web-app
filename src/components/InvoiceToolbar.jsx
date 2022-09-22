@@ -14,28 +14,34 @@ import ToolbarButtons from "./ToolbarButtons";
 
 const Toolbar = styled.div`
   height: 88px;
-  background-color: ${({ theme }) => theme.background};
-  padding: 10px 20px;
-  display: flex;
+
+  display: contents;
+  flex-direction: column;
   justify-content: space-between;
   align-items: center;
-  border-radius: 8px;
+
   width: 100%;
 
   @media (min-width: 768px) {
     width: 730px;
+    flex-direction: row;
   }
 
   box-shadow: 0px 10px 10px -10px rgba(72, 84, 159, 0.100397);
 `;
 
 const StatusContainer = styled.div`
-  display: contents;
+  display: flex;
+  height: 91px;
+  width: 100%;
+  padding: 10px 20px;
+  /* display: contents; */
   justify-content: space-between;
   align-items: center;
+  background-color: ${({ theme }) => theme.background};
+  border-radius: 8px;
 
   @media (min-width: 768px) {
-    display: flex;
   }
 `;
 

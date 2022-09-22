@@ -21,14 +21,16 @@ const ViewContainer = styled.div`
   justify-self: center;
   align-self: center;
   margin-top: 104px;
-  /* padding-left: 1.5rem;
-  padding-right: 1.5rem; */
+  padding-left: 1.5rem;
+  padding-right: 1.5rem;
 
   /* margin-bottom: 3.25rem; */
   /* position: relative; */
 
   @media (min-width: 768px) {
     max-width: 730px;
+    padding-left: 0;
+    padding-right: 0;
   }
 
   @media (min-width: 1200px) {
@@ -61,6 +63,18 @@ const GoBack = styled.p`
   margin: 0;
   margin-left: 1rem;
 `;
+
+const arrowLeft = (
+  <svg width="7" height="10" xmlns="http://www.w3.org/2000/svg">
+    <path
+      d="M6.342.886L2.114 5.114l4.228 4.228"
+      stroke="#9277FF"
+      strokeWidth="2"
+      fill="none"
+      fillRule="evenodd"
+    />
+  </svg>
+);
 
 function ViewInvoice() {
   const data = useSelector(selectInvoices);
@@ -99,7 +113,7 @@ function ViewInvoice() {
       />
       {/* </ErrorBoundary> */}
       <GoBackButton onClick={() => navigate(-1)}>
-        <Icon>{"<"}</Icon>
+        <Icon>{arrowLeft}</Icon>
         <GoBack>Go back</GoBack>
       </GoBackButton>
       <InvoiceToolbar

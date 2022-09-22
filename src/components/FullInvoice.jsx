@@ -17,7 +17,7 @@ const Card = styled.div`
   padding-bottom: 1.5rem;
   margin: 24px;
   margin-bottom: calc(3.5rem + 91px);
-  margin-top: 24px;
+  margin-top: 1rem;
   letter-spacing: -0.25px;
   line-height: 15px;
   font-size: 12px;
@@ -38,6 +38,7 @@ const Card = styled.div`
     /* margin: 8px 48px 8px 48px; */
     align-content: center;
     padding: 3rem;
+    margin-top: 1.5rem;
   }
 
   @media (min-width: 1200px) {

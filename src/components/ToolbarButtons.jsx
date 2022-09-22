@@ -12,14 +12,16 @@ const ButtonsContainer = styled.div`
   height: 91px;
   padding: 1.4rem 1.5rem;
   width: 100%;
-  position: absolute;
+  position: fixed;
   bottom: 0;
   left: 0;
   background-color: ${({ theme }) => theme.background};
   margin-top: 3.5rem;
+  order: 2;
 
   @media (min-width: 768px) {
     /* justify-self: initial; */
+    order: initial;
     height: initial;
     width: initial;
     position: static;

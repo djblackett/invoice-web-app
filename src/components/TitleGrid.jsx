@@ -71,7 +71,7 @@ const ControlBox = styled.div`
   flex-direction: row;
   align-items: center;
   margin-right: 24px;
-  justify-content: space-between;
+  justify-content: flex-end;
   /* cursor: pointer; */
 
   .largeScreenText {
@@ -101,8 +101,9 @@ const NewInvoiceButton = styled.div`
   width: 90px;
   display: flex;
   align-items: center;
+  margin-left: 18px;
   /* justify-content: space-between; */
-  margin-left: 40px;
+
   cursor: pointer;
   padding-left: 0.5rem;
 
@@ -114,6 +115,7 @@ const NewInvoiceButton = styled.div`
     height: 48px;
     width: 150px;
     padding-right: 1rem;
+    margin-left: 40px;
   }
 
   @media (min-width: 1200px) {
