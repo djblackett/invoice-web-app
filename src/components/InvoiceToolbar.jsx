@@ -23,8 +23,11 @@ const Toolbar = styled.div`
   width: 100%;
 
   @media (min-width: 768px) {
+    display: flex;
     width: 730px;
     flex-direction: row;
+    background-color: ${({ theme }) => theme.background};
+    border-radius: 8px;
   }
 
   box-shadow: 0px 10px 10px -10px rgba(72, 84, 159, 0.100397);
@@ -42,6 +45,7 @@ const StatusContainer = styled.div`
   border-radius: 8px;
 
   @media (min-width: 768px) {
+    background-color: initial;
   }
 `;
 

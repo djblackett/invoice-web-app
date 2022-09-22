@@ -19,6 +19,7 @@ const Button = styled.button`
   /* identical to box height, or 125% */
 
   letter-spacing: -0.25px;
+  white-space: nowrap;
 
   &:hover {
     background-color: ${({ theme }) => theme.newButtonHover};
@@ -30,13 +31,9 @@ function MarkAsPaidButton({ invoice }) {
     if (invoice.status === "pending") {
       dispatch(markAsPaid(invoice.id));
     }
-  }
+  };
 
-  return (
-    <Button onClick={handleClick}>
-      Mark as Paid
-    </Button>
-  );
+  return <Button onClick={handleClick}>Mark as Paid</Button>;
 }
 
 export default MarkAsPaidButton;

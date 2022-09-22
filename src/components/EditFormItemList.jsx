@@ -11,9 +11,11 @@ const ListContainer = styled.div`
   width: 100%;
   max-width: 504px;
   border-radius: 8px;
+
+  background-color: ${({ theme }) => theme.background};
 `;
 
-const ItemsHeader = styled.div`
+export const ItemsHeader = styled.div`
   display: none;
 
   @media (min-width: 768px) {
@@ -30,7 +32,7 @@ const ItemsHeader = styled.div`
   }
 `;
 
-const Col = styled.p`
+export const Col = styled.p`
   width: fit-content;
   margin: 0;
   padding: 0;
@@ -44,7 +46,7 @@ const Col = styled.p`
   letter-spacing: -0.229167px;
 `;
 
-const Col1 = styled(Col)`
+export const Col1 = styled(Col)`
   justify-self: start;
 `;
 

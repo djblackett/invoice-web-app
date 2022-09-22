@@ -1,15 +1,15 @@
 import styled from "styled-components";
 import PropTypes from "prop-types";
-import { useState } from "react";
-import { useDispatch } from "react-redux";
-import { addItem } from "../features/invoices/invoicesSlice";
+import { ItemsHeader, Col, Col1 } from "./EditFormItemList";
+import { useWindowWidth } from "../hooks/useWindowWidth";
 
 const ItemContainer = styled.div`
-  display: grid;
+  display: flex;
   width: 100%;
-  max-width: 504px;
-  height: 72px;
+  flex-wrap: wrap;
+
   align-items: center;
+  justify-content: space-between;
   /* border-radius: 8px; */
 
   /* padding: 1.5rem; */
@@ -20,16 +20,20 @@ const ItemContainer = styled.div`
 
   background-color: ${({ theme }) => theme.background};
 
+  margin-bottom: 3rem;
   :first-child {
     /* padding-top: 1.5rem; */
   }
 
   @media (min-width: 768px) {
+    height: 72px;
+    max-width: 504px;
     /* padding: 2rem; */
-
+    display: grid;
     // Setting the px of the grid column keeps the form fields lined up.
     grid-template: 1fr / 220px 62px 116px 61px 45px;
     justify-items: start;
+    margin-bottom: initial;
 
     // trying flex instead of grid
     /* display:flex;
@@ -72,7 +76,7 @@ const Input = styled.input`
 const ItemName = styled(Input)`
   white-space: nowrap;
   justify-self: start;
-  width: 204px;
+  width: 100%;
   margin: 0;
 
   padding-left: 1.25rem;
@@ -85,11 +89,15 @@ const ItemName = styled(Input)`
   /* identical to box height, or 125% */
 
   letter-spacing: -0.25px;
+
+  @media (min-width: 768px) {
+    width: 204px;
+  }
 `;
 
 // same style used for Price
 const Quantity = styled(Input)`
-  display: none;
+  /* display: none; */
   /* justify-self: end; */
   width: 46px;
   margin: 0;
@@ -195,6 +203,21 @@ export const SVG = styled.svg`
   }
 `;
 
+const Box = styled.div`
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  height: fit-content;
+  width: fit-content;
+`;
+
+const SmallBoxContainer = styled.div`
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  width: 80%;
+`;
+
 const deleteIcon = (
   <path
     d="M11.583 3.556v10.666c0 .982-.795 1.778-1.777 1.778H2.694a1.777 1.777 0 01-1.777-1.778V3.556h10.666zM8.473 0l.888.889h3.111v1.778H.028V.889h3.11L4.029 0h4.444z"
@@ -230,7 +253,41 @@ function EditFormItem({ item, id, items, setItems }) {
     setItems(items2);
   };
 
-  return (
+  const width = useWindowWidth();
+
+  const mobileRender = (
+    <ItemContainer>
+      <Box style={{ width: "100%" }}>
+        <Col1>Item Name</Col1>
+        <ItemName name={"name"} onChange={handleChange} value={item.name} />
+      </Box>
+      <SmallBoxContainer>
+        <Box>
+          <Col>Qty.</Col>
+          <Quantity
+            name={"quantity"}
+            onChange={handleChange}
+            value={item.quantity}
+          />
+        </Box>
+        <Box>
+          <Col>Price</Col>
+          <Price name={"price"} onChange={handleChange} value={item.price} />
+        </Box>
+        <Box>
+          <Col>Total</Col>
+          <Total name={"total"} onChange={handleChange} value={item.total}>
+            {(item.quantity * item.price).toFixed(2)}
+          </Total>
+        </Box>
+      </SmallBoxContainer>
+      <SVG name="removeButton" onClick={removeItem}>
+        {deleteIcon}
+      </SVG>
+    </ItemContainer>
+  );
+
+  const tabletAndDesktopRender = (
     <ItemContainer>
       <MobileHelperContainer>
         <ItemName name={"name"} onChange={handleChange} value={item.name} />
@@ -254,6 +311,12 @@ function EditFormItem({ item, id, items, setItems }) {
       </SVG>
     </ItemContainer>
   );
+
+  if (width < 768) {
+    return mobileRender;
+  } else {
+    return tabletAndDesktopRender;
+  }
 }
 
 export default EditFormItem;

@@ -666,6 +666,7 @@ function EditForm({
             invoice={invoice}
             items={items}
             setItems={setItems}
+            
           />
           {hasEmptyField && <ErrorText>- All fields must be added</ErrorText>}
           {items.length === 0 && <ErrorText>- An item must be added</ErrorText>}

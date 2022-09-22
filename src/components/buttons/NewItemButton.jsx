@@ -5,11 +5,15 @@ const Button = styled.button`
   display: flex;
   align-items: center;
   justify-content: center;
-  width: 504px;
+  width: 100%;
   height: 48px;
   border-radius: 10px;
   background-color: ${({ theme }) => theme.greyButton};
   border: none;
+
+  @media (min-width: 768) {
+    width: 504px;
+  }
 `;
 
 export const SVG = styled.svg`
