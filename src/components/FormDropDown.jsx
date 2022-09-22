@@ -14,13 +14,17 @@ const Main = styled("div")`
   /* margin: 20px 5%; */
   margin-bottom: 30px;
 
-  width: 240px;
+  width: 100%;
   height: 48px;
   border-radius: 4px;
   /* border-color: ; */
   border: 2px solid ${({ theme }) => theme.formFieldOutline};
   /* outline: none; */
   /* padding: 17px 20px 16px 20px; */
+
+  @media (min-width: 768px) {
+    width: 240px;
+  }
 `;
 
 const DropDownHeader = styled.div.attrs({

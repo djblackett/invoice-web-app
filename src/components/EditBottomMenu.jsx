@@ -10,6 +10,11 @@ const MenuContainer = styled.div`
   justify-content: flex-end;
 
   margin-top: 2.6rem;
+  margin-bottom: 4rem;
+
+  @media (min-width: 768px) {
+    margin-bottom: 0;
+  }
 `;
 
 const NewInvoiceButton = styled.input`

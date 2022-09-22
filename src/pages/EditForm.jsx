@@ -31,6 +31,7 @@ export const FormContainer = styled.div`
   bottom: 91px;
   left: 0;
   right: 0;
+  width: 100%;
   background-color: ${({ theme }) => theme.background};
   background-size: cover;
   position: absolute;
@@ -137,6 +138,16 @@ export const AddressDetailInput = styled(Input)`
   width: 152px;
 `;
 
+export const CountryInput = styled(AddressDetailInput)`
+  width: 100%;
+  min-width: 100%;
+
+  @media (min-width: 768px) {
+    width: initial;
+    min-width: initial;
+  }
+`;
+
 export const Label = styled.label`
   color: ${({ theme }) => theme.greyText};
   margin-bottom: 0.5rem;
@@ -168,6 +179,7 @@ export const ProjectDescription = styled(FormEntry)`
 
 export const LongEntry = styled(Input)`
   max-width: 100%;
+  width: 100%;
   @media (min-width: 768px) {
     max-width: initial;
     width: 504px;
@@ -250,6 +262,7 @@ function EditForm({
 
   const ExampleCustomInput = forwardRef(({ value, onClick }, ref) => (
     <Input
+      style={{ width: editPageWidth < 768 ? "100%" : "initial" }}
       className="custom-input"
       onClick={onClick}
       ref={ref}
@@ -461,14 +474,14 @@ function EditForm({
               />
             </FormEntry>
 
-            <FormEntry>
+            <FormEntry isLongOnMobile={editPageWidth < 768}>
               <Label
                 htmlFor="country"
                 style={{ color: errors.country ? "red" : "" }}
               >
                 Country
               </Label>
-              <AddressDetailInput
+              <CountryInput
                 onChange={() => handleChange}
                 type="text"
                 defaultValue={invoice.senderAddress.country}
@@ -562,7 +575,7 @@ function EditForm({
               />
             </FormEntry>
 
-            <FormEntry>
+            <FormEntry isLongOnMobile={editPageWidth < 768}>
               <Label
                 htmlFor="country"
                 style={{ color: errors.country ? "red" : "" }}
@@ -570,7 +583,7 @@ function EditForm({
                 Country
               </Label>
 
-              <AddressDetailInput
+              <CountryInput
                 style={{
                   border: errors.clientCountry ? "1px solid red" : "",
                 }}
@@ -580,14 +593,11 @@ function EditForm({
               />
             </FormEntry>
           </AddressBox>
-          <DateAndPaymentContainer
-            style={{
-              display: "flex",
-              justifyContent: "space-between",
-              width: "504px",
-            }}
-          >
-            <FormEntry>
+          <DateAndPaymentContainer>
+            <FormEntry
+              // style={{ width: editPageWidth < 768 ? "100%" : "240px" }}
+              isLongOnMobile={editPageWidth < 768}
+            >
               <Label
                 htmlFor="invoiceDate"
                 // style={{ color: errors.invoiceDate ? "red" : "" }}
@@ -600,13 +610,14 @@ function EditForm({
                 onChange={(date) => setStartDate(date)}
                 {...register("invoiceDate", { required: true })}
                 style={{
-                  width: "240px",
+                  // width: editPageWidth < 768 ? "100%" : "240px",
+                  width: "100%",
                   border: errors.invoiceDate ? "1px solid red" : "",
                 }}
               />
             </FormEntry>
 
-            <FormEntry>
+            <FormEntry isLongOnMobile={editPageWidth < 768}>
               <Label
                 htmlFor="paymentTerms"
                 style={{ color: errors.paymentTerms ? "red" : "" }}

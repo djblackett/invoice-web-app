@@ -9,9 +9,15 @@ const FormEntryContainer = styled.div`
   align-items: flex-start;
 
   font-style: ${({ theme }) => theme.font};
+
+  /* width: fit-content; */
+
+  @media (min-width: 768px) {
+    width: initial;
+  }
 `;
 
-function FormEntry({ className, children }) {
+function FormEntry({ className, isLongOnMobile = false, children }) {
   const [isDirty, setIsDirty] = useState(false);
   const handleChange = () => {
     setIsDirty(true);
@@ -21,6 +27,7 @@ function FormEntry({ className, children }) {
       onChange={handleChange}
       isDirty={isDirty}
       className={className}
+      style={{ width: isLongOnMobile ? "100%" : "initial" }}
     >
       {children}
     </FormEntryContainer>
@@ -32,4 +39,5 @@ export default FormEntry;
 FormEntry.propTypes = {
   children: PropTypes.node,
   className: PropTypes.string,
+  isLongOnMobile: PropTypes.bool,
 };

@@ -118,6 +118,7 @@
   border-radius: 0.3rem;
   display: inline-block;
   position: relative;
+  width: 100%;
 }
 
 .react-datepicker--time-only .react-datepicker__triangle {

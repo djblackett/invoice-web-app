@@ -79,9 +79,13 @@ const ItemTitle = styled.h1`
 
   color: ${({ theme }) => theme.greyText};
 
-  margin: 0;
-  margin-top: 2rem;
-  margin-bottom: 1rem;
+  margin-top: 4rem;
+  margin-bottom: 1.5rem;
+
+  @media (min-width: 768px) {
+    margin-top: 2rem;
+    margin-bottom: 1rem;
+  }
 `;
 
 function EditFormItemList({ invoice, items, setItems }) {
