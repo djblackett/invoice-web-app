@@ -2,44 +2,36 @@
 /* eslint-disable react/display-name */
 /* eslint-disable react/prop-types */
 /* eslint-disable no-unused-vars */
-import FormDropDown from '../components/FormDropDown';
-import Dropdown from 'rc-dropdown';
-import Menu, { Item as MenuItem, Divider } from 'rc-menu';
-import 'rc-dropdown/assets/index.css';
+import FormDropDown from '../components/form-components/FormDropDown';
 
-import styled from "styled-components";
+
+
+
 import React, { useState, useEffect, useLayoutEffect, forwardRef } from "react";
 import { useForm } from "react-hook-form";
 import DatePicker from "react-datepicker";
 import PropTypes from "prop-types";
 import { useDispatch } from "react-redux";
-import { updateInvoice, addInvoice } from "../features/invoices/invoicesSlice";
-// import { DarkenScreen } from "./DeleteModal";
+import { addInvoice } from "../features/invoices/invoicesSlice";
 import { v4 as uuidv4 } from "uuid";
 
-import "../react-datepicker.css";
-import AddressBox from "../components/AddressBox";
+import "../styles/react-datepicker.css";
+import AddressBox from "../components/form-components/AddressBox";
 import { useWindowWidth } from "../hooks/useWindowWidth";
-import EditBottomMenu from "../components/EditBottomMenu";
-import EditFormItemList from "../components/EditFormItemList";
-import FormEntry from "../components/FormEntry";
-// import Input from "../components/Input";
-import NewInvoiceBottomMenu from "../components/NewInvoiceBottomMenu";
+
+import EditFormItemList from "../components/form-components/EditFormItemList";
+import FormEntry from "../components/form-components/FormEntry";
+
+import NewInvoiceBottomMenu from "../components/menus-toolbars/NewInvoiceBottomMenu";
 import {
-  FormContainer,
-  // FormEntry,
-  BillText,
-  StreetAddressInput,
-  Label,
-  AddressDetailInput,
-  DarkenScreen,
-  Input,
-  EditTitle,
-  ProjectDescription,
-  Select,
-  Option
-} from "./EditForm";
-// import DropDown from "../components/DropDown";
+    AddressDetailInput, BillText,
+    DarkenScreen, EditTitle, FormContainer,
+    Input,
+    Label,
+    ProjectDescription,
+    StreetAddressInput
+} from "../styles/editStyles";
+
 
 function NewInvoice({
   isNewOpen,

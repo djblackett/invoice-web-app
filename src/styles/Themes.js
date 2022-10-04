@@ -13,6 +13,8 @@ export const lightTheme = {
   newButtonHover: "#9277FF",
   editButton: "#F9FAFE",
   editButtonHover: "#DFE3FA",
+  newItemText: "#7E88C3",
+  inputBackgroundColor: "#FFFFFF",
 };
 export const darkTheme = {
   body: "#141625",
@@ -28,6 +30,8 @@ export const darkTheme = {
   newButtonHover: "#9277FF",
   editButton: "#252945",
   editButtonHover: "#FFFFFF",
+  newItemText: "#888EB0",
+  inputBackgroundColor: "#1E2139",
 };
 
 export const colors = {

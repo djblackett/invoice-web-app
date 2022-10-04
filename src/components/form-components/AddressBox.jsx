@@ -14,13 +14,15 @@ const AddressDetails = styled.div`
   flex-wrap: wrap;
 
   max-width: 100vw;
+
   @media (min-width: 768px) {
+    flex-wrap: nowrap;
     max-width: 504px;
   }
 `;
 
 function AddressBox({ children }) {
-  return <AddressDetails>{children}</AddressDetails>;
+  return <AddressDetails className="address-box">{children}</AddressDetails>;
 }
 
 AddressBox.propTypes = {

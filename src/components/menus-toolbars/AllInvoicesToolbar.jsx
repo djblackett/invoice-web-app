@@ -2,7 +2,7 @@ import styled from "styled-components";
 import FilterDropDown from "./FilterDropDown";
 import PropTypes from "prop-types";
 import { useState, useEffect } from "react";
-import { selectFilter } from "../features/invoices/filterSlice";
+import { selectFilter } from "../../features/invoices/filterSlice";
 import { useSelector } from "react-redux";
 
 const GridContainer = styled.div`
@@ -13,6 +13,7 @@ const GridContainer = styled.div`
   grid-template-columns: 1fr 1fr;
   margin-top: 104px;
   margin-bottom: 25px;
+  z-index: 1;
 
   @media (min-width: 768px) {
     width: 672px;
@@ -51,7 +52,7 @@ const Title = styled.h1`
 
 const InvoicesLeft = styled.p`
   margin: 0;
-  margin-top: 4px;
+
   color: ${({ theme }) => theme.greyText};
 
   .wideScreenText {
@@ -59,6 +60,8 @@ const InvoicesLeft = styled.p`
   }
 
   @media (min-width: 768px) {
+    margin-top: 4px;
+
     .wideScreenText {
       display: inline;
     }
@@ -188,7 +191,7 @@ const plusSignSVG = (
 
 // change filter text dynamically
 
-function TitleGrid({ invoiceList, setIsNewOpen }) {
+function AllInvoicesToolbar({ invoiceList, setIsNewOpen }) {
   const [isOpen, setIsOpen] = useState(false);
   const [filterText, setFilterText] = useState("total");
 
@@ -227,7 +230,7 @@ function TitleGrid({ invoiceList, setIsNewOpen }) {
         <Title>Invoices</Title>
         <InvoicesLeft>
           <span className="wideScreenText">There are </span>
-          {invoiceList.length}{" "}
+          {invoiceList.length || "No"}{" "}
           <span className="wideScreenText"> {filterText} </span>
           invoices
         </InvoicesLeft>
@@ -255,10 +258,10 @@ function TitleGrid({ invoiceList, setIsNewOpen }) {
   );
 }
 
-TitleGrid.propTypes = {
+AllInvoicesToolbar.propTypes = {
   handleChangeFilter: PropTypes.func,
   invoiceList: PropTypes.array.isRequired,
   setIsNewOpen: PropTypes.func,
 };
 
-export default TitleGrid;
+export default AllInvoicesToolbar;

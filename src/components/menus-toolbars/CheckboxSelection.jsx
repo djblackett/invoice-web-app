@@ -1,10 +1,10 @@
-import Checkbox from "./buttons/Checkbox";
+import Checkbox from "../buttons/Checkbox";
 import PropTypes from "prop-types";
 import styled from "styled-components";
 import { useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { changeFilter } from "../features/invoices/filterSlice";
-import { selectFilter } from "../features/invoices/filterSlice";
+import { changeFilter } from "../../features/invoices/filterSlice";
+import { selectFilter } from "../../features/invoices/filterSlice";
 import { useEffect } from "react";
 
 const Label = styled.label`

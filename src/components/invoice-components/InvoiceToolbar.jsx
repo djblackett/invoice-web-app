@@ -5,12 +5,13 @@ import InvoicePending from "./InvoicePending";
 import InvoiceDraft from "./InvoiceDraft";
 import { useMemo, useState, useEffect, useCallback } from "react";
 import { useDispatch } from "react-redux";
-import { removeInvoice } from "../features/invoices/invoicesSlice";
+import { removeInvoice } from "../../features/invoices/invoicesSlice";
+import { useWindowWidth } from "../../hooks/useWindowWidth";
 
-import EditButton from "./buttons/EditButton";
-import DeleteButton from "./buttons/DeleteButton";
-import MarkAsPaidButton from "./buttons/MarkAsPaidButton";
-import ToolbarButtons from "./ToolbarButtons";
+import EditButton from "../buttons/EditButton";
+import DeleteButton from "../buttons/DeleteButton";
+import MarkAsPaidButton from "../buttons/MarkAsPaidButton";
+import ToolbarButtons from "../menus-toolbars/ToolbarButtons";
 
 const Toolbar = styled.div`
   height: 88px;
@@ -21,6 +22,7 @@ const Toolbar = styled.div`
   align-items: center;
 
   width: 100%;
+  z-index: 1;
 
   @media (min-width: 768px) {
     display: flex;
@@ -46,6 +48,7 @@ const StatusContainer = styled.div`
 
   @media (min-width: 768px) {
     background-color: initial;
+    justify-content: flex-start;
   }
 `;
 
@@ -54,7 +57,13 @@ const StatusText = styled.p`
   color: ${({ theme }) => theme.greyText};
 `;
 
-function InvoiceToolbar({ invoice, setEdit, setIsModalOpen, setItems }) {
+function InvoiceToolbar({
+  invoice,
+  setEdit,
+  setIsModalOpen,
+  setItems,
+  isEditOpen,
+}) {
   const [invoiceStatus, setInvoiceStatus] = useState(null);
 
   const openModal = () => setIsModalOpen(true);
@@ -70,9 +79,15 @@ function InvoiceToolbar({ invoice, setEdit, setIsModalOpen, setItems }) {
   }, [invoice]);
 
   const dispatch = useDispatch();
+  const width = useWindowWidth();
 
   return (
-    <Toolbar>
+    <Toolbar
+      className="invoice-toolbar"
+      style={{
+        display: isEditOpen ? "none" : width < 768 ? "contents" : "flex",
+      }}
+    >
       <StatusContainer>
         <StatusText>Status</StatusText>
         {invoiceStatus}
@@ -94,4 +109,5 @@ InvoiceToolbar.propTypes = {
   setEdit: Proptypes.func.isRequired,
   setIsModalOpen: Proptypes.func.isRequired,
   setItems: Proptypes.func,
+  isEditOpen: Proptypes.bool.isRequired,
 };

@@ -83,7 +83,15 @@ const InvoiceAmount = styled.p`
 const CustomerName = styled.p`
   margin: 0;
   color: #888eb0;
+  font-family: "Spartan";
+  font-style: normal;
+  font-weight: 500;
+  font-size: 12px;
+  line-height: 15px;
+  /* identical to box height, or 125% */
+
   text-align: right;
+  letter-spacing: -0.25px;
 
   @media (min-width: 768px) {
     grid-column: 3 / 4;
@@ -128,7 +136,8 @@ function InvoiceCard({ invoice }) {
     if (invoice.paymentDue) {
       const date = invoice.paymentDue.split("-");
       const dateObj = new Date(Date.UTC(date[0], date[1], date[2]));
-      return dateObj.toDateString().substring(4);
+      const utcDateArr = dateObj.toUTCString().split(" ");
+      return `${utcDateArr[1]}  ${utcDateArr[2]} ${utcDateArr[3]}`;
     }
   };
 

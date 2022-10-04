@@ -2,13 +2,14 @@ import React, { useState, useCallback, useEffect } from "react";
 import styled from "styled-components";
 import { useSelector } from "react-redux";
 import PropTypes from "prop-types";
+import { SVG } from "../buttons/NewItemButton";
 
 const Main = styled("div")`
   /* display: flex;
   align-items: center; */
   z-index: 10;
   box-sizing: border-box;
-  background-color: ${({ theme }) => theme.editButton};
+  background-color: ${({ theme }) => theme.inputBackgroundColor};
   cursor: pointer;
   /* filter: drop-shadow(3px 3px 3px ${({ theme }) => theme.shadow}); */
   /* margin: 20px 5%; */
@@ -30,14 +31,15 @@ const Main = styled("div")`
 const DropDownHeader = styled.div.attrs({
   tabIndex: 0,
 })`
-  /* display: flex;
+  display: flex;
   justify-content: space-between;
-  align-items: flex-start; */
+  align-items: center;
   box-sizing: border-box;
   padding: 0.4rem;
   padding-left: 20px;
   padding-top: 17px;
   padding-bottom: 16px;
+  padding-right: 1.5rem;
 
   background-color: transparent;
 
@@ -94,14 +96,14 @@ const ListItem = styled.li`
     filter: brightness(80%);
   }
 
-  border-color: ${({ theme }) => theme.formFieldOutline};
-  border-bottom: 1px solid;
+  /* border-color: ${({ theme }) => theme.formFieldOutline}; */
+  border-bottom: 1px solid ${({ theme }) => theme.formFieldOutline};
 `;
 
 const ItemButton = styled.button`
   height: 100%;
   width: 100%;
-  background-color: ${({ theme }) => theme.editButton};
+  background-color: ${({ theme }) => theme.inputBackgroundColor};
   border: none;
   cursor: pointer;
 
@@ -116,12 +118,32 @@ const ItemButton = styled.button`
 
   color: ${({ theme }) => theme.textPlain};
 
+  &:first-child {
+    padding-top: 0.8em;
+  }
+
+  &:last-child {
+    border: none;
+  }
+
   &:hover {
     color: #7c5dfa;
   }
 `;
 
 const options = ["Net 1 Day", "Net 7 Days", "Net 14 Days", "Net 30 Days"];
+
+const arrowDown = (
+  <svg width="11" height="7" xmlns="http://www.w3.org/2000/svg">
+    <path
+      d="M1 1l4.228 4.228L9.456 1"
+      stroke="#7C5DFA"
+      strokeWidth="2"
+      fill="none"
+      fillRule="evenodd"
+    />
+  </svg>
+);
 
 function FormDropDown({
   selectedPaymentOption,
@@ -130,26 +152,42 @@ function FormDropDown({
   handlePaymentClick,
   handlePaymentSelect,
 }) {
-  const [selected, setSelected] = useState("Net 1 Day");
+  const [selected, setSelected] = useState(String(selectedPaymentOption) || "");
 
   const onOptionClicked = (option) => (e) => {
     e.preventDefault();
     handlePaymentSelect();
-    setSelected(option);
-    handleChangeSelectedOption(option);
+
+    const num = Number(option.split(" ")[1]);
+    // setSelected(num);
+
+    handleChangeSelectedOption(num);
   };
+
+  // console.log(selectedPaymentOption);
+
+  useEffect(() => {
+    if (selectedPaymentOption === 1) {
+      setSelected("Net 1 Day");
+    } else if (String(selectedPaymentOption).match(/\d+/)) {
+      setSelected(`Net ${selectedPaymentOption} Days`);
+    }
+  }, [selectedPaymentOption]);
 
   return (
     <Main>
       {/* <DropDownContainer> */}
       <DropDownHeader onClick={handlePaymentClick}>
-        {selectedPaymentOption}
+        {selected}
+        <SVG>{arrowDown}</SVG>
       </DropDownHeader>
       {isPaymentOpen && (
         <DropDownList>
           {options.map((option, index) => (
             <ListItem key={index + "-li"} onClick={onOptionClicked(option)}>
-              <ItemButton key={index}>{option}</ItemButton>
+              <ItemButton key={index}>
+                {options.find((term) => term.includes(String(option)))}
+              </ItemButton>
             </ListItem>
           ))}
         </DropDownList>
@@ -166,6 +204,6 @@ FormDropDown.propTypes = {
 
   handlePaymentClick: PropTypes.func.isRequired,
   handlePaymentSelect: PropTypes.func.isRequired,
-  selectedPaymentOption: PropTypes.string,
+  selectedPaymentOption: PropTypes.number,
   handleChangeSelectedOption: PropTypes.func,
 };

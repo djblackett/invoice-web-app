@@ -19,9 +19,20 @@ const ItemContainer = styled.div`
   }
 
   @media (min-width: 768px) {
-    padding: 2rem;
+    padding-left: 2rem;
+    padding-right: 2rem;
+    padding-top: 1rem;
+    padding-bottom: 1rem;
     grid-template: 1fr / 2fr 1fr 1fr 1fr;
     justify-items: end;
+
+    :first-child {
+      padding-top: 0;
+    }
+
+    :last-child {
+      padding-bottom: 2rem;
+    }
   }
 `;
 
@@ -63,7 +74,13 @@ const Quantity = styled.p`
 
   @media (min-width: 768px) {
     display: inline;
+    text-align: center;
+    margin-right: 0.5rem;
   }
+`;
+
+const Price = styled(Quantity)`
+  margin-right: 0;
 `;
 
 const Total = styled(ItemName)`
@@ -127,7 +144,7 @@ function Item({ item }) {
         <ItemName>{item.name}</ItemName>
         <QuantityPriceContainer>
           <Quantity>{item.quantity}</Quantity>
-          <Quantity>£ {Number(item.price).toFixed(2)}</Quantity>
+          <Price>£ {Number(item.price).toFixed(2)}</Price>
         </QuantityPriceContainer>
         <MobileQuantityPrice>
           {item.quantity + " x £ " + Number(item.price).toFixed(2)}{" "}

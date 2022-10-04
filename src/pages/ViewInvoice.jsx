@@ -1,10 +1,10 @@
 /* eslint-disable no-unused-vars */
-import InvoiceToolbar from "../components/InvoiceToolbar";
+import InvoiceToolbar from "../components/invoice-components/InvoiceToolbar";
 import React, { useState, useLayoutEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 // import data from "../data.json";
 import styled from "styled-components";
-import FullInvoice from "../components/FullInvoice";
+import FullInvoice from "../components/invoice-components/FullInvoice";
 import EditForm from "./EditForm";
 import ErrorBoundary from "../components/ErrorBoundary";
 import { useSelector } from "react-redux";
@@ -13,6 +13,7 @@ import { useEffect } from "react";
 import DeleteModal from "../components/DeleteModal";
 
 const ViewContainer = styled.div`
+  z-index: 5;
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -121,6 +122,7 @@ function ViewInvoice() {
         setEdit={toggleEditTab}
         setIsModalOpen={setIsModalOpen}
         setItems={setItems}
+        isEditOpen={isEditOpen}
       />
       <FullInvoice invoice={invoice} />
 

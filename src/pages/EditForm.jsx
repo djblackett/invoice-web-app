@@ -1,249 +1,37 @@
-/* eslint-disable react/no-unescaped-entities */
 /* eslint-disable react/display-name */
 /* eslint-disable react/prop-types */
-/* eslint-disable no-unused-vars */
-import styled from "styled-components";
-import React, { useState, useEffect, useLayoutEffect, forwardRef } from "react";
-import { useForm } from "react-hook-form";
+
+import React, {forwardRef, useEffect, useLayoutEffect, useState} from "react";
+import {useForm} from "react-hook-form";
 import DatePicker from "react-datepicker";
 import PropTypes from "prop-types";
-import { useDispatch } from "react-redux";
-import { updateInvoice } from "../features/invoices/invoicesSlice";
-import { v4 as uuidv4 } from "uuid";
+import {useDispatch} from "react-redux";
+import {updateInvoice} from "../features/invoices/invoicesSlice";
+import {v4 as uuidv4} from "uuid";
 
-import "../react-datepicker.css";
-import AddressBox from "../components/AddressBox";
-import { useWindowWidth } from "../hooks/useWindowWidth";
-import EditBottomMenu from "../components/EditBottomMenu";
-import EditFormItemList from "../components/EditFormItemList";
-import FormEntry from "../components/FormEntry";
-import FormDropDown from "../components/FormDropDown";
-
-export const EditTitle = styled.h1`
-  font-size: 1.5rem;
-  color: ${({ theme }) => theme.text};
-`;
-
-export const FormContainer = styled.div`
-  height: 100%;
-  /* min-width: 300px; */
-  top: 72px;
-  bottom: 91px;
-  left: 0;
-  right: 0;
-  width: 100%;
-  background-color: ${({ theme }) => theme.background};
-  background-size: cover;
-  position: absolute;
-
-  display: flex;
-  flex-direction: column;
-  transition: all 250ms ease-in-out;
-  overflow-x: hidden;
-  filter: drop-shadow(2px 2px 2px bottom);
-
-  align-self: flex-start;
-  z-index: 100;
-
-  max-width: 100%;
-
-  @media (min-width: 768px) {
-    padding-left: 5rem;
-    padding-right: 2rem;
-    padding-top: 1rem;
-    padding-bottom: 2rem;
-    max-width: 700px;
-    /* top: 72px; */
-    right: 616px;
-    max-height: calc(100vh - 72px);
-  }
-
-  @media (min-width: 1200px) {
-    left: 90px;
-    padding-left: 5rem;
-    top: 0px;
-    max-height: initial;
-  }
-`;
-
-// export const FormEntry = styled.div`
-//   display: flex;
-//   flex-direction: column;
-//   position: relative;
-//   align-items: flex-start;
-
-//   font-style: ${({ theme }) => theme.font};
-// `;
-
-export const BillText = styled.p`
-  color: ${({ theme }) => theme.outline};
-  font-weight: bold;
-  font-size: 0.75rem;
-  /* margin: 5px; */
-  margin-bottom: 1.5rem;
-`;
-
-export const Input = styled.input`
-  width: 240px;
-  height: 48px;
-  border-radius: 4px;
-  border-color: ${({ theme }) => theme.formFieldOutline};
-  /* outline: none; */
-  padding: 17px 20px 16px 20px;
-  margin-bottom: 1.5rem;
-  font-family: ${({ theme }) => theme.font};
-  font-style: normal;
-  font-weight: 700;
-  font-size: 12px;
-  line-height: 15px;
-  /* margin-left:5px; */
-  /* identical to box height, or 125% */
-
-  letter-spacing: -0.25px;
-  /* color: #0c0e16; */
-  color: ${({ theme }) => theme.textPlain};
-  background-color: ${({ theme }) => theme.editButton};
-
-  &:focus {
-    border-color: black;
-  }
-
-  .custom-input {
-    padding: 0;
-  }
-`;
-
-export const StreetAddressInput = styled(Input)`
-  width: 100%;
-
-  @media (min-width: 768px) {
-    width: 504px;
-  }
-`;
-
-export const inputStyles = {
-  height: "48px",
-  borderRadius: "4px",
-  borderColor: ({ theme }) => theme.formFieldOutline,
-  /* outline: none; */
-  padding: "17px 20px 16px 20px",
-  fontFamily: ({ theme }) => theme.font,
-  fontStyle: "normal",
-  fontWeight: "700",
-  fontSize: "12px",
-  lineHeight: "15px",
-};
-
-export const AddressDetailInput = styled(Input)`
-  width: 152px;
-`;
-
-export const CountryInput = styled(AddressDetailInput)`
-  width: 100%;
-  min-width: 100%;
-
-  @media (min-width: 768px) {
-    width: initial;
-    min-width: initial;
-  }
-`;
-
-export const Label = styled.label`
-  color: ${({ theme }) => theme.greyText};
-  margin-bottom: 0.5rem;
-  font-size: 0.75rem;
-`;
-
-export const DarkenScreen = styled.div`
-  /* display: flex;
-  align-items: center;
-  justify-content: center; */
-  position: fixed;
-  top: 0;
-  bottom: 0;
-  left: 0;
-  right: 0;
-  background-color: rgba(0, 0, 0, 0.5);
-  transition: all 0.5s linear;
-`;
-
-export const ProjectDescription = styled(FormEntry)`
-  margin-bottom: 0;
-  max-width: 100%;
-  width: 100%;
-  @media (min-width: 768px) {
-    width: 504px;
-    max-width: initial;
-  }
-`;
-
-export const LongEntry = styled(Input)`
-  max-width: 100%;
-  width: 100%;
-  @media (min-width: 768px) {
-    max-width: initial;
-    width: 504px;
-  }
-`;
-
-const ErrorText = styled.p`
-  color: red;
-
-  margin-top: 0;
-`;
-
-const ErrorTextInline = styled(ErrorText)`
-  position: absolute;
-  right: 1.5rem;
-`;
-
-export const Select = styled.select`
-  width: 240px;
-  height: 48px;
-  border-radius: 4px;
-  border-color: ${({ theme }) => theme.formFieldOutline};
-  /* outline: none; */
-  padding: 17px 20px 16px 20px;
-  margin-bottom: 1.5rem;
-  font-family: ${({ theme }) => theme.font};
-  font-style: normal;
-  font-weight: 700;
-  font-size: 12px;
-  line-height: 15px;
-  /* margin-left:5px; */
-  /* identical to box height, or 125% */
-
-  letter-spacing: -0.25px;
-  /* color: #0c0e16; */
-  color: ${({ theme }) => theme.textPlain};
-  background-color: ${({ theme }) => theme.editButton};
-
-  &:focus {
-    border-color: black;
-  }
-
-  .custom-input {
-    padding: 0;
-  }
-`;
-
-export const Option = styled.option`
-  padding: 10px;
-`;
-
-export const DateAndPaymentContainer = styled.div`
-  /* display: contents; */
-  display: flex;
-  justify-content: space-between;
-  max-width: 100%;
-  flex-wrap: wrap;
-  @media (min-width: 768px) {
-    display: flex;
-    justify-content: space-between;
-    width: 504px;
-    max-width: initial;
-  }
-`;
+import "../styles/react-datepicker.css";
+import AddressBox from "../components/form-components/AddressBox";
+import {useWindowWidth} from "../hooks/useWindowWidth";
+import EditBottomMenu from "../components/menus-toolbars/EditBottomMenu";
+import EditFormItemList from "../components/form-components/EditFormItemList";
+import FormEntry from "../components/form-components/FormEntry";
+import FormDropDown from "../components/form-components/FormDropDown";
+import {
+  AddressDetailInput,
+  BillText,
+  CountryInput,
+  DarkenScreen,
+  DateAndPaymentContainer,
+  EditTitle,
+  ErrorText,
+  ErrorTextInline,
+  FormContainer,
+  Input,
+  Label,
+  LongEntry,
+  ProjectDescription,
+  StreetAddressInput
+} from "../styles/editStyles";
 
 function EditForm({
   isEditOpen,
@@ -345,12 +133,17 @@ function EditForm({
 
     newInvoice.total = total;
 
-    // console.log(newInvoice);
+    // Calculate payment due date from paymentTerms
+    const dateArray = newInvoice.createdAt.split("-");
+    let newDate = new Date(Date.UTC(dateArray[0], dateArray[1], dateArray[2]));
+    let paymentDueDate = newDate.getTime + 86400000 * newInvoice.paymentTerms;
+    newInvoice.paymentDue = paymentDueDate;
+
+    newDate.console.log("Submit dispatched");
+
     dispatch(updateInvoice(newInvoice));
     setIsEditOpen(false);
   };
-
-  // console.log(watch("streetAddress"));
 
   useLayoutEffect(() => {
     if (width > 1200 && isEditOpen) {
@@ -391,7 +184,7 @@ function EditForm({
   };
 
   const [selectedPaymentOption, setSelectedPaymentOption] = useState(
-    invoice.paymentTerms || "Net 1 Day"
+    invoice.paymentTerms || 1
   );
 
   const [isPaymentOpen, setIsPaymentOpen] = useState(false);
@@ -499,11 +292,11 @@ function EditForm({
               htmlFor="clientName"
               style={{ color: errors.clientName ? "red" : "" }}
             >
-              Client's Name
+              {"Client's Name"}
             </Label>
             {/* <p className>can't be empty</p> */}
             {errors.clientName?.type === "required" && (
-              <ErrorTextInline>can't be empty</ErrorTextInline>
+              <ErrorTextInline>{"can't be empty"}</ErrorTextInline>
             )}
             <LongEntry
               style={{ border: errors.clientName ? "1px solid red" : "" }}
@@ -517,7 +310,7 @@ function EditForm({
               htmlFor="clientEmail"
               style={{ color: errors.clientEmail ? "red" : "" }}
             >
-              Client's Email
+              {"Client's Email"}
             </Label>
             <LongEntry
               style={{ border: errors.clientEmail ? "1px solid red" : "" }}
@@ -632,17 +425,7 @@ function EditForm({
                 selectedPaymentOption={selectedPaymentOption}
                 handleChangeSelectedOption={handleChangeSelectedOption}
               />
-              {/* <Input
-                type="select"
-                defaultValue=""
-                {...register("paymentTerms", { required: true })}
-              /> */}
             </FormEntry>
-
-            {/* include validation with required or other standard HTML validation rules */}
-            {/* <Input type="text" {...register('exampleRequired', { required: true })} /> */}
-            {/* errors will return when field validation fails  */}
-            {/* {errors.exampleRequired && <span>This field is required</span>} */}
           </DateAndPaymentContainer>
           <ProjectDescription>
             <Label
@@ -666,7 +449,6 @@ function EditForm({
             invoice={invoice}
             items={items}
             setItems={setItems}
-            
           />
           {hasEmptyField && <ErrorText>- All fields must be added</ErrorText>}
           {items.length === 0 && <ErrorText>- An item must be added</ErrorText>}
@@ -684,7 +466,10 @@ function EditForm({
 EditForm.propTypes = {
   isEditOpen: PropTypes.bool.isRequired,
   setIsEditOpen: PropTypes.func.isRequired,
-  // handleClose: PropTypes.func.isRequired,
+  handleClose: PropTypes.func.isRequired,
+  invoice: PropTypes.object,
+  padding: PropTypes.number,
+  setPadding: PropTypes.func,
 };
 
 export default EditForm;

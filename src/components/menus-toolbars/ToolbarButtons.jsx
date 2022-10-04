@@ -1,7 +1,7 @@
 import styled from "styled-components";
-import EditButton from "./buttons/EditButton";
-import DeleteButton from "./buttons/DeleteButton";
-import MarkAsPaidButton from "./buttons/MarkAsPaidButton";
+import EditButton from "../buttons/EditButton";
+import DeleteButton from "../buttons/DeleteButton";
+import MarkAsPaidButton from "../buttons/MarkAsPaidButton";
 import PropTypes from "prop-types";
 
 const ButtonsContainer = styled.div`

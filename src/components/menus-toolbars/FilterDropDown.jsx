@@ -5,14 +5,14 @@ import styled from "styled-components";
 import PropTypes from "prop-types";
 import CheckboxSelection from "./CheckboxSelection";
 import { useDispatch } from "react-redux";
-import { changeFilter } from "../features/invoices/filterSlice";
+import { changeFilter } from "../../features/invoices/filterSlice";
 
 const Main = styled("div")`
   align-self: center;
   box-sizing: border-box;
   background: transparent;
   height: 50px;
-  z-index: 10;
+  z-index: 5;
 
   width: 8px;
   cursor: pointer;
@@ -47,6 +47,7 @@ const DropDownHeader = styled.div.attrs({
   tabIndex: "0",
 })`
   display: flex;
+  z-index: -1;
   justify-content: center;
   align-items: center;
   align-self: center;

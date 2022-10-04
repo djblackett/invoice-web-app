@@ -1,8 +1,8 @@
 import styled from "styled-components";
 import PropTypes from "prop-types";
 import EditFormItem from "./EditFormItem";
-import NewItemButton from "./buttons/NewItemButton";
-import { addItem } from "../features/invoices/invoicesSlice";
+import NewItemButton from "../buttons/NewItemButton";
+import { addItem } from "../../features/invoices/invoicesSlice";
 import { useDispatch } from "react-redux";
 import { v4 as uuidv4 } from "uuid";
 
@@ -11,6 +11,8 @@ const ListContainer = styled.div`
   width: 100%;
   max-width: 504px;
   border-radius: 8px;
+
+  grid-template-rows: auto;
 
   background-color: ${({ theme }) => theme.background};
 `;
@@ -24,7 +26,7 @@ export const ItemsHeader = styled.div`
     grid-template: 1fr / 220px 62px 116px 61px 49px;
     color: ${({ theme }) => theme.greyText};
     /* background-color: ${({ theme }) => theme.editButton}; */
-    /* margin-top: 3rem; */
+    margin-top: 1rem;
     /* padding: 2rem; */
     padding-left: 0;
     border-radius: 8px 8px 0 0;
@@ -33,6 +35,7 @@ export const ItemsHeader = styled.div`
 `;
 
 export const Col = styled.p`
+  color: ${({ theme }) => theme.greyText};
   width: fit-content;
   margin: 0;
   padding: 0;
@@ -58,9 +61,9 @@ const ItemsContainer = styled.div`
   /* padding: 2rem;
    */
 
-  margin-top: 2.5rem;
+  /* margin-top: 2.5rem; */
   border-radius: 8px 8px 0 0;
-  background-color: ${({ theme }) => theme.editButton};
+  background-color: ${({ theme }) => theme.background};
 
   @media (min-width: 768px) {
     padding: 0;
@@ -81,8 +84,8 @@ const ItemTitle = styled.h1`
 
   color: ${({ theme }) => theme.greyText};
 
-  margin-top: 4rem;
-  margin-bottom: 1.5rem;
+  margin-top: 1rem;
+  margin-bottom: 1rem;
 
   @media (min-width: 768px) {
     margin-top: 2rem;
@@ -118,7 +121,7 @@ function EditFormItemList({ invoice, items, setItems }) {
           <EditFormItem
             item={item}
             items={items}
-            key={item.id}
+            key={item.id + "-" + item.clientName}
             id={item.id}
             setItems={setItems}
           />

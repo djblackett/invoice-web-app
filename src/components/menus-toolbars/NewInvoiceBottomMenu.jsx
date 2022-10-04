@@ -1,4 +1,4 @@
-import CancelButton from "./buttons/CancelButton";
+import CancelButton from "../buttons/CancelButton";
 import styled from "styled-components";
 import PropTypes from "prop-types";
 
@@ -7,14 +7,9 @@ const MenuContainer = styled.div`
   display: flex;
   flex-direction: row;
   align-items: center;
-  justify-content: flex-end;
+  justify-content: space-between;
 
   margin-top: 2.6rem;
-  margin-bottom: 4rem;
-
-  @media (min-width: 768px) {
-    margin-bottom: 0;
-  }
 `;
 
 const NewInvoiceButton = styled.input`
@@ -23,7 +18,7 @@ const NewInvoiceButton = styled.input`
   border: none;
   height: 44px;
   width: 90px;
-  display: inline-flex;
+  display: flex;
   align-items: center;
   justify-content: center;
   text-align: center;
@@ -47,12 +42,46 @@ const NewInvoiceButton = styled.input`
     /* padding-right: 1rem; */
     /* padding-left: 0.5rem; */
   }
+
+  &:hover {
+    background-color: #9277ff;
+  }
 `;
 
-function EditBottomMenu({ setIsOpen, saveText, closeText, justifyCancel }) {
+const SaveDraft = styled(NewInvoiceButton)`
+  background-color: #373b53;
+  color: #888eb0;
+  margin-right: 8px;
+  width: 133px;
+
+  &:hover {
+    background-color: #0c0e16;
+  }
+`;
+
+const SaveAndDraftContainer = styled.div`
+  display: flex;
+  flex-direction: row;
+`;
+
+function NewInvoiceBottomMenu({
+  setIsDraft,
+  setIsOpen,
+  saveText,
+  closeText,
+  justifyCancel,
+}) {
   const closeMenu = (e) => {
     e.preventDefault();
     setIsOpen(false);
+  };
+
+  const setToDraft = () => {
+    setIsDraft(true);
+  };
+
+  const setToPending = () => {
+    setIsDraft(false);
   };
 
   return (
@@ -62,14 +91,22 @@ function EditBottomMenu({ setIsOpen, saveText, closeText, justifyCancel }) {
         text={closeText}
         justifySelf={justifyCancel}
       />
-      <NewInvoiceButton type="submit" value={saveText} onClick={closeMenu} />
+      <SaveAndDraftContainer>
+        <SaveDraft type="submit" value="Save as draft" onClick={setToDraft} />
+        <NewInvoiceButton
+          type="submit"
+          value={saveText}
+          onClick={setToPending}
+        />
+      </SaveAndDraftContainer>
     </MenuContainer>
   );
 }
 
-export default EditBottomMenu;
+export default NewInvoiceBottomMenu;
 
-EditBottomMenu.propTypes = {
+NewInvoiceBottomMenu.propTypes = {
+  setIsDraft: PropTypes.func,
   setIsOpen: PropTypes.func.isRequired,
   saveText: PropTypes.string.isRequired,
   closeText: PropTypes.string.isRequired,

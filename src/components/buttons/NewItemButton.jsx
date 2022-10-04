@@ -8,10 +8,15 @@ const Button = styled.button`
   width: 100%;
   height: 48px;
   border-radius: 10px;
-  background-color: ${({ theme }) => theme.greyButton};
+  background-color: ${({ theme }) => theme.editButton};
   border: none;
+  cursor: pointer;
 
-  @media (min-width: 768) {
+  &:hover {
+    background-color: #dfe3fa;
+  }
+
+  @media (min-width: 768px) {
     width: 504px;
   }
 `;
@@ -22,7 +27,7 @@ export const SVG = styled.svg`
 `;
 
 const ButtonText = styled.p`
-  color: ${({ theme }) => theme.greyText};
+  color: ${({ theme }) => theme.newItemText};
   font-family: "Spartan";
   font-style: normal;
   font-weight: 700;
@@ -49,8 +54,8 @@ function NewItemButton({ handleAddNewItem }) {
   // };
   return (
     <Button onClick={handleAddNewItem} type="button">
-      <SVG>{plusIcon}</SVG>
-      <ButtonText>Add New Item</ButtonText>
+      {/* <SVG>{plusIcon}</SVG> */}
+      <ButtonText>+ Add New Item</ButtonText>
     </Button>
   );
 }

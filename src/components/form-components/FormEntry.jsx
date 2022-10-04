@@ -14,6 +14,7 @@ const FormEntryContainer = styled.div`
 
   @media (min-width: 768px) {
     width: initial;
+    max-width: fit-content;
   }
 `;
 
@@ -27,7 +28,7 @@ function FormEntry({ className, isLongOnMobile = false, children }) {
       onChange={handleChange}
       isDirty={isDirty}
       className={className}
-      style={{ width: isLongOnMobile ? "100%" : "initial" }}
+      style={{ width: isLongOnMobile ? "100%" : "revert" }}
     >
       {children}
     </FormEntryContainer>

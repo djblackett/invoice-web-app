@@ -1,9 +1,9 @@
-import TitleGrid from "../components/TitleGrid";
-import InvoiceGrid from "../components/InvoiceGrid";
+import AllInvoicesToolbar from "../components/menus-toolbars/AllInvoicesToolbar";
+import InvoiceGrid from "../components/invoice-components/InvoiceGrid";
 // import data from "../data.json";
 import React, { useState, useEffect } from "react";
 import { useSelector, useDispatch } from "react-redux";
-import InvoiceCard from "../components/InvoiceCard";
+import InvoiceCard from "../components/invoice-components/InvoiceCard";
 import EmptyList from "../components/EmptyList";
 import { Link } from "react-router-dom";
 import {
@@ -22,6 +22,7 @@ const AllInvoicesContainer = styled.div`
   flex-direction: column;
   align-items: center;
   margin-bottom: 6.5rem;
+  z-index: 5;
 `;
 
 function AllInvoices() {
@@ -71,7 +72,7 @@ function AllInvoices() {
 
   return (
     <AllInvoicesContainer>
-      <TitleGrid invoiceList={invoiceList} setIsNewOpen={setIsNewOpen} />
+      <AllInvoicesToolbar invoiceList={invoiceList} setIsNewOpen={setIsNewOpen} />
       <NewInvoice
         isNewOpen={isNewOpen}
         setIsNewOpen={setIsNewOpen}

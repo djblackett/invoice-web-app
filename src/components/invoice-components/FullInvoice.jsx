@@ -4,7 +4,7 @@ import styled from "styled-components";
 import PropTypes from "prop-types";
 import { useMemo, useState } from "react";
 import ItemList from "./ItemList";
-import { useWindowWidth } from "../hooks/useWindowWidth";
+import { useWindowWidth } from "../../hooks/useWindowWidth";
 
 const Card = styled.div`
   /* min-height: 630px; */

@@ -102,6 +102,12 @@
   line-height: 15px; */
 }
 
+@media (min-width: 768px) {
+  .react-datepicker-wrapper {
+    width: 240px;
+  }
+}
+
 .react-datepicker {
   /* padding: 17px 20px 16px 20px;
   /* font-family: ${({ theme }) => theme.font};

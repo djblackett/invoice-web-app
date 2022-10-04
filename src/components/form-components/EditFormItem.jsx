@@ -1,7 +1,7 @@
 import styled from "styled-components";
 import PropTypes from "prop-types";
 import { ItemsHeader, Col, Col1 } from "./EditFormItemList";
-import { useWindowWidth } from "../hooks/useWindowWidth";
+import { useWindowWidth } from "../../hooks/useWindowWidth";
 
 const ItemContainer = styled.div`
   display: flex;
@@ -18,7 +18,7 @@ const ItemContainer = styled.div`
   grid-auto-flow: dense;
   /* grid-column: span 5; */
 
-  background-color: ${({ theme }) => theme.background};
+  background-color: ${({ theme }) => theme.inputBackgroundColor};
 
   margin-bottom: 3rem;
   :first-child {
@@ -47,6 +47,7 @@ const Input = styled.input`
   height: 48px;
   border-radius: 4px;
   border-color: ${({ theme }) => theme.formFieldOutline};
+  border-style: solid;
   /* outline: none; */
   padding: 17px 20px 16px 20px;
   margin-bottom: 1.5rem;
@@ -62,7 +63,7 @@ const Input = styled.input`
   letter-spacing: -0.25px;
   /* color: #0c0e16; */
   color: ${({ theme }) => theme.textPlain};
-  background-color: ${({ theme }) => theme.editButton};
+  background-color: ${({ theme }) => theme.inputBackgroundColor};
 
   &:focus {
     border-color: black;
@@ -102,7 +103,7 @@ const Quantity = styled(Input)`
   width: 46px;
   margin: 0;
   /* margin-left: 1rem; */
-  color: ${({ theme }) => theme.greyText};
+  color: ${({ theme }) => theme.textPlain};
   padding: 0;
   font-family: "Spartan";
   font-style: normal;
@@ -216,6 +217,7 @@ const SmallBoxContainer = styled.div`
   flex-direction: row;
   justify-content: space-between;
   width: 80%;
+  align-items: center;
 `;
 
 const deleteIcon = (
@@ -257,13 +259,13 @@ function EditFormItem({ item, id, items, setItems }) {
 
   const mobileRender = (
     <ItemContainer>
-      <Box style={{ width: "100%" }}>
-        <Col1>Item Name</Col1>
+      <Box style={{ width: "100%", marginBottom: "1.5rem" }}>
+        <Col1 style={{ marginBottom: "1rem" }}>Item Name</Col1>
         <ItemName name={"name"} onChange={handleChange} value={item.name} />
       </Box>
       <SmallBoxContainer>
         <Box>
-          <Col>Qty.</Col>
+          <Col style={{ marginBottom: "0.625rem" }}>Qty.</Col>
           <Quantity
             name={"quantity"}
             onChange={handleChange}
@@ -271,19 +273,26 @@ function EditFormItem({ item, id, items, setItems }) {
           />
         </Box>
         <Box>
-          <Col>Price</Col>
+          <Col style={{ marginBottom: "0.625rem" }}>Price</Col>
           <Price name={"price"} onChange={handleChange} value={item.price} />
         </Box>
         <Box>
-          <Col>Total</Col>
+          <Col style={{ marginBottom: "0.625rem" }}>Total</Col>
           <Total name={"total"} onChange={handleChange} value={item.total}>
             {(item.quantity * item.price).toFixed(2)}
           </Total>
         </Box>
       </SmallBoxContainer>
-      <SVG name="removeButton" onClick={removeItem}>
-        {deleteIcon}
-      </SVG>
+      <Box>
+        <Col style={{ marginBottom: "0.625rem" }}>{"  "}</Col>
+        <SVG
+          name="removeButton"
+          onClick={removeItem}
+          style={{ marginTop: "1.25rem" }}
+        >
+          {deleteIcon}
+        </SVG>
+      </Box>
     </ItemContainer>
   );
 

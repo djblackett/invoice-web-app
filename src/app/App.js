@@ -1,18 +1,18 @@
 /* eslint-disable no-unused-vars */
 import React, { useState } from "react";
-import "./App.css";
-import Header from "./components/Header";
+import "../styles/App.css";
+import Header from "../components/menus-toolbars/Header";
 import styled from "styled-components";
-import { GlobalStyles } from "./components/GlobalStyles";
+import { GlobalStyles } from "../styles/GlobalStyles";
 import { ThemeProvider } from "styled-components";
-import { lightTheme, darkTheme } from "./components/Themes";
+import { lightTheme, darkTheme } from "../styles/Themes";
 import { doc, getDoc } from "firebase/firestore";
-import { firestoreDb } from "./utils/firebase";
+import { firestoreDb } from "../utils/firebase";
 import { collection, getDocs } from "firebase/firestore";
 import { useRoutes } from "react-router-dom";
-import ViewInvoice from "./pages/ViewInvoice";
-import Layout from "./components/Layout";
-import AllInvoices from "./pages/AllInvoices";
+import ViewInvoice from "../pages/ViewInvoice";
+import Layout from "../components/Layout";
+import AllInvoices from "../pages/AllInvoices";
 
 const Main = styled.div`
   height: 100%;
@@ -20,6 +20,7 @@ const Main = styled.div`
   min-height: 100vh;
   background-color: ${({ theme }) => theme.body};
   transition: all 0.4s ease;
+  z-index: 1;
 
   @media (min-width: 1200px) {
     display: grid;

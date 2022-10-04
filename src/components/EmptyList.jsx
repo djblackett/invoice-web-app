@@ -46,6 +46,16 @@ const Description = styled.p`
   .newInvoice {
     font-weight: 700;
   }
+
+  .newInvoiceLargeOnly {
+    display: none;
+  }
+
+  @media (min-width: 768px) {
+    .newInvoiceLargeOnly {
+      display: inline;
+    }
+  }
 `;
 function EmptyList() {
   return (
@@ -344,7 +354,10 @@ function EmptyList() {
       <NothingHere>There is nothing here</NothingHere>
       <Description>
         Create a new invoice by clicking the{" "}
-        <span className="newInvoice">New Invoice</span> button and get started
+        <span className="newInvoice">
+          New <span className="newInvoiceLargeOnly">Invoice</span>
+        </span>{" "}
+        button and get started
       </Description>
     </EmptyListContainer>
   );
