@@ -54,10 +54,12 @@ const NewInvoiceButton = styled.input`
   }
 `;
 
-function EditBottomMenu({ setIsOpen, saveText, closeText, justifyCancel }) {
+function EditBottomMenu({ setIsOpen, saveText, closeText, justifyCancel, setItems, invoice }) {
   const closeMenu = (e) => {
-    e.preventDefault();
+    // e.preventDefault();
     setIsOpen(false);
+    setItems(invoice.items);
+
   };
 
   return (
@@ -67,7 +69,7 @@ function EditBottomMenu({ setIsOpen, saveText, closeText, justifyCancel }) {
         text={closeText}
         justifySelf={justifyCancel}
       />
-      <NewInvoiceButton type="submit" value={saveText} onClick={closeMenu} />
+      <NewInvoiceButton type={"submit"} value={saveText} />
     </MenuContainer>
   );
 }
@@ -79,4 +81,6 @@ EditBottomMenu.propTypes = {
   saveText: PropTypes.string.isRequired,
   closeText: PropTypes.string.isRequired,
   justifyCancel: PropTypes.string,
+    setItems: PropTypes.func,
+    invoice: PropTypes.object,
 };

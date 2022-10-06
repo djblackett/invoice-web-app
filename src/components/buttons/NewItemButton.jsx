@@ -28,7 +28,7 @@ export const SVG = styled.svg`
 
 const ButtonText = styled.p`
   color: ${({ theme }) => theme.newItemText};
-  font-family: "Spartan";
+  font-family: "Spartan", sans-serif;
   font-style: normal;
   font-weight: 700;
   font-size: 12px;
@@ -48,10 +48,6 @@ const plusIcon = (
 );
 
 function NewItemButton({ handleAddNewItem }) {
-  // const handleClick = (e) => {
-  //   e.preventDefault();
-  //   handleAddNewItem();
-  // };
   return (
     <Button onClick={handleAddNewItem} type="button">
       {/* <SVG>{plusIcon}</SVG> */}

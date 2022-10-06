@@ -24,15 +24,30 @@ import FormEntry from "../components/form-components/FormEntry";
 
 import NewInvoiceBottomMenu from "../components/menus-toolbars/NewInvoiceBottomMenu";
 import {
-    AddressDetailInput, BillText,
-    DarkenScreen, EditTitle, FormContainer,
-    Input,
-    Label,
-    ProjectDescription,
-    StreetAddressInput
+  AddressDetailInput, BillText,
+  DarkenScreen, EditTitle, ErrorText, FormContainer,
+  Input,
+  Label,
+  ProjectDescription,
+  StreetAddressInput
 } from "../styles/editStyles";
 
+const generateId = () => {
+    const list = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+    let res = "";
+    for(let i = 0; i < 2; i++) {
+      let rnd = Math.floor(Math.random() * list.length);
+      res = res + list.charAt(rnd);
+    }
 
+  for(let i = 0; i < 4; i++) {
+    res = res + String(Math.floor(Math.random() * 9));
+
+  }
+
+    return res;
+
+}
 function NewInvoice({
   isNewOpen,
   setIsNewOpen,
@@ -60,6 +75,7 @@ function NewInvoice({
   const width = useWindowWidth();
 
   const [isDraft, setIsDraft] = useState(false);
+  const [isSubmitDirty, setSubmitDirty] = useState(false);
 
   const [editPageWidth, setEditPageWidth] = useState(null);
   const [isPaymentOpen, setIsPaymentOpen] = useState(false);
@@ -67,11 +83,11 @@ function NewInvoice({
   const [startDate, setStartDate] = useState(new Date());
 
   const [items, setItems] = useState([]);
-  const [selectedPaymentOption, setSelectedPaymentOption] = useState("Net 1 Day");
+  const [selectedPaymentOption, setSelectedPaymentOption] = useState(1);
   const handleChangeSelectedOption = (option) => {
     setSelectedPaymentOption(option);
   }
-
+  const [hasEmptyField, setHasEmptyField] = useState(false);
   const dispatch = useDispatch();
 
    const handlePaymentClick = (e) => {
@@ -91,6 +107,7 @@ function NewInvoice({
 
   const onSubmit = (data) => {
     // console.log(data);
+
 
     let newInvoice = {
       // ...invoice,
@@ -120,9 +137,14 @@ function NewInvoice({
     }
 
     newInvoice.total = total;
-    newInvoice.id = newInvoice.id ? newInvoice.id : uuidv4();
+    newInvoice.id = newInvoice.id ? newInvoice.id : generateId();
     newInvoice.paymentTerms = selectedPaymentOption,
     newInvoice.status = isDraft ?  "draft" : "pending";
+
+    if (newInvoice.status === "pending" && hasEmptyField) {
+      setSubmitDirty(true);
+      return;
+    }
 
     // console.log(newInvoice);
     dispatch(addInvoice(newInvoice));
@@ -132,6 +154,27 @@ function NewInvoice({
   };
 
   // console.log(watch("streetAddress"));
+
+  // checks for empty form inputs on every render
+  useEffect(() => {
+    const inputs = document.querySelectorAll("input");
+    let count = 0;
+    for (let i = 0; i < inputs.length; i++) {
+      if (
+          inputs.item(i).value.length === 0 &&
+          inputs.item(i).defaultValue.length === 0
+      ) {
+        count++;
+        break;
+      }
+    }
+
+    if (count > 0) {
+      setHasEmptyField(true);
+    } else {
+      setHasEmptyField(false);
+    }
+  });
 
   useLayoutEffect(() => {
     if (width > 1200 && isNewOpen) {
@@ -163,7 +206,7 @@ function NewInvoice({
   }, []);
 
 
-  
+
               // todo make this input not editable - doesn't have to be a DatePicker component
   return (
     <DarkenScreen style={{ display: isNewOpen ? "block" : "none" }}>
@@ -299,7 +342,7 @@ function NewInvoice({
                 handlePaymentSelect={handlePaymentSelect} 
                 isPaymentOpen={isPaymentOpen} 
                 handlePaymentClick={handlePaymentClick}
-                selectedPaymentOption={selectedPaymentOption}
+                selectedPaymentOption={Number(selectedPaymentOption)}
                 handleChangeSelectedOption={handleChangeSelectedOption}
               />
 
@@ -325,8 +368,13 @@ function NewInvoice({
             // invoice={invoice}
             items={items}
             setItems={setItems}
+
           />
-          <NewInvoiceBottomMenu setIsDraft={setIsDraft} setIsOpen={setIsNewOpen} saveText={"Save & Send"} closeText={"Discard"} justifyCancel={"flex-start"}/>
+
+          {isSubmitDirty && <ErrorText>- All fields must be added</ErrorText>}
+          {(isSubmitDirty && items.length === 0) && <ErrorText>- An item must be added</ErrorText>}
+
+          <NewInvoiceBottomMenu setSubmitDirty={setSubmitDirty} setIsDraft={setIsDraft} setIsOpen={setIsNewOpen} saveText={"Save & Send"} closeText={"Discard"} justifyCancel={"flex-start"}/>
         </form>
       </FormContainer>
     </DarkenScreen>

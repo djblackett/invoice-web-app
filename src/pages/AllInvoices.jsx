@@ -1,6 +1,5 @@
 import AllInvoicesToolbar from "../components/menus-toolbars/AllInvoicesToolbar";
 import InvoiceGrid from "../components/invoice-components/InvoiceGrid";
-// import data from "../data.json";
 import React, { useState, useEffect } from "react";
 import { useSelector, useDispatch } from "react-redux";
 import InvoiceCard from "../components/invoice-components/InvoiceCard";
@@ -26,24 +25,17 @@ const AllInvoicesContainer = styled.div`
 `;
 
 function AllInvoices() {
-  // const [filter, setFilter] = useState("All");
+
   const filter = useSelector(selectFilter);
   const dispatch = useDispatch();
   const data = useSelector(selectInvoices);
-  // eslint-disable-next-line no-unused-vars
-  // const [unfilteredList, setUnfilteredList] = useState(data);
   const [invoiceList, setInvoiceList] = useState(data);
 
   const [isNewOpen, setIsNewOpen] = useState(false);
   const [padding, setPadding] = useState("");
 
-  // const handleChangeFilter = (status) => {
-  //   // setFilter(status);
-  // };
   useEffect(() => {
     dispatch(addIdToExistingInvoices());
-    // console.log("adding ids");
-    // data.forEach((invoice) => console.log(invoice.items));
   }, []);
 
   useEffect(() => {

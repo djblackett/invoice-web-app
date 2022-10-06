@@ -2,9 +2,10 @@ import styled from "styled-components";
 import PropTypes from "prop-types";
 import EditFormItem from "./EditFormItem";
 import NewItemButton from "../buttons/NewItemButton";
-import { addItem } from "../../features/invoices/invoicesSlice";
+import {addIdToExistingInvoices, addItem} from "../../features/invoices/invoicesSlice";
 import { useDispatch } from "react-redux";
 import { v4 as uuidv4 } from "uuid";
+import {useEffect} from "react";
 
 const ListContainer = styled.div`
   display: grid;
@@ -24,7 +25,7 @@ export const ItemsHeader = styled.div`
     display: grid;
     /* grid-template: auto / 2fr 1fr 1fr 1fr; */
     grid-template: 1fr / 220px 62px 116px 61px 49px;
-    color: ${({ theme }) => theme.greyText};
+    color: ${({ theme }) => theme.editButtonHover};
     /* background-color: ${({ theme }) => theme.editButton}; */
     margin-top: 1rem;
     /* padding: 2rem; */
@@ -35,11 +36,11 @@ export const ItemsHeader = styled.div`
 `;
 
 export const Col = styled.p`
-  color: ${({ theme }) => theme.greyText};
+  color: ${({ theme }) => theme.editButtonHover};
   width: fit-content;
   margin: 0;
   padding: 0;
-  font-family: "Spartan";
+  font-family: "Spartan",sans-serif;
   font-style: normal;
   font-weight: 500;
   font-size: 11px;
@@ -93,19 +94,32 @@ const ItemTitle = styled.h1`
   }
 `;
 
-function EditFormItemList({ invoice, items, setItems }) {
+function EditFormItemList({ invoice, items, setItems}) {
+
+    const dispatch = useDispatch();
   const handleAddNewItem = (e) => {
     e.preventDefault();
     setItems([
       ...items,
       { id: uuidv4(), name: "", quantity: 0, price: 0, total: 0 },
     ]);
+
+    dispatch(addIdToExistingInvoices());
   };
 
   const handleSyncItemFields = (id, name) => {
     let currentItem = items.find((currentItem) => currentItem.id === id);
     // currentItem[name] =
   };
+
+  // useEffect(() => {
+  //     for (let item of items) {
+  //         if (!item.id) {
+  //             item.id = uuidv4();
+  //         }
+  //     }
+  // }, []);
+
 
   return (
     <ListContainer>
@@ -117,15 +131,19 @@ function EditFormItemList({ invoice, items, setItems }) {
         <Col>Total</Col>
       </ItemsHeader>
       <ItemsContainer>
-        {items.map((item) => (
+        {items.map((item) => {
+
+
+            return (
           <EditFormItem
             item={item}
             items={items}
-            key={item.id + "-" + item.clientName}
-            id={item.id}
+            /*key={uuidv4()} */
+              key={"editItemList-" + item.id}
+
             setItems={setItems}
           />
-        ))}
+        )})}
       </ItemsContainer>
       <NewItemButton handleAddNewItem={handleAddNewItem} />
     </ListContainer>
@@ -138,4 +156,5 @@ EditFormItemList.propTypes = {
   invoice: PropTypes.object,
   items: PropTypes.arrayOf(PropTypes.object).isRequired,
   setItems: PropTypes.func.isRequired,
+
 };

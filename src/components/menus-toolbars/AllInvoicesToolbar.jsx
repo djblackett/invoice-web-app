@@ -4,6 +4,7 @@ import PropTypes from "prop-types";
 import { useState, useEffect } from "react";
 import { selectFilter } from "../../features/invoices/filterSlice";
 import { useSelector } from "react-redux";
+import {useWindowWidth} from "../../hooks/useWindowWidth";
 
 const GridContainer = styled.div`
   display: grid;
@@ -194,6 +195,7 @@ const plusSignSVG = (
 function AllInvoicesToolbar({ invoiceList, setIsNewOpen }) {
   const [isOpen, setIsOpen] = useState(false);
   const [filterText, setFilterText] = useState("total");
+  const width = useWindowWidth();
 
   const openNewInvoice = () => {
     setIsNewOpen(true);
@@ -202,7 +204,7 @@ function AllInvoicesToolbar({ invoiceList, setIsNewOpen }) {
   const toggling = (e) => {
     setIsOpen(!isOpen);
     e.stopPropagation();
-    console.log("toggle function called. isOpen: " + isOpen);
+    // console.log("toggle function called. isOpen: " + isOpen);
   };
   const togglingButton = (e) => {
     if (e.charCode === 13 || e.keyCode === 13) {
@@ -224,13 +226,15 @@ function AllInvoicesToolbar({ invoiceList, setIsNewOpen }) {
     }
   }, [filter]);
 
+  const invoiceNumber = width < 768 ? "No " : "no ";
+
   return (
     <GridContainer>
       <TitleBox>
         <Title>Invoices</Title>
         <InvoicesLeft>
           <span className="wideScreenText">There are </span>
-          {invoiceList.length || "No"}{" "}
+          {invoiceList.length || invoiceNumber}
           <span className="wideScreenText"> {filterText} </span>
           invoices
         </InvoicesLeft>

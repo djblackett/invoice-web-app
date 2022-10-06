@@ -187,9 +187,7 @@ export const Select = styled.select`
     padding: 0;
   }
 `;
-export const Option = styled.option`
-  padding: 10px;
-`;
+
 export const DateAndPaymentContainer = styled.div`
   /* display: contents; */
   display: flex;

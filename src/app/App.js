@@ -1,4 +1,3 @@
-/* eslint-disable no-unused-vars */
 import React, { useState } from "react";
 import "../styles/App.css";
 import Header from "../components/menus-toolbars/Header";
@@ -24,7 +23,6 @@ const Main = styled.div`
 
   @media (min-width: 1200px) {
     display: grid;
-    /* grid-template: repeat(3, auto) / 103px 1fr; */
     grid-template: repeat(3, auto) / 1fr;
     justify-items: center;
   }
@@ -32,9 +30,6 @@ const Main = styled.div`
 
 function App() {
   const [theme, setTheme] = useState("light");
-  const [isOpen, setIsOpen] = useState(false);
-  const [isEditOpen, setIsEditOpen] = useState(true);
-  const [padding, setPadding] = useState(0);
 
   const themeToggler = () => {
     theme === "light" ? setTheme("dark") : setTheme("light");
@@ -63,7 +58,7 @@ function App() {
     });
   }
 
-  // must fix credentials for db connection
+  // todo must fix credentials for db connection
   // useEffect(() => {
   //   testDBFunction();
   // }, []);
@@ -77,7 +72,6 @@ function App() {
           index: true,
           element: <AllInvoices />,
         },
-
         {
           path: ":id",
           element: <ViewInvoice />,
@@ -91,17 +85,9 @@ function App() {
   return (
     <ThemeProvider theme={theme === "light" ? lightTheme : darkTheme}>
       <GlobalStyles />
-
       <Main id="container">
         <Header themeToggler={themeToggler} theme={theme} />
-
         {element}
-
-        {/* <button onClick={() => setIsOpen(true)}>Click to Open Modal</button> */}
-
-        {/* <Modal handleClose={() => setIsEditOpen(false)} isOpen={isOpen}>
-          This is Modal Content!
-        </Modal> */}
       </Main>
     </ThemeProvider>
   );

@@ -135,8 +135,8 @@ const MobileHelperContainer = styled.div`
 `;
 
 function Item({ item }) {
-  console.log(item.total);
-  console.log(typeof item.total);
+  // console.log(item.total);
+  // console.log(typeof item.total);
   // console.log(item.total.toFixed(2));
   return (
     <ItemContainer>

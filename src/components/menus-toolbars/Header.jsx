@@ -11,7 +11,7 @@ const HeaderContainer = styled.div`
   background: #373b53;
   z-index: 1000;
   position: fixed;
-  // needs background color dynamically
+  
 
   @media (min-width: 1200px) {
     flex-direction: column;
@@ -138,11 +138,11 @@ function Header({ themeToggler, theme }) {
 
         <AvatarBox>
           <img
-            src="assets/image-avatar.jpg"
+            src={process.env.PUBLIC_URL + '/assets/image-avatar.jpg'}
             alt=""
-            height="32px"
-            width="32px"
-            style={{ borderRadius: "50%" }}
+
+            style={{ borderRadius: "50%", height:"32px",
+                width: "32px" }}
           />
         </AvatarBox>
       </DarkModeProfileContainer>

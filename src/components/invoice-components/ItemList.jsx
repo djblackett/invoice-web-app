@@ -1,6 +1,10 @@
 import styled from "styled-components";
 import PropTypes from "prop-types";
 import Item from "./Item";
+import { v4 as uuidv4 } from "uuid";
+import {useEffect, useLayoutEffect} from "react";
+import {useDispatch} from "react-redux";
+import {addIdToExistingInvoices} from "../../features/invoices/invoicesSlice";
 
 const ListContainer = styled.div`
   display: grid;
@@ -113,7 +117,14 @@ const ItemsContainer = styled.div`
   }
 `;
 
+let count = 0;
+
 function ItemList({ invoice }) {
+    const dispatch = useDispatch();
+    useLayoutEffect(() => {
+        dispatch(addIdToExistingInvoices())
+    }, [])
+
   return (
     <ListContainer>
       <ItemsHeader>
@@ -124,7 +135,7 @@ function ItemList({ invoice }) {
       </ItemsHeader>
       <ItemsContainer>
         {invoice.items.map((item) => (
-          <Item item={item} key={"item-" + item.name} />
+          <Item item={item} key={"itemList-" + (item.id || ++count)} />
         ))}
       </ItemsContainer>
       <AmountDue>

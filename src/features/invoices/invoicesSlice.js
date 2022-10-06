@@ -21,10 +21,6 @@ export const invoicesSlice = createSlice({
       );
     },
     updateInvoice: (state, action) => {
-      // state.data = state.data.filter(
-      //   (invoice) => invoice.id !== action.payload.id
-      // );
-
       const oldInvoice = state.data.find(
         (invoice) => invoice.id === action.payload.id
       );
@@ -37,10 +33,12 @@ export const invoicesSlice = createSlice({
         (invoice) => invoice.id === action.payload
       );
       invoice1.status = "paid";
-
-      // debugging info
-      // invoice1 = state.data.find((invoice) => invoice.id === action.payload);
-      // console.log(JSON.parse(JSON.stringify(invoice1)));
+    },
+    markAsPending: (state, action) => {
+      let invoice1 = state.data.find(
+          (invoice) => invoice.id === action.payload
+      );
+      invoice1.status = "pending";
     },
     addItem: (state, action) => {
       const { id, newItem } = action.payload;

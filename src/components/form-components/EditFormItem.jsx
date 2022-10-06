@@ -228,7 +228,7 @@ const deleteIcon = (
   />
 );
 
-function EditFormItem({ item, id, items, setItems }) {
+function EditFormItem({ item, items, setItems }) {
   // const [item1, setItem1] = useState({name: item.name, quantity: item.quantity, price: item.price, total: item.total});
 
   const handleChange = (e) => {
@@ -251,7 +251,7 @@ function EditFormItem({ item, id, items, setItems }) {
   };
 
   const removeItem = () => {
-    const items2 = items.filter((currentItem) => currentItem.id != item.id);
+    const items2 = items.filter((currentItem) => currentItem.id !== item.id);
     setItems(items2);
   };
 
@@ -267,6 +267,8 @@ function EditFormItem({ item, id, items, setItems }) {
         <Box>
           <Col style={{ marginBottom: "0.625rem" }}>Qty.</Col>
           <Quantity
+              title={"Must be numeric"}
+              pattern={"\\d+"}
             name={"quantity"}
             onChange={handleChange}
             value={item.quantity}

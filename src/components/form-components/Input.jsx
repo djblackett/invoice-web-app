@@ -19,7 +19,6 @@ export const InputStyles = styled.input`
   /* identical to box height, or 125% */
 
   letter-spacing: -0.25px;
-  /* color: #0c0e16; */
   color: ${({ theme }) => theme.textPlain};
   background-color: ${({ theme }) => theme.editButton};
 

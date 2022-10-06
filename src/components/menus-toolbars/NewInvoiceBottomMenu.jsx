@@ -70,10 +70,12 @@ function NewInvoiceBottomMenu({
   saveText,
   closeText,
   justifyCancel,
+    setSubmitDirty
 }) {
   const closeMenu = (e) => {
     e.preventDefault();
     setIsOpen(false);
+    setSubmitDirty(false);
   };
 
   const setToDraft = () => {
@@ -111,4 +113,5 @@ NewInvoiceBottomMenu.propTypes = {
   saveText: PropTypes.string.isRequired,
   closeText: PropTypes.string.isRequired,
   justifyCancel: PropTypes.string,
+  setSubmitDirty: PropTypes.func.isRequired
 };

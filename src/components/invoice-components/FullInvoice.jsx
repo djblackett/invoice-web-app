@@ -48,7 +48,7 @@ const Card = styled.div`
 
 const IDNumber = styled.p`
   margin: 0;
-  font-family: "Spartan";
+  font-family: "Spartan",sans-serif;
   font-style: normal;
   font-weight: 700;
   font-size: 16px;
@@ -206,10 +206,13 @@ const InfoGrid = styled.div`
   }
 `;
 
+let count = 0;
+
 function FullInvoice({ invoice }) {
   const width = useWindowWidth();
 
   const convertedDate = (dateString) => {
+    // console.log(dateString)
     if (dateString) {
       const date = dateString.split("-");
       const dateObj = new Date(Date.UTC(date[0], date[1], date[2]));
@@ -228,16 +231,19 @@ function FullInvoice({ invoice }) {
           <Description>{invoice.description}</Description>
         </IdAndDescription>
         <Address style={{ textAlign: width >= 768 ? "right" : "left" }}>
-          {Object.values(invoice.senderAddress).map((line) => (
-            <AddressEntry key={"key" + line}>{line}</AddressEntry>
-          ))}
+
+            <AddressEntry >{invoice.senderAddress.street}</AddressEntry>
+            <AddressEntry >{invoice.senderAddress.city}</AddressEntry>
+            <AddressEntry >{invoice.senderAddress.postCode}</AddressEntry>
+            <AddressEntry >{invoice.senderAddress.country}</AddressEntry>
+
         </Address>
       </TopRow>
 
       <InfoGrid>
         <GenericInvoiceEntry>
           <TopEntry>Invoice Date</TopEntry>
-          <BottomEntry>£ {convertedDate(invoice.createdAt)}</BottomEntry>
+          <BottomEntry> {convertedDate(invoice.createdAt)}</BottomEntry>
         </GenericInvoiceEntry>
         <GenericInvoiceEntry>
           <TopEntry>Payment Due</TopEntry>
@@ -249,9 +255,12 @@ function FullInvoice({ invoice }) {
             <BottomEntry>{invoice.clientName}</BottomEntry>
           </GenericInvoiceEntry>
           <EmbeddedAddress>
-            {Object.values(invoice.clientAddress).map((line) => (
-              <AddressEntry key={"key" + line}>{line}</AddressEntry>
-            ))}
+
+            <AddressEntry >{invoice.clientAddress.street}</AddressEntry>
+            <AddressEntry >{invoice.clientAddress.city}</AddressEntry>
+            <AddressEntry >{invoice.clientAddress.postCode}</AddressEntry>
+            <AddressEntry >{invoice.clientAddress.country}</AddressEntry>
+
           </EmbeddedAddress>
         </NamePlusAddress>
         <GenericInvoiceEntry>

@@ -2,7 +2,7 @@ import styled from "styled-components";
 import PropTypes from "prop-types";
 import { useState } from "react";
 
-const FormEntryContainer = styled.div`
+export const FormEntryContainer = styled.div`
   display: flex;
   flex-direction: column;
   position: relative;
