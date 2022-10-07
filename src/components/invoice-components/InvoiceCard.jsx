@@ -28,25 +28,33 @@ const Card = styled.div`
     border: 1px solid ${({ theme }) => theme.outline};
   }
 
-  @media (min-width: 768px) {
+  @media (min-width: 600px) {
     grid-template-rows: 1fr;
-    grid-template-columns: repeat(5, 1fr) 60px;
+    // container = 672px  or 624px without padding
+    // 1st box = 87  so 87/624 = 14%
+    //2nd box = 143px so 143/624 = 23%
+    // 3rd 136 so 136/ 624 = 
+    // 130 
+    // 124 
+    // 4
+    
+    grid-template-columns: 14% 23% 21.6% 20.8% 19.9% 2%;
+    //grid-template-columns: repeat(5, 1fr) 60px;
     grid-auto-flow: dense;
-    padding-left: 0;
-    padding-right: 0;
+    //padding-left: 0;
+    //padding-right: 0;
     align-items: center;
-    justify-items: center;
+    justify-items: start;
     height: 72px;
-    width: 672px;
-    max-width: initial;
     margin: 8px 0 8px 0;
     align-content: center;
   }
 
   @media (min-width: 1200px) {
-    width: 730px;
+    width: 100%;
     margin-left: 0;
     margin-right: 0;
+   
   }
 `;
 
@@ -66,7 +74,7 @@ const DueDateAmountBox = styled.div`
   flex-direction: column;
   grid-area: 2 / 1 / 3 / 2;
 
-  @media (min-width: 768px) {
+  @media (min-width: 600px) {
     display: contents;
   }
 `;
@@ -93,7 +101,7 @@ const CustomerName = styled.p`
   text-align: right;
   letter-spacing: -0.25px;
 
-  @media (min-width: 768px) {
+  @media (min-width: 600px) {
     grid-column: 3 / 4;
   }
 `;
@@ -105,7 +113,7 @@ const SVGContainer = styled.div`
   align-items: center;
   display: none;
 
-  @media (min-width: 768px) {
+  @media (min-width: 600px) {
     display: flex;
   }
 `;

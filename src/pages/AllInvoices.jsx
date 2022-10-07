@@ -13,6 +13,7 @@ import {
 import { selectFilter } from "../features/invoices/filterSlice";
 import styled from "styled-components";
 import NewInvoice from "./NewInvoice";
+import {useWindowWidth} from "../hooks/useWindowWidth";
 
 const AllInvoicesContainer = styled.div`
   width: 100%;
@@ -22,6 +23,12 @@ const AllInvoicesContainer = styled.div`
   align-items: center;
   margin-bottom: 6.5rem;
   z-index: 5;
+  
+  
+  @media (min-width: 1200px) {
+    padding-right: 48px;
+    padding-left: 48px;
+  }
 `;
 
 function AllInvoices() {
@@ -30,9 +37,30 @@ function AllInvoices() {
   const dispatch = useDispatch();
   const data = useSelector(selectInvoices);
   const [invoiceList, setInvoiceList] = useState(data);
+  const width = useWindowWidth();
 
   const [isNewOpen, setIsNewOpen] = useState(false);
   const [padding, setPadding] = useState("");
+
+  const linkStyleMobile = {
+      width: "100%",
+      textDecoration: "none",
+      display: "flex",
+      justifyContent: "center",
+      alignItems: "center",
+  }
+
+  const linkStyleDesktop = {
+
+      width: "50%",
+      minWidth: "730px",
+      // maxWidth: "50%",
+      textDecoration: "none",
+      display: "flex",
+      justifyContent: "center",
+      alignItems: "center",
+
+  }
 
   useEffect(() => {
     dispatch(addIdToExistingInvoices());
@@ -78,13 +106,7 @@ function AllInvoices() {
               <Link
                 key={invoice.id + "-link"}
                 to={`/${invoice.id}`}
-                style={{
-                  textDecoration: "none",
-                  width: "100%",
-                  display: "flex",
-                  justifyContent: "center",
-                  alignItems: "center",
-                }}
+                style={width < 1200 ? linkStyleMobile : linkStyleDesktop}
               >
                 <InvoiceCard invoice={invoice} key={invoice.id} />
               </Link>

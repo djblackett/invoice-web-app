@@ -13,6 +13,10 @@ const FlexContainer = styled.div`
   @media (min-width: 768px) {
     padding: 0 48px;
   }
+  
+  @media (min-width: 1200px) {
+    padding: 0;
+  }
 `;
 
 function InvoiceGrid({ children }) {

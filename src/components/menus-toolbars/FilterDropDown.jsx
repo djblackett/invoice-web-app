@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useState } from "react";
+import React, {useCallback, useEffect, useRef, useState} from "react";
 import styled from "styled-components";
 // import IonIcon from "@reacticons/ionicons";
 // import { useSearchParams } from "react-router-dom";
@@ -66,6 +66,8 @@ const DropDownHeader = styled.div.attrs({
 const DropDownListContainer = styled("div")`
   position: absolute;
   width: 150px;
+  //margin-top: 50px;
+  //bottom: -10px;
   left: -75px;
   background-color: ${({ theme }) => theme.background};
   border-radius: 10px;
@@ -131,19 +133,28 @@ const OptionLabel = styled.label`
   color: ${({ theme }) => theme.textPlain};
 `;
 
-export default function FilterDropDown({ icon, handleClick, isOpen, options }) {
-  // const [isOpen, setIsOpen] = useState(false);
+export default function FilterDropDown({ icon, handleClick, isOpen, options, onClickOutside }) {
 
-  // const toggling = () => setIsOpen(!isOpen);
-  // const togglingButton = (e) => {
-  //   if (e.charCode === 13 || e.keyCode === 13) {
-  //     setIsOpen(!isOpen);
-  //   }
-  // };
+  const ref = useRef(null);
+  // const { onClickOutside } = props;
 
   useEffect(() => {
-    // console.log(isOpen);
-  }, [isOpen]);
+    const handleClickOutside = (event) => {
+      if (ref.current && !ref.current.contains(event.target)) {
+        onClickOutside && onClickOutside();
+      }
+    };
+    document.addEventListener('click', handleClickOutside, true);
+    return () => {
+      document.removeEventListener('click', handleClickOutside, true);
+    };
+  }, [ onClickOutside ]);
+
+
+
+  // useEffect(() => {
+  //   // console.log(isOpen);
+  // }, [isOpen]);
 
   const dispatch = useDispatch();
   const onOptionClicked = (option) => () => {
@@ -161,6 +172,8 @@ export default function FilterDropDown({ icon, handleClick, isOpen, options }) {
     []
   );
 
+
+
   // todo make the drop down from scratch so I can style it correctly
 
   return (
@@ -168,8 +181,8 @@ export default function FilterDropDown({ icon, handleClick, isOpen, options }) {
       <DropDownContainer>
         <DropDownHeader onClick={handleClick}>{icon}</DropDownHeader>
         {isOpen && (
-          <DropDownListContainer>
-            <DropDownList>
+          <DropDownListContainer ref={ref}>
+            <DropDownList >
               {options.map((option, index) => (
                 <ListItem key={index + "-li"} onClick={clickCallback(option)}>
                   <ItemButton>
@@ -190,4 +203,5 @@ FilterDropDown.propTypes = {
   handleClick: PropTypes.func.isRequired,
   isOpen: PropTypes.bool.isRequired,
   options: PropTypes.array.isRequired,
+  onClickOutside: PropTypes.func,
 };

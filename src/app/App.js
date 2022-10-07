@@ -35,11 +35,6 @@ function App() {
     theme === "light" ? setTheme("dark") : setTheme("light");
   };
 
-  // const themeTogglerEnter = (e) => {
-  //   if (e.charCode === 13 || e.keyCode === 13) {
-  //     theme === 'light' ? setTheme('dark') : setTheme('light');
-  //   }
-  // };
 
   async function testDBFunction() {
     const docRef = doc(firestoreDb, "cities", "SF");

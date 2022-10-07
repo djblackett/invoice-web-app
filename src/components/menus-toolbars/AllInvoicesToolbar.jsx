@@ -15,14 +15,26 @@ const GridContainer = styled.div`
   margin-top: 104px;
   margin-bottom: 25px;
   z-index: 1;
-
-  @media (min-width: 768px) {
-    width: 672px;
+  padding-left: 24px;
+  padding-right: 24px;
+  
+  
+  @media (min-width: 600px) {
+    width: 100%;
+ 
   }
 
+  @media (min-width: 768px) {
+    padding-left: 48px;
+    padding-right: 48px;
+  }
+  
+
   @media (min-width: 1200px) {
-    /* display: inline-grid; */
-    width: 730px;
+    //width: 730px;
+    min-width: 730px;
+    max-width: 50%;
+   padding: 0;
     justify-self: center;
     margin-top: 72px;
     height: 59px;
@@ -36,7 +48,7 @@ const TitleBox = styled.div`
   flex-direction: column;
   justify-content: center;
   /* align-items: center; */
-  margin-left: 24px;
+  //margin-left: 24px;
 
   @media (min-width: 768px) {
     margin-left: 0;
@@ -74,7 +86,7 @@ const ControlBox = styled.div`
   justify-self: end;
   flex-direction: row;
   align-items: center;
-  margin-right: 24px;
+  //margin-right: 24px;
   justify-content: flex-end;
   /* cursor: pointer; */
 
@@ -82,7 +94,7 @@ const ControlBox = styled.div`
     display: none;
   }
 
-  @media (min-width: 768px) {
+  @media (min-width: 600px) {
     margin-right: 0;
     width: 308px;
 
@@ -115,7 +127,7 @@ const NewInvoiceButton = styled.div`
     background-color: #9277ff;
   }
 
-  @media (min-width: 768px) {
+  @media (min-width: 600px) {
     height: 48px;
     width: 150px;
     padding-right: 1rem;
@@ -203,7 +215,7 @@ function AllInvoicesToolbar({ invoiceList, setIsNewOpen }) {
 
   const toggling = (e) => {
     setIsOpen(!isOpen);
-    e.stopPropagation();
+    // e.stopPropagation();
     // console.log("toggle function called. isOpen: " + isOpen);
   };
   const togglingButton = (e) => {
@@ -234,7 +246,7 @@ function AllInvoicesToolbar({ invoiceList, setIsNewOpen }) {
         <Title>Invoices</Title>
         <InvoicesLeft>
           <span className="wideScreenText">There are </span>
-          {invoiceList.length || invoiceNumber}
+          {invoiceList.length || invoiceNumber}{" "}
           <span className="wideScreenText"> {filterText} </span>
           invoices
         </InvoicesLeft>
@@ -249,6 +261,7 @@ function AllInvoicesToolbar({ invoiceList, setIsNewOpen }) {
           handleClick={toggling}
           onKeyPress={togglingButton}
           options={["Draft", "Pending", "Paid"]}
+          onClickOutside={() => {setIsOpen(false)}}
         />
         <NewInvoiceButton onClick={openNewInvoice}>
           <WhiteCircle>{plusSignSVG}</WhiteCircle>

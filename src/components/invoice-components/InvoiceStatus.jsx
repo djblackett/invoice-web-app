@@ -11,6 +11,11 @@ const InvoiceStatusBox = styled.div`
   justify-content: center;
   align-items: center;
   justify-self: end;
+  
+  @media (min-width: 600px) {
+    width: 84%;
+    justify-self: start;
+  }
 `;
 
 const TextCircleBox = styled.div`
