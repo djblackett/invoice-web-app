@@ -5,15 +5,39 @@ import {
     ErrorTextInline,
     Label,
     LongEntry,
-    StreetAddressInput
+    StreetAddressInput,
+    Input
 } from "../../styles/editStyles";
 import AddressBox from "./AddressBox";
 import React from "react";
 import PropTypes from "prop-types";
+import LongFormEntry from "./LongFormEntry";
+import {useWindowWidth} from "../../hooks/useWindowWidth";
 
 export function ClientFormInfo(props) {
+
+    const width = useWindowWidth();
+    const countryChildren = (
+        <>
+            <Label
+                htmlFor="country"
+                style={{color: props.errors.clientCountry ? "red" : ""}}
+            >
+                Country
+            </Label>
+            <CountryInput
+                style={{
+                    border: props.errors.clientCountry ? "1px solid red" : "",
+                }}
+                type="text"
+                defaultValue={props.clientAddress.country}
+                {...props.useFormRegisterReturn5}
+            />
+        </>
+    );
+
     return <>
-        <FormEntry>
+        <LongFormEntry isLongOnMobile={props.editPageWidth < 768}>
             <Label
                 htmlFor="clientName"
                 style={{color: props.errors.clientName ? "red" : ""}}
@@ -23,27 +47,30 @@ export function ClientFormInfo(props) {
             {props.errors.clientName?.type === "required" && (
                 <ErrorTextInline>{"can't be empty"}</ErrorTextInline>
             )}
-            <LongEntry
+            <Input
+                long
                 style={{border: props.errors.clientName ? "1px solid red" : ""}}
                 type="text"
-                defaultValue={props.defaultValue}
+                defaultValue={props.clientName}
                 {...props.useFormRegisterReturn}
             />
-        </FormEntry>
-        <FormEntry>
+        </LongFormEntry>
+        <LongFormEntry isLongOnMobile={props.editPageWidth < 768}>
             <Label
                 htmlFor="clientEmail"
                 style={{color: props.errors.clientEmail ? "red" : ""}}
             >
                 {"Client's Email"}
             </Label>
-            <LongEntry
+            <Input
+                long
                 style={{border: props.errors.clientEmail ? "1px solid red" : ""}}
-                defaultValue={props.defaultValue1}
+                defaultValue={props.clientEmail}
                 {...props.useFormRegisterReturn1}
             />
-        </FormEntry>
-        <FormEntry>
+        </LongFormEntry>
+
+        <LongFormEntry isLongOnMobile={props.editPageWidth < 768}>
             <Label
                 htmlFor="clientStreetAddress"
                 style={{color: props.errors.clientStreetAddress ? "red" : ""}}
@@ -57,7 +84,8 @@ export function ClientFormInfo(props) {
                 defaultValue={props.clientAddress.street}
                 {...props.useFormRegisterReturn2}
             />
-        </FormEntry>
+        </LongFormEntry>
+
         <AddressBox>
             <FormEntry>
                 <Label
@@ -93,23 +121,13 @@ export function ClientFormInfo(props) {
                 />
             </FormEntry>
 
-            <FormEntry isLongOnMobile={props.editPageWidth < 768}>
-                <Label
-                    htmlFor="country"
-                    style={{color: props.errors.country ? "red" : ""}}
-                >
-                    Country
-                </Label>
+            { width < 768 && <LongFormEntry isLongOnMobile={props.editPageWidth < 768}>
+                {countryChildren}
+            </LongFormEntry>}
 
-                <CountryInput
-                    style={{
-                        border: props.errors.clientCountry ? "1px solid red" : "",
-                    }}
-                    type="text"
-                    defaultValue={props.clientAddress.country}
-                    {...props.useFormRegisterReturn5}
-                />
-            </FormEntry>
+            {width >= 768 && <FormEntry>
+                {countryChildren}
+            </FormEntry>}
         </AddressBox>
     </>;
 }
@@ -117,9 +135,9 @@ export function ClientFormInfo(props) {
 
 ClientFormInfo.propTypes = {
     errors: PropTypes.any,
-    defaultValue: PropTypes.any,
+    clientName: PropTypes.any,
     useFormRegisterReturn: PropTypes.any,
-    defaultValue1: PropTypes.any,
+    clientEmail: PropTypes.any,
     useFormRegisterReturn1: PropTypes.any,
     clientAddress: PropTypes.any,
     useFormRegisterReturn2: PropTypes.any,

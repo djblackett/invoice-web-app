@@ -48,9 +48,9 @@ const Circle = styled.div`
   background: #33d69f;
 `;
 
-function InvoiceStatus({ text, textColor, backgroundColor }) {
+function InvoiceStatus({ text, textColor, backgroundColor, isInToolbar }) {
   return (
-    <InvoiceStatusBox style={{ backgroundColor: backgroundColor }}>
+    <InvoiceStatusBox style={{ backgroundColor: backgroundColor, width: isInToolbar ? "20%" : "revert" }}>
       <TextCircleBox>
         <Circle style={{ backgroundColor: textColor }} />
         <StatusText style={{ color: textColor }}>{text}</StatusText>
@@ -63,5 +63,6 @@ InvoiceStatus.propTypes = {
   text: PropTypes.string.isRequired,
   textColor: PropTypes.string.isRequired,
   backgroundColor: PropTypes.string.isRequired,
+    isInToolbar: PropTypes.bool,
 };
 export default InvoiceStatus;

@@ -24,12 +24,16 @@ const Toolbar = styled.div`
   width: 100%;
   z-index: 1;
 
-  @media (min-width: 768px) {
+  @media (min-width: 600px) {
     display: flex;
-    width: 730px;
+    
     flex-direction: row;
     background-color: ${({ theme }) => theme.background};
     border-radius: 8px;
+  }
+  
+  @media (min-width: 1200px) {
+    max-width: 730px;
   }
 
   box-shadow: 0px 10px 10px -10px rgba(72, 84, 159, 0.100397);
@@ -46,7 +50,7 @@ const StatusContainer = styled.div`
   background-color: ${({ theme }) => theme.background};
   border-radius: 8px;
 
-  @media (min-width: 768px) {
+  @media (min-width: 600px) {
     background-color: initial;
     justify-content: flex-start;
   }
@@ -85,7 +89,7 @@ function InvoiceToolbar({
     <Toolbar
       className="invoice-toolbar"
       style={{
-        display: isEditOpen ? "none" : width < 768 ? "contents" : "flex",
+        display: isEditOpen ? "none" : width < 600 ? "contents" : "flex",
       }}
     >
       <StatusContainer>

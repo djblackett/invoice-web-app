@@ -25,7 +25,7 @@ import FormEntry from "../components/form-components/FormEntry";
 import NewInvoiceBottomMenu from "../components/menus-toolbars/NewInvoiceBottomMenu";
 import {
   AddressDetailInput, BillText,
-  DarkenScreen, EditTitle, ErrorText, FormContainer,
+  DarkenScreen, EditTitle, ErrorText, FormContainerDarkenModal,
   Input,
   Label,
   ProjectDescription,
@@ -210,7 +210,7 @@ function NewInvoice({
               // todo make this input not editable - doesn't have to be a DatePicker component
   return (
     <DarkenScreen style={{ display: isNewOpen ? "block" : "none" }}>
-      <FormContainer
+      <FormContainerDarkenModal
         style={{
           width: isNewOpen ? `${editPageWidth}px` : "0px",
           // paddingLeft: `${padding}px`,
@@ -376,7 +376,7 @@ function NewInvoice({
 
           <NewInvoiceBottomMenu setSubmitDirty={setSubmitDirty} setIsDraft={setIsDraft} setIsOpen={setIsNewOpen} saveText={"Save & Send"} closeText={"Discard"} justifyCancel={"flex-start"}/>
         </form>
-      </FormContainer>
+      </FormContainerDarkenModal>
     </DarkenScreen>
   );
 }

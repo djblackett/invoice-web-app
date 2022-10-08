@@ -19,7 +19,7 @@ const ButtonsContainer = styled.div`
   margin-top: 3.5rem;
   order: 2;
 
-  @media (min-width: 768px) {
+  @media (min-width: 600px) {
     /* justify-self: initial; */
     order: initial;
     height: initial;

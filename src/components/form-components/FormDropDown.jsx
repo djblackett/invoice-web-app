@@ -5,24 +5,18 @@ import PropTypes from "prop-types";
 import { SVG } from "../buttons/NewItemButton";
 
 const Main = styled("div")`
-  /* display: flex;
-  align-items: center; */
   z-index: 10;
   box-sizing: border-box;
   background-color: ${({ theme }) => theme.inputBackgroundColor};
   cursor: pointer;
-  /* filter: drop-shadow(3px 3px 3px ${({ theme }) => theme.shadow}); */
-  /* margin: 20px 5%; */
   margin-bottom: 30px;
 
   width: 100%;
   height: 48px;
   border-radius: 4px;
-  /* border-color: ; */
-  border: 2px solid ${({ theme }) => theme.formFieldOutline};
-  /* outline: none; */
-  /* padding: 17px 20px 16px 20px; */
 
+  border: 2px solid ${({ theme }) => theme.formFieldOutline};
+  
   @media (min-width: 768px) {
     width: 240px;
   }
@@ -31,11 +25,11 @@ const Main = styled("div")`
 const DropDownHeader = styled.div.attrs({
   tabIndex: 0,
 })`
+  
   display: flex;
   justify-content: space-between;
   align-items: center;
   box-sizing: border-box;
-  padding: 0.4rem;
   padding-left: 20px;
   padding-top: 17px;
   padding-bottom: 16px;
@@ -43,16 +37,40 @@ const DropDownHeader = styled.div.attrs({
 
   background-color: transparent;
 
-  font-family: "Spartan";
-  font-style: normal;
-  font-weight: 700;
-  font-size: 12px;
-  line-height: 15px;
-  /* identical to box height, or 125% */
 
-  letter-spacing: -0.25px;
+  
+  h2 {
+    writing-mode: horizontal-tb !important;
+    text-rendering: auto;
 
-  width: 240px;
+    word-spacing: normal;
+    text-transform: none;
+    text-indent: 0px;
+    text-shadow: none;
+    display: inline-block;
+    text-align: start;
+    appearance: auto;
+    -webkit-rtl-ordering: logical;
+    cursor: text;
+    
+    padding: 1px 2px;
+   
+
+    font-family: "League Spartan", sans-serif;
+    font-style: normal;
+    font-weight: 700;
+    font-size: 12px;
+    line-height: 15px;
+    /* identical to box height, or 125% */
+
+    letter-spacing: -0.25px;
+    
+    margin: 0;
+    
+    transform: translateY(-2px);
+  }
+
+  width: 100%;
   height: 48px;
   border-radius: 4px;
   border-color: ${({ theme }) => theme.formFieldOutline};
@@ -159,12 +177,9 @@ function FormDropDown({
     handlePaymentSelect();
 
     const num = Number(option.split(" ")[1]);
-    // setSelected(num);
-
     handleChangeSelectedOption(num);
   };
 
-  // console.log(selectedPaymentOption);
 
   useEffect(() => {
     if (selectedPaymentOption === 1) {
@@ -176,9 +191,8 @@ function FormDropDown({
 
   return (
     <Main>
-      {/* <DropDownContainer> */}
       <DropDownHeader onClick={handlePaymentClick}>
-        {selected}
+        <h2>{selected}</h2>
         <SVG>{arrowDown}</SVG>
       </DropDownHeader>
       {isPaymentOpen && (
@@ -192,7 +206,6 @@ function FormDropDown({
           ))}
         </DropDownList>
       )}
-      {/* </DropDownContainer> */}
     </Main>
   );
 }

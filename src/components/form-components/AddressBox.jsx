@@ -17,7 +17,7 @@ const AddressDetails = styled.div`
 
   @media (min-width: 768px) {
     flex-wrap: nowrap;
-    max-width: 504px;
+    max-width: 100%;
   }
 `;
 

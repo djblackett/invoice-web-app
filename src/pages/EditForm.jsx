@@ -17,7 +17,7 @@ import {
   DarkenScreen,
   EditTitle,
   ErrorText,
-  FormContainer,
+  FormContainerDarkenModal, Input,
   Label,
   LongEntry,
   ProjectDescription
@@ -25,6 +25,8 @@ import {
 import {CompanyFormInfo} from "../components/form-components/CompanyFormInfo";
 import {ClientFormInfo} from "../components/form-components/ClientFormInfo";
 import {DateAndPayment} from "../components/form-components/DateAndPayment";
+import FormEntry from "../components/form-components/FormEntry";
+import LongFormEntry from "../components/form-components/LongFormEntry";
 
 function EditForm({
   isEditOpen,
@@ -189,7 +191,7 @@ function EditForm({
   // console.log(watch("example")); // watch input value by passing the name of it
   return (
     <DarkenScreen style={{display: isEditOpen ? "block" : "none"}}>
-      <FormContainer
+      <FormContainerDarkenModal
           style={{
             width: isEditOpen ? `${editPageWidth}px` : "0px",
             padding: padding,
@@ -202,7 +204,7 @@ function EditForm({
 
         {/* "handleSubmit" will validate your inputs before invoking "onSubmit" */}
 
-        <form onSubmit={handleSubmit(onSubmit)}>
+        <form onSubmit={handleSubmit(onSubmit)} style={{display: "flex", flexDirection: "column"}}>
           {/* register your input into the hook by invoking the "register" function */}
           <BillText>Bill From</BillText>
           <CompanyFormInfo errors={errors} senderAddress={invoice.senderAddress}
@@ -215,9 +217,9 @@ function EditForm({
           {/* //  Client details */}
 
           <BillText>Bill To</BillText>
-          <ClientFormInfo errors={errors} defaultValue={invoice.clientName}
+          <ClientFormInfo errors={errors} clientName={invoice.clientName}
                           useFormRegisterReturn={register("clientName", {required: true})}
-                          defaultValue1={invoice.clientEmail}
+                          clientEmail={invoice.clientEmail}
                           useFormRegisterReturn1={register("clientEmail", {required: true})}
                           clientAddress={invoice.clientAddress}
                           useFormRegisterReturn2={register("clientStreetAddress", {required: true})}
@@ -231,14 +233,15 @@ function EditForm({
                           handlePaymentClick={handlePaymentClick} selectedPaymentOption={selectedPaymentOption}
                           handleChangeSelectedOption={handleChangeSelectedOption}/>
 
-          <ProjectDescription>
+          <LongFormEntry isLongOnMobile={editPageWidth < 768}>
             <Label
                 htmlFor="projectDescription"
                 style={{color: errors.projectDescription ? "red" : ""}}
             >
               Project Description
             </Label>
-            <LongEntry
+            <Input
+                long
                 type="text"
                 defaultValue={invoice.description}
                 error={errors?.title ? true : false}
@@ -247,7 +250,7 @@ function EditForm({
                   border: errors.projectDescription ? "1px solid red" : "",
                 }}
             />
-          </ProjectDescription>
+          </LongFormEntry>
 
           <EditFormItemList
               invoice={invoice}
@@ -266,7 +269,7 @@ function EditForm({
               invoice={invoice}
           />
         </form>
-      </FormContainer>
+      </FormContainerDarkenModal>
     </DarkenScreen>
   );
 }

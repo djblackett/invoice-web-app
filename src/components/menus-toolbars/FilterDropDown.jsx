@@ -1,7 +1,5 @@
 import React, {useCallback, useEffect, useRef, useState} from "react";
 import styled from "styled-components";
-// import IonIcon from "@reacticons/ionicons";
-// import { useSearchParams } from "react-router-dom";
 import PropTypes from "prop-types";
 import CheckboxSelection from "./CheckboxSelection";
 import { useDispatch } from "react-redux";

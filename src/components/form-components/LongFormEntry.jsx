@@ -11,15 +11,14 @@ export const FormEntryContainer = styled.div`
 
   font-style: ${({ theme }) => theme.font};
 
-  width: 45%;
+  width: 100%;
 
   @media (min-width: 768px) {
-    width: 100%;
-    max-width: fit-content;
+    
   }
 `;
 
-function FormEntry({ className, isLongOnMobile = false, children, isAlwaysLong=false }) {
+function LongFormEntry({ className, children}) {
   const [isDirty, setIsDirty] = useState(false);
   const windowWidth = useWindowWidth();
   const handleChange = () => {
@@ -37,17 +36,15 @@ function FormEntry({ className, isLongOnMobile = false, children, isAlwaysLong=f
       onChange={handleChange}
       isDirty={isDirty}
       className={className}
-      // style={{ width: isAlwaysLong ? "100%" : width}}
-      // style={{width: }}
     >
       {children}
     </FormEntryContainer>
   );
 }
 
-export default FormEntry;
+export default LongFormEntry;
 
-FormEntry.propTypes = {
+LongFormEntry.propTypes = {
   children: PropTypes.node,
   className: PropTypes.string,
   isLongOnMobile: PropTypes.bool,
