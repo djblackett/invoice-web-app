@@ -25,9 +25,9 @@ const ItemContainer = styled.div`
     /* padding-top: 1.5rem; */
   }
 
-  @media (min-width: 768px) {
+  @media (min-width: 600px) {
     height: 72px;
-    max-width: 504px;
+    width: 100%;
     /* padding: 2rem; */
     display: grid;
     // Setting the px of the grid column keeps the form fields lined up.
@@ -91,7 +91,7 @@ const ItemName = styled(Input)`
 
   letter-spacing: -0.25px;
 
-  @media (min-width: 768px) {
+  @media (min-width: 600px) {
     width: 204px;
   }
 `;
@@ -115,7 +115,7 @@ const Quantity = styled(Input)`
   text-align: center;
   letter-spacing: -0.25px;
 
-  @media (min-width: 768px) {
+  @media (min-width: 600px) {
     display: inline;
   }
 `;
@@ -143,7 +143,7 @@ const Total = styled.p`
   color: ${({ theme }) => theme.greyText};
 
   letter-spacing: -0.25px;
-  @media (min-width: 768px) {
+  @media (min-width: 600px) {
     grid-area: initial;
     text-align: left;
   }
@@ -155,7 +155,7 @@ const QuantityPriceContainer = styled.div`
   align-items: center; */
   /* grid-area: 2 / 2 /3 / 3; */
 
-  @media (min-width: 768px) {
+  @media (min-width: 600px) {
     display: contents;
   }
 `;
@@ -175,7 +175,7 @@ const MobileQuantityPrice = styled.p`
 
   letter-spacing: -0.25px;
   color: ${({ theme }) => theme.greyText};
-  @media (min-width: 768px) {
+  @media (min-width: 600px) {
     display: none;
   }
 `;
@@ -185,7 +185,7 @@ const MobileHelperContainer = styled.div`
   flex-direction: column;
   justify-content: center;
 
-  @media (min-width: 768px) {
+  @media (min-width: 600px) {
     display: contents;
   }
 `;
@@ -323,7 +323,7 @@ function EditFormItem({ item, items, setItems }) {
     </ItemContainer>
   );
 
-  if (width < 768) {
+  if (width < 600) {
     return mobileRender;
   } else {
     return tabletAndDesktopRender;

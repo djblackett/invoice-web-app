@@ -25,7 +25,7 @@ import FormEntry from "../components/form-components/FormEntry";
 import NewInvoiceBottomMenu from "../components/menus-toolbars/NewInvoiceBottomMenu";
 import {
   AddressDetailInput, BillText, CountryInput,
-  DarkenScreen, EditTitle, ErrorText, FormContainerDarkenModal,
+  DarkenScreen, DateAndPaymentContainer, EditTitle, ErrorText, FormContainerDarkenModal,
   Input,
   Label,
   ProjectDescription,
@@ -219,7 +219,7 @@ function NewInvoice({
             type="text"
 
             style={{border: errors.country ? "1px solid red" : ""}}
-            {...register("clientCountry", {required: true})}
+            {...register("clientCountry")}
         />
       </>
   );
@@ -238,7 +238,7 @@ function NewInvoice({
             }}
             type="text"
 
-            {...register("country", {required: true})}
+            {...register("country")}
         />
       </>
   );
@@ -360,14 +360,16 @@ function NewInvoice({
             </FormEntry>}
 
           </AddressBox>
-          <div
-            style={{
-              display: "flex",
-              justifyContent: "space-between",
-              width: "100%",
-            }}
-          >
-            <FormEntry>
+          {/*<div*/}
+          {/*  style={{*/}
+          {/*    display: "flex",*/}
+          {/*    justifyContent: "space-between",*/}
+          {/*    width: "100%",*/}
+          {/*  }}*/}
+          {/*>*/}
+
+          <DateAndPaymentContainer>
+            <FormEntry isLongOnMobile>
               <Label htmlFor="invoiceDate">Invoice Date</Label>
 
               <DatePicker
@@ -380,7 +382,7 @@ function NewInvoice({
               />
             </FormEntry>
 
-            <FormEntry>
+            <FormEntry isLongOnMobile>
               <Label htmlFor="paymentTerms">Payment Terms</Label>
               <FormDropDown 
                 handlePaymentSelect={handlePaymentSelect} 
@@ -396,7 +398,8 @@ function NewInvoice({
             {/* <Input type="text" {...register('exampleRequired', { required: true })} /> */}
             {/* errors will return when field validation fails  */}
             {/* {errors.exampleRequired && <span>This field is required</span>} */}
-          </div>
+          {/*</div>*/}
+          </DateAndPaymentContainer>
           <LongFormEntry isLongOnMobile={editPageWidth < 768}>
             <Label htmlFor="projectDescription">Project Description</Label>
             <Input

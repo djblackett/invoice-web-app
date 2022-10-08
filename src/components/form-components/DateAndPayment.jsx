@@ -20,10 +20,10 @@ export function DateAndPayment(props) {
       />
   ));
 
+
+
     return <DateAndPaymentContainer>
-        <FormEntry
-            isLongOnMobile={props.editPageWidth < 768}
-        >
+        <FormEntry isLongOnMobile>
             <Label
                 htmlFor="invoiceDate"
             >
@@ -40,7 +40,7 @@ export function DateAndPayment(props) {
             />
         </FormEntry>
 
-        <FormEntry isLongOnMobile={props.editPageWidth < 768}>
+        <FormEntry isLongOnMobile>
             <Label
                 htmlFor="paymentTerms"
             >

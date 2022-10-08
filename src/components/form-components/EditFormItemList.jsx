@@ -10,7 +10,7 @@ import {useEffect} from "react";
 const ListContainer = styled.div`
   display: grid;
   width: 100%;
-  max-width: 504px;
+  //max-width: 504px;
   border-radius: 8px;
 
   grid-template-rows: auto;
@@ -21,7 +21,7 @@ const ListContainer = styled.div`
 export const ItemsHeader = styled.div`
   display: none;
 
-  @media (min-width: 768px) {
+  @media (min-width: 600px) {
     display: grid;
     /* grid-template: auto / 2fr 1fr 1fr 1fr; */
     grid-template: 1fr / 220px 62px 116px 61px 49px;

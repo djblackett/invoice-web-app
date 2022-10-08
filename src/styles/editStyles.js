@@ -158,35 +158,7 @@ export const ErrorTextInline = styled(ErrorText)`
   position: absolute;
   right: 1.5rem;
 `;
-// export const Select = styled.select`
-//   width: 240px;
-//   height: 48px;
-//   border-radius: 4px;
-//   border-color: ${({theme}) => theme.formFieldOutline};
-//   /* outline: none; */
-//   padding: 17px 20px 16px 20px;
-//   margin-bottom: 1.5rem;
-//   font-family: ${({theme}) => theme.font};
-//   font-style: normal;
-//   font-weight: 700;
-//   font-size: 12px;
-//   line-height: 15px;
-//   /* margin-left:5px; */
-//   /* identical to box height, or 125% */
-//
-//   letter-spacing: -0.25px;
-//   /* color: #0c0e16; */
-//   color: ${({theme}) => theme.textPlain};
-//   background-color: ${({theme}) => theme.editButton};
-//
-//   &:focus {
-//     border-color: black;
-//   }
-//
-//   .custom-input {
-//     padding: 0;
-//   }
-// `;
+
 
 export const DateAndPaymentContainer = styled.div`
   /* display: contents; */
@@ -194,9 +166,12 @@ export const DateAndPaymentContainer = styled.div`
   justify-content: space-between;
   max-width: 100%;
   flex-wrap: wrap;
+  flex-direction: column;
+  
   @media (min-width: 768px) {
     display: flex;
     justify-content: space-between;
+    flex-direction: row;
     width: 100%;
     max-width: initial;
     flex-wrap: nowrap;

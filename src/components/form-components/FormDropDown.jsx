@@ -5,6 +5,7 @@ import PropTypes from "prop-types";
 import { SVG } from "../buttons/NewItemButton";
 
 const Main = styled("div")`
+  display: inline;
   z-index: 10;
   box-sizing: border-box;
   background-color: ${({ theme }) => theme.inputBackgroundColor};
@@ -19,6 +20,7 @@ const Main = styled("div")`
   
   @media (min-width: 768px) {
     width: 240px;
+    max-width: 100%;
   }
 `;
 
@@ -37,6 +39,10 @@ const DropDownHeader = styled.div.attrs({
 
   background-color: transparent;
 
+  width: 100%;
+  height: 48px;
+  border-radius: 4px;
+  border-color: ${({ theme }) => theme.formFieldOutline};
 
   
   h2 {
@@ -70,10 +76,7 @@ const DropDownHeader = styled.div.attrs({
     transform: translateY(-2px);
   }
 
-  width: 100%;
-  height: 48px;
-  border-radius: 4px;
-  border-color: ${({ theme }) => theme.formFieldOutline};
+
 `;
 
 const DropDownList = styled.ul`
