@@ -5,6 +5,7 @@ import PropTypes from "prop-types";
 const MenuContainer = styled.div`
   z-index: 100;
   width: 100%;
+  max-width: 100vw;
   display: flex;
   flex-direction: row;
   align-items: center;

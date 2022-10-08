@@ -57,7 +57,7 @@ export const BillText = styled.p`
 
 
 export const Input = styled.input`
-  width: 240px;
+  width: 100%;
   height: 48px;
   border-radius: 4px;
   border-color: ${({theme}) => theme.formFieldOutline};

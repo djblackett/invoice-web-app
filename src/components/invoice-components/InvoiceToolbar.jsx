@@ -20,6 +20,7 @@ const Toolbar = styled.div`
   flex-direction: column;
   justify-content: space-between;
   align-items: center;
+  //margin-bottom: 0;
 
   width: 100%;
   z-index: 1;

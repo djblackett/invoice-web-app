@@ -12,7 +12,7 @@ export function DateAndPayment(props) {
 
   const ExampleCustomInput = forwardRef(({ value, onClick }, ref) => (
       <Input
-          style={{ width: props.editPageWidth < 768 ? "100%" : "initial" }}
+          // style={{ width: props.editPageWidth < 600 ? "100%" : "initial" }}
           className="custom-input"
           onClick={onClick}
           ref={ref}

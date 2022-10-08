@@ -4,12 +4,18 @@ import PropTypes from "prop-types";
 
 const MenuContainer = styled.div`
   width: 100%;
+  max-width: 100vw;
   display: flex;
   flex-direction: row;
   align-items: center;
   justify-content: space-between;
 
   margin-top: 2.6rem;
+  margin-bottom: 4rem;
+
+  @media (min-width: 768px) {
+    margin-bottom: 0;
+  }
 `;
 
 const NewInvoiceButton = styled.input`
@@ -60,8 +66,14 @@ const SaveDraft = styled(NewInvoiceButton)`
 `;
 
 const SaveAndDraftContainer = styled.div`
-  display: flex;
-  flex-direction: row;
+  display: contents;
+
+  @media (min-width: 768px) {
+    display: flex;
+    flex-direction: row;
+  }
+  
+  
 `;
 
 function NewInvoiceBottomMenu({
