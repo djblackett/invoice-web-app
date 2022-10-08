@@ -7,7 +7,7 @@ import styled from "styled-components";
 import LongFormEntry from "./LongFormEntry";
 import {useWindowWidth} from "../../hooks/useWindowWidth";
 
-const CityPostContainer = styled.div`
+export const CityPostContainer = styled.div`
   display: flex;
   width: 100%;
   //max-width: 100vw;

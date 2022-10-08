@@ -13,7 +13,7 @@ const InvoiceStatusBox = styled.div`
   justify-self: end;
   
   @media (min-width: 600px) {
-    width: 84%;
+    //width: 84%;
     justify-self: start;
   }
 `;
@@ -50,7 +50,7 @@ const Circle = styled.div`
 
 function InvoiceStatus({ text, textColor, backgroundColor, isInToolbar }) {
   return (
-    <InvoiceStatusBox style={{ backgroundColor: backgroundColor, width: isInToolbar ? "20%" : "revert" }}>
+    <InvoiceStatusBox style={{ backgroundColor: backgroundColor }}>
       <TextCircleBox>
         <Circle style={{ backgroundColor: textColor }} />
         <StatusText style={{ color: textColor }}>{text}</StatusText>

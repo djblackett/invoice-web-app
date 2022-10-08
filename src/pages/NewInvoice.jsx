@@ -24,13 +24,15 @@ import FormEntry from "../components/form-components/FormEntry";
 
 import NewInvoiceBottomMenu from "../components/menus-toolbars/NewInvoiceBottomMenu";
 import {
-  AddressDetailInput, BillText,
+  AddressDetailInput, BillText, CountryInput,
   DarkenScreen, EditTitle, ErrorText, FormContainerDarkenModal,
   Input,
   Label,
   ProjectDescription,
   StreetAddressInput
 } from "../styles/editStyles";
+import LongFormEntry from "../components/form-components/LongFormEntry";
+import {CityPostContainer} from "../components/form-components/CompanyFormInfo";
 
 const generateId = () => {
     const list = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
@@ -205,6 +207,41 @@ function NewInvoice({
     // console.log(items);
   }, []);
 
+  const companyCountryChildren = (
+      <>
+        <Label
+            htmlFor="country"
+            style={{color: errors.country ? "red" : ""}}
+        >
+          Country
+        </Label>
+        <CountryInput
+            type="text"
+
+            style={{border: errors.country ? "1px solid red" : ""}}
+            {...register("clientCountry", {required: true})}
+        />
+      </>
+  );
+
+  const clientCountryChildren = (
+      <>
+        <Label
+            htmlFor="country"
+            style={{color: errors.clientCountry ? "red" : ""}}
+        >
+          Country
+        </Label>
+        <CountryInput
+            style={{
+              border: errors.clientCountry ? "1px solid red" : "",
+            }}
+            type="text"
+
+            {...register("country", {required: true})}
+        />
+      </>
+  );
 
 
               // todo make this input not editable - doesn't have to be a DatePicker component
@@ -227,14 +264,16 @@ function NewInvoice({
         <form onSubmit={handleSubmit(onSubmit)}>
           {/* register your input into the hook by invoking the "register" function */}
           <BillText>Bill From</BillText>
-          <FormEntry>
+          <LongFormEntry>
             <Label htmlFor="streetAddress">Street Address</Label>
-            <StreetAddressInput
+            <Input
+                long
               // defaultValue={invoice.senderAddress.street}
               {...register("streetAddress")}
             />
-          </FormEntry>
+          </LongFormEntry>
           <AddressBox>
+            <CityPostContainer>
             <FormEntry>
               <Label htmlFor="city">City</Label>
               <AddressDetailInput
@@ -252,43 +291,46 @@ function NewInvoice({
                 {...register("postalCode")}
               />
             </FormEntry>
+            </CityPostContainer>
+            { width < 768 && <LongFormEntry isLongOnMobile={editPageWidth < 768}>
+              {companyCountryChildren}
+            </LongFormEntry>}
 
-            <FormEntry>
-              <Label htmlFor="country">Country</Label>
-              <AddressDetailInput
-                type="text"
-                // defaultValue={invoice.senderAddress.country}
-                {...register("country")}
-              />
-            </FormEntry>
+            {width >= 768 && <FormEntry>
+              {companyCountryChildren}
+            </FormEntry>}
           </AddressBox>
 
           {/*   client details */}
 
           <BillText>Bill To</BillText>
-          <FormEntry>
+          <LongFormEntry>
             <Label htmlFor="clientName">Client's Name</Label>
             <Input
               type="text"
+              long
               // defaultValue={invoice.clientName}
               {...register("clientName")}
             />
-          </FormEntry>
-          <FormEntry>
+          </LongFormEntry>
+          <LongFormEntry>
             <Label htmlFor="clientEmail">Client's Email</Label>
             <Input
+                long
               // defaultValue={invoice.clientEmail}
               {...register("clientEmail")}
             />
-          </FormEntry>
-          <FormEntry>
+          </LongFormEntry>
+          <LongFormEntry>
             <Label htmlFor="clientStreetAddress">Street Address</Label>
-            <StreetAddressInput
+            <Input
+                long
               // defaultValue={invoice.clientAddress.street}
               {...register("clientStreetAddress")}
             />
-          </FormEntry>
+          </LongFormEntry>
           <AddressBox>
+          <CityPostContainer>
             <FormEntry>
               <Label htmlFor="clientCity">City</Label>
               <AddressDetailInput
@@ -306,21 +348,23 @@ function NewInvoice({
                 {...register("clientPostalCode")}
               />
             </FormEntry>
+          </CityPostContainer>
 
-            <FormEntry>
-              <Label htmlFor="country">Country</Label>
-              <AddressDetailInput
-                type="text"
-                // defaultValue={invoice.clientAddress.country}
-                {...register("clientCountry")}
-              />
-            </FormEntry>
+
+            { width < 768 && <LongFormEntry isLongOnMobile={editPageWidth < 768}>
+              {clientCountryChildren}
+            </LongFormEntry>}
+
+            {width >= 768 && <FormEntry>
+              {clientCountryChildren}
+            </FormEntry>}
+
           </AddressBox>
           <div
             style={{
               display: "flex",
               justifyContent: "space-between",
-              width: "504px",
+              width: "100%",
             }}
           >
             <FormEntry>
@@ -353,22 +397,19 @@ function NewInvoice({
             {/* errors will return when field validation fails  */}
             {/* {errors.exampleRequired && <span>This field is required</span>} */}
           </div>
-          <ProjectDescription>
+          <LongFormEntry isLongOnMobile={editPageWidth < 768}>
             <Label htmlFor="projectDescription">Project Description</Label>
             <Input
               type="text"
-              // defaultValue={invoice.description}
+              long
               {...register("projectDescription")}
-              style={{ marginBottom: 0, width: "504px" }}
+              // style={{ marginBottom: 0, width: "504px" }}
             />
-          </ProjectDescription>
-          {/* <Input type="submit" style={{ marginLeft: "5px" }} /> */}
+          </LongFormEntry>
 
           <EditFormItemList
-            // invoice={invoice}
             items={items}
             setItems={setItems}
-
           />
 
           {isSubmitDirty && <ErrorText>- All fields must be added</ErrorText>}
@@ -384,7 +425,6 @@ function NewInvoice({
 NewInvoice.propTypes = {
   isNewOpen: PropTypes.bool.isRequired,
   setIsNewOpen: PropTypes.func.isRequired,
-  // handleClose: PropTypes.func.isRequired,
 };
 
 export default NewInvoice;
