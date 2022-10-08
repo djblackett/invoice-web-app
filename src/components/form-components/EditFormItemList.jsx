@@ -25,7 +25,7 @@ export const ItemsHeader = styled.div`
     display: grid;
     /* grid-template: auto / 2fr 1fr 1fr 1fr; */
     grid-template: 1fr / 220px 62px 116px 61px 49px;
-    color: ${({ theme }) => theme.editButtonHover};
+    color: ${({ theme }) => theme.newItemText};
     /* background-color: ${({ theme }) => theme.editButton}; */
     margin-top: 1rem;
     /* padding: 2rem; */
@@ -36,7 +36,7 @@ export const ItemsHeader = styled.div`
 `;
 
 export const Col = styled.p`
-  color: ${({ theme }) => theme.editButtonHover};
+  color: ${({ theme }) => theme.newItemText};
   width: fit-content;
   margin: 0;
   padding: 0;
