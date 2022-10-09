@@ -152,6 +152,8 @@ function NewInvoice({
     dispatch(addInvoice(newInvoice));
     setIsNewOpen(false);
     reset();
+    setItems([]);
+    setSelectedPaymentOption(1);
     // newInvoice = {};
   };
 

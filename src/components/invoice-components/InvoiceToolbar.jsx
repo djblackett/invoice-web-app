@@ -1,17 +1,9 @@
 import styled from "styled-components";
 import Proptypes from "prop-types";
-import InvoicePaid from "./InvoicePaid";
-import InvoicePending from "./InvoicePending";
-import InvoiceDraft from "./InvoiceDraft";
 import { useMemo, useState, useEffect, useCallback } from "react";
-import { useDispatch } from "react-redux";
-import { removeInvoice } from "../../features/invoices/invoicesSlice";
 import { useWindowWidth } from "../../hooks/useWindowWidth";
-
-import EditButton from "../buttons/EditButton";
-import DeleteButton from "../buttons/DeleteButton";
-import MarkAsPaidButton from "../buttons/MarkAsPaidButton";
 import ToolbarButtons from "../menus-toolbars/ToolbarButtons";
+import InvoiceStatus from "./InvoiceStatus";
 
 const Toolbar = styled.div`
   height: 88px;
@@ -20,7 +12,6 @@ const Toolbar = styled.div`
   flex-direction: column;
   justify-content: space-between;
   align-items: center;
-  //margin-bottom: 0;
 
   width: 100%;
   z-index: 1;
@@ -69,21 +60,19 @@ function InvoiceToolbar({
   setItems,
   isEditOpen,
 }) {
-  const [invoiceStatus, setInvoiceStatus] = useState(null);
 
   const openModal = () => setIsModalOpen(true);
 
-  useEffect(() => {
+  const invoiceStatus = useMemo(() => {
     if (invoice.status === "paid") {
-      setInvoiceStatus(<InvoicePaid />);
+      return <InvoiceStatus statusType="paid" text={"Paid"}/>;
     } else if (invoice.status === "pending") {
-      setInvoiceStatus(<InvoicePending />);
+      return <InvoiceStatus statusType="pending" text={"Pending"}/>;
     } else if (invoice.status === "draft") {
-      setInvoiceStatus(<InvoiceDraft />);
+      return <InvoiceStatus statusType="draft" text={"Draft"}/>;
     }
   }, [invoice]);
 
-  const dispatch = useDispatch();
   const width = useWindowWidth();
 
   return (

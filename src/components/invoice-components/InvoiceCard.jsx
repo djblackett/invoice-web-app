@@ -1,9 +1,7 @@
 import styled from "styled-components";
-import InvoicePaid from "./InvoicePaid";
-import InvoicePending from "./InvoicePending";
-import InvoiceDraft from "./InvoiceDraft";
 import PropTypes from "prop-types";
 import { useMemo } from "react";
+import InvoiceStatus from "./InvoiceStatus";
 
 const Card = styled.div`
   height: 134px;
@@ -56,6 +54,8 @@ const Card = styled.div`
     margin-right: 0;
    
   }
+  
+  
 `;
 
 const IDNumber = styled.p`
@@ -90,7 +90,7 @@ const InvoiceAmount = styled.p`
 
 const CustomerName = styled.p`
   margin: 0;
-  color: #888eb0;
+  color: ${({theme}) => theme.textPlain};
   font-family: "Spartan";
   font-style: normal;
   font-weight: 500;
@@ -132,11 +132,11 @@ const arrowRightSVG = (
 function InvoiceCard({ invoice }) {
   const invoiceStatus = useMemo(() => {
     if (invoice.status === "paid") {
-      return <InvoicePaid />;
+      return <InvoiceStatus statusType="paid" text={"Paid"}/>;
     } else if (invoice.status === "pending") {
-      return <InvoicePending />;
+      return <InvoiceStatus statusType="pending" text={"Pending"}/>;
     } else if (invoice.status === "draft") {
-      return <InvoiceDraft />;
+      return <InvoiceStatus statusType="draft" text={"Draft"}/>;
     }
   }, [invoice]);
 

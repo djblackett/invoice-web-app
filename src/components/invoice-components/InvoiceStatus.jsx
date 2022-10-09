@@ -1,10 +1,10 @@
-import styled from "styled-components";
+import styled, {css} from "styled-components";
 import PropTypes from "prop-types";
 
 const InvoiceStatusBox = styled.div`
   padding: 13px 23px 12px 24px;
-  background-color: rgba(173, 216, 230, 0.2);
-  border-radius: 8px;
+  //background: rgba(173, 216, 230, 0.2);
+  border-radius: 6px;
   height: 40px;
   width: 104px;
   display: flex;
@@ -16,6 +16,7 @@ const InvoiceStatusBox = styled.div`
     //width: 84%;
     justify-self: start;
   }
+
 `;
 
 const TextCircleBox = styled.div`
@@ -27,7 +28,7 @@ const TextCircleBox = styled.div`
 
 const StatusText = styled.p`
   margin: 0;
-  color: #33d69f;
+  color: inherit;
   font-weight: bold;
   margin-left: 4px;
   font-family: "Spartan";
@@ -45,15 +46,15 @@ const Circle = styled.div`
   height: 8px;
   width: 8px;
   margin-right: 4px;
-  background: #33d69f;
+  background-color: inherit;
 `;
 
-function InvoiceStatus({ text, textColor, backgroundColor, isInToolbar }) {
+function InvoiceStatus({ text, statusType }) {
   return (
-    <InvoiceStatusBox style={{ backgroundColor: backgroundColor }}>
+    <InvoiceStatusBox className={statusType}>
       <TextCircleBox>
-        <Circle style={{ backgroundColor: textColor }} />
-        <StatusText style={{ color: textColor }}>{text}</StatusText>
+        <Circle className="circle"/>
+        <StatusText >{text}</StatusText>
       </TextCircleBox>
     </InvoiceStatusBox>
   );
@@ -61,8 +62,7 @@ function InvoiceStatus({ text, textColor, backgroundColor, isInToolbar }) {
 
 InvoiceStatus.propTypes = {
   text: PropTypes.string.isRequired,
-  textColor: PropTypes.string.isRequired,
-  backgroundColor: PropTypes.string.isRequired,
-    isInToolbar: PropTypes.bool,
+  statusType: PropTypes.string
+
 };
 export default InvoiceStatus;

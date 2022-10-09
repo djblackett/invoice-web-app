@@ -15,11 +15,13 @@ export const lightTheme = {
   editButtonHover: "#DFE3FA",
   newItemText: "#7E88C3",
   inputBackgroundColor: "#FFFFFF",
+  draftColor: "#373B53",
+  draftBackgroundColor: "rgba(55,59,83, 0.06)",
 };
 export const darkTheme = {
   body: "#141625",
   text: "hsl(0, 0%, 100%)",
-  textPlain: "white",
+  textPlain: "#FFFFFF",
   toggleBorder: "#6B8096",
   background: "#1E2139",
   elements: "hsl(209, 23%, 22%)",
@@ -32,6 +34,8 @@ export const darkTheme = {
   editButtonHover: "#FFFFFF",
   newItemText: "#888EB0",
   inputBackgroundColor: "#1E2139",
+  draftColor: "#DFE3FA",
+  draftBackgroundColor: "rgba(151, 151, 151, 0.06)"
 };
 
 export const colors = {
