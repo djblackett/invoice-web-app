@@ -23,7 +23,6 @@ const AllInvoicesContainer = styled.div`
   align-items: center;
   margin-bottom: 6.5rem;
   z-index: 5;
-  //scrollbar-gutter: stable;
   overflow-y: auto;
   
   

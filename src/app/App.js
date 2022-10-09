@@ -18,7 +18,7 @@ const Main = styled.div`
   width: 100%;
   min-height: 100vh;
   background-color: ${({ theme }) => theme.body};
-  transition: all 0.4s ease;
+  transition: all 0.4s ease-in-out;
   z-index: 1;
   //scrollbar-gutter: stable both-edges;
 

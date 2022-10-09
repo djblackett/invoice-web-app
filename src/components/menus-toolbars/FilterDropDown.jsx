@@ -14,7 +14,7 @@ const Main = styled("div")`
 
   width: 8px;
   cursor: pointer;
-  filter: drop-shadow(2px 2px 2px bottom);
+  //filter: drop-shadow(2px 2px 2px bottom);
   margin-left: 16px;
   position: relative;
 
@@ -37,7 +37,6 @@ const DropDownContainer = styled("div")`
   width: 8px;
   margin: 0 auto;
   z-index: 10;
-  filter: drop-shadow(2px 2px 2px bottom);
   background: transparent;
 `;
 
@@ -57,20 +56,19 @@ const DropDownHeader = styled.div.attrs({
   color: ${({ theme }) => theme.text};
   border-radius: 6px;
 
-  color: ${({ theme }) => theme.text};
-  /* background-color: ${({ theme }) => theme.background}; */
+ 
+  
 `;
 
 const DropDownListContainer = styled("div")`
   position: absolute;
   width: 150px;
-  //margin-top: 50px;
-  //bottom: -10px;
   left: -75px;
   background-color: ${({ theme }) => theme.background};
   border-radius: 10px;
   overflow: hidden;
-  filter: drop-shadow(2px 2px 2px gray);
+  box-shadow: ${({theme}) => theme.filterShadow};
+  transition: height 250ms;
 `;
 
 const DropDownList = styled("ul")`
@@ -161,8 +159,8 @@ export default function FilterDropDown({ icon, isOpen, options, onClickOutside }
     <Main>
       <DropDownContainer>
         <DropDownHeader>{icon}</DropDownHeader>
-        {isOpen && (
-          <DropDownListContainer>
+        {/*{isOpen && (*/}
+          <DropDownListContainer style={{height: isOpen ? "106px" : 0}}>
             <DropDownList >
               {options.map((option, index) => (
                 <ListItem key={index + "-li"} onClick={clickCallback(option)}>
@@ -173,7 +171,7 @@ export default function FilterDropDown({ icon, isOpen, options, onClickOutside }
               ))}
             </DropDownList>
           </DropDownListContainer>
-        )}
+        {/*)}*/}
       </DropDownContainer>
     </Main>
   );

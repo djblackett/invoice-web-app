@@ -79,7 +79,8 @@ function InvoiceToolbar({
     <Toolbar
       className="invoice-toolbar"
       style={{
-        display: isEditOpen ? "none" : width < 600 ? "contents" : "flex",
+        // display: isEditOpen ? "none" : width < 600 ? "contents" : "flex",
+        display: width < 600 ? "contents" : "flex"
       }}
     >
       <StatusContainer>

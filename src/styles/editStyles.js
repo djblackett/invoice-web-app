@@ -7,19 +7,20 @@ export const EditTitle = styled.h1`
 `;
 export const FormContainerDarkenModal = styled.div`
   height: 100%;
-  /* min-width: 300px; */
   top: 72px;
   bottom: 91px;
   left: 0;
-  right: 0;
+  
   width: 100%;
   background-color: ${({theme}) => theme.background};
-  background-size: cover;
-  position: absolute;
+  //background-size: cover;
+  position: fixed;
 
   display: flex;
   flex-direction: column;
-  transition: all 250ms ease-in-out;
+  transition-property: all;
+  transition-duration: 250ms;
+  transition-timing-function: ease-in-out;
   overflow-x: hidden;
   filter: drop-shadow(2px 2px 2px bottom);
 
@@ -99,12 +100,9 @@ export const StreetAddressInput = styled(Input)`
 
 export const AddressDetailInput = styled(Input)`
   width: 100%;
-  //min-width: 120px;
-  //max-width: 50%;
   
   @media (min-width: 768px) {
     max-width: 152px;
-    //width: max-content;
   }
 `;
 export const CountryInput = styled(Input)`
@@ -124,23 +122,18 @@ export const Label = styled.label`
 `;
 export const DarkenScreen = styled.div`
   position: fixed;
+  //overflow-y: hidden;
   top: 0;
   bottom: 0;
   left: 0;
   right: 0;
+
+  
   background-color: rgba(0, 0, 0, 0.5);
-  transition: all 0.5s linear;
+  transition: all 250ms ease-in-out;
   z-index: 100;
 `;
-export const ProjectDescription = styled(FormEntry)`
-  margin-bottom: 0;
-  max-width: 100%;
-  width: 100%;
-  @media (min-width: 768px) {
-    width: 504px;
-    max-width: initial;
-  }
-`;
+
 export const LongEntry = styled(Input)`
   max-width: 100%;
   width: 100%;
@@ -161,7 +154,6 @@ export const ErrorTextInline = styled(ErrorText)`
 
 
 export const DateAndPaymentContainer = styled.div`
-  /* display: contents; */
   display: flex;
   justify-content: space-between;
   max-width: 100%;

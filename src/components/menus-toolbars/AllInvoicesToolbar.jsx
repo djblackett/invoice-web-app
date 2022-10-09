@@ -177,7 +177,7 @@ const NewText = styled.p`
 const Filter = styled.p`
   font-weight: bold;
   margin: 0;
-  margin-bottom: 5px;
+  //margin-bottom: 5px;
   cursor: pointer;
   white-space: nowrap;
 

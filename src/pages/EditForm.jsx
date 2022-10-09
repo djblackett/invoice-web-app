@@ -19,19 +19,30 @@ import {
   ErrorText,
   FormContainerDarkenModal, Input,
   Label,
-  LongEntry,
-  ProjectDescription
 } from "../styles/editStyles";
 import {CompanyFormInfo} from "../components/form-components/CompanyFormInfo";
 import {ClientFormInfo} from "../components/form-components/ClientFormInfo";
 import {DateAndPayment} from "../components/form-components/DateAndPayment";
-import FormEntry from "../components/form-components/FormEntry";
 import LongFormEntry from "../components/form-components/LongFormEntry";
+
+
+export const convertDateToString = date => {
+  const [month, day, year] = [date.getMonth(), date.getDate(), date.getFullYear()];
+  return [year, month, day].join("-");
+}
+
+export const convertStringToDate = (str) => {
+  if (!str) {
+    return new Date();
+  }
+   const dateArray = str.split("-");
+   return new Date(Date.UTC(dateArray[0], dateArray[1], dateArray[2]));
+
+}
 
 function EditForm({
   isEditOpen,
   setIsEditOpen,
-  handleClose,
   padding,
   setPadding,
   invoice,
@@ -44,8 +55,8 @@ function EditForm({
   } = useForm();
 
   const width = useWindowWidth();
-  const [editPageWidth, setEditPageWidth] = useState(null);
-  const [startDate, setStartDate] = useState(new Date());
+  const [editPageWidth, setEditPageWidth] = useState(0);
+  const [startDate, setStartDate] = useState(convertStringToDate(invoice.createdAt));
   const [items, setItems] = useState(invoice.items || []);
   const [hasEmptyField, setHasEmptyField] = useState(false);
   const dispatch = useDispatch();
@@ -76,16 +87,17 @@ function EditForm({
     }
   });
 
-  //todo figure out which invoice date goes with what
 
   // submit form logic
   const onSubmit = (data) => {
 
     // check for empty fields or items before submitting
     if (hasEmptyField || items.length === 0) {
-      console.log("Has an empty field or no items");
+      // console.log("Has an empty field or no items");
       return;
     }
+
+    // console.log(startDate)
 
     // build updated invoice from form data
     const newInvoice = {
@@ -104,7 +116,7 @@ function EditForm({
         street: data.streetAddress,
       },
       clientEmail: data.clientEmail,
-      createdAt: invoice.createdAt,
+      createdAt: convertDateToString(startDate),
       paymentTerms: selectedPaymentOption,
       description: data.projectDescription,
       items: items,
@@ -118,10 +130,12 @@ function EditForm({
     }
     newInvoice.total = total;
 
+
+
     // Calculate payment due date from paymentTerms + createdAt
-    const dateArray = newInvoice.createdAt.split("-");
-    let oldDate = new Date(Date.UTC(dateArray[0], dateArray[1], dateArray[2]));
-    const date = new Date(oldDate.getTime() + 86400000 * newInvoice.paymentTerms);
+    // const dateArray = newInvoice.createdAt.split("-");
+    // let oldDate = new Date(Date.UTC(dateArray[0], dateArray[1], dateArray[2]));
+    const date = new Date(startDate.getTime() + 86400000 * newInvoice.paymentTerms);
 
     const [month, day, year] = [date.getMonth(), date.getDate(), date.getFullYear()];
     newInvoice.paymentDue = [year, month, day].join("-");
@@ -138,9 +152,16 @@ function EditForm({
     } else if (width < 1200 && isEditOpen) {
       setEditPageWidth(616);
       setPadding("2.5rem 2.5rem 2.5rem 2.5rem");
-    } else if (!isEditOpen) {
-      // setEditPageWidth(0);
-      setPadding("0px");
+    }
+
+    else if (width < 600 && isEditOpen) {
+      setEditPageWidth(width);
+      setPadding("1.5rem 1.5rem 1.5rem 1.5rem");
+    }
+
+    else if (!isEditOpen) {
+      setEditPageWidth(0);
+      // setPadding("0px");
     }
   }, [width, padding, isEditOpen]);
 
@@ -188,13 +209,16 @@ function EditForm({
     setIsPaymentOpen(false);
   };
 
+
+
   // console.log(watch("example")); // watch input value by passing the name of it
   return (
-    <DarkenScreen style={{display: isEditOpen ? "block" : "none"}}>
+    <DarkenScreen style={{visibility: isEditOpen ? "visible" : "hidden"}}>
       <FormContainerDarkenModal
           style={{
-            width: isEditOpen ? `${editPageWidth}px` : "0px",
-            padding: padding,
+            width: isEditOpen ? `${editPageWidth}px` : 0,
+            padding: isEditOpen ? padding : 0,
+
           }}
       >
         <EditTitle>

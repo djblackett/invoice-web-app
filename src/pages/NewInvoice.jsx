@@ -2,14 +2,13 @@
 /* eslint-disable react/display-name */
 /* eslint-disable react/prop-types */
 /* eslint-disable no-unused-vars */
-import FormDropDown from '../components/form-components/FormDropDown';
+
 
 
 
 
 import React, { useState, useEffect, useLayoutEffect, forwardRef } from "react";
 import { useForm } from "react-hook-form";
-import DatePicker from "react-datepicker";
 import PropTypes from "prop-types";
 import { useDispatch } from "react-redux";
 import { addInvoice } from "../features/invoices/invoicesSlice";
@@ -25,14 +24,14 @@ import FormEntry from "../components/form-components/FormEntry";
 import NewInvoiceBottomMenu from "../components/menus-toolbars/NewInvoiceBottomMenu";
 import {
   AddressDetailInput, BillText, CountryInput,
-  DarkenScreen, DateAndPaymentContainer, EditTitle, ErrorText, FormContainerDarkenModal,
+  DarkenScreen, EditTitle, ErrorText, FormContainerDarkenModal,
   Input,
   Label,
-  ProjectDescription,
-  StreetAddressInput
 } from "../styles/editStyles";
 import LongFormEntry from "../components/form-components/LongFormEntry";
 import {CityPostContainer} from "../components/form-components/CompanyFormInfo";
+import {DateAndPayment} from "../components/form-components/DateAndPayment";
+import {convertDateToString} from "./EditForm";
 
 const generateId = () => {
     const list = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
@@ -46,10 +45,9 @@ const generateId = () => {
     res = res + String(Math.floor(Math.random() * 9));
 
   }
-
     return res;
-
 }
+
 function NewInvoice({
   isNewOpen,
   setIsNewOpen,
@@ -60,19 +58,9 @@ function NewInvoice({
   const {
     register,
     handleSubmit,
-    watch,
     formState: { errors },
     reset
   } = useForm();
-
-  const ExampleCustomInput = forwardRef(({ value, onClick }, ref) => (
-    <Input
-      className="custom-input"
-      onClick={onClick}
-      ref={ref}
-      defaultValue={value}
-    />
-  ));
 
   const width = useWindowWidth();
 
@@ -93,26 +81,17 @@ function NewInvoice({
   const dispatch = useDispatch();
 
    const handlePaymentClick = (e) => {
-    console.log("button pressed");
     e.preventDefault();
-
     setIsPaymentOpen(true);
-    console.log("isPaymentOpen: " + isPaymentOpen);
   };
 
   const handlePaymentSelect = (e) => {
     setIsPaymentOpen(false);
   }
 
-  // todo add items to newInvoice
-  //todo figure out which invoice date goes with what
-
   const onSubmit = (data) => {
-    // console.log(data);
-
 
     let newInvoice = {
-      // ...invoice,
       clientName: data.clientName,
       clientAddress: {
         city: data.clientCity,
@@ -127,7 +106,7 @@ function NewInvoice({
         street: data.streetAddress,
       },
       clientEmail: data.clientEmail,
-      // createdAt: invoice.createdAt, 
+      createdAt: convertDateToString(startDate),
       description: data.projectDescription,
       items: items,
     };
@@ -148,16 +127,19 @@ function NewInvoice({
       return;
     }
 
-    // console.log(newInvoice);
+    const date = new Date(startDate.getTime() + 86400000 * newInvoice.paymentTerms);
+
+    const [month, day, year] = [date.getMonth(), date.getDate(), date.getFullYear()];
+    newInvoice.paymentDue = [year, month, day].join("-");
+
+
     dispatch(addInvoice(newInvoice));
     setIsNewOpen(false);
     reset();
     setItems([]);
     setSelectedPaymentOption(1);
-    // newInvoice = {};
   };
 
-  // console.log(watch("streetAddress"));
 
   // checks for empty form inputs on every render
   useEffect(() => {
@@ -188,7 +170,7 @@ function NewInvoice({
       setEditPageWidth(616);
       setPadding("2.5rem 2.5rem 2.5rem 2.5rem");
     } else if (!isNewOpen) {
-      // setEditPageWidth(0);
+      setEditPageWidth(0);
       setPadding("0px");
     }
   }, [width, padding, isNewOpen]);
@@ -206,7 +188,6 @@ function NewInvoice({
       return { ...item, id: uuidv4() };
     });
     setItems(newItems);
-    // console.log(items);
   }, []);
 
   const companyCountryChildren = (
@@ -246,16 +227,13 @@ function NewInvoice({
   );
 
 
-              // todo make this input not editable - doesn't have to be a DatePicker component
   return (
-    <DarkenScreen style={{ display: isNewOpen ? "block" : "none" }}>
+    <DarkenScreen style={{visibility: isNewOpen ? "visible" : "hidden" }}>
       <FormContainerDarkenModal
         style={{
           width: isNewOpen ? `${editPageWidth}px` : "0px",
-          // paddingLeft: `${padding}px`,
-          // paddingRight: `${padding}px`,
           padding: padding,
-          // paddingTop: "2rem",
+          // transition: "width 3s linear",
         }}
       >
         <EditTitle>
@@ -270,7 +248,6 @@ function NewInvoice({
             <Label htmlFor="streetAddress">Street Address</Label>
             <Input
                 long
-              // defaultValue={invoice.senderAddress.street}
               {...register("streetAddress")}
             />
           </LongFormEntry>
@@ -280,7 +257,6 @@ function NewInvoice({
               <Label htmlFor="city">City</Label>
               <AddressDetailInput
                 type="text"
-                // defaultValue={invoice.senderAddress.city}
                 {...register("city")}
               />
             </FormEntry>
@@ -289,7 +265,6 @@ function NewInvoice({
               <Label htmlFor="postalCode">Post Code</Label>
               <AddressDetailInput
                 type="text"
-                // defaultValue={invoice.senderAddress.postCode}
                 {...register("postalCode")}
               />
             </FormEntry>
@@ -311,7 +286,6 @@ function NewInvoice({
             <Input
               type="text"
               long
-              // defaultValue={invoice.clientName}
               {...register("clientName")}
             />
           </LongFormEntry>
@@ -319,7 +293,6 @@ function NewInvoice({
             <Label htmlFor="clientEmail">Client's Email</Label>
             <Input
                 long
-              // defaultValue={invoice.clientEmail}
               {...register("clientEmail")}
             />
           </LongFormEntry>
@@ -327,7 +300,6 @@ function NewInvoice({
             <Label htmlFor="clientStreetAddress">Street Address</Label>
             <Input
                 long
-              // defaultValue={invoice.clientAddress.street}
               {...register("clientStreetAddress")}
             />
           </LongFormEntry>
@@ -337,7 +309,6 @@ function NewInvoice({
               <Label htmlFor="clientCity">City</Label>
               <AddressDetailInput
                 type="text"
-                // defaultValue={invoice.clientAddress.city}
                 {...register("clientCity")}
               />
             </FormEntry>
@@ -346,7 +317,6 @@ function NewInvoice({
               <Label htmlFor="clientPostalCode">Post Code</Label>
               <AddressDetailInput
                 type="text"
-                // defaultValue={invoice.clientAddress.postCode}
                 {...register("clientPostalCode")}
               />
             </FormEntry>
@@ -362,46 +332,14 @@ function NewInvoice({
             </FormEntry>}
 
           </AddressBox>
-          {/*<div*/}
-          {/*  style={{*/}
-          {/*    display: "flex",*/}
-          {/*    justifyContent: "space-between",*/}
-          {/*    width: "100%",*/}
-          {/*  }}*/}
-          {/*>*/}
 
-          <DateAndPaymentContainer>
-            <FormEntry isLongOnMobile>
-              <Label htmlFor="invoiceDate">Invoice Date</Label>
 
-              <DatePicker
-                disabled
-                customInput={<ExampleCustomInput />}
-                selected={startDate}
-                value={startDate}
-                // onChange={(date) => setStartDate(date)}
-                style={{ width: "240px" }}
-              />
-            </FormEntry>
+          <DateAndPayment editPageWidth={editPageWidth} selected={startDate} onChange={(date) => setStartDate(date)}
+                          handlePaymentSelect={handlePaymentSelect} paymentOpen={isPaymentOpen}
+                          handlePaymentClick={handlePaymentClick} selectedPaymentOption={selectedPaymentOption}
+                          handleChangeSelectedOption={handleChangeSelectedOption}/>
 
-            <FormEntry isLongOnMobile>
-              <Label htmlFor="paymentTerms">Payment Terms</Label>
-              <FormDropDown 
-                handlePaymentSelect={handlePaymentSelect} 
-                isPaymentOpen={isPaymentOpen} 
-                handlePaymentClick={handlePaymentClick}
-                selectedPaymentOption={Number(selectedPaymentOption)}
-                handleChangeSelectedOption={handleChangeSelectedOption}
-              />
 
-            </FormEntry>
-
-            {/* include validation with required or other standard HTML validation rules */}
-            {/* <Input type="text" {...register('exampleRequired', { required: true })} /> */}
-            {/* errors will return when field validation fails  */}
-            {/* {errors.exampleRequired && <span>This field is required</span>} */}
-          {/*</div>*/}
-          </DateAndPaymentContainer>
           <LongFormEntry isLongOnMobile={editPageWidth < 768}>
             <Label htmlFor="projectDescription">Project Description</Label>
             <Input
