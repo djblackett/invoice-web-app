@@ -2,11 +2,19 @@
 
 * {
   box-sizing: border-box;
+  /*scrollbar-gutter: stable both-edges;*/
+}
+
+body {
+  /*scrollbar-gutter: stable both-edges;*/
 }
 
 html {
   font-family: "League Spartan", sans-serif;
   font-size: 16px;
+
+  /*scrollbar-gutter: stable;*/
+  overflow-y: scroll;
 }
 
 

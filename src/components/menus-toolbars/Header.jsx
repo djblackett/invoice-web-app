@@ -3,6 +3,7 @@ import PropTypes from "prop-types";
 
 const HeaderContainer = styled.div`
   width: 100%;
+  max-width: 100vw;
   height: 72px;
   display: flex;
   flex-direction: row;

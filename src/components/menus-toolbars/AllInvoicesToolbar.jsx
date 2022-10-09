@@ -192,6 +192,14 @@ const Filter = styled.p`
   }
 `;
 
+const FilterButton = styled.div`
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  width: fit-content;
+  cursor: pointer;
+`
+
 const plusSignSVG = (
   <svg width="11" height="11" xmlns="http://www.w3.org/2000/svg">
     <path
@@ -224,6 +232,8 @@ function AllInvoicesToolbar({ invoiceList, setIsNewOpen }) {
     }
   };
 
+  const handleClickOutside = () => {setIsOpen(false)}
+
   const filter = useSelector(selectFilter);
 
   useEffect(() => {
@@ -252,17 +262,18 @@ function AllInvoicesToolbar({ invoiceList, setIsNewOpen }) {
         </InvoicesLeft>
       </TitleBox>
       <ControlBox>
-        <Filter onClick={toggling} onKeyPress={togglingButton}>
+        <FilterButton onClick={toggling}>
+        <Filter>
           Filter <span className="wideScreenText">by status</span>
         </Filter>
         <FilterDropDown
           icon={arrowDownSVG}
           isOpen={isOpen}
-          handleClick={toggling}
           onKeyPress={togglingButton}
           options={["Draft", "Pending", "Paid"]}
-          onClickOutside={() => {setIsOpen(false)}}
+          // onClickOutside={handleClickOutside}
         />
+        </FilterButton>
         <NewInvoiceButton onClick={openNewInvoice}>
           <WhiteCircle>{plusSignSVG}</WhiteCircle>
 

@@ -131,55 +131,38 @@ const OptionLabel = styled.label`
   color: ${({ theme }) => theme.textPlain};
 `;
 
-export default function FilterDropDown({ icon, handleClick, isOpen, options, onClickOutside }) {
+export default function FilterDropDown({ icon, isOpen, options, onClickOutside }) {
 
-  const ref = useRef(null);
-  // const { onClickOutside } = props;
-
-  useEffect(() => {
-    const handleClickOutside = (event) => {
-      if (ref.current && !ref.current.contains(event.target)) {
-        onClickOutside && onClickOutside();
-      }
-    };
-    document.addEventListener('click', handleClickOutside, true);
-    return () => {
-      document.removeEventListener('click', handleClickOutside, true);
-    };
-  }, [ onClickOutside ]);
-
-
+  // const ref = useRef(null);
 
   // useEffect(() => {
-  //   // console.log(isOpen);
-  // }, [isOpen]);
+  //   const handleClickOutside = (event) => {
+  //     if (ref.current && !ref.current.contains(event.target)) {
+  //       onClickOutside && onClickOutside();
+  //     }
+  //   };
+  //   document.addEventListener('click', handleClickOutside, true);
+  //   return () => {
+  //     document.removeEventListener('click', handleClickOutside, true);
+  //   };
+  // }, [ onClickOutside ]);
+
+
+
 
   const dispatch = useDispatch();
-  const onOptionClicked = (option) => () => {
-    // handleChangeFilter(status);
-    dispatch(changeFilter(option.toLowerCase()));
-    // console.log(option + "line 153");
-  };
-
-  const clickCallback = useCallback(
-    (option) => () => {
-      // handleChangeFilter(status);
+  const clickCallback =  (option) => (e) => {
+     e.stopPropagation();
       dispatch(changeFilter(option.toLowerCase()));
-      // console.log(option);
-    },
-    []
-  );
+    };
 
-
-
-  // todo make the drop down from scratch so I can style it correctly
 
   return (
     <Main>
       <DropDownContainer>
-        <DropDownHeader onClick={handleClick}>{icon}</DropDownHeader>
+        <DropDownHeader>{icon}</DropDownHeader>
         {isOpen && (
-          <DropDownListContainer ref={ref}>
+          <DropDownListContainer>
             <DropDownList >
               {options.map((option, index) => (
                 <ListItem key={index + "-li"} onClick={clickCallback(option)}>
@@ -198,7 +181,7 @@ export default function FilterDropDown({ icon, handleClick, isOpen, options, onC
 
 FilterDropDown.propTypes = {
   icon: PropTypes.object,
-  handleClick: PropTypes.func.isRequired,
+  handleClick: PropTypes.func,
   isOpen: PropTypes.bool.isRequired,
   options: PropTypes.array.isRequired,
   onClickOutside: PropTypes.func,

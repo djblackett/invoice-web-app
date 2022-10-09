@@ -7,8 +7,14 @@ import { changeFilter } from "../../features/invoices/filterSlice";
 import { selectFilter } from "../../features/invoices/filterSlice";
 import { useEffect } from "react";
 
+
+
+const CheckboxContainer = styled.div`
+
+`
+
 const Label = styled.label`
-  /* pointer-events: none; */
+  pointer-events: none;
   cursor: pointer;
   box-sizing: border-box;
   margin-left: 0.5rem;
@@ -34,15 +40,16 @@ function CheckboxSelection({ option }) {
   const filter = useSelector(selectFilter);
   const handleCheckboxChange = (event) => {};
   return (
-    <div>
-      <Label onClick={(e) => e.preventDefault()}>
+    <CheckboxContainer >
+      <Label>
         <Checkbox
           checked={filter[option.toLowerCase()]}
           onChange={handleCheckboxChange}
+
         />
         <span style={{ marginLeft: "13px" }}>{option}</span>
       </Label>
-    </div>
+    </CheckboxContainer>
   );
 }
 
