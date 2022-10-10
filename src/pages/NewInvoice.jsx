@@ -81,8 +81,8 @@ function NewInvoice({
   const dispatch = useDispatch();
 
    const handlePaymentClick = (e) => {
-    e.preventDefault();
-    setIsPaymentOpen(true);
+
+    setIsPaymentOpen(!isPaymentOpen);
   };
 
   const handlePaymentSelect = (e) => {

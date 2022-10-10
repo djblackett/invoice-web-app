@@ -25,7 +25,7 @@ export const FormContainerDarkenModal = styled.div`
   filter: drop-shadow(2px 2px 2px bottom);
 
   align-self: flex-start;
-  z-index: 1000;
+  z-index: 50;
 
   max-width: 100%;
 
@@ -89,6 +89,35 @@ export const Input = styled.input`
     width: 100%;
   `}
 `;
+
+export const DateButton = styled.button`
+  width: 100%;
+  height: 48px;
+  border-radius: 4px;
+  border-color: ${({theme}) => theme.formFieldOutline};
+  border-style: solid;
+  padding: 0;
+  margin-bottom: 1.5rem;
+  font-family: ${({theme}) => theme.font};
+  font-style: normal;
+  font-weight: 700;
+  font-size: 12px;
+  line-height: 15px;
+
+
+  letter-spacing: -0.25px;
+
+  color: ${({theme}) => theme.textPlain};
+  background-color: ${({theme}) => theme.inputBackgroundColor};
+
+  &:focus {
+    border-color: black;
+  }
+
+  ${props => props.long && css`
+    width: 100%;
+  `}
+`
 
 export const StreetAddressInput = styled(Input)`
   width: 100%;
@@ -159,6 +188,7 @@ export const DateAndPaymentContainer = styled.div`
   max-width: 100%;
   flex-wrap: wrap;
   flex-direction: column;
+  z-index: 60;
   
   @media (min-width: 768px) {
     display: flex;

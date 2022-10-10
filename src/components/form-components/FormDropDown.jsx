@@ -7,6 +7,7 @@ import { SVG } from "../buttons/NewItemButton";
 const Main = styled("div")`
   display: inline;
   z-index: 10;
+  position: relative;
   box-sizing: border-box;
   background-color: ${({ theme }) => theme.inputBackgroundColor};
   cursor: pointer;
@@ -29,6 +30,7 @@ const DropDownHeader = styled.div.attrs({
 })`
   
   display: flex;
+  //position: static;
   justify-content: space-between;
   align-items: center;
   box-sizing: border-box;
@@ -80,8 +82,12 @@ const DropDownHeader = styled.div.attrs({
 `;
 
 const DropDownList = styled.ul`
+  position: absolute;
+  width: 100%;
+  z-index: 100;
   padding: 0;
   margin: 0;
+  overflow: hidden;
   background-color: ${({ theme }) => theme.editButton};
   /* padding-bottom: 5px; */
   box-sizing: border-box;
@@ -92,6 +98,8 @@ const DropDownList = styled.ul`
   font-weight: 600;
   /* filter: drop-shadow(4px, 4px, 4px, black); */
   filter: drop-shadow(2px 2px 2px gray);
+  
+  transition: height 250ms ease-in-out;
 
   &:first-child {
     padding-top: 0.8em;
@@ -104,8 +112,10 @@ const DropDownList = styled.ul`
 
 const ListItem = styled.li`
   display: flex;
+  flex-direction: column;
   align-items: center;
-
+  justify-content: center;
+  //position: absolute;
   list-style: none;
   height: 48px;
   width: 100%;
@@ -122,6 +132,7 @@ const ListItem = styled.li`
 `;
 
 const ItemButton = styled.button`
+  //position: absolute;
   height: 100%;
   width: 100%;
   background-color: ${({ theme }) => theme.inputBackgroundColor};
@@ -177,10 +188,12 @@ function FormDropDown({
 
   const onOptionClicked = (option) => (e) => {
     e.preventDefault();
-    handlePaymentSelect();
+    // handlePaymentSelect();
+    handlePaymentClick();
 
     const num = Number(option.split(" ")[1]);
     handleChangeSelectedOption(num);
+
   };
 
 
@@ -198,8 +211,8 @@ function FormDropDown({
         <h2>{selected}</h2>
         <SVG>{arrowDown}</SVG>
       </DropDownHeader>
-      {isPaymentOpen && (
-        <DropDownList>
+
+        <DropDownList style={{height: isPaymentOpen ? "192px" : 0}}>
           {options.map((option, index) => (
             <ListItem key={index + "-li"} onClick={onOptionClicked(option)}>
               <ItemButton key={index}>
@@ -208,7 +221,7 @@ function FormDropDown({
             </ListItem>
           ))}
         </DropDownList>
-      )}
+
     </Main>
   );
 }

@@ -98,7 +98,7 @@ const ListItem = styled.li.attrs({})`
   cursor: pointer;
   width: 100%;
   background-color: ${({ theme }) => theme.background};
-  transition: all 0.2s;
+  //transition: all 0.2s;
 
   /* &:hover {
     filter: brightness(90%);

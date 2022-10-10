@@ -93,6 +93,7 @@
   padding: 0;
   border: 0;
   width: 100%;
+  z-index: 1000;
 
   /* padding: 17px 20px 16px 20px;
   /* font-family: ${({ theme }) => theme.font}; 
@@ -125,6 +126,7 @@
   display: inline-block;
   position: relative;
   width: 100%;
+  z-index: 1000;
 }
 
 .react-datepicker--time-only .react-datepicker__triangle {
@@ -145,7 +147,7 @@
 }
 
 .react-datepicker-popper {
-  z-index: 1;
+  z-index: 1000;
 }
 .react-datepicker-popper[data-placement^="bottom"] {
   padding-top: 10px;
@@ -656,6 +658,7 @@
   position: relative;
   display: inline-block;
   width: 100%;
+  z-index: 1000;
 }
 
 .react-datepicker__year-read-view,

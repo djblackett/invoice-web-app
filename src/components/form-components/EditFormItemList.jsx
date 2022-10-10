@@ -14,6 +14,8 @@ const ListContainer = styled.div`
   border-radius: 8px;
 
   grid-template-rows: auto;
+  
+
 
   background-color: ${({ theme }) => theme.background};
 `;
@@ -65,6 +67,8 @@ const ItemsContainer = styled.div`
   /* margin-top: 2.5rem; */
   border-radius: 8px 8px 0 0;
   background-color: ${({ theme }) => theme.background};
+
+  transition: all 250ms ease-in-out;
 
   @media (min-width: 768px) {
     padding: 0;

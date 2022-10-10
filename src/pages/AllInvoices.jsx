@@ -122,7 +122,7 @@ function AllInvoices() {
       )}
 
       {invoiceList.length === 0 && <EmptyList />}
-      <button onClick={() => dispatch(clearInvoices())}>Clear Invoices</button>
+      {/*<button onClick={() => dispatch(clearInvoices())}>Clear Invoices</button>*/}
     </AllInvoicesContainer>
   );
 }

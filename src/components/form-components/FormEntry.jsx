@@ -10,6 +10,7 @@ export const FormEntryContainer = styled.div`
   align-items: flex-start;
   font-style: ${({ theme }) => theme.font};
   width: 45%;
+  //z-index: 70;
 
 
   @media (min-width: 768px) {

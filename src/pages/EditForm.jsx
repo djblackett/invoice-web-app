@@ -198,9 +198,9 @@ function EditForm({
   // handles the payment dropdown upon click
   const handlePaymentClick = (e) => {
     // console.log("button pressed");
-    e.preventDefault();
+    // e.preventDefault();
 
-    setIsPaymentOpen(true);
+    setIsPaymentOpen(!isPaymentOpen);
     // console.log("isPaymentOpen: " + isPaymentOpen);
   };
 

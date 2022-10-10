@@ -17,6 +17,7 @@ export function DateAndPayment(props) {
           onClick={onClick}
           ref={ref}
           defaultValue={value}
+          readOnly
       />
   ));
 
