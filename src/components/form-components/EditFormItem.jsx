@@ -48,16 +48,16 @@ const Input = styled.input`
   border-radius: 4px;
   border-color: ${({ theme }) => theme.formFieldOutline};
   border-style: solid;
-  /* outline: none; */
+  outline: none;
   padding: 17px 20px 16px 20px;
   margin-bottom: 1.5rem;
-  /* margin-right: 1rem; */
+  
   font-family: ${({ theme }) => theme.font};
   font-style: normal;
   font-weight: 700;
   font-size: 12px;
   line-height: 15px;
-  /* margin-left:5px; */
+  
   /* identical to box height, or 125% */
 
   letter-spacing: -0.25px;
@@ -66,7 +66,7 @@ const Input = styled.input`
   background-color: ${({ theme }) => theme.inputBackgroundColor};
 
   &:focus {
-    border-color: black;
+    border-color: ${({theme}) => theme.formFieldOutlineFocus};
   }
 
   .custom-input {
@@ -195,10 +195,16 @@ export const SVG = styled.svg`
   height: 16px;
   justify-self: end;
   cursor: pointer;
+  outline: none;
 
   .deleteIconPath {
     fill: #888eb0;
+    outline: none;
     &:hover {
+      fill: red;
+    }
+    
+    &:focus {
       fill: red;
     }
   }
@@ -225,6 +231,7 @@ const deleteIcon = (
     d="M11.583 3.556v10.666c0 .982-.795 1.778-1.777 1.778H2.694a1.777 1.777 0 01-1.777-1.778V3.556h10.666zM8.473 0l.888.889h3.111v1.778H.028V.889h3.11L4.029 0h4.444z"
     fillRule="nonzero"
     className="deleteIconPath"
+    tabIndex={0}
   />
 );
 
@@ -317,7 +324,8 @@ function EditFormItem({ item, items, setItems }) {
       <Total name={"total"} onChange={handleChange} value={item.total}>
         {(item.quantity * item.price).toFixed(2)}
       </Total>
-      <SVG name="removeButton" onClick={removeItem}>
+      <SVG
+          name="removeButton" onClick={removeItem}>
         {deleteIcon}
       </SVG>
     </ItemContainer>

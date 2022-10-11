@@ -4,7 +4,9 @@ import { useSelector } from "react-redux";
 import PropTypes from "prop-types";
 import { SVG } from "../buttons/NewItemButton";
 
-const Main = styled("div")`
+const Main = styled.div.attrs({
+  tabIndex: 0,
+})`
   display: inline;
   z-index: 10;
   position: relative;
@@ -12,6 +14,7 @@ const Main = styled("div")`
   background-color: ${({ theme }) => theme.inputBackgroundColor};
   cursor: pointer;
   margin-bottom: 30px;
+  outline: none;
 
   width: 100%;
   height: 48px;
@@ -23,11 +26,13 @@ const Main = styled("div")`
     width: 240px;
     max-width: 100%;
   }
+  
+  &:focus {
+    border: 2px solid ${({ theme }) => theme.formFieldOutlineFocus};
+  }
 `;
 
-const DropDownHeader = styled.div.attrs({
-  tabIndex: 0,
-})`
+const DropDownHeader = styled.div`
   
   display: flex;
   //position: static;
@@ -97,8 +102,8 @@ const DropDownList = styled.ul`
   font-size: 1.2rem;
   font-weight: 600;
   /* filter: drop-shadow(4px, 4px, 4px, black); */
-  filter: drop-shadow(2px 2px 2px gray);
-  
+  //filter: drop-shadow(2px 2px 2px gray);
+  box-shadow: ${({ theme }) => theme.filterShadow};
   transition: height 250ms ease-in-out;
 
   &:first-child {
@@ -124,7 +129,7 @@ const ListItem = styled.li`
   /* background-color: ${({ theme }) => theme.background}; */
 
   &:hover {
-    filter: brightness(80%);
+    //filter: brightness(80%);
   }
 
   /* border-color: ${({ theme }) => theme.formFieldOutline}; */
@@ -138,6 +143,7 @@ const ItemButton = styled.button`
   background-color: ${({ theme }) => theme.inputBackgroundColor};
   border: none;
   cursor: pointer;
+  outline: none;
 
   font-family: "Spartan";
   font-style: normal;

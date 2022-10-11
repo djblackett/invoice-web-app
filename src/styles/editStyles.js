@@ -70,7 +70,10 @@ export const Input = styled.input`
   font-weight: 700;
   font-size: 12px;
   line-height: 15px;
-
+  
+  //outline-color: ${({ theme }) => theme.outline};
+  caret-color: #7C5DFA;
+  outline: none;
 
   letter-spacing: -0.25px;
 
@@ -78,7 +81,7 @@ export const Input = styled.input`
   background-color: ${({theme}) => theme.inputBackgroundColor};
 
   &:focus {
-    border-color: black;
+    border-color: ${({theme}) => theme.formFieldOutlineFocus};
   }
 
   .custom-input {
@@ -202,22 +205,74 @@ export const DateAndPaymentContainer = styled.div`
   .react-datepicker__header {
     background-color: ${({theme})=> theme.background};
     color: ${({theme})=> theme.dateText};
+    border: none;
+    padding-top: 1.5rem;
+    padding-bottom: 1.5rem;
   }
 
   .react-datepicker__day, .react-datepicker__month-text, .react-datepicker__quarter-text, .react-datepicker__year-text {
     color: ${({theme})=> theme.dateText};
   }
+  
+  .react-datepicker__day {
+    &:hover {
+      background: #7C5DFA;
+      color: white;
+    }
+  }
 
   .react-datepicker {
     background-color: ${({theme})=> theme.background};
     color: ${({theme})=> theme.dateText};
+    border: none;
+    box-shadow: ${({theme}) => theme.filterShadow};
+    transition: all 250ms ease-in-out;
   }
   
   .react-datepicker__month-year-dropdown {
     background-color: ${({theme})=> theme.background};
     color: ${({theme})=> theme.dateText};
+    border: none;
   }
-  
-  
+
+  .react-datepicker__day--selected {
+    color: #7C5DFA;
+    background-color: transparent;
+    font-weight: bold;
+    
+    
+  }
+
+  .react-datepicker__day-names {
+    display: none;
+  }
+
+  .react-datepicker__triangle {
+    display: none;
+  }
+
+  .react-datepicker__current-month {
+    color: ${({theme})=> theme.dateText};
+    align-self: center;
+    justify-self: center;
+
+    font-family: 'Spartan';
+    font-style: normal;
+    font-weight: 700;
+    font-size: 12px;
+    line-height: 15px;
+    /* identical to box height, or 125% */
+
+    text-align: center;
+    letter-spacing: -0.25px;
+    
+  }
+
+
+
+  .react-datepicker__day--keyboard-selected {
+    background-color: rgba(124, 93, 250, 0.5);
+    
+  }
   
 `;

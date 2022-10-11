@@ -5,13 +5,13 @@
 .react-datepicker__navigation-icon::before {
   border-color: #7C5DFA;
   border-style: solid;
-  border-width: 3px 3px 0 0;
+  border-width: 2px 2px 0 0;
   content: "";
   display: block;
-  height: 9px;
+  height: 4px;
   position: absolute;
   top: 6px;
-  width: 9px;
+  width: 4px;
 }
 .react-datepicker-popper[data-placement^="top"] .react-datepicker__triangle,
 .react-datepicker-popper[data-placement^="bottom"] .react-datepicker__triangle {
@@ -91,6 +91,7 @@
 .react-datepicker-wrapper {
   display: inline-block;
   padding: 0;
+  /*padding-top: 1.5rem;*/
   border: 0;
   width: 100%;
   z-index: 1000;
@@ -229,7 +230,7 @@
   text-align: center;
   cursor: pointer;
   position: absolute;
-  top: 2px;
+  top: 20px;
   padding: 0;
   border: none;
   z-index: 1;
@@ -239,7 +240,7 @@
   overflow: hidden;
   fill: #7C5DFA;
   color: #7C5DFA;
-  /*fill-rule: evenodd;*/
+
 
 }
 .react-datepicker__navigation--previous {

@@ -15,6 +15,10 @@ const Button = styled.button`
   &:hover {
     background-color: #dfe3fa;
   }
+  
+  &:focus {
+    background-color: #dfe3fa;
+  }
 
   @media (min-width: 768px) {
     width: 504px;

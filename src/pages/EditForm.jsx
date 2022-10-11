@@ -233,7 +233,7 @@ function EditForm({
           <CompanyFormInfo errors={errors} senderAddress={invoice.senderAddress}
                            useFormRegisterReturn={register("streetAddress", {required: true, pattern: /^[A-Za-z0-9 ]+$/i, maxLength: 50})} onChange={handleChange}
                            useFormRegisterReturn1={register("city", {required: true, pattern: /^\w+$/i, maxLength: 30})}
-                           useFormRegisterReturn2={register("postalCode", {required: true, pattern: /^\w+$/i, maxLength: 10})}
+                           useFormRegisterReturn2={register("postalCode", {required: true, pattern: /^\w+[\w ]+$/i, maxLength: 10, minLength: 5})}
                            editPageWidth={editPageWidth} onChange1={() => handleChange}
                            useFormRegisterReturn3={register("country", {required: true, pattern: /^[A-Za-z0-9 ]+$/i, maxLength: 30})}/>
 
