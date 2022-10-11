@@ -198,4 +198,26 @@ export const DateAndPaymentContainer = styled.div`
     max-width: initial;
     flex-wrap: nowrap;
   }
+
+  .react-datepicker__header {
+    background-color: ${({theme})=> theme.background};
+    color: ${({theme})=> theme.dateText};
+  }
+
+  .react-datepicker__day, .react-datepicker__month-text, .react-datepicker__quarter-text, .react-datepicker__year-text {
+    color: ${({theme})=> theme.dateText};
+  }
+
+  .react-datepicker {
+    background-color: ${({theme})=> theme.background};
+    color: ${({theme})=> theme.dateText};
+  }
+  
+  .react-datepicker__month-year-dropdown {
+    background-color: ${({theme})=> theme.background};
+    color: ${({theme})=> theme.dateText};
+  }
+  
+  
+  
 `;

@@ -17,7 +17,8 @@ export const lightTheme = {
   inputBackgroundColor: "#FFFFFF",
   draftColor: "#373B53",
   draftBackgroundColor: "rgba(55,59,83, 0.06)",
-  filterShadow: "0px 10px 20px rgba(72, 84, 159, 0.25)"
+  filterShadow: "0px 10px 20px rgba(72, 84, 159, 0.25)",
+  dateText: "#0C0E16",
 };
 export const darkTheme = {
   body: "#141625",
@@ -38,6 +39,7 @@ export const darkTheme = {
   draftColor: "#DFE3FA",
   draftBackgroundColor: "rgba(151, 151, 151, 0.06)",
   filterShadow: "0px 10px 20px rgba(0, 0, 0, 0.25)",
+  dateText: "#DFE3FA"
 };
 
 export const colors = {

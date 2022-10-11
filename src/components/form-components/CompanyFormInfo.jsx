@@ -18,8 +18,6 @@ export const CityPostContainer = styled.div`
   }
 `
 
-
-
 export function CompanyFormInfo(props) {
 
     const width = useWindowWidth();

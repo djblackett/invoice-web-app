@@ -3,7 +3,7 @@
 .react-datepicker__month-read-view--down-arrow,
 .react-datepicker__month-year-read-view--down-arrow,
 .react-datepicker__navigation-icon::before {
-  border-color: #ccc;
+  border-color: #7C5DFA;
   border-style: solid;
   border-width: 3px 3px 0 0;
   content: "";
@@ -237,6 +237,10 @@
   width: 32px;
   text-indent: -999em;
   overflow: hidden;
+  fill: #7C5DFA;
+  color: #7C5DFA;
+  /*fill-rule: evenodd;*/
+
 }
 .react-datepicker__navigation--previous {
   left: 2px;

@@ -218,7 +218,6 @@ function EditForm({
           style={{
             width: isEditOpen ? `${editPageWidth}px` : 0,
             padding: isEditOpen ? padding : 0,
-
           }}
       >
         <EditTitle>
@@ -232,11 +231,11 @@ function EditForm({
           {/* register your input into the hook by invoking the "register" function */}
           <BillText>Bill From</BillText>
           <CompanyFormInfo errors={errors} senderAddress={invoice.senderAddress}
-                           useFormRegisterReturn={register("streetAddress", {required: true})} onChange={handleChange}
-                           useFormRegisterReturn1={register("city", {required: true})}
-                           useFormRegisterReturn2={register("postalCode", {required: true})}
+                           useFormRegisterReturn={register("streetAddress", {required: true, pattern: /^[A-Za-z0-9 ]+$/i, maxLength: 50})} onChange={handleChange}
+                           useFormRegisterReturn1={register("city", {required: true, pattern: /^\w+$/i, maxLength: 30})}
+                           useFormRegisterReturn2={register("postalCode", {required: true, pattern: /^\w+$/i, maxLength: 10})}
                            editPageWidth={editPageWidth} onChange1={() => handleChange}
-                           useFormRegisterReturn3={register("country", {required: true})}/>
+                           useFormRegisterReturn3={register("country", {required: true, pattern: /^[A-Za-z0-9 ]+$/i, maxLength: 30})}/>
 
           {/* //  Client details */}
 
