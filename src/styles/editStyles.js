@@ -177,7 +177,7 @@ export const LongEntry = styled(Input)`
 export const ErrorText = styled.p`
   color: red;
 
-  margin-top: 0;
+  margin-top: 0.5rem;
 `;
 export const ErrorTextInline = styled(ErrorText)`
   position: absolute;

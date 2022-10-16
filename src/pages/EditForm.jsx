@@ -93,11 +93,8 @@ function EditForm({
 
     // check for empty fields or items before submitting
     if (hasEmptyField || items.length === 0) {
-      // console.log("Has an empty field or no items");
       return;
     }
-
-    // console.log(startDate)
 
     // build updated invoice from form data
     const newInvoice = {
@@ -130,16 +127,10 @@ function EditForm({
     }
     newInvoice.total = total;
 
-
-
-    // Calculate payment due date from paymentTerms + createdAt
-    // const dateArray = newInvoice.createdAt.split("-");
-    // let oldDate = new Date(Date.UTC(dateArray[0], dateArray[1], dateArray[2]));
     const date = new Date(startDate.getTime() + 86400000 * newInvoice.paymentTerms);
 
     const [month, day, year] = [date.getMonth(), date.getDate(), date.getFullYear()];
     newInvoice.paymentDue = [year, month, day].join("-");
-    // console.log("Submit dispatched");
 
     dispatch(updateInvoice(newInvoice));
     setIsEditOpen(false);
@@ -165,13 +156,6 @@ function EditForm({
     }
   }, [width, padding, isEditOpen]);
 
-  // useEffect(() => {
-  //   const closeOnEscapeKey = (e) => (e.key === "Escape" ? handleClose() : null);
-  //   document.body.addEventListener("keydown", closeOnEscapeKey);
-  //   return () => {
-  //     document.body.removeEventListener("keydown", closeOnEscapeKey);
-  //   };
-  // }, [handleClose]);
 
   // gives unique ids to all invoice items
   useLayoutEffect(() => {
@@ -197,21 +181,16 @@ function EditForm({
 
   // handles the payment dropdown upon click
   const handlePaymentClick = (e) => {
-    // console.log("button pressed");
-    // e.preventDefault();
-
     setIsPaymentOpen(!isPaymentOpen);
-    // console.log("isPaymentOpen: " + isPaymentOpen);
   };
 
+  // todo is this redundant now that the above toggles?
   // closes payment dropdown once an option is selected
   const handlePaymentSelect = () => {
     setIsPaymentOpen(false);
   };
 
 
-
-  // console.log(watch("example")); // watch input value by passing the name of it
   return (
     <DarkenScreen style={{visibility: isEditOpen ? "visible" : "hidden"}}>
       <FormContainerDarkenModal
@@ -267,7 +246,7 @@ function EditForm({
                 long
                 type="text"
                 defaultValue={invoice.description}
-                error={errors?.title ? true : false}
+                error={!!errors?.title}
                 {...register("projectDescription", {required: true})}
                 style={{
                   border: errors.projectDescription ? "1px solid red" : "",
