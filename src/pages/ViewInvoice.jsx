@@ -32,10 +32,11 @@ function ViewInvoice() {
     setIsEditOpen(!isEditOpen);
   }
 
+  // todo implement loading state when backend is implemented
   return (
     //  {!invoice && <h1>Loading</h1>}
     <ViewContainer>
-      {/* <ErrorBoundary> */}
+
       <EditForm
         isEditOpen={isEditOpen}
         setIsEditOpen={setIsEditOpen}
@@ -45,7 +46,6 @@ function ViewInvoice() {
         items={items}
 
       />
-      {/* </ErrorBoundary> */}
       <GoBackButton onClick={() => navigate(-1)}>
         <Icon>{arrowLeft}</Icon>
         <GoBack>Go back</GoBack>

@@ -34,13 +34,10 @@ const ModalContainer = styled.div`
 `;
 
 const Confirm = styled.h1`
-  font-family: "Spartan";
-  font-style: normal;
   font-weight: 700;
   font-size: 24px;
   line-height: 32px;
   /* identical to box height, or 133% */
-
   letter-spacing: -0.5px;
   color: ${({ theme }) => theme.text};
   margin: 0;
@@ -48,8 +45,6 @@ const Confirm = styled.h1`
 `;
 
 const Description = styled.p`
-  font-family: "Spartan";
-  font-style: normal;
   font-weight: 500;
   font-size: 12px;
   line-height: 22px;

@@ -3,10 +3,6 @@
 /* eslint-disable react/prop-types */
 /* eslint-disable no-unused-vars */
 
-
-
-
-
 import React, { useState, useEffect, useLayoutEffect, forwardRef } from "react";
 import { useForm } from "react-hook-form";
 import PropTypes from "prop-types";
@@ -48,6 +44,7 @@ const generateId = () => {
     return res;
 }
 
+// This component needs help
 function NewInvoice({
   isNewOpen,
   setIsNewOpen,
@@ -236,7 +233,6 @@ function NewInvoice({
         style={{
           width: isNewOpen ? `${editPageWidth}px` : "0px",
           padding: padding,
-          // transition: "width 3s linear",
         }}
       >
         <EditTitle>
@@ -349,7 +345,6 @@ function NewInvoice({
               type="text"
               long
               {...register("projectDescription")}
-              // style={{ marginBottom: 0, width: "504px" }}
             />
           </LongFormEntry>
 

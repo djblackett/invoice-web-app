@@ -16,7 +16,6 @@ import {
   SVG,
   Total
 } from "../../styles/editFormItemStyles";
-import {useTheme} from "styled-components";
 
 function EditFormItem({ item, items, setItems }) {
 
@@ -25,13 +24,13 @@ function EditFormItem({ item, items, setItems }) {
   const [price, setPrice] = useState(String(item.price.toFixed(2)));
   const [total, setTotal] = useState(String(item.total));
   const [isTotalValid, setIsTotalValid] = useState(true);
-  const theme = useTheme();
 
+
+  // updates the items array in the EditForm page (possibly makes handleChange below redundant)
   const updateItem = () => {
     const newItem = { ...item, price: Number(price), total: (Number(quantity) * Number(price)).toFixed(2), quantity: quantity };
     const items2 = [...items];
     const index = items.indexOf(item);
-    // console.log(items2);
     items2.splice(index, 1, newItem);
     setItems(items2);
   }
@@ -48,46 +47,17 @@ function EditFormItem({ item, items, setItems }) {
     }
   }, [price, quantity])
 
+  // updates the items array in the EditForm page on change
   const handleChange = (e) => {
     e.preventDefault();
     const name1 = e.target.name;
     const newItem = { ...item, [name1]: e.target.value };
-    // newItem.total = (newItem.quantity * newItem.price).toFixed(2);
-    // setItem1(newItem);
-
-    console.log(items);
-
-    //     // console.log(item.name);
-    // const items2 = items.filter(currentItem => currentItem.id != item.id);
     const items2 = [...items];
     const index = items.indexOf(item);
     console.log(items2);
     items2.splice(index, 1, newItem);
     setItems(items2);
-    console.log("new items Array: " + items2);
   };
-
-  const handleQuantityChange = (e) => {
-    e.preventDefault();
-    // const quantity = e.target.value;
-
-    if (String(quantity).match(/^\d+$/) || quantity === "") {
-      console.log("match");
-      setQuantity(e.target.value);
-      console.log(quantity);
-      // const newItem = {...item, quantity};
-      // newItem.total = (newItem.quantity * newItem.price).toFixed(2);
-      //
-      // const items2 = [...items];
-      // const index = items.indexOf(item);
-      // items2.splice(index, 1, newItem);
-      // setItems(items2);
-    } else {
-      console.log("don't match")
-    }
-  }
-
-  // todo make handleChange functions for quantity and price with proper regexes
 
   const removeItem = () => {
     const items2 = items.filter((currentItem) => currentItem.id !== item.id);

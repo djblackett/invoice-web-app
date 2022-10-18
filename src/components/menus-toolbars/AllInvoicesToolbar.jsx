@@ -9,7 +9,6 @@ import {useWindowWidth} from "../../hooks/useWindowWidth";
 const GridContainer = styled.div`
   display: grid;
   height: 100%;
-  
   grid-template-rows: auto;
   grid-template-columns: 1fr 1fr;
   margin-top: 104px;
@@ -27,7 +26,6 @@ const GridContainer = styled.div`
   
   @media (min-width: 600px) {
     width: 100%;
- 
   }
 
   @media (min-width: 768px) {
@@ -37,15 +35,13 @@ const GridContainer = styled.div`
   
 
   @media (min-width: 1200px) {
-    //width: 730px;
     min-width: 730px;
     max-width: 50%;
-   padding: 0;
+    padding: 0;
     justify-self: center;
     margin-top: 72px;
     height: 59px;
     margin-bottom: 65px;
-    /* margin-right: 355px; */
   }
 `;
 
@@ -53,8 +49,6 @@ const TitleBox = styled.div`
   display: flex;
   flex-direction: column;
   justify-content: center;
-  /* align-items: center; */
-  //margin-left: 24px;
 
   @media (min-width: 768px) {
     margin-left: 0;
@@ -89,24 +83,12 @@ const InvoicesLeft = styled.p`
 `;
 
 const ControlBox = styled.div`
-
   display: flex;
   justify-self: end;
   flex-direction: row;
   align-items: center;
-  //margin-right: 24px;
   justify-content: flex-end;
-  /* cursor: pointer; */
-  //scale: 0.8;
   
-  
-  @media (min-width: 325px) {
-    //scale: 1;
-  }
-  
-  
-  
-
   .largeScreenText {
     display: none;
   }
@@ -135,8 +117,6 @@ const NewInvoiceButton = styled.div`
   display: flex;
   align-items: center;
   margin-left: 18px;
-  /* justify-content: space-between; */
-
   cursor: pointer;
   padding-left: 0.5rem;
 
@@ -194,7 +174,6 @@ const NewText = styled.p`
 const Filter = styled.p`
   font-weight: bold;
   margin: 0;
-  //margin-bottom: 5px;
   cursor: pointer;
   white-space: nowrap;
 
@@ -210,8 +189,6 @@ const Filter = styled.p`
 `;
 
 const FilterButton = styled.div`
-  
-  
   display: flex;
   justify-content: center;
   align-items: center;
@@ -235,7 +212,7 @@ const plusSignSVG = (
   </svg>
 );
 
-// change filter text dynamically
+
 
 function AllInvoicesToolbar({ invoiceList, setIsNewOpen }) {
   const [isOpen, setIsOpen] = useState(false);
@@ -248,16 +225,12 @@ function AllInvoicesToolbar({ invoiceList, setIsNewOpen }) {
 
   const toggling = (e) => {
     setIsOpen(!isOpen);
-    // e.stopPropagation();
-    // console.log("toggle function called. isOpen: " + isOpen);
   };
   const togglingButton = (e) => {
     if (e.charCode === 13 || e.keyCode === 13) {
       setIsOpen(!isOpen);
     }
   };
-
-  const handleClickOutside = () => {setIsOpen(false)}
 
   const filter = useSelector(selectFilter);
 
@@ -296,12 +269,10 @@ function AllInvoicesToolbar({ invoiceList, setIsNewOpen }) {
           isOpen={isOpen}
           onKeyPress={togglingButton}
           options={["Draft", "Pending", "Paid"]}
-          // onClickOutside={handleClickOutside}
         />
         </FilterButton>
         <NewInvoiceButton onClick={openNewInvoice}>
           <WhiteCircle>{plusSignSVG}</WhiteCircle>
-
           <NewText>
             New <span className="largeScreenText">Invoice</span>
           </NewText>

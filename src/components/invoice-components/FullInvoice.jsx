@@ -1,4 +1,3 @@
-/* eslint-disable no-unused-vars */
 import styled from "styled-components";
 
 import PropTypes from "prop-types";
@@ -7,7 +6,6 @@ import ItemList from "./ItemList";
 import { useWindowWidth } from "../../hooks/useWindowWidth";
 
 const Card = styled.div`
-  /* min-height: 630px; */
   width: 100%;
   max-width: 100%;
   background-color: ${({ theme }) => theme.background};
@@ -23,7 +21,6 @@ const Card = styled.div`
   font-size: 12px;
   border-radius: 8px;
   box-shadow: 0px 10px 10px -10px rgba(72, 84, 159, 0.100397);
-
   transition: width 0.5s ease-in-out;
 
   &:hover {
@@ -32,10 +29,8 @@ const Card = styled.div`
 
   @media (min-width: 768px) {
     justify-items: center;
-    /* height: 72px; */
     width: 730px;
     max-width: initial;
-    /* margin: 8px 48px 8px 48px; */
     align-content: center;
     padding: 3rem;
     margin-top: 1.5rem;
@@ -72,25 +67,17 @@ const TopRow = styled.div`
 const TopEntry = styled.p`
   margin: 0;
   color: ${({ theme }) => theme.greyText};
-
-  font-family: "Spartan";
-  font-style: normal;
   font-weight: 500;
   font-size: 12px;
   line-height: 15px;
   /* identical to box height, or 125% */
-
   letter-spacing: -0.25px;
 `;
 
 const GenericInvoiceEntry = styled.div`
   display: flex;
   flex-direction: column;
-  /* grid-area: 2 / 1 / 3 / 2; */
-
-  @media (min-width: 768px) {
-    /* display: contents; */
-  }
+  
 `;
 
 const NamePlusAddress = styled.div`
@@ -103,9 +90,6 @@ const NamePlusAddress = styled.div`
 const BottomEntry = styled.p`
   margin: 0;
   margin-top: 8px;
-
-  font-family: "Spartan";
-  font-style: normal;
   font-weight: 700;
   font-size: 15px;
   line-height: 20px;
@@ -116,17 +100,12 @@ const BottomEntry = styled.p`
 
 const Description = styled.p`
   margin: 0;
-
   padding: 0;
   color: ${({ theme }) => theme.greyText};
-
-  font-family: "Spartan";
-  font-style: normal;
   font-weight: 500;
   font-size: 12px;
   line-height: 15px;
   /* identical to box height, or 125% */
-
   letter-spacing: -0.25px;
 
   @media (min-width: 768px) {
@@ -155,35 +134,6 @@ const AddressEntry = styled.p`
   }
 `;
 
-const CustomerName = styled.p`
-  margin: 0;
-  color: #888eb0;
-  text-align: right;
-`;
-
-const SVGContainer = styled.div`
-  width: 100%;
-  display: none;
-  justify-content: center;
-  align-items: center;
-  display: none;
-
-  @media (min-width: 768px) {
-    display: flex;
-  }
-`;
-const arrowRightSVG = (
-  <svg width="7" height="10" xmlns="http://www.w3.org/2000/svg">
-    <path
-      d="M1 1l4 4-4 4"
-      stroke="#7C5DFA"
-      strokeWidth="2"
-      fill="none"
-      fillRule="evenodd"
-    />
-  </svg>
-);
-
 const IdAndDescription = styled.div`
   display: flex;
   flex-direction: column;
@@ -206,13 +156,11 @@ const InfoGrid = styled.div`
   }
 `;
 
-let count = 0;
 
 function FullInvoice({ invoice }) {
   const width = useWindowWidth();
 
   const convertedDate = (dateString) => {
-    // console.log(dateString)
     if (dateString) {
       const date = dateString.split("-");
       const dateObj = new Date(Date.UTC(date[0], date[1], date[2]));
@@ -268,7 +216,6 @@ function FullInvoice({ invoice }) {
           <BottomEntry>{invoice.clientEmail}</BottomEntry>
         </GenericInvoiceEntry>
       </InfoGrid>
-      {/* <CustomerName>{invoice.clientName}</CustomerName> */}
       <ItemList invoice={invoice} />
     </Card>
   );

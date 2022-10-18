@@ -1,8 +1,7 @@
 import styled from "styled-components";
 import PropTypes from "prop-types";
 import Item from "./Item";
-import { v4 as uuidv4 } from "uuid";
-import {useEffect, useLayoutEffect} from "react";
+import {useLayoutEffect} from "react";
 import {useDispatch} from "react-redux";
 import {addIdToExistingInvoices} from "../../features/invoices/invoicesSlice";
 
@@ -24,13 +23,10 @@ const AmountDue = styled.div`
 
 const AmountDueTitle = styled.p`
   color: white;
-  font-family: "Spartan";
-  font-style: normal;
   font-weight: 500;
   font-size: 11px;
   line-height: 18px;
   /* identical to box height, or 164% */
-
   letter-spacing: -0.229167px;
 
   .grand-total {
@@ -53,16 +49,12 @@ const AmountDueTitle = styled.p`
 `;
 
 const AmountDueTotal = styled.p`
-  font-family: "Spartan";
-  font-style: normal;
   font-weight: 700;
   font-size: 24px;
   line-height: 32px;
   /* identical to box height, or 133% */
-
   text-align: right;
   letter-spacing: -0.5px;
-  /* color: ${({ theme }) => theme.text}; */
   color: white;
 `;
 
@@ -85,13 +77,10 @@ const Col = styled.p`
   width: fit-content;
   margin: 0;
   padding: 0;
-  font-family: "Spartan";
-  font-style: normal;
   font-weight: 500;
   font-size: 11px;
   line-height: 18px;
   /* identical to box height, or 164% */
-
   letter-spacing: -0.229167px;
 `;
 
@@ -103,9 +92,6 @@ const ItemsContainer = styled.div`
   display: flex;
   flex-direction: column;
   width: 100%;
-  /* padding: 2rem;
-   */
-
   margin-top: 2.5rem;
   border-radius: 8px 8px 0 0;
   background-color: ${({ theme }) => theme.editButton};

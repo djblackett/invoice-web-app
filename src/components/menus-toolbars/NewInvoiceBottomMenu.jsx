@@ -9,7 +9,6 @@ const MenuContainer = styled.div`
   flex-direction: row;
   align-items: center;
   justify-content: space-between;
-
   margin-top: 2.6rem;
   margin-bottom: 4rem;
 
@@ -28,25 +27,17 @@ const NewInvoiceButton = styled.input`
   align-items: center;
   justify-content: center;
   text-align: center;
-  /* margin-left: 40px; */
   cursor: pointer;
-
-  font-family: "Spartan";
-  font-style: normal;
   font-weight: 700;
   font-size: 12px;
   line-height: 15px;
   /* identical to box height, or 125% */
-
   letter-spacing: -0.25px;
-
   color: #ffffff;
 
   @media (min-width: 1200px) {
     height: 48px;
     width: 138px;
-    /* padding-right: 1rem; */
-    /* padding-left: 0.5rem; */
   }
 
   &:hover {
@@ -72,8 +63,6 @@ const SaveAndDraftContainer = styled.div`
     display: flex;
     flex-direction: row;
   }
-  
-  
 `;
 
 function NewInvoiceBottomMenu({

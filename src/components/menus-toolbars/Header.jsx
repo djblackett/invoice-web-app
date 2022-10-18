@@ -13,7 +13,6 @@ const HeaderContainer = styled.div`
   z-index: 1000;
   position: fixed;
   
-
   @media (min-width: 1200px) {
     flex-direction: column;
     display: flex;
@@ -22,7 +21,6 @@ const HeaderContainer = styled.div`
     height: 100%;
     max-height: 100vh;
     grid-area: 1 / 1 / 4 / 2;
-
     border-radius: 0 20px 20px 0;
   }
 `;

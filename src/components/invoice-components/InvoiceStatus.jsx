@@ -3,7 +3,6 @@ import PropTypes from "prop-types";
 
 const InvoiceStatusBox = styled.div`
   padding: 13px 23px 12px 24px;
-  //background: rgba(173, 216, 230, 0.2);
   border-radius: 6px;
   height: 40px;
   width: 104px;
@@ -13,7 +12,6 @@ const InvoiceStatusBox = styled.div`
   justify-self: end;
   
   @media (min-width: 600px) {
-    //width: 84%;
     justify-self: start;
   }
 
@@ -29,10 +27,6 @@ const TextCircleBox = styled.div`
 const StatusText = styled.p`
   margin: 0;
   color: inherit;
-  font-weight: bold;
-  margin-left: 4px;
-  font-family: "Spartan";
-  font-style: normal;
   font-weight: 700;
   font-size: 12px;
   line-height: 15px;

@@ -9,12 +9,9 @@ const Main = styled("div")`
   align-self: center;
   box-sizing: border-box;
   background: transparent;
-  //height: 50px;
   z-index: 5;
-
   width: 8px;
   cursor: pointer;
-  //filter: drop-shadow(2px 2px 2px bottom);
   margin-left: 0;
   position: relative;
 
@@ -24,20 +21,6 @@ const Main = styled("div")`
 
   @media (min-width: 350px) {
     margin-left: 16px;
-  }
-  
-  @media (min-width: 600px) {
-  }
-
-  @media (min-width: 900px) {
-    /* grid-area: 1 / 3 / 2 / 4; */
-  }
-
-  @media (min-width: 1200px) {
-    /* justify-self: end; */
-    /* grid-area: 1 / 3 / 2 / 5; */
-    /* margin: 0; */
-    /* width: 250px; */
   }
 `;
 
@@ -57,7 +40,6 @@ const DropDownHeader = styled.div.attrs({
   align-items: center;
   align-self: center;
   box-sizing: border-box;
-  //height: 50px;
   width: 12px;
   font-weight: 600;
   font-size: 1.2rem;
@@ -88,7 +70,6 @@ const DropDownList = styled("ul")`
   width: 100%;
   padding: 0;
   margin: 0;
-
   background-color: ${({ theme }) => theme.background};
   box-sizing: border-box;
   border-radius: 10px;
@@ -107,11 +88,6 @@ const ListItem = styled.li.attrs({})`
   cursor: pointer;
   width: 100%;
   background-color: ${({ theme }) => theme.background};
-  //transition: all 0.2s;
-
-  /* &:hover {
-    filter: brightness(90%);
-  } */
 `;
 
 const ItemButton = styled.button`
@@ -125,37 +101,8 @@ const ItemButton = styled.button`
   box-sizing: border-box;
 `;
 
-const OptionLabel = styled.label`
-  margin-left: 0.5rem;
-  font-family: "Spartan";
-  font-style: normal;
-  font-weight: 700;
-  font-size: 12px;
-  line-height: 15px;
-  /* identical to box height, or 125% */
 
-  letter-spacing: -0.25px;
-  color: ${({ theme }) => theme.textPlain};
-`;
-
-export default function FilterDropDown({ icon, isOpen, options, onClickOutside }) {
-
-  // const ref = useRef(null);
-
-  // useEffect(() => {
-  //   const handleClickOutside = (event) => {
-  //     if (ref.current && !ref.current.contains(event.target)) {
-  //       onClickOutside && onClickOutside();
-  //     }
-  //   };
-  //   document.addEventListener('click', handleClickOutside, true);
-  //   return () => {
-  //     document.removeEventListener('click', handleClickOutside, true);
-  //   };
-  // }, [ onClickOutside ]);
-
-
-
+export default function FilterDropDown({ icon, isOpen, options }) {
 
   const dispatch = useDispatch();
   const clickCallback =  (option) => (e) => {
@@ -168,7 +115,6 @@ export default function FilterDropDown({ icon, isOpen, options, onClickOutside }
     <Main>
       <DropDownContainer>
         <DropDownHeader>{icon}</DropDownHeader>
-        {/*{isOpen && (*/}
           <DropDownListContainer style={{height: isOpen ? "106px" : 0}}>
             <DropDownList >
               {options.map((option, index) => (
@@ -180,7 +126,6 @@ export default function FilterDropDown({ icon, isOpen, options, onClickOutside }
               ))}
             </DropDownList>
           </DropDownListContainer>
-        {/*)}*/}
       </DropDownContainer>
     </Main>
   );

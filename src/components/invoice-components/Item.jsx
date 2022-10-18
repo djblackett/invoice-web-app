@@ -4,14 +4,10 @@ import PropTypes from "prop-types";
 const ItemContainer = styled.div`
   display: grid;
   width: 100%;
-  /* border-radius: 8px; */
-
   padding: 1.5rem;
   padding-top: 0;
   grid-template: auto auto / 1fr 1fr;
   grid-auto-flow: dense;
-  /* grid-column: span 5; */
-
   background-color: ${({ theme }) => theme.editButton};
 
   :first-child {
@@ -36,7 +32,7 @@ const ItemContainer = styled.div`
   }
 `;
 
-// same srtyle for Total
+
 const ItemName = styled.p`
   white-space: nowrap;
   justify-self: start;
@@ -44,13 +40,10 @@ const ItemName = styled.p`
   margin: 0;
   padding: 0;
   color: ${({ theme }) => theme.text};
-  font-family: "Spartan";
-  font-style: normal;
   font-weight: 700;
   font-size: 12px;
   line-height: 15px;
   /* identical to box height, or 125% */
-
   letter-spacing: -0.25px;
 `;
 
@@ -62,8 +55,6 @@ const Quantity = styled.p`
   margin: 0;
   color: ${({ theme }) => theme.greyText};
   padding: 0;
-  font-family: "Spartan";
-  font-style: normal;
   font-weight: 700;
   font-size: 12px;
   line-height: 15px;
@@ -95,9 +86,6 @@ const Total = styled(ItemName)`
 
 const QuantityPriceContainer = styled.div`
   display: none;
-  /* justify-content: space-between;
-  align-items: center; */
-  /* grid-area: 2 / 2 /3 / 3; */
 
   @media (min-width: 768px) {
     display: contents;
@@ -107,18 +95,15 @@ const QuantityPriceContainer = styled.div`
 const MobileQuantityPrice = styled.p`
   display: inline;
   grid-area: 2 / 1 / 3 / 2;
-
-  font-family: "Spartan";
-  font-style: normal;
   font-weight: 700;
   font-size: 12px;
   line-height: 15px;
   margin: 0;
   margin-top: 0.5rem;
   /* identical to box height, or 125% */
-
   letter-spacing: -0.25px;
   color: ${({ theme }) => theme.greyText};
+  
   @media (min-width: 768px) {
     display: none;
   }
@@ -135,9 +120,7 @@ const MobileHelperContainer = styled.div`
 `;
 
 function Item({ item }) {
-  // console.log(item.total);
-  // console.log(typeof item.total);
-  // console.log(item.total.toFixed(2));
+
   return (
     <ItemContainer>
       <MobileHelperContainer>
@@ -160,10 +143,3 @@ export default Item;
 Item.propTypes = {
   item: PropTypes.object.isRequired,
 };
-
-// {
-//         "name": "Brand Guidelines",
-//         "quantity": 1,
-//         "price": 1800.90,
-//         "total": 1800.90
-//       }

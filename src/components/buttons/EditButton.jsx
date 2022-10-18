@@ -8,8 +8,6 @@ const Button = styled.button`
   color: ${({ theme }) => theme.greyText};
   border: none;
   cursor: pointer;
-  font-family: "Spartan";
-  font-style: normal;
   font-weight: 700;
   font-size: 12px;
   line-height: 15px;

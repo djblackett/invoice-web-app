@@ -8,28 +8,15 @@ export const FormEntryContainer = styled.div`
   flex-direction: column;
   position: relative;
   align-items: flex-start;
-
   font-style: ${({ theme }) => theme.font};
-
   width: 100%;
-
-  @media (min-width: 768px) {
-    
-  }
 `;
 
 function LongFormEntry({ className, children}) {
   const [isDirty, setIsDirty] = useState(false);
-  const windowWidth = useWindowWidth();
   const handleChange = () => {
     setIsDirty(true);
   };
-
-  useEffect(() => {
-
-  }, [windowWidth])
-
-  // const width = isLongOnMobile ? "100%" : windowWidth < 768 ? "45%" : "revert";
 
   return (
     <FormEntryContainer

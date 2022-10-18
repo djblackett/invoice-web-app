@@ -41,7 +41,6 @@ export const Col = styled.p`
   font-size: 11px;
   line-height: 18px;
   /* identical to box height, or 164% */
-
   letter-spacing: -0.229167px;
 `;
 
@@ -56,7 +55,6 @@ const ItemsContainer = styled.div`
   max-width: 504px;
   border-radius: 8px 8px 0 0;
   background-color: ${({ theme }) => theme.background};
-
   transition: all 250ms ease-in-out;
 
   @media (min-width: 768px) {
@@ -67,8 +65,6 @@ const ItemsContainer = styled.div`
 `;
 
 const ItemTitle = styled.h1`
-  font-family: "Spartan";
-  font-style: normal;
   font-weight: 700;
   font-size: 18px;
   line-height: 32px;
@@ -87,14 +83,16 @@ const ItemTitle = styled.h1`
   }
 `;
 
-function EditFormItemList({ invoice, items, setItems}) {
+function EditFormItemList({ items, setItems}) {
 
-    // todo not sure if this will work because
+    // boilerplate for if I decide to try to integrate the items list with react-hook-form
+    // currently not implemented
     const { control, register } = useForm();
     const { fields, append, prepend, remove, swap, move, insert } = useFieldArray({
         control, // control props comes from useForm (optional: if you are using FormContext)
         name: "form-items", // unique name for your Field Array
     });
+
 
     const dispatch = useDispatch();
     const handleAddNewItem = (e) => {
@@ -119,15 +117,11 @@ function EditFormItemList({ invoice, items, setItems}) {
       </ItemsHeader>
       <ItemsContainer>
         {items.map((item) => {
-
-
             return (
           <EditFormItem
             item={item}
             items={items}
-
-              key={"editItemList-" + item.id}
-
+            key={"editItemList-" + item.id}
             setItems={setItems}
           />
         )})}
@@ -143,5 +137,4 @@ EditFormItemList.propTypes = {
   invoice: PropTypes.object,
   items: PropTypes.arrayOf(PropTypes.object).isRequired,
   setItems: PropTypes.func.isRequired,
-
 };

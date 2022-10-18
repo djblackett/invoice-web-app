@@ -1,5 +1,5 @@
 import styled from "styled-components";
-import React, { useState } from "react";
+import React from "react";
 import PropTypes from "prop-types";
 
 export const InputStyles = styled.input`
@@ -7,7 +7,6 @@ export const InputStyles = styled.input`
   height: 48px;
   border-radius: 4px;
   border-color: ${({ theme }) => theme.formFieldOutline};
-  /* outline: none; */
   padding: 17px 20px 16px 20px;
   margin-bottom: 1.5rem;
   font-family: ${({ theme }) => theme.font};
@@ -15,9 +14,7 @@ export const InputStyles = styled.input`
   font-weight: 700;
   font-size: 12px;
   line-height: 15px;
-  /* margin-left:5px; */
   /* identical to box height, or 125% */
-
   letter-spacing: -0.25px;
   color: ${({ theme }) => theme.textPlain};
   background-color: ${({ theme }) => theme.editButton};

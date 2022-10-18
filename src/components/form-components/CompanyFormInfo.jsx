@@ -10,7 +10,6 @@ import {useWindowWidth} from "../../hooks/useWindowWidth";
 export const CityPostContainer = styled.div`
   display: flex;
   width: 100%;
-  //max-width: 100vw;
   justify-content: space-between;
   
   @media (min-width: 600px) {

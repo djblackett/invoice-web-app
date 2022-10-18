@@ -9,14 +9,11 @@ const Button = styled.button`
   color: ${({ theme }) => theme.greyText};
   border: none;
   cursor: pointer;
-  font-family: "Spartan";
-  font-style: normal;
   font-weight: 700;
   font-size: 12px;
   line-height: 15px;
   margin: 0.25rem;
   /* identical to box height, or 125% */
-
   letter-spacing: -0.25px;
 
   &:hover {

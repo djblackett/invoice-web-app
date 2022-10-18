@@ -1,8 +1,5 @@
 import styled from "styled-components";
-import { useDispatch } from "react-redux";
-import { removeInvoice } from "../../features/invoices/invoicesSlice";
-import { PropTypes } from "prop-types";
-import { useNavigate } from "react-router-dom";
+import  PropTypes  from "prop-types";
 
 const Button = styled.button`
   background-color: #ec5757;
@@ -11,8 +8,6 @@ const Button = styled.button`
   color: white;
   border: none;
   cursor: pointer;
-  font-family: "Spartan";
-  font-style: normal;
   font-weight: 700;
   font-size: 12px;
   line-height: 15px;
@@ -25,7 +20,7 @@ const Button = styled.button`
     background-color: #ff9797;
   }
 `;
-function DeleteButton({ invoice, handleClick }) {
+function DeleteButton({ handleClick }) {
   return <Button onClick={handleClick}>Delete</Button>;
 }
 

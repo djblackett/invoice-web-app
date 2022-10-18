@@ -43,6 +43,8 @@ const ButtonText = styled.p`
   letter-spacing: -0.25px;
   margin-left: 0.25rem;
 `;
+
+// may use this in design later
 const plusIcon = (
   <path
     d="M6.313 10.023v-3.71h3.71v-2.58h-3.71V.023h-2.58v3.71H.023v2.58h3.71v3.71z"

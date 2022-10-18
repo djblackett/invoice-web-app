@@ -12,11 +12,8 @@ export const ViewContainer = styled.div`
   margin-top: 104px;
   padding-left: 0.5rem;
   padding-right: 0.5rem;
-  //scale: 0.95;
-  
   
   @media (min-width: 325px) {
-    //scale: 1;
     padding-left: 1.5rem;
     padding-right: 1.5rem;
   }
@@ -31,6 +28,7 @@ export const ViewContainer = styled.div`
     margin-top: 4rem;
   }
 `;
+
 export const GoBackButton = styled.div`
   align-self: flex-start;
   display: flex;
@@ -41,18 +39,21 @@ export const GoBackButton = styled.div`
   cursor: pointer;
   margin-bottom: 2rem;
 `;
+
 export const Icon = styled.p`
   color: ${({theme}) => theme.outline};
   padding: 0;
   margin: 0;
   font-weight: 900;
 `;
+
 export const GoBack = styled.p`
   font-weight: bold;
   padding: 0;
   margin: 0;
   margin-left: 1rem;
 `;
+
 export const arrowLeft = (
     <svg width="7" height="10" xmlns="http://www.w3.org/2000/svg">
         <path

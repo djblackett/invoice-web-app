@@ -1,6 +1,6 @@
 /* eslint-disable react/display-name */
 /* eslint-disable react/prop-types */
-import {DateAndPaymentContainer, Input, Label} from "../../styles/editStyles";
+import {DateAndPaymentContainer, Label} from "../../styles/editStyles";
 import FormEntry from "./FormEntry";
 import DatePicker from "react-datepicker";
 import FormDropDown from "./FormDropDown";
@@ -20,9 +20,6 @@ const CustomDateBox = styled.div`
   border-style: solid;
   padding: 0 20px 0 16px;
   margin-bottom: 1.5rem;
- 
-  
-  //outline-color: ${({ theme }) => theme.outline};
   caret-color: #7C5DFA;
   outline: none;
 
@@ -42,6 +39,7 @@ const CustomDateBox = styled.div`
   ${props => props.long && css`
     width: 100%;
   `}
+  
   `;
 
 const DateInput = styled.input`
@@ -68,7 +66,6 @@ export function DateAndPayment(props) {
     // todo figure out how to get calendar icon inside the datepicker container
   const ExampleCustomInput = forwardRef(({ value, onClick }, ref) => (
       <CustomDateBox
-          // style={{ width: props.editPageWidth < 600 ? "100%" : "initial" }}
           className="custom-input"
           onClick={onClick}
           style={{cursor: "pointer"}}>

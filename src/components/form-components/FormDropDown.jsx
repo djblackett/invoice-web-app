@@ -1,6 +1,5 @@
 import React, { useState, useCallback, useEffect } from "react";
 import styled from "styled-components";
-import { useSelector } from "react-redux";
 import PropTypes from "prop-types";
 import { SVG } from "../buttons/NewItemButton";
 
@@ -35,7 +34,6 @@ const Main = styled.div.attrs({
 const DropDownHeader = styled.div`
   
   display: flex;
-  //position: static;
   justify-content: space-between;
   align-items: center;
   box-sizing: border-box;
@@ -43,9 +41,7 @@ const DropDownHeader = styled.div`
   padding-top: 17px;
   padding-bottom: 16px;
   padding-right: 1.5rem;
-
   background-color: transparent;
-
   width: 100%;
   height: 48px;
   border-radius: 4px;
@@ -58,7 +54,7 @@ const DropDownHeader = styled.div`
 
     word-spacing: normal;
     text-transform: none;
-    text-indent: 0px;
+    text-indent: 0;
     text-shadow: none;
     display: inline-block;
     text-align: start;
@@ -75,15 +71,10 @@ const DropDownHeader = styled.div`
     font-size: 12px;
     line-height: 15px;
     /* identical to box height, or 125% */
-
     letter-spacing: -0.25px;
-    
     margin: 0;
-    
     transform: translateY(-2px);
   }
-
-
 `;
 
 const DropDownList = styled.ul`
@@ -94,15 +85,12 @@ const DropDownList = styled.ul`
   margin: 0;
   overflow: hidden;
   background-color: ${({ theme }) => theme.editButton};
-  /* padding-bottom: 5px; */
   box-sizing: border-box;
   height: fit-content;
   border-radius: 4px;
   color: ${({ theme }) => theme.text};
   font-size: 1.2rem;
   font-weight: 600;
-  /* filter: drop-shadow(4px, 4px, 4px, black); */
-  //filter: drop-shadow(2px 2px 2px gray);
   box-shadow: ${({ theme }) => theme.filterShadow};
   transition: height 250ms ease-in-out;
 
@@ -120,19 +108,12 @@ const ListItem = styled.li`
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  //position: absolute;
+ 
   list-style: none;
   height: 48px;
   width: 100%;
   border-color: ${({ theme }) => theme.formFieldOutline};
   cursor: pointer;
-  /* background-color: ${({ theme }) => theme.background}; */
-
-  &:hover {
-    //filter: brightness(80%);
-  }
-
-  /* border-color: ${({ theme }) => theme.formFieldOutline}; */
   border-bottom: 1px solid ${({ theme }) => theme.formFieldOutline};
 `;
 
@@ -144,16 +125,11 @@ const ItemButton = styled.button`
   border: none;
   cursor: pointer;
   outline: none;
-
-  font-family: "Spartan";
-  font-style: normal;
   font-weight: 700;
   font-size: 12px;
   line-height: 15px;
   /* identical to box height, or 125% */
-
   letter-spacing: -0.25px;
-
   color: ${({ theme }) => theme.textPlain};
 
   &:first-child {
@@ -188,13 +164,11 @@ function FormDropDown({
   handleChangeSelectedOption,
   isPaymentOpen,
   handlePaymentClick,
-  handlePaymentSelect,
 }) {
   const [selected, setSelected] = useState(String(selectedPaymentOption) || "");
 
   const onOptionClicked = (option) => (e) => {
     e.preventDefault();
-    // handlePaymentSelect();
     handlePaymentClick();
 
     const num = Number(option.split(" ")[1]);
@@ -236,7 +210,6 @@ export default FormDropDown;
 
 FormDropDown.propTypes = {
   isPaymentOpen: PropTypes.bool.isRequired,
-
   handlePaymentClick: PropTypes.func.isRequired,
   handlePaymentSelect: PropTypes.func.isRequired,
   selectedPaymentOption: PropTypes.number,

@@ -4,7 +4,6 @@ import {
     CountryInput,
     ErrorTextInline,
     Label,
-    LongEntry,
     StreetAddressInput,
     Input
 } from "../../styles/editStyles";

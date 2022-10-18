@@ -1,6 +1,6 @@
 import styled from "styled-components";
 import Proptypes from "prop-types";
-import { useMemo, useState, useEffect, useCallback } from "react";
+import { useMemo} from "react";
 import { useWindowWidth } from "../../hooks/useWindowWidth";
 import ToolbarButtons from "../menus-toolbars/ToolbarButtons";
 import InvoiceStatus from "./InvoiceStatus";
@@ -28,7 +28,7 @@ const Toolbar = styled.div`
     max-width: 730px;
   }
 
-  box-shadow: 0px 10px 10px -10px rgba(72, 84, 159, 0.100397);
+  box-shadow: 0 10px 10px -10px rgba(72, 84, 159, 0.100397);
 `;
 
 const StatusContainer = styled.div`
@@ -36,7 +36,6 @@ const StatusContainer = styled.div`
   height: 91px;
   width: 100%;
   padding: 10px 20px;
-  /* display: contents; */
   justify-content: space-between;
   align-items: center;
   background-color: ${({ theme }) => theme.background};
@@ -58,7 +57,6 @@ function InvoiceToolbar({
   setEdit,
   setIsModalOpen,
   setItems,
-  isEditOpen,
 }) {
 
   const openModal = () => setIsModalOpen(true);
@@ -79,7 +77,6 @@ function InvoiceToolbar({
     <Toolbar
       className="invoice-toolbar"
       style={{
-        // display: isEditOpen ? "none" : width < 600 ? "contents" : "flex",
         display: width < 600 ? "contents" : "flex"
       }}
     >

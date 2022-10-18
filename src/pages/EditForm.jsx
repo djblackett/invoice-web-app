@@ -1,6 +1,5 @@
 /* eslint-disable react/display-name */
 /* eslint-disable react/prop-types */
-
 import React, {useEffect, useLayoutEffect, useState} from "react";
 import {useForm} from "react-hook-form";
 import PropTypes from "prop-types";
@@ -136,6 +135,7 @@ function EditForm({
     setIsEditOpen(false);
   };
 
+  // calculates width and padding of editForm depending on window width and whether the edit tab is open
   useLayoutEffect(() => {
     if (width > 1200 && isEditOpen) {
       setEditPageWidth(616);
@@ -146,16 +146,11 @@ function EditForm({
     } else if (width < 325 && isEditOpen) {
       setEditPageWidth(325);
       setPadding("2rem 1.5rem 2.5rem 1.5rem");
-    }
-
-    else if (width < 600 && isEditOpen) {
+    } else if (width < 600 && isEditOpen) {
       setEditPageWidth(width);
       setPadding("1.5rem 1.5rem 1.5rem 1.5rem");
-    }
-
-    else if (!isEditOpen) {
+    } else if (!isEditOpen) {
       setEditPageWidth(0);
-      // setPadding("0px");
     }
   }, [width, padding, isEditOpen]);
 
@@ -208,9 +203,11 @@ function EditForm({
         </EditTitle>
 
         {/* "handleSubmit" will validate your inputs before invoking "onSubmit" */}
-
         <form onSubmit={handleSubmit(onSubmit)} style={{display: "flex", flexDirection: "column"}}>
+
           {/* register your input into the hook by invoking the "register" function */}
+
+          {/* Company Details */}
           <BillText>Bill From</BillText>
           <CompanyFormInfo errors={errors} senderAddress={invoice.senderAddress}
                            useFormRegisterReturn={register("streetAddress", {required: true, pattern: /^[A-Za-z0-9 ]+$/i, maxLength: 50})} onChange={handleChange}
@@ -220,7 +217,6 @@ function EditForm({
                            useFormRegisterReturn3={register("country", {required: true, pattern: /^[A-Za-z0-9 ]+$/i, maxLength: 30})}/>
 
           {/* //  Client details */}
-
           <BillText>Bill To</BillText>
           <ClientFormInfo errors={errors} clientName={invoice.clientName}
                           useFormRegisterReturn={register("clientName", {required: true})}

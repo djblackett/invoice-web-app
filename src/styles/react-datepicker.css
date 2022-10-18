@@ -86,12 +86,9 @@
   border-top-color: #aeaeae;
 }
 
-/* This is the input here !!! */
-/* Nope it's the wrapper  */
 .react-datepicker-wrapper {
   display: inline-block;
   padding: 0;
-  /*padding-top: 1.5rem;*/
   border: 0;
   width: 100%;
   z-index: 1000;

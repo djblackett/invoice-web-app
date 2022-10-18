@@ -20,19 +20,13 @@ const Main = styled.div`
   background-color: ${({ theme }) => theme.body};
   transition: all 0.4s ease-in-out;
   z-index: 1;
-  //scale: 0.90;
-  @media (min-width: 325px) {
-    //scale: 1;
-  }
-  //scrollbar-gutter: stable both-edges;
 
   @media (min-width: 1200px) {
     display: grid;
     grid-template: repeat(3, auto) / 1fr;
     justify-items: center;
   }
-
-
+  
   // applies the appropriate theme to each status type
   .draft {
     background: ${({theme}) => theme.draftBackgroundColor};
@@ -61,6 +55,7 @@ const Main = styled.div`
   }
 `;
 
+
 function App() {
   const [theme, setTheme] = useState("light");
 
@@ -68,7 +63,7 @@ function App() {
     theme === "light" ? setTheme("dark") : setTheme("light");
   };
 
-
+  // for testing firebase DB functionality (Not fully implemented yet)
   async function testDBFunction() {
     const docRef = doc(firestoreDb, "cities", "SF");
     const docSnap = await getDoc(docRef);

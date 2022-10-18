@@ -1,4 +1,4 @@
-import styled, {css} from "styled-components";
+import styled from "styled-components";
 import PropTypes from "prop-types";
 import {useEffect, useState} from "react";
 import {useWindowWidth} from "../../hooks/useWindowWidth";
@@ -10,8 +10,6 @@ export const FormEntryContainer = styled.div`
   align-items: flex-start;
   font-style: ${({ theme }) => theme.font};
   width: 45%;
-  //z-index: 70;
-
 
   @media (min-width: 768px) {
     width: 100%;
@@ -35,12 +33,7 @@ function FormEntry({ className, isLongOnMobile = false, children}) {
     setIsDirty(true);
   };
 
-  useEffect(() => {
-
-  }, [windowWidth])
-
-  // const width = isLongOnMobile ? "100%" : windowWidth < 768 ? "45%" : "revert";
-
+  // mobile view gets a longer component, hence the awkward naming scheme here
   if (isLongOnMobile) {
     return (
         <OppositeWidthContainer

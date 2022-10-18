@@ -1,11 +1,9 @@
 import Checkbox from "../buttons/Checkbox";
 import PropTypes from "prop-types";
 import styled from "styled-components";
-import { useState } from "react";
-import { useDispatch, useSelector } from "react-redux";
-import { changeFilter } from "../../features/invoices/filterSlice";
+import { useSelector } from "react-redux";
 import { selectFilter } from "../../features/invoices/filterSlice";
-import { useEffect } from "react";
+
 
 
 
@@ -18,15 +16,13 @@ const Label = styled.label`
   cursor: pointer;
   box-sizing: border-box;
   margin-left: 0.5rem;
-  font-family: "Spartan";
-  font-style: normal;
   font-weight: 700;
   font-size: 12px;
   line-height: 15px;
   /* identical to box height, or 125% */
-
   letter-spacing: -0.25px;
   color: ${({ theme }) => theme.textPlain};
+  
   &:hover {
     .styledCheckbox {
       border: 1px solid ${({ theme }) => theme.outline};
@@ -38,7 +34,7 @@ const Label = styled.label`
 
 function CheckboxSelection({ option }) {
   const filter = useSelector(selectFilter);
-  const handleCheckboxChange = (event) => {};
+  const handleCheckboxChange = () => {};
   return (
     <CheckboxContainer >
       <Label>

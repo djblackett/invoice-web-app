@@ -1,5 +1,4 @@
 import styled, {css} from "styled-components";
-import FormEntry from "../components/form-components/FormEntry";
 
 export const EditTitle = styled.h1`
   font-size: 1.5rem;
@@ -11,12 +10,9 @@ export const FormContainerDarkenModal = styled.div`
   top: 72px;
   bottom: 91px;
   left: 0;
-  
   width: 100%;
   background-color: ${({theme}) => theme.background};
-  //background-size: cover;
   position: fixed;
-
   display: flex;
   flex-direction: column;
   transition-property: all;
@@ -24,10 +20,8 @@ export const FormContainerDarkenModal = styled.div`
   transition-timing-function: ease-in-out;
   overflow-x: hidden;
   filter: drop-shadow(2px 2px 2px bottom);
-
   align-self: flex-start;
   z-index: 50;
-
   max-width: 100%;
 
   @media (min-width: 768px) {
@@ -36,7 +30,6 @@ export const FormContainerDarkenModal = styled.div`
     padding-top: 1rem;
     padding-bottom: 2rem;
     max-width: 700px;
-    /* top: 72px; */
     right: 616px;
     max-height: calc(100vh - 72px);
   }
@@ -53,7 +46,6 @@ export const BillText = styled.p`
   color: ${({theme}) => theme.outline};
   font-weight: bold;
   font-size: 0.75rem;
-  /* margin: 5px; */
   margin-bottom: 1.5rem;
 `;
 
@@ -71,8 +63,6 @@ export const Input = styled.input`
   font-weight: 700;
   font-size: 12px;
   line-height: 15px;
-  
-  //outline-color: ${({ theme }) => theme.outline};
   caret-color: #7C5DFA;
   outline: none;
 
@@ -93,35 +83,6 @@ export const Input = styled.input`
     width: 100%;
   `}
 `;
-
-export const DateButton = styled.button`
-  width: 100%;
-  height: 48px;
-  border-radius: 4px;
-  border-color: ${({theme}) => theme.formFieldOutline};
-  border-style: solid;
-  padding: 0;
-  margin-bottom: 1.5rem;
-  font-family: ${({theme}) => theme.font};
-  font-style: normal;
-  font-weight: 700;
-  font-size: 12px;
-  line-height: 15px;
-
-
-  letter-spacing: -0.25px;
-
-  color: ${({theme}) => theme.textPlain};
-  background-color: ${({theme}) => theme.inputBackgroundColor};
-
-  &:focus {
-    border-color: black;
-  }
-
-  ${props => props.long && css`
-    width: 100%;
-  `}
-`
 
 export const StreetAddressInput = styled(Input)`
   width: 100%;
@@ -155,36 +116,24 @@ export const Label = styled.label`
 `;
 export const DarkenScreen = styled.div`
   position: fixed;
-  //overflow-y: hidden;
   top: 0;
   bottom: 0;
   left: 0;
   right: 0;
-
-  
   background-color: rgba(0, 0, 0, 0.5);
   transition: all 250ms ease-in-out;
   z-index: 100;
 `;
 
-export const LongEntry = styled(Input)`
-  max-width: 100%;
-  width: 100%;
-  @media (min-width: 768px) {
-    max-width: initial;
-    width: 504px;
-  }
-`;
 export const ErrorText = styled.p`
   color: red;
-
   margin-top: 0.5rem;
 `;
+
 export const ErrorTextInline = styled(ErrorText)`
   position: absolute;
   right: 1.5rem;
 `;
-
 
 export const DateAndPaymentContainer = styled.div`
   display: flex;
@@ -203,6 +152,7 @@ export const DateAndPaymentContainer = styled.div`
     flex-wrap: nowrap;
   }
 
+  // section targets the react-date-picker component to apply theming 
   .react-datepicker__header {
     background-color: ${({theme})=> theme.background};
     color: ${({theme})=> theme.dateText};
@@ -240,8 +190,6 @@ export const DateAndPaymentContainer = styled.div`
     color: #7C5DFA;
     background-color: transparent;
     font-weight: bold;
-    
-    
   }
 
   .react-datepicker__day-names {
@@ -256,24 +204,17 @@ export const DateAndPaymentContainer = styled.div`
     color: ${({theme})=> theme.dateText};
     align-self: center;
     justify-self: center;
-
-    font-family: 'Spartan';
+    font-family: 'Spartan',sans-serif;
     font-style: normal;
     font-weight: 700;
     font-size: 12px;
     line-height: 15px;
     /* identical to box height, or 125% */
-
-    text-align: center;
     letter-spacing: -0.25px;
-    
-  }
-
-
-
-  .react-datepicker__day--keyboard-selected {
-    background-color: rgba(124, 93, 250, 0.5);
-    
+    text-align: center;
   }
   
+  .react-datepicker__day--keyboard-selected {
+    background-color: rgba(124, 93, 250, 0.5);
+  }
 `;

@@ -6,20 +6,18 @@ import InvoiceStatus from "./InvoiceStatus";
 const Card = styled.div`
   height: 134px;
   width: 100%;
-  /* max-width: 100%; */
   background-color: ${({ theme }) => theme.background};
   display: grid;
   grid-template-columns: 1fr 1fr;
   grid-template-rows: 43px 43px;
   padding: 24px;
-  /* margin: 24px; */
   margin-bottom: 8px;
   margin-top: 8px;
   letter-spacing: -0.25px;
   line-height: 15px;
   font-size: 12px;
   border-radius: 8px;
-  box-shadow: 0px 10px 10px -10px rgba(72, 84, 159, 0.100397);
+  box-shadow: 0 10px 10px -10px rgba(72, 84, 159, 0.100397);
   transition: width 0.5s ease-in-out;
 
   &:hover {
@@ -28,6 +26,8 @@ const Card = styled.div`
 
   @media (min-width: 600px) {
     grid-template-rows: 1fr;
+    
+    // calculations for the grid-template-columns based on design spec
     // container = 672px  or 624px without padding
     // 1st box = 87  so 87/624 = 14%
     //2nd box = 143px so 143/624 = 23%
@@ -37,10 +37,7 @@ const Card = styled.div`
     // 4
     
     grid-template-columns: 14% 23% 21.6% 20.8% 19.9% 2%;
-    //grid-template-columns: repeat(5, 1fr) 60px;
     grid-auto-flow: dense;
-    //padding-left: 0;
-    //padding-right: 0;
     align-items: center;
     justify-items: start;
     height: 72px;
@@ -52,10 +49,7 @@ const Card = styled.div`
     width: 100%;
     margin-left: 0;
     margin-right: 0;
-   
   }
-  
-  
 `;
 
 const IDNumber = styled.p`
@@ -91,8 +85,6 @@ const InvoiceAmount = styled.p`
 const CustomerName = styled.p`
   margin: 0;
   color: ${({theme}) => theme.textPlain};
-  font-family: "Spartan";
-  font-style: normal;
   font-weight: 500;
   font-size: 12px;
   line-height: 15px;
@@ -111,7 +103,6 @@ const SVGContainer = styled.div`
   display: none;
   justify-content: center;
   align-items: center;
-  display: none;
 
   @media (min-width: 600px) {
     display: flex;

@@ -8,7 +8,6 @@ import { Link } from "react-router-dom";
 import {
   selectInvoices,
   addIdToExistingInvoices,
-  clearInvoices,
 } from "../features/invoices/invoicesSlice";
 import { selectFilter } from "../features/invoices/filterSlice";
 import styled from "styled-components";
