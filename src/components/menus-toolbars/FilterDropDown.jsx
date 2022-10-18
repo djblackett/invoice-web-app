@@ -9,15 +9,23 @@ const Main = styled("div")`
   align-self: center;
   box-sizing: border-box;
   background: transparent;
-  height: 50px;
+  //height: 50px;
   z-index: 5;
 
   width: 8px;
   cursor: pointer;
   //filter: drop-shadow(2px 2px 2px bottom);
-  margin-left: 16px;
+  margin-left: 0;
   position: relative;
 
+  @media (min-width: 325px) {
+    margin-left: 8px;
+  }
+
+  @media (min-width: 350px) {
+    margin-left: 16px;
+  }
+  
   @media (min-width: 600px) {
   }
 
@@ -49,7 +57,7 @@ const DropDownHeader = styled.div.attrs({
   align-items: center;
   align-self: center;
   box-sizing: border-box;
-  height: 50px;
+  //height: 50px;
   width: 12px;
   font-weight: 600;
   font-size: 1.2rem;
@@ -64,6 +72,7 @@ const DropDownListContainer = styled("div")`
   position: absolute;
   width: 150px;
   left: -75px;
+  top: 24px;
   background-color: ${({ theme }) => theme.background};
   border-radius: 10px;
   overflow: hidden;

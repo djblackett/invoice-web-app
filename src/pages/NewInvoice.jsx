@@ -166,9 +166,12 @@ function NewInvoice({
     if (width > 1200 && isNewOpen) {
       setEditPageWidth(616);
       setPadding("2.5rem 2.5rem 2rem calc(2.5rem + 17px)");
-    } else if (width < 1200 && isNewOpen) {
+    } else if (width < 1200 && width > 325 && isNewOpen) {
       setEditPageWidth(616);
       setPadding("2.5rem 2.5rem 2.5rem 2.5rem");
+    } else if (width < 325 && isNewOpen) {
+      setEditPageWidth(325);
+      setPadding("2rem 1.5rem 2.5rem 1.5rem");
     } else if (!isNewOpen) {
       setEditPageWidth(0);
       setPadding("0px");

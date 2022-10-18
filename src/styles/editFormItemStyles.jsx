@@ -125,6 +125,7 @@ export const Price = styled(Quantity).attrs(
 export const Total = styled.p`
   /* text-align: end; */
   /* justify-self: end; */
+  min-width: 40px;
   align-self: center;
   /* grid-area: 1 / 2 / 2 / 3; */
   height: fit-content;
@@ -139,11 +140,18 @@ export const Total = styled.p`
   color: ${({theme}) => theme.greyText};
 
   letter-spacing: -0.25px;
+
+  @media (min-width: 325px) {
+    min-width: 60px;
+  }
+  
   @media (min-width: 600px) {
     grid-area: initial;
     text-align: left;
   }
 `;
+
+
 export const QuantityPriceContainer = styled.div`
   display: none;
 

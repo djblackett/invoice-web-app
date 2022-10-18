@@ -106,8 +106,6 @@ function EditFormItem({ item, items, setItems }) {
         <Box>
           <Col style={{ marginBottom: "0.625rem" }}>Qty.</Col>
           <Quantity
-              // title={"Must be numeric"}
-              pattern="[0-9]*"
               onChange={(e) =>
                   setQuantity((v) => (e.target.validity.valid ? e.target.value : v))}
             value={quantity}
@@ -116,14 +114,14 @@ function EditFormItem({ item, items, setItems }) {
         <Box>
           <Col style={{ marginBottom: "0.625rem" }}>Price</Col>
           <Price name={"price"} onChange={(e) =>
-            setPrice((v) => (e.target.validity.valid ? e.target.value : v))} value={price.toF}
-                 style={{borderColor: isTotalValid ? "initial" : "red"}}
+            setPrice((v) => (e.target.validity.valid ? e.target.value : v))} value={price}
+                 style={{borderColor: isTotalValid ? "" : "red"}}
           />
         </Box>
         <Box>
           <Col style={{ marginBottom: "0.625rem" }}>Total</Col>
-          <Total name={"total"} onChange={handleChange} value={item.total}>
-            {(item.quantity * item.price).toFixed(2)}
+          <Total name={"total"} onChange={handleChange} value={item.total}  style={{color: isTotalValid ? "" : "red"}}>
+            {total}
           </Total>
         </Box>
       </SmallBoxContainer>
@@ -148,18 +146,17 @@ function EditFormItem({ item, items, setItems }) {
           <Quantity
             name={"quantity"}
             type="text"
-            // pattern="[0-9]*"
             onChange={(e) =>
                 setQuantity((v) => (e.target.validity.valid ? e.target.value : v))}
             value={quantity}
           />
           <Price name={"price"}
                  type="text"
-
                  onChange={(e) =>
-              setPrice((v) =>  e.target.value)}
-                 value={price}
+                     setPrice((v) => (e.target.validity.valid ? e.target.value : v))}
+
                  style={{borderColor: isTotalValid ? "" : "red"}}
+                 value={price}
           />
         </QuantityPriceContainer>
         <MobileQuantityPrice>

@@ -20,6 +20,10 @@ const Main = styled.div`
   background-color: ${({ theme }) => theme.body};
   transition: all 0.4s ease-in-out;
   z-index: 1;
+  //scale: 0.90;
+  @media (min-width: 325px) {
+    //scale: 1;
+  }
   //scrollbar-gutter: stable both-edges;
 
   @media (min-width: 1200px) {

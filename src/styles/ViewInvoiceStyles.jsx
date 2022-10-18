@@ -10,8 +10,16 @@ export const ViewContainer = styled.div`
   justify-self: center;
   align-self: center;
   margin-top: 104px;
-  padding-left: 1.5rem;
-  padding-right: 1.5rem;
+  padding-left: 0.5rem;
+  padding-right: 0.5rem;
+  //scale: 0.95;
+  
+  
+  @media (min-width: 325px) {
+    //scale: 1;
+    padding-left: 1.5rem;
+    padding-right: 1.5rem;
+  }
 
   @media (min-width: 768px) {
     max-width: 730px;

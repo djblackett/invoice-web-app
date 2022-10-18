@@ -9,15 +9,21 @@ import {useWindowWidth} from "../../hooks/useWindowWidth";
 const GridContainer = styled.div`
   display: grid;
   height: 100%;
-  width: 100%;
+  
   grid-template-rows: auto;
   grid-template-columns: 1fr 1fr;
   margin-top: 104px;
   margin-bottom: 25px;
   z-index: 1;
-  padding-left: 24px;
-  padding-right: 24px;
-  
+  padding-left: 18px;
+  padding-right: 18px;
+  width: 100%;
+
+  @media (min-width: 325px) {
+    padding-left: 24px;
+    padding-right: 24px;
+    width: 100%;
+  }
   
   @media (min-width: 600px) {
     width: 100%;
@@ -61,6 +67,7 @@ const TitleBox = styled.div`
 
 const Title = styled.h1`
   margin: 0;
+  font-size: 2rem;
 `;
 
 const InvoicesLeft = styled.p`
@@ -82,6 +89,7 @@ const InvoicesLeft = styled.p`
 `;
 
 const ControlBox = styled.div`
+
   display: flex;
   justify-self: end;
   flex-direction: row;
@@ -89,6 +97,15 @@ const ControlBox = styled.div`
   //margin-right: 24px;
   justify-content: flex-end;
   /* cursor: pointer; */
+  //scale: 0.8;
+  
+  
+  @media (min-width: 325px) {
+    //scale: 1;
+  }
+  
+  
+  
 
   .largeScreenText {
     display: none;
@@ -193,11 +210,19 @@ const Filter = styled.p`
 `;
 
 const FilterButton = styled.div`
+  
+  
   display: flex;
-  justify-content: space-between;
+  justify-content: center;
   align-items: center;
+  height: 50px;
   width: fit-content;
   cursor: pointer;
+  flex-direction: column;
+  
+  @media (min-width: 325px) {
+    flex-direction: row;
+  }
 `
 
 const plusSignSVG = (

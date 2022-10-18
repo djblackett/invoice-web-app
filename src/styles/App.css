@@ -11,10 +11,16 @@ body {
 
 html {
   font-family: "League Spartan", sans-serif;
-  font-size: 16px;
-
+  font-size: 12px;
+  /*font-size: 16px;*/
   /*scrollbar-gutter: stable;*/
   overflow-y: scroll;
+}
+
+@media (min-width: 325px) {
+  html {
+    font-size: 16px;
+  }
 }
 
 

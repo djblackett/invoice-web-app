@@ -5,6 +5,7 @@ export const EditTitle = styled.h1`
   font-size: 1.5rem;
   color: ${({theme}) => theme.text};
 `;
+
 export const FormContainerDarkenModal = styled.div`
   height: 100%;
   top: 72px;
