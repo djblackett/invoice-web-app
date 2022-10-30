@@ -3,7 +3,6 @@ import PropTypes from "prop-types";
 import DeleteButton from "./buttons/DeleteButton";
 import { useDispatch } from "react-redux";
 import { removeInvoice } from "../features/invoices/invoicesSlice";
-
 import { useNavigate } from "react-router-dom";
 import CancelButton from "./buttons/CancelButton";
 
@@ -65,8 +64,9 @@ function DeleteModal({ isModalOpen, setIsModalOpen, invoice }) {
   const navigate = useNavigate();
 
   const handleClick = () => {
-    dispatch(removeInvoice(invoice.id));
     navigate(-1);
+    dispatch(removeInvoice(invoice.id));
+
   };
 
   const closeModal = () => setIsModalOpen(false);
