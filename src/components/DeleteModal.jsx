@@ -17,10 +17,12 @@ export const DarkenScreen = styled.div`
   left: 0;
   right: 0;
   background-color: rgba(0, 0, 0, 0.5);
+  z-index: 100;
 `;
 
 const ModalContainer = styled.div`
   display: flex;
+  position: absolute;
   align-items: flex-start;
   justify-content: center;
   flex-direction: column;
@@ -64,7 +66,7 @@ function DeleteModal({ isModalOpen, setIsModalOpen, invoice }) {
   const navigate = useNavigate();
 
   const handleClick = () => {
-    navigate(-1);
+    navigate("/");
     dispatch(removeInvoice(invoice.id));
 
   };
