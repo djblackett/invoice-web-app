@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, {useLayoutEffect, useState} from "react";
 import "../styles/App.css";
 import Header from "../components/menus-toolbars/Header";
 import styled from "styled-components";
@@ -59,8 +59,15 @@ const Main = styled.div`
 function App() {
   const [theme, setTheme] = useState("light");
 
+  useLayoutEffect(() => {
+    if (localStorage.getItem("theme")) {
+      setTheme(localStorage.getItem("theme"));
+    }
+  }, [])
+
   const themeToggler = () => {
     theme === "light" ? setTheme("dark") : setTheme("light");
+    localStorage.setItem("theme", theme === "light" ? "dark" : "light");
   };
 
   // for testing firebase DB functionality (Not fully implemented yet)
