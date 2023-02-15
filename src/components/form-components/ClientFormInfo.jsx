@@ -61,6 +61,9 @@ export function ClientFormInfo(props) {
             >
                 {"Client's Email"}
             </Label>
+            {props.errors.clientEmail?.type === "pattern" && (
+                <ErrorTextInline style={{position: "absolute", top: "-8px"}}>{"Invalid email"}</ErrorTextInline>
+            )}
             <Input
                 long
                 style={{border: props.errors.clientEmail ? "1px solid red" : ""}}

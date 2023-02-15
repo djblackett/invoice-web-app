@@ -221,7 +221,7 @@ function EditForm({
           <ClientFormInfo errors={errors} clientName={invoice.clientName}
                           useFormRegisterReturn={register("clientName", {required: true})}
                           clientEmail={invoice.clientEmail}
-                          useFormRegisterReturn1={register("clientEmail", {required: true})}
+                          useFormRegisterReturn1={register("clientEmail", {required: true, pattern: /^\w+([.-]?\w+)*@\w+([.-]?\w+)*(\.\w{2,3})+$/})}
                           clientAddress={invoice.clientAddress}
                           useFormRegisterReturn2={register("clientStreetAddress", {required: true})}
                           useFormRegisterReturn3={register("clientCity", {required: true})}
