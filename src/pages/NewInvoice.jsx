@@ -86,8 +86,7 @@ function NewInvoice({
     setIsPaymentOpen(false);
   }
 
-  const onSubmit = (data) => {
-
+  const createInvoiceObject = (data) => {
     let newInvoice = {
       clientName: data.clientName,
       clientAddress: {
@@ -116,18 +115,29 @@ function NewInvoice({
 
     newInvoice.total = total;
     newInvoice.id = newInvoice.id ? newInvoice.id : generateId();
-    newInvoice.paymentTerms = selectedPaymentOption,
+    newInvoice.paymentTerms = selectedPaymentOption;
     newInvoice.status = isDraft ?  "draft" : "pending";
+
+    const date = new Date(startDate.getTime() + 86400000 * newInvoice.paymentTerms);
+
+    const [month, day, year] = [date.getMonth(), date.getDate(), date.getFullYear()];
+    newInvoice.paymentDue = [year, month, day].join("-");
+
+    return newInvoice
+  }
+
+  const onSubmit = (data) => {
+
+
+    const newInvoice = createInvoiceObject(data);
+
 
     if (newInvoice.status === "pending" && hasEmptyField) {
       setSubmitDirty(true);
       return;
     }
 
-    const date = new Date(startDate.getTime() + 86400000 * newInvoice.paymentTerms);
 
-    const [month, day, year] = [date.getMonth(), date.getDate(), date.getFullYear()];
-    newInvoice.paymentDue = [year, month, day].join("-");
 
 
     dispatch(addInvoice(newInvoice));
@@ -202,26 +212,28 @@ function NewInvoice({
             type="text"
 
             style={{border: errors.country ? "1px solid red" : ""}}
-            {...register("clientCountry")}
+            {...register("clientCountry", {required: true })}
         />
       </>
   );
+
+  const errorStyle = {
+    border: errors.clientCountry ? "1px solid red" : "",
+  };
 
   const clientCountryChildren = (
       <>
         <Label
             htmlFor="country"
-            style={{color: errors.clientCountry ? "red" : ""}}
+            style={errorStyle}
         >
           Country
         </Label>
         <CountryInput
-            style={{
-              border: errors.clientCountry ? "1px solid red" : "",
-            }}
+            style={errorStyle}
             type="text"
 
-            {...register("country")}
+            {...register("country", {required: true })}
         />
       </>
   );
@@ -241,13 +253,13 @@ function NewInvoice({
 
         {/* "handleSubmit" will validate your inputs before invoking "onSubmit" */}
         <form onSubmit={handleSubmit(onSubmit)}>
-          {/* register your input into the hook by invoking the "register" function */}
+          {/* register your input into the hook by invoking the "register" function *, {required: true /}
           <BillText>Bill From</BillText>
           <LongFormEntry>
             <Label htmlFor="streetAddress">Street Address</Label>
             <Input
                 long
-              {...register("streetAddress")}
+              {...register("streetAddress", {required: true )}
             />
           </LongFormEntry>
           <AddressBox>
@@ -256,7 +268,7 @@ function NewInvoice({
               <Label htmlFor="city">City</Label>
               <AddressDetailInput
                 type="text"
-                {...register("city")}
+                {...register("city", {required: true )}
               />
             </FormEntry>
 
@@ -264,7 +276,7 @@ function NewInvoice({
               <Label htmlFor="postalCode">Post Code</Label>
               <AddressDetailInput
                 type="text"
-                {...register("postalCode")}
+                {...register("postalCode", {required: true )}
               />
             </FormEntry>
             </CityPostContainer>
@@ -285,21 +297,22 @@ function NewInvoice({
             <Input
               type="text"
               long
-              {...register("clientName")}
+
+              {...register("clientName", {required: true })}
             />
           </LongFormEntry>
           <LongFormEntry>
             <Label htmlFor="clientEmail">Client's Email</Label>
             <Input
                 long
-              {...register("clientEmail")}
+              {...register("clientEmail", {required: true })}
             />
           </LongFormEntry>
           <LongFormEntry>
             <Label htmlFor="clientStreetAddress">Street Address</Label>
             <Input
                 long
-              {...register("clientStreetAddress")}
+              {...register("clientStreetAddress", {required: true })}
             />
           </LongFormEntry>
           <AddressBox>
@@ -308,7 +321,7 @@ function NewInvoice({
               <Label htmlFor="clientCity">City</Label>
               <AddressDetailInput
                 type="text"
-                {...register("clientCity")}
+                {...register("clientCity", {required: true })}
               />
             </FormEntry>
 
@@ -316,7 +329,7 @@ function NewInvoice({
               <Label htmlFor="clientPostalCode">Post Code</Label>
               <AddressDetailInput
                 type="text"
-                {...register("clientPostalCode")}
+                {...register("clientPostalCode", {required: true })}
               />
             </FormEntry>
           </CityPostContainer>
@@ -344,7 +357,7 @@ function NewInvoice({
             <Input
               type="text"
               long
-              {...register("projectDescription")}
+              {...register("projectDescription", {required: true })}
             />
           </LongFormEntry>
 
