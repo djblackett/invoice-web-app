@@ -1,6 +1,8 @@
 import CancelButton from "../buttons/CancelButton";
 import styled from "styled-components";
 import PropTypes from "prop-types";
+import {useForm} from "react-hook-form";
+import Proptypes from "prop-types";
 
 const MenuContainer = styled.div`
   width: 100%;
@@ -71,12 +73,21 @@ function NewInvoiceBottomMenu({
   saveText,
   closeText,
   justifyCancel,
-    setSubmitDirty
+    setSubmitDirty,
+    reset,
+    setItems
 }) {
+
+  const { clearErrors } = useForm();
+
   const closeMenu = (e) => {
-    e.preventDefault();
-    setIsOpen(false);
+    // e.preventDefault();
     setSubmitDirty(false);
+    clearErrors();
+    setIsOpen(false);
+    setItems([])
+    // HTMLFormElement.reset();
+    reset();
   };
 
   const setToDraft = () => {
@@ -114,5 +125,7 @@ NewInvoiceBottomMenu.propTypes = {
   saveText: PropTypes.string.isRequired,
   closeText: PropTypes.string.isRequired,
   justifyCancel: PropTypes.string,
-  setSubmitDirty: PropTypes.func.isRequired
+  setSubmitDirty: PropTypes.func.isRequired,
+  reset: PropTypes.func,
+  setItems: Proptypes.func.isRequired
 };

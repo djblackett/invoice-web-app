@@ -1,6 +1,5 @@
 /* eslint-disable react/no-unescaped-entities */
 /* eslint-disable react/display-name */
-/* eslint-disable react/prop-types */
 /* eslint-disable no-unused-vars */
 
 import React, { useState, useEffect, useLayoutEffect, forwardRef } from "react";
@@ -9,82 +8,52 @@ import PropTypes from "prop-types";
 import { useDispatch } from "react-redux";
 import { addInvoice } from "../features/invoices/invoicesSlice";
 import { v4 as uuidv4 } from "uuid";
-
+import { generateId} from "../utils/utilityFunctions";
+import NewInvoiceForm from "../components/form-components/NewInvoiceForm";
 import "../styles/react-datepicker.css";
-import AddressBox from "../components/form-components/AddressBox";
 import { useWindowWidth } from "../hooks/useWindowWidth";
-
-import EditFormItemList from "../components/form-components/EditFormItemList";
-import FormEntry from "../components/form-components/FormEntry";
-
-import NewInvoiceBottomMenu from "../components/menus-toolbars/NewInvoiceBottomMenu";
 import {
-  AddressDetailInput, BillText, CountryInput,
-  DarkenScreen, EditTitle, ErrorText, FormContainerDarkenModal,
-  Input,
-  Label,
+  DarkenScreen, EditTitle, FormContainerDarkenModal,
 } from "../styles/editStyles";
-import LongFormEntry from "../components/form-components/LongFormEntry";
-import {CityPostContainer} from "../components/form-components/CompanyFormInfo";
-import {DateAndPayment} from "../components/form-components/DateAndPayment";
 import {convertDateToString} from "./EditForm";
 
-const generateId = () => {
-    const list = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
-    let res = "";
-    for(let i = 0; i < 2; i++) {
-      let rnd = Math.floor(Math.random() * list.length);
-      res = res + list.charAt(rnd);
-    }
 
-  for(let i = 0; i < 4; i++) {
-    res = res + String(Math.floor(Math.random() * 9));
-
-  }
-    return res;
-}
 
 // This component needs help
 function NewInvoice({
   isNewOpen,
-  setIsNewOpen,
-  handleClose,
-  padding,
+  setIsNewOpen, padding,
   setPadding,
 }) {
+
   const {
-    register,
-    handleSubmit,
+    reset,
     formState: { errors },
-    reset
+
   } = useForm();
+
+
+  // DONE todo make conditionals that change whether fields are required depending on draft or pending state
+
+  // todo check why all fields turn red when there is a form error and why the error text at bottom is not rendering
+
 
   const width = useWindowWidth();
 
-  const [isDraft, setIsDraft] = useState(false);
+  // initial state and default values for form
+  const [isDraft, setIsDraft] = useState(true);
   const [isSubmitDirty, setSubmitDirty] = useState(false);
-
   const [editPageWidth, setEditPageWidth] = useState(null);
-  const [isPaymentOpen, setIsPaymentOpen] = useState(false);
-
   const [startDate, setStartDate] = useState(new Date());
-
   const [items, setItems] = useState([]);
   const [selectedPaymentOption, setSelectedPaymentOption] = useState(1);
-  const handleChangeSelectedOption = (option) => {
-    setSelectedPaymentOption(option);
-  }
   const [hasEmptyField, setHasEmptyField] = useState(false);
+
+
+
   const dispatch = useDispatch();
 
-   const handlePaymentClick = (e) => {
 
-    setIsPaymentOpen(!isPaymentOpen);
-  };
-
-  const handlePaymentSelect = (e) => {
-    setIsPaymentOpen(false);
-  }
 
   const createInvoiceObject = (data) => {
     let newInvoice = {
@@ -126,25 +95,33 @@ function NewInvoice({
     return newInvoice
   }
 
-  const onSubmit = (data) => {
-
-
-    const newInvoice = createInvoiceObject(data);
-
-
-    if (newInvoice.status === "pending" && hasEmptyField) {
-      setSubmitDirty(true);
-      return;
-    }
-
-
-
-
-    dispatch(addInvoice(newInvoice));
-    setIsNewOpen(false);
+  function resetForm() {
     reset();
+    setIsNewOpen(false);
+
     setItems([]);
     setSelectedPaymentOption(1);
+    setSubmitDirty(false);
+  }
+
+  const onSubmit = (data) => {
+    const newInvoice = createInvoiceObject(data);
+
+    if (!isDraft && hasEmptyField) {
+    // if (newInvoice.status === "pending" && hasEmptyField) {
+      setSubmitDirty(true);
+      console.log(isSubmitDirty);
+      return;
+    }
+    dispatch(addInvoice(newInvoice));
+    // resetForm();
+    console.log("dispatched")
+    reset();
+    setIsNewOpen(false);
+
+    setItems([]);
+    setSelectedPaymentOption(1);
+    setSubmitDirty(false);
   };
 
 
@@ -185,14 +162,6 @@ function NewInvoice({
     }
   }, [width, padding, isNewOpen]);
 
-  useEffect(() => {
-    const closeOnEscapeKey = (e) => (e.key === "Escape" ? handleClose() : null);
-    document.body.addEventListener("keydown", closeOnEscapeKey);
-    return () => {
-      document.body.removeEventListener("keydown", closeOnEscapeKey);
-    };
-  }, [handleClose]);
-
   useLayoutEffect(() => {
     const newItems = items.map((item) => {
       return { ...item, id: uuidv4() };
@@ -200,46 +169,10 @@ function NewInvoice({
     setItems(newItems);
   }, []);
 
-  const companyCountryChildren = (
-      <>
-        <Label
-            htmlFor="country"
-            style={{color: errors.country ? "red" : ""}}
-        >
-          Country
-        </Label>
-        <CountryInput
-            type="text"
-
-            style={{border: errors.country ? "1px solid red" : ""}}
-            {...register("clientCountry", {required: true })}
-        />
-      </>
-  );
-
-  const errorStyle = {
-    border: errors.clientCountry ? "1px solid red" : "",
-  };
-
-  const clientCountryChildren = (
-      <>
-        <Label
-            htmlFor="country"
-            style={errorStyle}
-        >
-          Country
-        </Label>
-        <CountryInput
-            style={errorStyle}
-            type="text"
-
-            {...register("country", {required: true })}
-        />
-      </>
-  );
-
 
   return (
+
+    // DarkenScreen appears when newInvoice tab is open
     <DarkenScreen style={{visibility: isNewOpen ? "visible" : "hidden" }}>
       <FormContainerDarkenModal
         style={{
@@ -251,126 +184,9 @@ function NewInvoice({
           New Invoice
         </EditTitle>
 
-        {/* "handleSubmit" will validate your inputs before invoking "onSubmit" */}
-        <form onSubmit={handleSubmit(onSubmit)}>
-          {/* register your input into the hook by invoking the "register" function *, {required: true /}
-          <BillText>Bill From</BillText>
-          <LongFormEntry>
-            <Label htmlFor="streetAddress">Street Address</Label>
-            <Input
-                long
-              {...register("streetAddress", {required: true )}
-            />
-          </LongFormEntry>
-          <AddressBox>
-            <CityPostContainer>
-            <FormEntry>
-              <Label htmlFor="city">City</Label>
-              <AddressDetailInput
-                type="text"
-                {...register("city", {required: true )}
-              />
-            </FormEntry>
+        <NewInvoiceForm
+            startDate={startDate} setStartDate={setStartDate} setIsNewOpen={setIsNewOpen} onSubmit={onSubmit} setItems={setItems} editPageWidth={editPageWidth} items={items} isSubmitDirty={isSubmitDirty} setSubmitDirty={setSubmitDirty} isDraft={isDraft} setIsDraft={setIsDraft}  selectedPaymentOption={selectedPaymentOption} setSelectedPaymentOption={setSelectedPaymentOption}/>
 
-            <FormEntry>
-              <Label htmlFor="postalCode">Post Code</Label>
-              <AddressDetailInput
-                type="text"
-                {...register("postalCode", {required: true )}
-              />
-            </FormEntry>
-            </CityPostContainer>
-            { width < 768 && <LongFormEntry isLongOnMobile={editPageWidth < 768}>
-              {companyCountryChildren}
-            </LongFormEntry>}
-
-            {width >= 768 && <FormEntry>
-              {companyCountryChildren}
-            </FormEntry>}
-          </AddressBox>
-
-          {/*   client details */}
-
-          <BillText>Bill To</BillText>
-          <LongFormEntry>
-            <Label htmlFor="clientName">Client's Name</Label>
-            <Input
-              type="text"
-              long
-
-              {...register("clientName", {required: true })}
-            />
-          </LongFormEntry>
-          <LongFormEntry>
-            <Label htmlFor="clientEmail">Client's Email</Label>
-            <Input
-                long
-              {...register("clientEmail", {required: true })}
-            />
-          </LongFormEntry>
-          <LongFormEntry>
-            <Label htmlFor="clientStreetAddress">Street Address</Label>
-            <Input
-                long
-              {...register("clientStreetAddress", {required: true })}
-            />
-          </LongFormEntry>
-          <AddressBox>
-          <CityPostContainer>
-            <FormEntry>
-              <Label htmlFor="clientCity">City</Label>
-              <AddressDetailInput
-                type="text"
-                {...register("clientCity", {required: true })}
-              />
-            </FormEntry>
-
-            <FormEntry>
-              <Label htmlFor="clientPostalCode">Post Code</Label>
-              <AddressDetailInput
-                type="text"
-                {...register("clientPostalCode", {required: true })}
-              />
-            </FormEntry>
-          </CityPostContainer>
-
-
-            { width < 768 && <LongFormEntry isLongOnMobile={editPageWidth < 768}>
-              {clientCountryChildren}
-            </LongFormEntry>}
-
-            {width >= 768 && <FormEntry>
-              {clientCountryChildren}
-            </FormEntry>}
-
-          </AddressBox>
-
-
-          <DateAndPayment editPageWidth={editPageWidth} selected={startDate} onChange={(date) => setStartDate(date)}
-                          handlePaymentSelect={handlePaymentSelect} paymentOpen={isPaymentOpen}
-                          handlePaymentClick={handlePaymentClick} selectedPaymentOption={selectedPaymentOption}
-                          handleChangeSelectedOption={handleChangeSelectedOption}/>
-
-
-          <LongFormEntry isLongOnMobile={editPageWidth < 768}>
-            <Label htmlFor="projectDescription">Project Description</Label>
-            <Input
-              type="text"
-              long
-              {...register("projectDescription", {required: true })}
-            />
-          </LongFormEntry>
-
-          <EditFormItemList
-            items={items}
-            setItems={setItems}
-          />
-
-          {isSubmitDirty && <ErrorText>- All fields must be added</ErrorText>}
-          {(isSubmitDirty && items.length === 0) && <ErrorText>- An item must be added</ErrorText>}
-
-          <NewInvoiceBottomMenu setSubmitDirty={setSubmitDirty} setIsDraft={setIsDraft} setIsOpen={setIsNewOpen} saveText={"Save & Send"} closeText={"Discard"} justifyCancel={"flex-start"}/>
-        </form>
       </FormContainerDarkenModal>
     </DarkenScreen>
   );
@@ -379,6 +195,8 @@ function NewInvoice({
 NewInvoice.propTypes = {
   isNewOpen: PropTypes.bool.isRequired,
   setIsNewOpen: PropTypes.func.isRequired,
+  setPadding: PropTypes.func.isRequired,
+  padding: PropTypes.string,
 };
 
 export default NewInvoice;
