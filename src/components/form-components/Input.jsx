@@ -7,6 +7,7 @@ export const InputStyles = styled.input`
   height: 48px;
   border-radius: 4px;
   border-color: ${({ theme }) => theme.formFieldOutline};
+  border-width: 1px;
   padding: 17px 20px 16px 20px;
   margin-bottom: 1.5rem;
   font-family: ${({ theme }) => theme.font};
@@ -34,5 +35,5 @@ function Input({ width }) {
 
 export default Input;
 Input.propTypes = {
-  width: PropTypes.number,
+  width: PropTypes.string,
 };

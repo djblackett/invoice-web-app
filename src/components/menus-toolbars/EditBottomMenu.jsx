@@ -38,6 +38,7 @@ const NewInvoiceButton = styled.input`
 
   &:hover {
     background-color: #9277ff;
+    
   }
 
   @media (min-width: 1200px) {

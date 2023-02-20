@@ -1,4 +1,4 @@
-import AllInvoicesToolbar from "../components/menus-toolbars/AllInvoicesToolbar";
+import AllInvoicesToolbar, {MemoizedAllInvoicesToolbar} from "../components/menus-toolbars/AllInvoicesToolbar";
 import InvoiceGrid from "../components/invoice-components/InvoiceGrid";
 import React, { useState, useEffect } from "react";
 import { useSelector, useDispatch } from "react-redux";
@@ -95,7 +95,7 @@ function AllInvoices() {
 
   return (
     <AllInvoicesContainer>
-      <AllInvoicesToolbar invoiceList={invoiceList} setIsNewOpen={setIsNewOpen} />
+      <MemoizedAllInvoicesToolbar invoiceList={invoiceList} setIsNewOpen={setIsNewOpen} />
       <NewInvoice
         isNewOpen={isNewOpen}
         setIsNewOpen={setIsNewOpen}

@@ -32,8 +32,6 @@ export const SVG = styled.svg`
 
 const ButtonText = styled.p`
   color: ${({ theme }) => theme.newItemText};
-  font-family: "Spartan", sans-serif;
-  font-style: normal;
   font-weight: 700;
   font-size: 12px;
   line-height: 15px;

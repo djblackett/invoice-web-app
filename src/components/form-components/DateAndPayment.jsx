@@ -22,13 +22,14 @@ const CustomDateBox = styled.div`
   margin-bottom: 1.5rem;
   caret-color: #7C5DFA;
   outline: none;
+  border-width: 1px;
 
   letter-spacing: -0.25px;
 
   color: ${({theme}) => theme.textPlain};
   background-color: ${({theme}) => theme.inputBackgroundColor};
 
-  &:focus {
+  &:focus, &:hover {
     border-color: ${({theme}) => theme.formFieldOutlineFocus};
   }
 
@@ -54,7 +55,10 @@ const DateInput = styled.input`
   border: none;
   touch-action: none;
   cursor: pointer;
-  
+
+  &:focus, &:hover {
+    border-color: ${({theme}) => theme.formFieldOutlineFocus};
+  }
 `
 
 

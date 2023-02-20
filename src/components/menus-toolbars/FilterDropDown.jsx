@@ -56,10 +56,15 @@ const DropDownListContainer = styled("div")`
   left: -75px;
   top: 24px;
   background-color: ${({ theme }) => theme.background};
-  border-radius: 10px;
+  border-radius: 8px;
   overflow: hidden;
   box-shadow: ${({theme}) => theme.filterShadow};
+  
   transition: height 250ms;
+
+  @media (min-width: 768px) {
+    left: -130px;
+  }
 `;
 
 const DropDownList = styled("ul")`
@@ -69,25 +74,36 @@ const DropDownList = styled("ul")`
   justify-content: center;
   width: 100%;
   padding: 0;
+  padding-top: 12px;
+  padding-bottom: 12px;
   margin: 0;
   background-color: ${({ theme }) => theme.background};
   box-sizing: border-box;
-  border-radius: 10px;
+  border-radius: 8px;
   color: ${({ theme }) => theme.text};
   font-size: 1.2rem;
-  font-weight: 600;
+  font-weight: 700;
 `;
 
 const ListItem = styled.li.attrs({})`
   display: flex;
+  flex-grow: 0;
 
   align-items: center;
   justify-content: center;
   list-style: none;
   padding: 0.5rem;
-  cursor: pointer;
+ 
   width: 100%;
   background-color: ${({ theme }) => theme.background};
+
+   &:hover {
+     .styledCheckbox {
+       border-color ${({theme}) => theme.outline};
+  //box-shadow:0 0 1px 1px #102447;
+  //     border-radius: 3px;
+     }
+   }
 `;
 
 const ItemButton = styled.button`
@@ -99,6 +115,14 @@ const ItemButton = styled.button`
   border: none;
   color: ${({ theme }) => theme.text};
   box-sizing: border-box;
+  cursor: pointer;
+  
+  // &:hover {
+  //   .styledCheckbox {
+  //     border: 1px solid ${({ theme }) => theme.outline};
+  //     border-radius: 3px;
+  //   }
+  // }
 `;
 
 
@@ -115,7 +139,7 @@ export default function FilterDropDown({ icon, isOpen, options }) {
     <Main>
       <DropDownContainer>
         <DropDownHeader>{icon}</DropDownHeader>
-          <DropDownListContainer style={{height: isOpen ? "106px" : 0}}>
+          <DropDownListContainer style={{height: isOpen ? "130px" : 0}}>
             <DropDownList >
               {options.map((option, index) => (
                 <ListItem key={index + "-li"} onClick={clickCallback(option)}>

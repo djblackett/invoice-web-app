@@ -9,6 +9,7 @@ const ListContainer = styled.div`
   display: grid;
   width: 100%;
   border-radius: 8px;
+  
 `;
 
 const AmountDue = styled.div`
@@ -16,7 +17,7 @@ const AmountDue = styled.div`
   align-items: center;
   justify-content: space-between;
   height: 80px;
-  background-color: #373b53;
+  background-color: ${({theme}) => theme.amountDueBackground};
   padding: 2rem;
   border-radius: 0 0 8px 8px;
 `;

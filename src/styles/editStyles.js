@@ -11,7 +11,7 @@ export const FormContainerDarkenModal = styled.div`
   bottom: 91px;
   left: 0;
   width: 100%;
-  background-color: ${({theme}) => theme.background};
+  background-color: ${({theme}) => theme.formBackground};
   position: fixed;
   display: flex;
   flex-direction: column;
@@ -51,11 +51,13 @@ export const BillText = styled.p`
 
 
 export const Input = styled.input`
+  cursor: pointer;
   width: 100%;
   height: 48px;
   border-radius: 4px;
   border-color: ${({theme}) => theme.formFieldOutline};
   border-style: solid;
+  border-width: 1px;
   padding: 17px 20px 16px 20px;
   margin-bottom: 1.5rem;
   font-family: ${({theme}) => theme.font};
@@ -71,7 +73,7 @@ export const Input = styled.input`
   color: ${({theme}) => theme.textPlain};
   background-color: ${({theme}) => theme.inputBackgroundColor};
 
-  &:focus {
+  &:focus, &:hover {
     border-color: ${({theme}) => theme.formFieldOutlineFocus};
   }
 

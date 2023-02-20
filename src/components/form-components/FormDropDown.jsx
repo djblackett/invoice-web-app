@@ -19,15 +19,15 @@ const Main = styled.div.attrs({
   height: 48px;
   border-radius: 4px;
 
-  border: 2px solid ${({ theme }) => theme.formFieldOutline};
+  border: 1px solid ${({ theme }) => theme.formFieldOutline};
   
   @media (min-width: 768px) {
     width: 240px;
     max-width: 100%;
   }
   
-  &:focus {
-    border: 2px solid ${({ theme }) => theme.formFieldOutlineFocus};
+  &:focus, &:hover {
+    border: 1px solid ${({ theme }) => theme.formFieldOutlineFocus};
   }
 `;
 
@@ -84,7 +84,7 @@ const DropDownList = styled.ul`
   padding: 0;
   margin: 0;
   overflow: hidden;
-  background-color: ${({ theme }) => theme.editButton};
+  background-color: ${({ theme }) => theme.paymentTermsBackground};
   box-sizing: border-box;
   height: fit-content;
   border-radius: 4px;
@@ -114,14 +114,15 @@ const ListItem = styled.li`
   width: 100%;
   border-color: ${({ theme }) => theme.formFieldOutline};
   cursor: pointer;
-  border-bottom: 1px solid ${({ theme }) => theme.formFieldOutline};
+  border-bottom: 1px solid ${({ theme }) => theme.paymentOptionBorder};
+  //border-bottom: 1px solid #979797;
 `;
 
 const ItemButton = styled.button`
   //position: absolute;
   height: 100%;
   width: 100%;
-  background-color: ${({ theme }) => theme.inputBackgroundColor};
+  background-color: ${({ theme }) => theme.paymentTermsBackground};
   border: none;
   cursor: pointer;
   outline: none;

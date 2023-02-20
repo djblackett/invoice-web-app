@@ -1,7 +1,7 @@
 import styled from "styled-components";
 import FilterDropDown from "./FilterDropDown";
 import PropTypes from "prop-types";
-import { useState, useEffect } from "react";
+import React, { useState, useEffect } from "react";
 import { selectFilter } from "../../features/invoices/filterSlice";
 import { useSelector } from "react-redux";
 import {useWindowWidth} from "../../hooks/useWindowWidth";
@@ -289,3 +289,5 @@ AllInvoicesToolbar.propTypes = {
 };
 
 export default AllInvoicesToolbar;
+
+export const MemoizedAllInvoicesToolbar = React.memo(AllInvoicesToolbar);

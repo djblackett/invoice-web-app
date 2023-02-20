@@ -13,7 +13,7 @@ const ListContainer = styled.div`
   width: 100%;
   border-radius: 8px;
   grid-template-rows: auto;
-  background-color: ${({ theme }) => theme.background};
+  background-color: ${({ theme }) => theme.formBackground};
 `;
 
 export const ItemsHeader = styled.div`
@@ -52,9 +52,11 @@ const ItemsContainer = styled.div`
   display: flex;
   flex-direction: column;
   width: 100%;
+  height: fit-content;
   max-width: 504px;
   border-radius: 8px 8px 0 0;
-  background-color: ${({ theme }) => theme.background};
+  background-color: ${({ theme }) => theme.formBackground};
+
   transition: all 250ms ease-in-out;
 
   @media (min-width: 768px) {
@@ -74,12 +76,13 @@ const ItemTitle = styled.h1`
 
   color: ${({ theme }) => theme.greyText};
 
+  padding: 0;
   margin-top: 1rem;
   margin-bottom: 1rem;
 
   @media (min-width: 768px) {
     margin-top: 2rem;
-    margin-bottom: 1rem;
+    
   }
 `;
 
@@ -88,10 +91,10 @@ function EditFormItemList({ items, setItems}) {
     // boilerplate for if I decide to try to integrate the items list with react-hook-form
     // currently not implemented
     const { control, register } = useForm();
-    const { fields, append, prepend, remove, swap, move, insert } = useFieldArray({
-        control, // control props comes from useForm (optional: if you are using FormContext)
-        name: "form-items", // unique name for your Field Array
-    });
+    // const { fields, append, prepend, remove, swap, move, insert } = useFieldArray({
+    //     control, // control props comes from useForm (optional: if you are using FormContext)
+    //     name: "form-items", // unique name for your Field Array
+    // });
 
 
     const dispatch = useDispatch();

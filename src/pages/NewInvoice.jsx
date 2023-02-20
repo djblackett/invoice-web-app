@@ -33,11 +33,6 @@ function NewInvoice({
   } = useForm();
 
 
-  // DONE todo make conditionals that change whether fields are required depending on draft or pending state
-
-  // todo check why all fields turn red when there is a form error and why the error text at bottom is not rendering
-
-
   const width = useWindowWidth();
 
   // initial state and default values for form
@@ -108,13 +103,11 @@ function NewInvoice({
     const newInvoice = createInvoiceObject(data);
 
     if (!isDraft && hasEmptyField) {
-    // if (newInvoice.status === "pending" && hasEmptyField) {
       setSubmitDirty(true);
       console.log(isSubmitDirty);
       return;
     }
     dispatch(addInvoice(newInvoice));
-    // resetForm();
     console.log("dispatched")
     reset();
     setIsNewOpen(false);

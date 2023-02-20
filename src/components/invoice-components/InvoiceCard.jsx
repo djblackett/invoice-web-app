@@ -18,7 +18,7 @@ const Card = styled.div`
   font-size: 12px;
   border-radius: 8px;
   box-shadow: 0 10px 10px -10px rgba(72, 84, 159, 0.100397);
-  transition: width 0.5s ease-in-out;
+  transition: background-color 0.4s ease-in-out;
 
   &:hover {
     border: 1px solid ${({ theme }) => theme.outline};

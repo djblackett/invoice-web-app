@@ -9,7 +9,7 @@ export const ItemContainer = styled.div`
   padding-top: 0;
   grid-template: auto auto / 1fr 1fr;
   grid-auto-flow: dense;
-  background-color: ${({theme}) => theme.inputBackgroundColor};
+  background-color: ${({theme}) => theme.formBackground };
   margin-bottom: 3rem;
   
   @media (min-width: 600px) {
@@ -23,12 +23,14 @@ export const ItemContainer = styled.div`
     margin-bottom: initial;
   }
 `;
+
 const Input = styled.input`
   width: 240px;
   height: 48px;
   border-radius: 4px;
   border-color: ${({theme}) => theme.formFieldOutline};
   border-style: solid;
+  border-width: 1px;
   outline: none;
   padding: 17px 20px 16px 20px;
   margin-bottom: 1.5rem;
@@ -41,8 +43,9 @@ const Input = styled.input`
   letter-spacing: -0.25px;
   color: ${({theme}) => theme.textPlain};
   background-color: ${({theme}) => theme.inputBackgroundColor};
+  cursor: pointer;
 
-  &:focus {
+  &:focus, &:hover {
     border-color: ${({theme}) => theme.formFieldOutlineFocus};
   }
 
@@ -57,7 +60,6 @@ export const ItemName = styled(Input)`
   margin: 0;
   padding-left: 1.25rem;
   color: ${({theme}) => theme.text};
-  font-family: "Spartan";
   font-style: normal;
   font-weight: 700;
   font-size: 12px;

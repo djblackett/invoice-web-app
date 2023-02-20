@@ -4,15 +4,12 @@ import styled from "styled-components";
 import { useSelector } from "react-redux";
 import { selectFilter } from "../../features/invoices/filterSlice";
 
-
-
-
 const CheckboxContainer = styled.div`
 
 `
 
-const Label = styled.label`
-  pointer-events: none;
+const Label = styled.div`
+  //pointer-events: none;
   cursor: pointer;
   box-sizing: border-box;
   margin-left: 0.5rem;
@@ -23,27 +20,20 @@ const Label = styled.label`
   letter-spacing: -0.25px;
   color: ${({ theme }) => theme.textPlain};
   
-  &:hover {
-    .styledCheckbox {
-      border: 1px solid ${({ theme }) => theme.outline};
-    }
-
-    cursor: pointer;
-  }
+  
 `;
 
 function CheckboxSelection({ option }) {
   const filter = useSelector(selectFilter);
   const handleCheckboxChange = () => {};
   return (
-    <CheckboxContainer >
+    <CheckboxContainer checked={filter[option.toLowerCase()]} >
       <Label>
         <Checkbox
           checked={filter[option.toLowerCase()]}
           onChange={handleCheckboxChange}
-
         />
-        <span style={{ marginLeft: "13px" }}>{option}</span>
+        <span style={{ marginLeft: "13px", fontFamily: "League Spartan", fontWeight: 700 }}>{option}</span>
       </Label>
     </CheckboxContainer>
   );

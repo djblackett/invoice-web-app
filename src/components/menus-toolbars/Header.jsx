@@ -9,9 +9,10 @@ const HeaderContainer = styled.div`
   flex-direction: row;
   justify-content: space-between;
   align-items: center;
-  background: #373b53;
+  background: ${({theme}) => theme.headerBackground};
   z-index: 1000;
   position: fixed;
+  //transition: background-color .2s ease-in;
   
   @media (min-width: 1200px) {
     flex-direction: column;

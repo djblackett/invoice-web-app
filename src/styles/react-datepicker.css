@@ -5,7 +5,7 @@
 .react-datepicker__navigation-icon::before {
   border-color: #7C5DFA;
   border-style: solid;
-  border-width: 2px 2px 0 0;
+  border-width: 1px 1px 0 0;
   content: "";
   display: block;
   height: 4px;

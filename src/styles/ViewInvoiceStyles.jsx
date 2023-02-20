@@ -52,6 +52,10 @@ export const GoBack = styled.p`
   padding: 0;
   margin: 0;
   margin-left: 1rem;
+  
+  &:hover {
+    color: #7E88C3;
+  }
 `;
 
 export const arrowLeft = (
