@@ -9,7 +9,7 @@ export const ItemContainer = styled.div`
   padding-top: 0;
   grid-template: auto auto / 1fr 1fr;
   grid-auto-flow: dense;
-  background-color: ${({theme}) => theme.formBackground };
+  background-color: ${({ theme }) => theme.formBackground };
   margin-bottom: 3rem;
   
   @media (min-width: 600px) {
@@ -28,25 +28,25 @@ const Input = styled.input`
   width: 240px;
   height: 48px;
   border-radius: 4px;
-  border-color: ${({theme}) => theme.formFieldOutline};
-  border-style: solid;
-  border-width: 1px;
+  border: 1px solid ${({ theme }) => theme.formFieldOutline};
+  //border-style: solid;
+  //border-width: 1px;
   outline: none;
   padding: 17px 20px 16px 20px;
   margin-bottom: 1.5rem;
-  font-family: ${({theme}) => theme.font};
+  font-family: ${({ theme }) => theme.font};
   font-style: normal;
   font-weight: 700;
   font-size: 12px;
   line-height: 15px;
   /* identical to box height, or 125% */
   letter-spacing: -0.25px;
-  color: ${({theme}) => theme.textPlain};
-  background-color: ${({theme}) => theme.inputBackgroundColor};
+  color: ${({ theme }) => theme.textPlain};
+  background-color: ${({ theme }) => theme.inputBackgroundColor};
   cursor: pointer;
 
   &:focus, &:hover {
-    border-color: ${({theme}) => theme.formFieldOutlineFocus};
+    border-color: ${({ theme }) => theme.formFieldOutlineFocus};
   }
 
   .custom-input {
@@ -59,13 +59,16 @@ export const ItemName = styled(Input)`
   width: 100%;
   margin: 0;
   padding-left: 1.25rem;
-  color: ${({theme}) => theme.text};
+  color: ${({ theme }) => theme.text};
   font-style: normal;
   font-weight: 700;
   font-size: 12px;
   line-height: 15px;
   /* identical to box height, or 125% */
   letter-spacing: -0.25px;
+  
+  border: ${props => props.invalid? "1px solid red" : ""};
+  
 
   @media (min-width: 600px) {
     width: 204px;
@@ -74,11 +77,11 @@ export const ItemName = styled(Input)`
 
 
 export const Quantity = styled(Input).attrs(
-    {pattern: "\\d+"}
+  { pattern: "\\d+" }
 )`
   width: 46px;
   margin: 0;
-  color: ${({theme}) => theme.textPlain};
+  color: ${({ theme }) => theme.textPlain};
   padding: 0;
   font-weight: 700;
   font-size: 12px;
@@ -93,7 +96,7 @@ export const Quantity = styled(Input).attrs(
 `;
 
 export const Price = styled(Quantity).attrs(
-    {pattern: "[0-9.]*"}
+  { pattern: "[0-9.]*" }
 )`
   width: 100px;
   padding-left: 1.25rem;
@@ -108,7 +111,7 @@ export const Total = styled.p`
   line-height: 15px;
   /* identical to box height, or 125% */
   letter-spacing: -0.25px;
-  color: ${({theme}) => theme.greyText};
+  color: ${({ theme }) => theme.greyText};
   
   @media (min-width: 325px) {
     min-width: 60px;
@@ -138,7 +141,7 @@ export const MobileQuantityPrice = styled.p`
   margin-top: 0.5rem;
   /* identical to box height, or 125% */
   letter-spacing: -0.25px;
-  color: ${({theme}) => theme.greyText};
+  color: ${({ theme }) => theme.greyText};
   
   @media (min-width: 600px) {
     display: none;
@@ -190,10 +193,10 @@ export const SmallBoxContainer = styled.div`
 `;
 
 export const deleteIcon = (
-    <path
-        d="M11.583 3.556v10.666c0 .982-.795 1.778-1.777 1.778H2.694a1.777 1.777 0 01-1.777-1.778V3.556h10.666zM8.473 0l.888.889h3.111v1.778H.028V.889h3.11L4.029 0h4.444z"
-        fillRule="nonzero"
-        className="deleteIconPath"
-        tabIndex={0}
-    />
+  <path
+    d="M11.583 3.556v10.666c0 .982-.795 1.778-1.777 1.778H2.694a1.777 1.777 0 01-1.777-1.778V3.556h10.666zM8.473 0l.888.889h3.111v1.778H.028V.889h3.11L4.029 0h4.444z"
+    fillRule="nonzero"
+    className="deleteIconPath"
+    tabIndex={0}
+  />
 );

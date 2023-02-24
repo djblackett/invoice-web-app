@@ -1,4 +1,4 @@
-import React, {useCallback, useEffect, useRef, useState} from "react";
+import React, { useCallback, useEffect, useRef, useState } from "react";
 import styled from "styled-components";
 import PropTypes from "prop-types";
 import CheckboxSelection from "./CheckboxSelection";
@@ -58,7 +58,7 @@ const DropDownListContainer = styled("div")`
   background-color: ${({ theme }) => theme.background};
   border-radius: 8px;
   overflow: hidden;
-  box-shadow: ${({theme}) => theme.filterShadow};
+  box-shadow: ${({ theme }) => theme.filterShadow};
   
   transition: height 250ms;
 
@@ -99,7 +99,7 @@ const ListItem = styled.li.attrs({})`
 
    &:hover {
      .styledCheckbox {
-       border-color ${({theme}) => theme.outline};
+       border-color ${({ theme }) => theme.outline};
   //box-shadow:0 0 1px 1px #102447;
   //     border-radius: 3px;
      }
@@ -130,26 +130,26 @@ export default function FilterDropDown({ icon, isOpen, options }) {
 
   const dispatch = useDispatch();
   const clickCallback =  (option) => (e) => {
-     e.stopPropagation();
-      dispatch(changeFilter(option.toLowerCase()));
-    };
+    e.stopPropagation();
+    dispatch(changeFilter(option.toLowerCase()));
+  };
 
 
   return (
     <Main>
       <DropDownContainer>
         <DropDownHeader>{icon}</DropDownHeader>
-          <DropDownListContainer style={{height: isOpen ? "130px" : 0}}>
-            <DropDownList >
-              {options.map((option, index) => (
-                <ListItem key={index + "-li"} onClick={clickCallback(option)}>
-                  <ItemButton>
-                    <CheckboxSelection option={option} />
-                  </ItemButton>
-                </ListItem>
-              ))}
-            </DropDownList>
-          </DropDownListContainer>
+        <DropDownListContainer style={{ height: isOpen ? "130px" : 0 }}>
+          <DropDownList >
+            {options.map((option, index) => (
+              <ListItem key={index + "-li"} onClick={clickCallback(option)}>
+                <ItemButton>
+                  <CheckboxSelection option={option} />
+                </ItemButton>
+              </ListItem>
+            ))}
+          </DropDownList>
+        </DropDownListContainer>
       </DropDownContainer>
     </Main>
   );

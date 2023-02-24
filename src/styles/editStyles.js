@@ -1,8 +1,8 @@
-import styled, {css} from "styled-components";
+import styled, { css } from "styled-components";
 
 export const EditTitle = styled.h1`
   font-size: 1.5rem;
-  color: ${({theme}) => theme.text};
+  color: ${({ theme }) => theme.text};
 `;
 
 export const FormContainerDarkenModal = styled.div`
@@ -11,7 +11,7 @@ export const FormContainerDarkenModal = styled.div`
   bottom: 91px;
   left: 0;
   width: 100%;
-  background-color: ${({theme}) => theme.formBackground};
+  background-color: ${({ theme }) => theme.formBackground};
   position: fixed;
   display: flex;
   flex-direction: column;
@@ -43,7 +43,7 @@ export const FormContainerDarkenModal = styled.div`
 `;
 
 export const BillText = styled.p`
-  color: ${({theme}) => theme.outline};
+  color: ${({ theme }) => theme.outline};
   font-weight: bold;
   font-size: 0.75rem;
   margin-bottom: 1.5rem;
@@ -55,12 +55,10 @@ export const Input = styled.input`
   width: 100%;
   height: 48px;
   border-radius: 4px;
-  border-color: ${({theme}) => theme.formFieldOutline};
-  border-style: solid;
-  border-width: 1px;
+  border: 1px solid ${({ theme }) => theme.formFieldOutline};
   padding: 17px 20px 16px 20px;
   margin-bottom: 1.5rem;
-  font-family: ${({theme}) => theme.font};
+  font-family: ${({ theme }) => theme.font};
   font-style: normal;
   font-weight: 700;
   font-size: 12px;
@@ -70,11 +68,11 @@ export const Input = styled.input`
 
   letter-spacing: -0.25px;
 
-  color: ${({theme}) => theme.textPlain};
-  background-color: ${({theme}) => theme.inputBackgroundColor};
+  color: ${({ theme }) => theme.textPlain};
+  background-color: ${({ theme }) => theme.inputBackgroundColor};
 
   &:focus, &:hover {
-    border-color: ${({theme}) => theme.formFieldOutlineFocus};
+    border-color: ${({ theme }) => theme.formFieldOutlineFocus};
   }
 
   .custom-input {
@@ -112,7 +110,7 @@ export const CountryInput = styled(Input)`
 `;
 
 export const Label = styled.label`
-  color: ${({theme}) => theme.greyText};
+  color: ${({ theme }) => theme.greyText};
   margin-bottom: 0.5rem;
   font-size: 0.75rem;
 `;
@@ -128,9 +126,13 @@ export const DarkenScreen = styled.div`
 `;
 
 export const ErrorText = styled.p`
-  color: red;
-  margin-top: 0.5rem;
+  color: #EC5757;
+  margin: 0;
+  padding: 0;
+  //margin-top: 0.5rem;
 `;
+
+// todo make a list container that has a larger top margin for the first item
 
 export const ErrorTextInline = styled(ErrorText)`
   position: absolute;
@@ -156,15 +158,15 @@ export const DateAndPaymentContainer = styled.div`
 
   // section targets the react-date-picker component to apply theming 
   .react-datepicker__header {
-    background-color: ${({theme})=> theme.background};
-    color: ${({theme})=> theme.dateText};
+    background-color: ${({ theme }) => theme.background};
+    color: ${({ theme }) => theme.dateText};
     border: none;
     padding-top: 1.5rem;
     padding-bottom: 1.5rem;
   }
 
   .react-datepicker__day, .react-datepicker__month-text, .react-datepicker__quarter-text, .react-datepicker__year-text {
-    color: ${({theme})=> theme.dateText};
+    color: ${({ theme }) => theme.dateText};
   }
   
   .react-datepicker__day {
@@ -175,16 +177,16 @@ export const DateAndPaymentContainer = styled.div`
   }
 
   .react-datepicker {
-    background-color: ${({theme})=> theme.background};
-    color: ${({theme})=> theme.dateText};
+    background-color: ${({ theme }) => theme.background};
+    color: ${({ theme }) => theme.dateText};
     border: none;
-    box-shadow: ${({theme}) => theme.filterShadow};
+    box-shadow: ${({ theme }) => theme.filterShadow};
     transition: all 250ms ease-in-out;
   }
   
   .react-datepicker__month-year-dropdown {
-    background-color: ${({theme})=> theme.background};
-    color: ${({theme})=> theme.dateText};
+    background-color: ${({ theme }) => theme.background};
+    color: ${({ theme }) => theme.dateText};
     border: none;
   }
 
@@ -203,7 +205,7 @@ export const DateAndPaymentContainer = styled.div`
   }
 
   .react-datepicker__current-month {
-    color: ${({theme})=> theme.dateText};
+    color: ${({ theme }) => theme.dateText};
     align-self: center;
     justify-self: center;
     font-family: 'Spartan',sans-serif;

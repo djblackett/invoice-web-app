@@ -1,7 +1,7 @@
 import styled from "styled-components";
 import PropTypes from "prop-types";
-import {useEffect, useState} from "react";
-import {useWindowWidth} from "../../hooks/useWindowWidth";
+import { useEffect, useState } from "react";
+import { useWindowWidth } from "../../hooks/useWindowWidth";
 
 export const FormEntryContainer = styled.div`
   display: flex;
@@ -12,7 +12,7 @@ export const FormEntryContainer = styled.div`
   width: 100%;
 `;
 
-function LongFormEntry({ className, children}) {
+function LongFormEntry({ className, children }) {
   const [isDirty, setIsDirty] = useState(false);
   const handleChange = () => {
     setIsDirty(true);

@@ -31,7 +31,7 @@ function MarkAsPaidButton({ invoice }) {
     }
   };
 
-  return <Button onClick={handleClick}>Mark as Paid</Button>;
+  return <Button onClick={handleClick} type="button">Mark as Paid</Button>;
 }
 
 export default MarkAsPaidButton;

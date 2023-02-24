@@ -1,6 +1,7 @@
 import CancelButton from "../buttons/CancelButton";
 import styled from "styled-components";
 import PropTypes from "prop-types";
+import { useFormContext } from "react-hook-form";
 
 const MenuContainer = styled.div`
   z-index: 100;
@@ -49,10 +50,19 @@ const NewInvoiceButton = styled.input`
   }
 `;
 
-function EditBottomMenu({ setIsOpen, saveText, closeText, justifyCancel, setItems, invoice }) {
+function EditBottomMenu({ setIsOpen, saveText, closeText, justifyCancel, setItems, invoice, onSubmit }) {
+
+  const { reset, resetField } = useFormContext();
+
   const closeMenu = () => {
     setIsOpen(false);
-    setItems(invoice.items);
+    reset();
+    // setItems(invoice.items);
+  };
+
+  const handleSubmitClick = (e) => {
+    onSubmit();
+    // reset();
   };
 
   return (
@@ -62,7 +72,7 @@ function EditBottomMenu({ setIsOpen, saveText, closeText, justifyCancel, setItem
         text={closeText}
         justifySelf={justifyCancel}
       />
-      <NewInvoiceButton type={"submit"} value={saveText} />
+      <NewInvoiceButton type={"button"} value={saveText} onClick={handleSubmitClick} />
     </MenuContainer>
   );
 }
@@ -74,6 +84,6 @@ EditBottomMenu.propTypes = {
   saveText: PropTypes.string.isRequired,
   closeText: PropTypes.string.isRequired,
   justifyCancel: PropTypes.string,
-    setItems: PropTypes.func,
-    invoice: PropTypes.object,
+  setItems: PropTypes.func,
+  invoice: PropTypes.object,
 };

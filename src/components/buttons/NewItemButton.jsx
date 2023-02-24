@@ -1,5 +1,6 @@
 import styled from "styled-components";
 import PropTypes from "prop-types";
+import { useForm, useFormContext } from "react-hook-form";
 
 const Button = styled.button`
   display: flex;
@@ -9,7 +10,7 @@ const Button = styled.button`
   height: 48px;
   border-radius: 10px;
   background-color: ${({ theme }) => theme.editButton};
-  border: none;
+  //border: none;
   cursor: pointer;
 
   &:hover {
@@ -51,9 +52,21 @@ const plusIcon = (
   />
 );
 
-function NewItemButton({ handleAddNewItem }) {
+// eslint-disable-next-line react/prop-types
+function NewItemButton({ items, append }) {
+
+  const { control, errors, setError, clearErrors } = useFormContext();
+
+  const { formState: { submitCount } } = useForm();
+
+  const handleClick = () => {
+    append({ id: "", name: "", quantity: "", price: "", total: "" });
+    clearErrors("itemsError");
+  };
+
+
   return (
-    <Button onClick={handleAddNewItem} type="button">
+    <Button onClick={handleClick } type="button" style={{ border: (submitCount > 0 && items.length === 0) ? "1px solid red" : "1px solid transparent" }}>
       {/* <SVG>{plusIcon}</SVG> */}
       <ButtonText>+ Add New Item</ButtonText>
     </Button>
@@ -63,5 +76,6 @@ function NewItemButton({ handleAddNewItem }) {
 export default NewItemButton;
 
 NewItemButton.propTypes = {
-  handleAddNewItem: PropTypes.func.isRequired,
+  handleAddNewItem: PropTypes.func,
+  items: PropTypes.array,
 };

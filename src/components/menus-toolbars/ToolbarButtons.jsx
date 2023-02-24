@@ -15,7 +15,7 @@ const ButtonsContainer = styled.div`
   bottom: 0;
   left: 0;
   right: 0;
-  background-color: ${({theme}) => theme.background};
+  background-color: ${({ theme }) => theme.background};
   margin-top: 3.5rem;
   order: 2;
   

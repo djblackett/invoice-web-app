@@ -9,7 +9,7 @@ const HeaderContainer = styled.div`
   flex-direction: row;
   justify-content: space-between;
   align-items: center;
-  background: ${({theme}) => theme.headerBackground};
+  background: ${({ theme }) => theme.headerBackground};
   z-index: 1000;
   position: fixed;
   //transition: background-color .2s ease-in;
@@ -138,11 +138,11 @@ function Header({ themeToggler, theme }) {
 
         <AvatarBox>
           <img
-            src={process.env.PUBLIC_URL + '/assets/image-avatar.jpg'}
+            src={process.env.PUBLIC_URL + "/assets/image-avatar.jpg"}
             alt=""
 
             style={{ borderRadius: "50%", height:"32px",
-                width: "32px" }}
+              width: "32px" }}
           />
         </AvatarBox>
       </DarkModeProfileContainer>

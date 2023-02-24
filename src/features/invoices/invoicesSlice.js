@@ -35,7 +35,7 @@ export const invoicesSlice = createSlice({
     },
     markAsPending: (state, action) => {
       let invoice1 = state.data.find(
-          (invoice) => invoice.id === action.payload
+        (invoice) => invoice.id === action.payload
       );
       invoice1.status = "pending";
     },
@@ -72,5 +72,12 @@ export const {
 } = invoicesSlice.actions;
 
 export const selectInvoices = (state) => state.invoices.data;
+export const selectInvoiceById = (state, id) => {
+  // console.log(state);
+  // console.log(state.data);
+  // console.log(state.invoices);
+  return state.invoices.data.find(item => id === item.id);
+};
+
 
 export default invoicesSlice.reducer;

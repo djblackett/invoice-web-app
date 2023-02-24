@@ -21,7 +21,7 @@ const Button = styled.button`
   }
 `;
 function DeleteButton({ handleClick }) {
-  return <Button onClick={handleClick}>Delete</Button>;
+  return <Button onClick={handleClick} type="button">Delete</Button>;
 }
 
 export default DeleteButton;

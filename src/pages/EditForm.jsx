@@ -1,14 +1,14 @@
 /* eslint-disable react/display-name */
 /* eslint-disable react/prop-types */
-import React, {useEffect, useLayoutEffect, useState} from "react";
-import {useForm} from "react-hook-form";
+import React, { useEffect, useLayoutEffect, useState } from "react";
+import { FormProvider, useForm } from "react-hook-form";
 import PropTypes from "prop-types";
-import {useDispatch} from "react-redux";
-import {updateInvoice} from "../features/invoices/invoicesSlice";
-import {v4 as uuidv4} from "uuid";
+import { useDispatch } from "react-redux";
+import { addInvoice, updateInvoice } from "../features/invoices/invoicesSlice";
+import { v4 as uuidv4 } from "uuid";
 
 import "../styles/react-datepicker.css";
-import {useWindowWidth} from "../hooks/useWindowWidth";
+import { useWindowWidth } from "../hooks/useWindowWidth";
 import EditBottomMenu from "../components/menus-toolbars/EditBottomMenu";
 import EditFormItemList from "../components/form-components/EditFormItemList";
 import {
@@ -19,25 +19,31 @@ import {
   FormContainerDarkenModal, Input,
   Label,
 } from "../styles/editStyles";
-import {CompanyFormInfo} from "../components/form-components/CompanyFormInfo";
-import {ClientFormInfo} from "../components/form-components/ClientFormInfo";
-import {DateAndPayment} from "../components/form-components/DateAndPayment";
+import { CompanyFormInfo } from "../components/form-components/CompanyFormInfo";
+import { ClientFormInfo } from "../components/form-components/ClientFormInfo";
+import { DateAndPayment } from "../components/form-components/DateAndPayment";
 import LongFormEntry from "../components/form-components/LongFormEntry";
+import { validationSchema } from "../components/form-components/NewInvoiceForm";
+import { yupResolver } from "@hookform/resolvers/yup";
+import { InputFormItem1 } from "../components/form-components/InputFormItem1";
+import { generateId } from "../utils/utilityFunctions";
+import { useParams } from "react-router-dom";
 
 
+const formOptions = { resolver: yupResolver(validationSchema) };
 export const convertDateToString = date => {
   const [month, day, year] = [date.getMonth(), date.getDate(), date.getFullYear()];
   return [year, month, day].join("-");
-}
+};
 
 export const convertStringToDate = (str) => {
   if (!str) {
     return new Date();
   }
-   const dateArray = str.split("-");
-   return new Date(Date.UTC(dateArray[0], dateArray[1], dateArray[2]));
+  const dateArray = str.split("-");
+  return new Date(Date.UTC(dateArray[0], dateArray[1], dateArray[2]));
 
-}
+};
 
 function EditForm({
   isEditOpen,
@@ -47,57 +53,46 @@ function EditForm({
   invoice,
 }) {
 
+  // const {
+  //   register,
+  //   handleSubmit,
+  //   formState: { errors, submitCount },
+  // } = useForm();
+
+  const methods = useForm(
+    { formOptions }
+  );
+
   const {
     register,
     handleSubmit,
-    formState: { errors },
-  } = useForm();
+    formState: { errors, submitCount },
+    getValues,
+    watch,
+    trigger,
+    reset,
+    setError,
+  } = methods;
 
   const width = useWindowWidth();
+  const { id } = useParams();
   const [editPageWidth, setEditPageWidth] = useState(0);
   const [startDate, setStartDate] = useState(convertStringToDate(invoice.createdAt));
-  const [items, setItems] = useState(invoice.items || []);
+  // const [items, setItems] = useState(invoice.items || []);
   const [hasEmptyField, setHasEmptyField] = useState(false);
   const dispatch = useDispatch();
   const [selectedPaymentOption, setSelectedPaymentOption] = useState(
-      invoice.paymentTerms || 1
+    invoice.paymentTerms || 1
   );
+
+  const watcher = watch();
 
   const [isPaymentOpen, setIsPaymentOpen] = useState(false);
 
-  // checks for empty form inputs on every render
-  useEffect(() => {
-    const inputs = document.querySelectorAll("input");
-    let count = 0;
-    for (let i = 0; i < inputs.length; i++) {
-      if (
-        inputs.item(i).value.length === 0 &&
-        inputs.item(i).defaultValue.length === 0
-      ) {
-        count++;
-        break;
-      }
-    }
 
-    if (count > 0) {
-      setHasEmptyField(true);
-    } else {
-      setHasEmptyField(false);
-    }
-  });
-
-
-  // submit form logic
-  const onSubmit = (data) => {
-
-    // check for empty fields or items before submitting
-    if (hasEmptyField || items.length === 0) {
-      return;
-    }
-
-    // build updated invoice from form data
+  const createInvoiceObject = (data) => {
     const newInvoice = {
-      ...invoice,
+      id: id,
       clientName: data.clientName,
       clientAddress: {
         city: data.clientCity,
@@ -113,27 +108,118 @@ function EditForm({
       },
       clientEmail: data.clientEmail,
       createdAt: convertDateToString(startDate),
-      paymentTerms: selectedPaymentOption,
       description: data.projectDescription,
-      items: items,
-      status: "pending",
+      items: [...data.items],
     };
 
-    // recalculate the total for invoice
-    let total = 0;
-    for (let i of items) {
-      total += Number(i.total);
-    }
-    newInvoice.total = total;
+    let invoiceTotal = 0;
 
+    let items = newInvoice.items;
+
+    for (let i = 0; i < items.length; i++) {
+      items[i].total = (Number(items[i].quantity) * Number(items[i].price)).toFixed(2);
+      invoiceTotal += Number(items[i].total);
+      if (!items[i].id) {
+        items[i].id = uuidv4();
+      }
+    }
+
+    newInvoice.total = invoiceTotal;
+    // newInvoice.id = newInvoice.id ? newInvoice.id : generateId();
+    newInvoice.paymentTerms = selectedPaymentOption;
+    // newInvoice.status = isDraft ?  "draft" : "pending";
+    newInvoice.status = invoice.status;
     const date = new Date(startDate.getTime() + 86400000 * newInvoice.paymentTerms);
 
     const [month, day, year] = [date.getMonth(), date.getDate(), date.getFullYear()];
     newInvoice.paymentDue = [year, month, day].join("-");
 
-    dispatch(updateInvoice(newInvoice));
-    setIsEditOpen(false);
+    console.log("end of newVoice function", newInvoice);
+    return newInvoice;
   };
+
+
+  useEffect(() => {
+    if (!watcher.items || watcher.items.length === 0) {
+      setError("items", { type: "custom", message: "An item must be added" });
+    }
+  }, [watcher.items]);
+
+  const onSubmit = (e) => {
+    const watcher = watch();
+    console.log(watcher);
+
+    const data = getValues();
+
+    if (!data.items || data.items.length === 0) {
+      setError("items", { type: "custom", message: "An item must be added" });
+      // trigger();
+      return;
+    }
+
+    //trigger validation on fields
+    trigger()
+      .then(value => {
+        if (value){
+          console.log("validation success");
+          const newInvoice = createInvoiceObject(data);
+          dispatch(updateInvoice(newInvoice));
+          setIsEditOpen(false);
+          setSelectedPaymentOption(1);
+          console.log(newInvoice);
+          reset();
+        }
+      });
+
+  };
+
+  // old submit form logic
+  // const onSubmit = (data) => {
+  //
+  //   // check for empty fields or items before submitting
+  //   if (hasEmptyField || items.length === 0) {
+  //     return;
+  //   }
+  //
+  //   // build updated invoice from form data
+  //   const newInvoice = {
+  //     ...invoice,
+  //     clientName: data.clientName,
+  //     clientAddress: {
+  //       city: data.clientCity,
+  //       country: data.clientCountry,
+  //       postCode: data.clientPostalCode,
+  //       street: data.clientStreetAddress,
+  //     },
+  //     senderAddress: {
+  //       city: data.city,
+  //       country: data.country,
+  //       postCode: data.postalCode,
+  //       street: data.streetAddress,
+  //     },
+  //     clientEmail: data.clientEmail,
+  //     createdAt: convertDateToString(startDate),
+  //     paymentTerms: selectedPaymentOption,
+  //     description: data.projectDescription,
+  //     items: items,
+  //     status: "pending",
+  //   };
+  //
+  //   // recalculate the total for invoice
+  //   let total = 0;
+  //   for (let i of items) {
+  //     total += Number(i.total);
+  //   }
+  //   newInvoice.total = total;
+  //
+  //   const date = new Date(startDate.getTime() + 86400000 * newInvoice.paymentTerms);
+  //
+  //   const [month, day, year] = [date.getMonth(), date.getDate(), date.getFullYear()];
+  //   newInvoice.paymentDue = [year, month, day].join("-");
+  //
+  //   dispatch(updateInvoice(newInvoice));
+  //   setIsEditOpen(false);
+  // };
 
   // calculates width and padding of editForm depending on window width and whether the edit tab is open
   useLayoutEffect(() => {
@@ -156,21 +242,21 @@ function EditForm({
 
 
   // gives unique ids to all invoice items
-  useLayoutEffect(() => {
-    const newItems = items.map((item) => {
-      return { ...item, id: uuidv4() };
-    });
-    setItems(newItems);
-  }, []);
+  // useLayoutEffect(() => {
+  //   const newItems = items.map((item) => {
+  //     return { ...item, id: uuidv4() };
+  //   });
+  //   setItems(newItems);
+  // }, []);
 
   // form validation -- adds red border for empty elements
-  const handleChange = (e) => {
-    if (e.target.value.length === 0 && e.target.defaultValue.length === 0) {
-      e.target.style.setProperty("border", "1px solid red");
-    } else {
-      e.target.style.setProperty("border", "none");
-    }
-  };
+  // const handleChange = (e) => {
+  //   if (e.target.value.length === 0 && e.target.defaultValue.length === 0) {
+  //     e.target.style.setProperty("border", "1px solid red");
+  //   } else {
+  //     e.target.style.setProperty("border", "none");
+  //   }
+  // };
 
   // sets the payment option after change
   const handleChangeSelectedOption = (option) => {
@@ -190,86 +276,93 @@ function EditForm({
 
 
   return (
-    <DarkenScreen style={{visibility: isEditOpen ? "visible" : "hidden"}}>
+    <DarkenScreen style={{ visibility: isEditOpen ? "visible" : "hidden" }}>
       <FormContainerDarkenModal
-          style={{
-            width: isEditOpen ? `${editPageWidth}px` : 0,
-            padding: isEditOpen ? padding : 0,
-          }}
+        style={{
+          width: isEditOpen ? `${editPageWidth}px` : 0,
+          padding: isEditOpen ? padding : 0,
+        }}
       >
         <EditTitle>
-          Edit <span style={{color: "#7E88C3"}}>#</span>
+          Edit <span style={{ color: "#7E88C3" }}>#</span>
           {invoice.id.substring(0, 6)}
         </EditTitle>
 
         {/* "handleSubmit" will validate your inputs before invoking "onSubmit" */}
-        <form onSubmit={handleSubmit(onSubmit)} style={{display: "flex", flexDirection: "column"}}>
+        <FormProvider {...methods}>
+          <form onSubmit={handleSubmit(onSubmit)} style={{ display: "flex", flexDirection: "column" }}>
 
-          {/* register your input into the hook by invoking the "register" function */}
+            {/* register your input into the hook by invoking the "register" function */}
 
-          {/* Company Details */}
-          <BillText>Bill From</BillText>
-          <CompanyFormInfo errors={errors} senderAddress={invoice.senderAddress}
-                           useFormRegisterReturn={register("streetAddress", {required: true, pattern: /^[A-Za-z0-9 ]+$/i, maxLength: 50})} onChange={handleChange}
-                           useFormRegisterReturn1={register("city", {required: true, pattern: /^\w+$/i, maxLength: 30})}
-                           useFormRegisterReturn2={register("postalCode", {required: true, pattern: /^\w+[\w ]+$/i, maxLength: 10, minLength: 5})}
-                           editPageWidth={editPageWidth} onChange1={() => handleChange}
-                           useFormRegisterReturn3={register("country", {required: true, pattern: /^[A-Za-z0-9 ]+$/i, maxLength: 30})}/>
+            {/* Company Details */}
+            <BillText>Bill From</BillText>
+            <CompanyFormInfo errors={errors} senderAddress={invoice.senderAddress}
+              invoice={invoice}
+              useFormRegisterReturn={register("streetAddress", { required: true, pattern: /^[A-Za-z0-9 ]+$/i, maxLength: 50 })}
+              useFormRegisterReturn1={register("city", { required: true, pattern: /^\w+$/i, maxLength: 30 })}
+              useFormRegisterReturn2={register("postalCode", { required: true, pattern: /^\w+[\w ]+$/i, maxLength: 10, minLength: 5 })}
+              editPageWidth={editPageWidth}
+              useFormRegisterReturn3={register("country", { required: true, pattern: /^[A-Za-z0-9 ]+$/i, maxLength: 30 })}/>
 
-          {/* //  Client details */}
-          <BillText>Bill To</BillText>
-          <ClientFormInfo errors={errors} clientName={invoice.clientName}
-                          useFormRegisterReturn={register("clientName", {required: true})}
-                          clientEmail={invoice.clientEmail}
-                          useFormRegisterReturn1={register("clientEmail", {required: true, pattern: /^\w+([.-]?\w+)*@\w+([.-]?\w+)*(\.\w{2,3})+$/})}
-                          clientAddress={invoice.clientAddress}
-                          useFormRegisterReturn2={register("clientStreetAddress", {required: true})}
-                          useFormRegisterReturn3={register("clientCity", {required: true})}
-                          useFormRegisterReturn4={register("clientPostalCode", {required: true})}
-                          editPageWidth={editPageWidth}
-                          useFormRegisterReturn5={register("clientCountry", {required: true})}/>
+            {/* //  Client details */}
+            <BillText>Bill To</BillText>
+            <ClientFormInfo errors={errors} clientName={invoice.clientName}
+              useFormRegisterReturn={register("clientName", { required: true })}
+              clientEmail={invoice.clientEmail}
+              useFormRegisterReturn1={register("clientEmail", { required: true, pattern: /^\w+([.-]?\w+)*@\w+([.-]?\w+)*(\.\w{2,3})+$/ })}
+              clientAddress={invoice.clientAddress}
+              useFormRegisterReturn2={register("clientStreetAddress", { required: true })}
+              useFormRegisterReturn3={register("clientCity", { required: true })}
+              useFormRegisterReturn4={register("clientPostalCode", { required: true })}
+              editPageWidth={editPageWidth}
+              useFormRegisterReturn5={register("clientCountry", { required: true })}/>
 
-          <DateAndPayment editPageWidth={editPageWidth} selected={startDate} onChange={(date) => setStartDate(date)}
-                          handlePaymentSelect={handlePaymentSelect} paymentOpen={isPaymentOpen}
-                          handlePaymentClick={handlePaymentClick} selectedPaymentOption={selectedPaymentOption}
-                          handleChangeSelectedOption={handleChangeSelectedOption}/>
+            <DateAndPayment editPageWidth={editPageWidth} selected={startDate} onChange={(date) => setStartDate(date)}
+              handlePaymentSelect={handlePaymentSelect} paymentOpen={isPaymentOpen}
+              handlePaymentClick={handlePaymentClick} selectedPaymentOption={selectedPaymentOption}
+              handleChangeSelectedOption={handleChangeSelectedOption}/>
 
-          <LongFormEntry isLongOnMobile={editPageWidth < 768}>
-            <Label
+            <LongFormEntry isLongOnMobile={editPageWidth < 768}>
+              <Label
                 htmlFor="projectDescription"
-                style={{color: errors.projectDescription ? "red" : ""}}
-            >
+                style={{ color: errors.projectDescription ? "red" : "" }}
+              >
               Project Description
-            </Label>
-            <Input
+              </Label>
+              <Input
                 long
                 type="text"
                 defaultValue={invoice.description}
                 error={!!errors?.title}
-                {...register("projectDescription", {required: true})}
+                {...register("projectDescription", { required: true })}
                 style={{
                   border: errors.projectDescription ? "1px solid red" : "",
                 }}
-            />
-          </LongFormEntry>
+              />
+            </LongFormEntry>
 
-          <EditFormItemList
-              invoice={invoice}
-              items={items}
-              setItems={setItems}
-          />
+            {/*<EditFormItemList*/}
+            {/*  invoice={invoice}*/}
+            {/*  items={items}*/}
+            {/*  setItems={setItems}*/}
+            {/*/>*/}
 
-          {hasEmptyField && <ErrorText>- All fields must be added</ErrorText>}
-          {items.length === 0 && <ErrorText>- An item must be added</ErrorText>}
+            <InputFormItem1 invoice={invoice} isEditOpen={ isEditOpen }/>
 
-          <EditBottomMenu
+            <ErrorText style={{ marginTop: "2rem", display: submitCount > 0 ? "block" : "none" }}>- All fields must be added</ErrorText>
+            { errors.items && <ErrorText >- An item must be added</ErrorText>
+            }
+
+            <EditBottomMenu
               setIsOpen={setIsEditOpen}
               saveText={"Save Changes"}
               closeText={"Cancel"}
-              setItems={setItems}
+              // setItems={setItems}
               invoice={invoice}
-          />
-        </form>
+              onSubmit={onSubmit}
+            />
+          </form>
+        </FormProvider>
       </FormContainerDarkenModal>
     </DarkenScreen>
   );

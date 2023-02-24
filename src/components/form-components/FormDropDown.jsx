@@ -1,3 +1,4 @@
+// eslint-disable-next-line no-unused-vars
 import React, { useState, useCallback, useEffect } from "react";
 import styled from "styled-components";
 import PropTypes from "prop-types";
@@ -20,19 +21,19 @@ const Main = styled.div.attrs({
   border-radius: 4px;
 
   border: 1px solid ${({ theme }) => theme.formFieldOutline};
-  
+
   @media (min-width: 768px) {
     width: 240px;
     max-width: 100%;
   }
-  
-  &:focus, &:hover {
+
+  &:focus,
+  &:hover {
     border: 1px solid ${({ theme }) => theme.formFieldOutlineFocus};
   }
 `;
 
 const DropDownHeader = styled.div`
-  
   display: flex;
   justify-content: space-between;
   align-items: center;
@@ -47,7 +48,6 @@ const DropDownHeader = styled.div`
   border-radius: 4px;
   border-color: ${({ theme }) => theme.formFieldOutline};
 
-  
   h2 {
     writing-mode: horizontal-tb !important;
     text-rendering: auto;
@@ -61,9 +61,8 @@ const DropDownHeader = styled.div`
     appearance: auto;
     -webkit-rtl-ordering: logical;
     cursor: text;
-    
+
     padding: 1px 2px;
-   
 
     font-family: "League Spartan", sans-serif;
     font-style: normal;
@@ -108,7 +107,7 @@ const ListItem = styled.li`
   flex-direction: column;
   align-items: center;
   justify-content: center;
- 
+
   list-style: none;
   height: 48px;
   width: 100%;
@@ -165,6 +164,7 @@ function FormDropDown({
   handleChangeSelectedOption,
   isPaymentOpen,
   handlePaymentClick,
+  setIsPaymentOpen
 }) {
   const [selected, setSelected] = useState(String(selectedPaymentOption) || "");
 
@@ -174,9 +174,7 @@ function FormDropDown({
 
     const num = Number(option.split(" ")[1]);
     handleChangeSelectedOption(num);
-
   };
-
 
   useEffect(() => {
     if (selectedPaymentOption === 1) {
@@ -186,23 +184,31 @@ function FormDropDown({
     }
   }, [selectedPaymentOption]);
 
+
+  const handleKeyDown = (e) => {
+    if (e.key === "Enter") {
+      setIsPaymentOpen(false);
+    }
+  };
+
   return (
     <Main>
-      <DropDownHeader onClick={handlePaymentClick}>
+      <DropDownHeader onClick={handlePaymentClick} onKeyDown={handleKeyDown}
+        tabIndex={-1}
+      >
         <h2>{selected}</h2>
         <SVG>{arrowDown}</SVG>
       </DropDownHeader>
 
-        <DropDownList style={{height: isPaymentOpen ? "192px" : 0}}>
-          {options.map((option, index) => (
-            <ListItem key={index + "-li"} onClick={onOptionClicked(option)}>
-              <ItemButton key={index}>
-                {options.find((term) => term.includes(String(option)))}
-              </ItemButton>
-            </ListItem>
-          ))}
-        </DropDownList>
-
+      <DropDownList style={{ height: isPaymentOpen ? "192px" : 0 }}>
+        {options.map((option, index) => (
+          <ListItem key={index + "-li"} onClick={onOptionClicked(option)}>
+            <ItemButton key={index} type="button" >
+              {options.find((term) => term.includes(String(option)))}
+            </ItemButton>
+          </ListItem>
+        ))}
+      </DropDownList>
     </Main>
   );
 }

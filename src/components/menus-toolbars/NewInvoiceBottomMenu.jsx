@@ -1,8 +1,10 @@
 import CancelButton from "../buttons/CancelButton";
 import styled from "styled-components";
 import PropTypes from "prop-types";
-import {useForm} from "react-hook-form";
+import { useForm, useFormContext } from "react-hook-form";
 import Proptypes from "prop-types";
+import { isDraft } from "immer";
+import { useEffect } from "react";
 
 const MenuContainer = styled.div`
   width: 100%;
@@ -69,33 +71,60 @@ const SaveAndDraftContainer = styled.div`
 
 function NewInvoiceBottomMenu({
   setIsDraft,
+  isDraft,
   setIsOpen,
   saveText,
   closeText,
   justifyCancel,
-    setSubmitDirty,
-    reset,
-    setItems
+  setSubmitDirty,
+  reset,
+  setItems,
+  onSubmit
 }) {
 
-  const { clearErrors } = useForm();
+  const { clearErrors, setValue } = useFormContext();
+
+  useEffect(() => {
+    if (isDraft === false) {
+      onSubmit();
+    }
+  }, [isDraft]);
 
   const closeMenu = (e) => {
     // e.preventDefault();
     setSubmitDirty(false);
     clearErrors();
     setIsOpen(false);
-    setItems([])
+    setItems([]);
     // HTMLFormElement.reset();
     reset();
   };
 
-  const setToDraft = () => {
+  const setToDraft = async (e) => {
+    // e.stopPropagation();
     setIsDraft(true);
+    setValue("status", "draft");
+    // setTimeout(() => onSubmit(), 500);
+    onSubmit();
   };
 
-  const setToPending = () => {
+  const setToPending = (e) => {
+    // e.preventDefault();
+    // e.stopPropagation();
     setIsDraft(false);
+    setValue("status", "pending");
+    // console.log(isDraft);
+    // setTimeout(() => console.log(isDraft), 5000);
+    // setTimeout(() => onSubmit(), 1000);
+    // onSubmit();
+  };
+
+  const handleKeyDown = (e) => {
+    // if (e.key === "Enter") {
+    //   e.preventDefault();
+    //   e.stopPropagation();
+    //   e.stopImmediatePropagation();
+    // }
   };
 
   return (
@@ -106,9 +135,9 @@ function NewInvoiceBottomMenu({
         justifySelf={justifyCancel}
       />
       <SaveAndDraftContainer>
-        <SaveDraft type="submit" value="Save as draft" onClick={setToDraft} />
+        <SaveDraft type="button" value="Save as draft" onClick={setToDraft} />
         <NewInvoiceButton
-          type="submit"
+          type="button"
           value={saveText}
           onClick={setToPending}
         />

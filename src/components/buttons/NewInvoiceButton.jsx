@@ -1,5 +1,5 @@
-import React from 'react';
-import Button from './Button';
+import React from "react";
+import Button from "./Button";
 
 const plusSign = (
   <svg width="11" height="11" xmlns="http://www.w3.org/2000/svg">
@@ -12,7 +12,7 @@ const plusSign = (
 );
 
 function NewInvoiceButton() {
-  return <Button>{plusSign}</Button>;
+  return <Button type="button">{plusSign}</Button>;
 }
 
 export default NewInvoiceButton;

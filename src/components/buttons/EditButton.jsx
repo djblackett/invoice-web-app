@@ -21,7 +21,7 @@ const Button = styled.button`
   }
 `;
 function EditButton({ toggleEditTab }) {
-  return <Button onClick={toggleEditTab}>Edit</Button>;
+  return <Button onClick={toggleEditTab} type="button">Edit</Button>;
 }
 
 export default EditButton;

@@ -19,6 +19,7 @@ const Card = styled.div`
   letter-spacing: -0.25px;
   line-height: 15px;
   font-size: 12px;
+  border: 1px solid transparent;
   border-radius: 8px;
   box-shadow: 0px 10px 10px -10px rgba(72, 84, 159, 0.100397);
   transition: width 0.5s ease-in-out;
@@ -180,10 +181,10 @@ function FullInvoice({ invoice }) {
         </IdAndDescription>
         <Address style={{ textAlign: width >= 768 ? "right" : "left" }}>
 
-            <AddressEntry >{invoice.senderAddress.street}</AddressEntry>
-            <AddressEntry >{invoice.senderAddress.city}</AddressEntry>
-            <AddressEntry >{invoice.senderAddress.postCode}</AddressEntry>
-            <AddressEntry >{invoice.senderAddress.country}</AddressEntry>
+          <AddressEntry >{invoice.senderAddress.street}</AddressEntry>
+          <AddressEntry >{invoice.senderAddress.city}</AddressEntry>
+          <AddressEntry >{invoice.senderAddress.postCode}</AddressEntry>
+          <AddressEntry >{invoice.senderAddress.country}</AddressEntry>
 
         </Address>
       </TopRow>

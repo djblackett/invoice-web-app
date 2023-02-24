@@ -1,7 +1,7 @@
 import styled from "styled-components";
 import PropTypes from "prop-types";
-import {useEffect, useState} from "react";
-import {useWindowWidth} from "../../hooks/useWindowWidth";
+import { useEffect, useState } from "react";
+import { useWindowWidth } from "../../hooks/useWindowWidth";
 
 export const FormEntryContainer = styled.div`
   display: flex;
@@ -26,7 +26,7 @@ const OppositeWidthContainer = styled(FormEntryContainer)`
   }
 `;
 
-function FormEntry({ className, isLongOnMobile = false, children}) {
+function FormEntry({ className, isLongOnMobile = false, children }) {
   const [isDirty, setIsDirty] = useState(false);
   const windowWidth = useWindowWidth();
   const handleChange = () => {
@@ -36,25 +36,25 @@ function FormEntry({ className, isLongOnMobile = false, children}) {
   // mobile view gets a longer component, hence the awkward naming scheme here
   if (isLongOnMobile) {
     return (
-        <OppositeWidthContainer
-            onChange={handleChange}
-            isDirty={isDirty}
-            className={className}
-        >
-          {children}
-        </OppositeWidthContainer>
-    )
+      <OppositeWidthContainer
+        onChange={handleChange}
+        isDirty={isDirty}
+        className={className}
+      >
+        {children}
+      </OppositeWidthContainer>
+    );
   }
 
   else {
     return (
-        <FormEntryContainer
-            onChange={handleChange}
-            isDirty={isDirty}
-            className={className}
-        >
-          {children}
-        </FormEntryContainer>
+      <FormEntryContainer
+        onChange={handleChange}
+        isDirty={isDirty}
+        className={className}
+      >
+        {children}
+      </FormEntryContainer>
     );
   }
 }

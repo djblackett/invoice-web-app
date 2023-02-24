@@ -1,4 +1,4 @@
-import React, {useLayoutEffect, useState} from "react";
+import React, { useEffect, useLayoutEffect, useState } from "react";
 import "../styles/App.css";
 import Header from "../components/menus-toolbars/Header";
 import styled from "styled-components";
@@ -29,11 +29,11 @@ const Main = styled.div`
   
   // applies the appropriate theme to each status type
   .draft {
-    background: ${({theme}) => theme.draftBackgroundColor};
-    color: ${({theme}) => theme.draftColor};
+    background: ${({ theme }) => theme.draftBackgroundColor};
+    color: ${({ theme }) => theme.draftColor};
 
     .circle {
-      background: ${({theme}) => theme.draftColor};
+      background: ${({ theme }) => theme.draftColor};
     }
   }
   
@@ -55,15 +55,28 @@ const Main = styled.div`
   }
 `;
 
+// todo fix pressing enter opens the payment dropdown -- fixed
+// todo stop hover on fullInvoice and allInvoices from resizing by 1 pixel. use transparent border in normal state --fixed
+// todo figure out why error state will not change when typing into inputs --fixed
+// todo fix red colors for errors -- fixed
+// todo should not submit when 0 items
+// todo items do not get auto added in edit form --fixed
+// todo removing items and then adding new ones will just add the old ones back in --fixed
 
+// returning window scroll to proper position is currently non-functional
 function App() {
   const [theme, setTheme] = useState("light");
+  const [scrollPosition, setScrollPosition] = useState({ x: 0, y: 0 });
 
   useLayoutEffect(() => {
     if (localStorage.getItem("theme")) {
       setTheme(localStorage.getItem("theme"));
     }
-  }, [])
+  }, []);
+
+  useEffect(() => {
+    window.scrollTo(scrollPosition.x, scrollPosition.y);
+  }, []);
 
   const themeToggler = () => {
     theme === "light" ? setTheme("dark") : setTheme("light");
@@ -100,11 +113,11 @@ function App() {
       children: [
         {
           index: true,
-          element: <AllInvoices />,
+          element: <AllInvoices scrollPosition={scrollPosition} setScrollPosition={setScrollPosition}/>,
         },
         {
           path: ":id",
-          element: <ViewInvoice />,
+          element: <ViewInvoice scrollPosition={scrollPosition} setScrollPosition={setScrollPosition}/>,
         },
       ],
     },

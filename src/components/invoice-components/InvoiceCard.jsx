@@ -2,6 +2,7 @@ import styled from "styled-components";
 import PropTypes from "prop-types";
 import { useMemo } from "react";
 import InvoiceStatus from "./InvoiceStatus";
+import { getMoney } from "../../utils/utilityFunctions";
 
 const Card = styled.div`
   height: 134px;
@@ -17,6 +18,7 @@ const Card = styled.div`
   line-height: 15px;
   font-size: 12px;
   border-radius: 8px;
+  border: 1px solid transparent;
   box-shadow: 0 10px 10px -10px rgba(72, 84, 159, 0.100397);
   transition: background-color 0.4s ease-in-out;
 
@@ -84,7 +86,7 @@ const InvoiceAmount = styled.p`
 
 const CustomerName = styled.p`
   margin: 0;
-  color: ${({theme}) => theme.textPlain};
+  color: ${({ theme }) => theme.textPlain};
   font-weight: 500;
   font-size: 12px;
   line-height: 15px;
@@ -150,7 +152,7 @@ function InvoiceCard({ invoice }) {
       <DueDateAmountBox>
         <DueDate>Due {convertedDate()}</DueDate>
 
-        <InvoiceAmount>£ {invoice.total.toFixed(2)}</InvoiceAmount>
+        <InvoiceAmount>£ {getMoney(invoice.total)}</InvoiceAmount>
       </DueDateAmountBox>
 
       {invoiceStatus}

@@ -5,7 +5,7 @@ import { store } from "./app/store";
 import App from "./app/App";
 import reportWebVitals from "./reportWebVitals";
 import "./styles/index.css";
-import {BrowserRouter, HashRouter} from "react-router-dom";
+import { BrowserRouter, HashRouter } from "react-router-dom";
 
 const container = document.getElementById("root");
 const root = createRoot(container);
@@ -14,7 +14,7 @@ root.render(
   <React.StrictMode>
     <Provider store={store}>
       {/*<HashRouter basename="/invoice-web-app">*/}
-        <HashRouter>
+      <HashRouter>
         <App />
       </HashRouter>
     </Provider>

@@ -8,14 +8,14 @@ import PropTypes from "prop-types";
 import { useDispatch } from "react-redux";
 import { addInvoice } from "../features/invoices/invoicesSlice";
 import { v4 as uuidv4 } from "uuid";
-import { generateId} from "../utils/utilityFunctions";
+import { generateId } from "../utils/utilityFunctions";
 import NewInvoiceForm from "../components/form-components/NewInvoiceForm";
 import "../styles/react-datepicker.css";
 import { useWindowWidth } from "../hooks/useWindowWidth";
 import {
   DarkenScreen, EditTitle, FormContainerDarkenModal,
 } from "../styles/editStyles";
-import {convertDateToString} from "./EditForm";
+import { convertDateToString } from "./EditForm";
 
 
 
@@ -25,13 +25,6 @@ function NewInvoice({
   setIsNewOpen, padding,
   setPadding,
 }) {
-
-  const {
-    reset,
-    formState: { errors },
-
-  } = useForm();
-
 
   const width = useWindowWidth();
 
@@ -50,72 +43,17 @@ function NewInvoice({
 
 
 
-  const createInvoiceObject = (data) => {
-    let newInvoice = {
-      clientName: data.clientName,
-      clientAddress: {
-        city: data.clientCity,
-        country: data.clientCountry,
-        postCode: data.clientPostalCode,
-        street: data.clientStreetAddress,
-      },
-      senderAddress: {
-        city: data.city,
-        country: data.country,
-        postCode: data.postalCode,
-        street: data.streetAddress,
-      },
-      clientEmail: data.clientEmail,
-      createdAt: convertDateToString(startDate),
-      description: data.projectDescription,
-      items: items,
-    };
 
-    let total = 0;
 
-    for (let i of items) {
-      total += Number(i.total);
-    }
+  // function resetForm() {
+  //   reset();
+  //   setIsNewOpen(false);
+  //
+  //   setItems([]);
+  //   setSelectedPaymentOption(1);
+  //   setSubmitDirty(false);
+  // }
 
-    newInvoice.total = total;
-    newInvoice.id = newInvoice.id ? newInvoice.id : generateId();
-    newInvoice.paymentTerms = selectedPaymentOption;
-    newInvoice.status = isDraft ?  "draft" : "pending";
-
-    const date = new Date(startDate.getTime() + 86400000 * newInvoice.paymentTerms);
-
-    const [month, day, year] = [date.getMonth(), date.getDate(), date.getFullYear()];
-    newInvoice.paymentDue = [year, month, day].join("-");
-
-    return newInvoice
-  }
-
-  function resetForm() {
-    reset();
-    setIsNewOpen(false);
-
-    setItems([]);
-    setSelectedPaymentOption(1);
-    setSubmitDirty(false);
-  }
-
-  const onSubmit = (data) => {
-    const newInvoice = createInvoiceObject(data);
-
-    if (!isDraft && hasEmptyField) {
-      setSubmitDirty(true);
-      console.log(isSubmitDirty);
-      return;
-    }
-    dispatch(addInvoice(newInvoice));
-    console.log("dispatched")
-    reset();
-    setIsNewOpen(false);
-
-    setItems([]);
-    setSelectedPaymentOption(1);
-    setSubmitDirty(false);
-  };
 
 
   // checks for empty form inputs on every render
@@ -124,7 +62,7 @@ function NewInvoice({
     let count = 0;
     for (let i = 0; i < inputs.length; i++) {
       if (
-          inputs.item(i).value.length === 0 &&
+        inputs.item(i).value.length === 0 &&
           inputs.item(i).defaultValue.length === 0
       ) {
         count++;
@@ -166,7 +104,7 @@ function NewInvoice({
   return (
 
     // DarkenScreen appears when newInvoice tab is open
-    <DarkenScreen style={{visibility: isNewOpen ? "visible" : "hidden" }}>
+    <DarkenScreen style={{ visibility: isNewOpen ? "visible" : "hidden" }}>
       <FormContainerDarkenModal
         style={{
           width: isNewOpen ? `${editPageWidth}px` : "0px",
@@ -178,7 +116,7 @@ function NewInvoice({
         </EditTitle>
 
         <NewInvoiceForm
-            startDate={startDate} setStartDate={setStartDate} setIsNewOpen={setIsNewOpen} onSubmit={onSubmit} setItems={setItems} editPageWidth={editPageWidth} items={items} isSubmitDirty={isSubmitDirty} setSubmitDirty={setSubmitDirty} isDraft={isDraft} setIsDraft={setIsDraft}  selectedPaymentOption={selectedPaymentOption} setSelectedPaymentOption={setSelectedPaymentOption}/>
+          startDate={startDate} setStartDate={setStartDate} setIsNewOpen={setIsNewOpen} setItems={setItems} editPageWidth={editPageWidth} items={items} isSubmitDirty={isSubmitDirty} setSubmitDirty={setSubmitDirty} isDraft={isDraft} setIsDraft={setIsDraft}  selectedPaymentOption={selectedPaymentOption} setSelectedPaymentOption={setSelectedPaymentOption}/>
 
       </FormContainerDarkenModal>
     </DarkenScreen>

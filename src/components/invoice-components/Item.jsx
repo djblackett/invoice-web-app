@@ -1,5 +1,6 @@
 import styled from "styled-components";
 import PropTypes from "prop-types";
+import { getMoney } from "../../utils/utilityFunctions";
 
 const ItemContainer = styled.div`
   display: grid;
@@ -127,13 +128,13 @@ function Item({ item }) {
         <ItemName>{item.name}</ItemName>
         <QuantityPriceContainer>
           <Quantity>{item.quantity}</Quantity>
-          <Price>£ {Number(item.price).toFixed(2)}</Price>
+          <Price>£ {getMoney(Number(item.price))}</Price>
         </QuantityPriceContainer>
         <MobileQuantityPrice>
           {item.quantity + " x £ " + Number(item.price).toFixed(2)}{" "}
         </MobileQuantityPrice>
       </MobileHelperContainer>
-      <Total>£ {Number(item.total).toFixed(2)}</Total>
+      <Total>£ {getMoney(Number(item.total))}</Total>
     </ItemContainer>
   );
 }

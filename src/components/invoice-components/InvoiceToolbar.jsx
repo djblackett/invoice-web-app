@@ -1,6 +1,6 @@
 import styled from "styled-components";
 import Proptypes from "prop-types";
-import { useMemo} from "react";
+import { useMemo } from "react";
 import { useWindowWidth } from "../../hooks/useWindowWidth";
 import ToolbarButtons from "../menus-toolbars/ToolbarButtons";
 import InvoiceStatus from "./InvoiceStatus";

@@ -4,7 +4,7 @@ import PropTypes from "prop-types";
 import React, { useState, useEffect } from "react";
 import { selectFilter } from "../../features/invoices/filterSlice";
 import { useSelector } from "react-redux";
-import {useWindowWidth} from "../../hooks/useWindowWidth";
+import { useWindowWidth } from "../../hooks/useWindowWidth";
 
 const GridContainer = styled.div`
   display: grid;
@@ -200,7 +200,7 @@ const FilterButton = styled.div`
   @media (min-width: 325px) {
     flex-direction: row;
   }
-`
+`;
 
 const plusSignSVG = (
   <svg width="11" height="11" xmlns="http://www.w3.org/2000/svg">
@@ -261,15 +261,15 @@ function AllInvoicesToolbar({ invoiceList, setIsNewOpen }) {
       </TitleBox>
       <ControlBox>
         <FilterButton onClick={toggling}>
-        <Filter>
+          <Filter>
           Filter <span className="wideScreenText">by status</span>
-        </Filter>
-        <FilterDropDown
-          icon={arrowDownSVG}
-          isOpen={isOpen}
-          onKeyPress={togglingButton}
-          options={["Draft", "Pending", "Paid"]}
-        />
+          </Filter>
+          <FilterDropDown
+            icon={arrowDownSVG}
+            isOpen={isOpen}
+            onKeyPress={togglingButton}
+            options={["Draft", "Pending", "Paid"]}
+          />
         </FilterButton>
         <NewInvoiceButton onClick={openNewInvoice}>
           <WhiteCircle>{plusSignSVG}</WhiteCircle>

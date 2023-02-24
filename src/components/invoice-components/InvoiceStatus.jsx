@@ -1,4 +1,4 @@
-import styled, {css} from "styled-components";
+import styled, { css } from "styled-components";
 import PropTypes from "prop-types";
 
 const InvoiceStatusBox = styled.div`

@@ -1,9 +1,10 @@
 import styled from "styled-components";
 import PropTypes from "prop-types";
 import Item from "./Item";
-import {useLayoutEffect} from "react";
-import {useDispatch} from "react-redux";
-import {addIdToExistingInvoices} from "../../features/invoices/invoicesSlice";
+import { useLayoutEffect } from "react";
+import { useDispatch } from "react-redux";
+import { addIdToExistingInvoices } from "../../features/invoices/invoicesSlice";
+import { getCurrency, getMoney } from "../../utils/utilityFunctions";
 
 const ListContainer = styled.div`
   display: grid;
@@ -17,7 +18,7 @@ const AmountDue = styled.div`
   align-items: center;
   justify-content: space-between;
   height: 80px;
-  background-color: ${({theme}) => theme.amountDueBackground};
+  background-color: ${({ theme }) => theme.amountDueBackground};
   padding: 2rem;
   border-radius: 0 0 8px 8px;
 `;
@@ -107,10 +108,10 @@ const ItemsContainer = styled.div`
 let count = 0;
 
 function ItemList({ invoice }) {
-    const dispatch = useDispatch();
-    useLayoutEffect(() => {
-        dispatch(addIdToExistingInvoices())
-    }, [])
+  const dispatch = useDispatch();
+  useLayoutEffect(() => {
+    dispatch(addIdToExistingInvoices());
+  }, []);
 
   return (
     <ListContainer>
@@ -130,7 +131,7 @@ function ItemList({ invoice }) {
           <span className="amount-due">Amount Due</span>
           <span className="grand-total">Grand Total</span>
         </AmountDueTitle>
-        <AmountDueTotal>£ {invoice.total.toFixed(2)}</AmountDueTotal>
+        <AmountDueTotal>£ {getMoney(invoice.total)}</AmountDueTotal>
       </AmountDue>
     </ListContainer>
   );

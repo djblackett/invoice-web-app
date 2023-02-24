@@ -14,7 +14,7 @@ const PrimaryButton = styled.button`
 `;
 
 function Button({ children }) {
-  return <PrimaryButton>{children}</PrimaryButton>;
+  return <PrimaryButton type="button">{children}</PrimaryButton>;
 }
 
 Button.propTypes = { children: Proptypes.node };

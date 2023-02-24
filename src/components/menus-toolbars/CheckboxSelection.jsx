@@ -6,7 +6,7 @@ import { selectFilter } from "../../features/invoices/filterSlice";
 
 const CheckboxContainer = styled.div`
 
-`
+`;
 
 const Label = styled.div`
   //pointer-events: none;

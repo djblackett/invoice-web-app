@@ -41,7 +41,7 @@ export const GoBackButton = styled.div`
 `;
 
 export const Icon = styled.p`
-  color: ${({theme}) => theme.outline};
+  color: ${({ theme }) => theme.outline};
   padding: 0;
   margin: 0;
   font-weight: 900;
@@ -59,13 +59,13 @@ export const GoBack = styled.p`
 `;
 
 export const arrowLeft = (
-    <svg width="7" height="10" xmlns="http://www.w3.org/2000/svg">
-        <path
-            d="M6.342.886L2.114 5.114l4.228 4.228"
-            stroke="#9277FF"
-            strokeWidth="2"
-            fill="none"
-            fillRule="evenodd"
-        />
-    </svg>
+  <svg width="7" height="10" xmlns="http://www.w3.org/2000/svg">
+    <path
+      d="M6.342.886L2.114 5.114l4.228 4.228"
+      stroke="#9277FF"
+      strokeWidth="2"
+      fill="none"
+      fillRule="evenodd"
+    />
+  </svg>
 );
