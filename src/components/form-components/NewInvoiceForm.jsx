@@ -1,6 +1,6 @@
 /* eslint-disable react/no-unescaped-entities */
 
-import { AddressDetailInput, BillText, CountryInput, ErrorText, Input, Label } from "../../styles/editStyles";
+import { AddressDetailInput, BillText, CountryInput, ErrorList, ErrorText, Input, Label } from "../../styles/editStyles";
 import LongFormEntry from "./LongFormEntry";
 import AddressBox from "./AddressBox";
 import { CityPostContainer, CompanyFormInfo } from "./CompanyFormInfo";
@@ -11,7 +11,7 @@ import NewInvoiceBottomMenu from "../menus-toolbars/NewInvoiceBottomMenu";
 import { FormProvider, useForm } from "react-hook-form";
 import PropTypes from "prop-types";
 import { useWindowWidth } from "../../hooks/useWindowWidth";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { yupResolver } from "@hookform/resolvers/yup";
 import * as Yup from "yup";
 import { addInvoice } from "../../features/invoices/invoicesSlice";
@@ -19,6 +19,8 @@ import { convertDateToString } from "../../pages/EditForm";
 import { generateId } from "../../utils/utilityFunctions";
 import { useDispatch } from "react-redux";
 import { v4 as uuidv4 } from "uuid";
+import FormErrorList from "./FormErrorList";
+
 
 export const validationSchema = Yup.object().shape({
   clientName: Yup.string()
@@ -46,6 +48,7 @@ export const validationSchema = Yup.object().shape({
   )
 });
 
+
 export default function NewInvoiceForm({
   editPageWidth,
   startDate,
@@ -60,11 +63,12 @@ export default function NewInvoiceForm({
   selectedPaymentOption
 }) {
 
+  // removed this for debugging
   const formOptions = { resolver: yupResolver(validationSchema) };
 
   const methods = useForm(
     {
-      formOptions,
+      // formOptions,
       defaultValues: {
         status: "draft",
         city: "",
@@ -101,11 +105,6 @@ export default function NewInvoiceForm({
 
   const watcher = watch();
 
-  useEffect(() => {
-    if (!watcher.items || watcher.items.length === 0) {
-      setError("items", { type: "custom", message: "An item must be added" });
-    }
-  }, [watcher.items]);
 
   const createInvoiceObject = (data) => {
     const newInvoice = {
@@ -157,15 +156,9 @@ export default function NewInvoiceForm({
 
   const onSubmit = (e) => {
     const watcher = watch();
-
+    console.log(errors);
 
     const data = getValues();
-
-    if (!data.items || data.items.length === 0) {
-      setError("items", { type: "custom", message: "An item must be added" });
-      // trigger();
-      return;
-    }
 
     //trigger validation on fields
     trigger()
@@ -223,6 +216,8 @@ export default function NewInvoiceForm({
       />
     </>
   );
+
+
 
 
   return (
@@ -314,20 +309,11 @@ export default function NewInvoiceForm({
         </LongFormEntry>
 
         <EditFormItemList
-          items={items}
-          setItems={setItems}
           isDraft={isDraft}
           register={register}
-          control={control}
         />
 
-        {/* The below ternary operator is a hack to show "all fields must be added" if any field has errors but not including the items array being empty
-         I'm not sure if it works, but at this point I'm afraid to ask... */}
-        <ErrorText style={{ marginTop: "2rem", display: submitCount > 0 && (errors.items && Object.entries() > 1 || errors) ? "block" : "none" }}>- All fields must be
-                    added</ErrorText>
-        {errors.items && <ErrorText style={{
-          marginBottom: "2.8rem"
-        }}>- An item must be added</ErrorText> }
+        <FormErrorList />
         <NewInvoiceBottomMenu setSubmitDirty={setSubmitDirty} setIsDraft={setIsDraft} setIsOpen={setIsNewOpen}
           saveText={"Save & Send"} closeText={"Discard"}
           justifyCancel={"flex-start"} reset={reset}
@@ -337,7 +323,6 @@ export default function NewInvoiceForm({
         />
       </form>
     </ FormProvider>
-
   );
 }
 

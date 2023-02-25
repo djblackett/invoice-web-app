@@ -84,11 +84,11 @@ function NewInvoiceBottomMenu({
 
   const { clearErrors, setValue } = useFormContext();
 
-  useEffect(() => {
-    if (isDraft === false) {
-      onSubmit();
-    }
-  }, [isDraft]);
+  // useEffect(() => {
+  //   if (isDraft === false) {
+  //     onSubmit();
+  //   }
+  // }, [isDraft]);
 
   const closeMenu = (e) => {
     // e.preventDefault();
@@ -116,16 +116,9 @@ function NewInvoiceBottomMenu({
     // console.log(isDraft);
     // setTimeout(() => console.log(isDraft), 5000);
     // setTimeout(() => onSubmit(), 1000);
-    // onSubmit();
+    onSubmit();
   };
 
-  const handleKeyDown = (e) => {
-    // if (e.key === "Enter") {
-    //   e.preventDefault();
-    //   e.stopPropagation();
-    //   e.stopImmediatePropagation();
-    // }
-  };
 
   return (
     <MenuContainer>
@@ -156,5 +149,7 @@ NewInvoiceBottomMenu.propTypes = {
   justifyCancel: PropTypes.string,
   setSubmitDirty: PropTypes.func.isRequired,
   reset: PropTypes.func,
-  setItems: Proptypes.func.isRequired
+  setItems: Proptypes.func.isRequired,
+  isDraft: PropTypes.bool.isRequired,
+  onSubmit: PropTypes.func.isRequired
 };

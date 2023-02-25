@@ -19,6 +19,7 @@ export function ClientFormInfo({ invoice, isDraft, editPageWidth }) {
   const width = useWindowWidth();
 
   const { formState: { errors }, register } = useFormContext();
+
   const countryChildren = (
     <>
       <Label
@@ -149,5 +150,7 @@ ClientFormInfo.propTypes = {
   useFormRegisterReturn3: PropTypes.any,
   useFormRegisterReturn4: PropTypes.any,
   editPageWidth: PropTypes.any,
-  useFormRegisterReturn5: PropTypes.any
+  useFormRegisterReturn5: PropTypes.any,
+  invoice: PropTypes.object,
+  isDraft: PropTypes.bool
 };

@@ -125,11 +125,27 @@ export const DarkenScreen = styled.div`
   z-index: 100;
 `;
 
-export const ErrorText = styled.p`
+export const ErrorList = styled.ul`
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  //transition: height 300ms ease-in-out; // nice idea but complicated to implement
+
+  &:first-of-type {
+    margin-top: 2rem;
+  }
+
+  &:last-of-type {
+    margin-bottom: 2.8rem;
+  }
+
+`;
+export const ErrorText = styled.li`
   color: #EC5757;
   margin: 0;
   padding: 0;
-  //margin-top: 0.5rem;
+  
+  
 `;
 
 // todo make a list container that has a larger top margin for the first item

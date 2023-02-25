@@ -11,7 +11,7 @@ const MenuContainer = styled.div`
   flex-direction: row;
   align-items: center;
   justify-content: flex-end;
-  margin-top: 2.6rem;
+  //margin-top: 2.6rem;
   margin-bottom: 4rem;
 
   @media (min-width: 768px) {
@@ -62,7 +62,6 @@ function EditBottomMenu({ setIsOpen, saveText, closeText, justifyCancel, setItem
 
   const handleSubmitClick = (e) => {
     onSubmit();
-    // reset();
   };
 
   return (

@@ -1,10 +1,9 @@
 /* eslint-disable react/display-name */
-/* eslint-disable react/prop-types */
 import React, { useEffect, useLayoutEffect, useState } from "react";
 import { FormProvider, useForm } from "react-hook-form";
 import PropTypes from "prop-types";
-import { useDispatch } from "react-redux";
-import { updateInvoice } from "../features/invoices/invoicesSlice";
+import { useDispatch, useSelector } from "react-redux";
+import { selectInvoiceById, updateInvoice } from "../features/invoices/invoicesSlice";
 import { v4 as uuidv4 } from "uuid";
 import "../styles/react-datepicker.css";
 import { useWindowWidth } from "../hooks/useWindowWidth";
@@ -13,7 +12,6 @@ import {
   BillText,
   DarkenScreen,
   EditTitle,
-  ErrorText,
   FormContainerDarkenModal, Input,
   Label,
 } from "../styles/editStyles";
@@ -25,6 +23,8 @@ import { validationSchema } from "../components/form-components/NewInvoiceForm";
 import { yupResolver } from "@hookform/resolvers/yup";
 import { InputFormItem1 } from "../components/form-components/InputFormItem1";
 import { useParams } from "react-router-dom";
+import FormErrorList from "../components/form-components/FormErrorList";
+import EditFormItemList from "../components/form-components/EditFormItemList";
 
 
 const formOptions = { resolver: yupResolver(validationSchema) };
@@ -46,8 +46,7 @@ function EditForm({
   isEditOpen,
   setIsEditOpen,
   padding,
-  setPadding,
-  invoice,
+  setPadding
 }) {
 
 
@@ -58,7 +57,7 @@ function EditForm({
   const {
     register,
     handleSubmit,
-    formState: { errors, submitCount },
+    formState: { errors },
     getValues,
     watch,
     trigger,
@@ -68,6 +67,7 @@ function EditForm({
 
   const width = useWindowWidth();
   const { id } = useParams();
+  const invoice = useSelector((state) => selectInvoiceById(state, id));
   const [editPageWidth, setEditPageWidth] = useState(0);
   const [startDate, setStartDate] = useState(convertStringToDate(invoice.createdAt));
   const [hasEmptyField, setHasEmptyField] = useState(false);
@@ -75,6 +75,8 @@ function EditForm({
   const [selectedPaymentOption, setSelectedPaymentOption] = useState(
     invoice.paymentTerms || 1
   );
+
+
 
   const watcher = watch();
 
@@ -130,24 +132,28 @@ function EditForm({
   };
 
 
+
   useEffect(() => {
     if (!watcher.items || watcher.items.length === 0) {
       setError("items", { type: "custom", message: "An item must be added" });
     }
   }, [watcher.items]);
 
+
+
   const onSubmit = (e) => {
     const watcher = watch();
-    console.log(watcher);
+    // console.log(watcher);
 
     const data = getValues();
 
-    if (!data.items || data.items.length === 0) {
-      setError("items", { type: "custom", message: "An item must be added" });
-      // trigger();
-      return;
-    }
+    // if (!data.items || data.items.length === 0) {
+    //   setError("items", { type: "custom", message: "An item must be added" });
+    //   // trigger();
+    //   return;
+    // }
 
+    console.log("errors", errors);
     //trigger validation on fields
     trigger()
       .then(value => {
@@ -156,8 +162,8 @@ function EditForm({
           const newInvoice = createInvoiceObject(data);
           dispatch(updateInvoice(newInvoice));
           setIsEditOpen(false);
-          setSelectedPaymentOption(1);
-          console.log(newInvoice);
+          setSelectedPaymentOption(1); // todo check this
+          // console.log(newInvoice);
           reset();
         }
       });
@@ -296,11 +302,10 @@ function EditForm({
               />
             </LongFormEntry>
 
-            <InputFormItem1 invoice={invoice} isEditOpen={ isEditOpen }/>
+            <EditFormItemList invoice={invoice} isEditOpen={ isEditOpen } isDraft={ false } />
 
-            <ErrorText style={{ marginTop: "2rem", display: submitCount > 0 ? "block" : "none" }}>- All fields must be added</ErrorText>
-            { errors.items && <ErrorText >- An item must be added</ErrorText>
-            }
+
+            <FormErrorList />
 
             <EditBottomMenu
               setIsOpen={setIsEditOpen}

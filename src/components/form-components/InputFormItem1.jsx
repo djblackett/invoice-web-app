@@ -12,34 +12,58 @@ import {
   Quantity,
   QuantityPriceContainer, SVG, Total
 } from "../../styles/editFormItemStyles";
-import { useEffect, useState } from "react";
+import React, { useEffect, useState, useRef } from "react";
+import PropTypes from "prop-types";
 
-// eslint-disable-next-line react/prop-types
-export const InputFormItem1 = ({ isDraft, control, invoice, isEditOpen }) => {
+export const InputFormItem1 = ({ isDraft, invoice, isEditOpen }) => {
 
-  const { formState, register, getValues, watch, trigger, clearErrors } = useFormContext();
+  const { formState, register, watch, clearErrors, setError } = useFormContext();
 
   const { fields, remove, append } = useFieldArray({
-    name: "items", rules: { required: !isDraft, minLength: 1 }
+    name: "items", rules: { required: true, minLength: 1 }
   });
 
-  const { errors, submitCount } = formState;
+  const { errors, isSubmitting, isSubmitted } = formState;
   const watchItems = watch("items", []);
   const watcher = watch();
-  // console.log(watchItems);
-  // console.log("watcher",watcher);
+  // console.log(invoice);
+  // console.log(isEditOpen);
 
+  useEffect(() => {
+    if (!fields.length && !isInitialRender.current) {
+      setError("myFieldArray", {
+        type: "min",
+        message: "At least one item is required",
+      });
+    } else {
+      clearErrors("myFieldArray");
+    }
+    if (isInitialRender.current) {
+      isInitialRender.current = false;
+    }
+  }, [fields, isSubmitting]);
 
   useEffect(() => {
     if (invoice && isEditOpen) {
       for (let i of invoice.items) {
         append({ id: i.id || uuidv4(),name: i.name, quantity: i.quantity, price: i.price, total: i.total });
       }
+      console.log("items added to form");
     }
   }, [invoice, isEditOpen]);
 
-  console.log("errors", errors);
-  console.log(errors?.fieldArray?.root);
+
+
+  const isInitialRender = useRef(true);
+
+  // validation check for at least one item
+
+
+  // useEffect(() => {
+  //   if (!watcher.items || watcher.items.length === 0) {
+  //     setError("items", { type: "custom", message: "An item must be added" });
+  //   }
+  // }, [watcher.items]);
 
   return (
     <>
@@ -96,6 +120,12 @@ export const InputFormItem1 = ({ isDraft, control, invoice, isEditOpen }) => {
   );
 };
 
+
+InputFormItem1.propTypes = {
+  isDraft: PropTypes.bool.isRequired,
+  isEditOpen: PropTypes.bool,
+  invoice: PropTypes.object
+};
 
 // const tabletAndDesktopRender = (
 //   <ItemContainer>

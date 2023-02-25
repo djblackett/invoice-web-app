@@ -59,7 +59,7 @@ const Main = styled.div`
 // todo stop hover on fullInvoice and allInvoices from resizing by 1 pixel. use transparent border in normal state --fixed
 // todo figure out why error state will not change when typing into inputs --fixed
 // todo fix red colors for errors -- fixed
-// todo should not submit when 0 items
+// todo should not submit when 0 items --fixed
 // todo items do not get auto added in edit form --fixed
 // todo removing items and then adding new ones will just add the old ones back in --fixed
 

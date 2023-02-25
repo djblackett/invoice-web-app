@@ -1,13 +1,5 @@
 import styled from "styled-components";
 import PropTypes from "prop-types";
-import EditFormItem from "./EditFormItem";
-import NewItemButton from "../buttons/NewItemButton";
-import { addIdToExistingInvoices, addItem } from "../../features/invoices/invoicesSlice";
-import { useDispatch } from "react-redux";
-import { v4 as uuidv4 } from "uuid";
-import { Controller, useController, useFieldArray, useForm, useFormContext } from "react-hook-form";
-import { useState } from "react";
-import { InputFormItem } from "./InputFormItem";
 import { InputFormItem1 } from "./InputFormItem1";
 
 
@@ -74,11 +66,8 @@ const ItemTitle = styled.h1`
   font-size: 18px;
   line-height: 32px;
   /* identical to box height, or 178% */
-
   letter-spacing: -0.375px;
-
   color: ${({ theme }) => theme.greyText};
-
   padding: 0;
   margin-top: 1rem;
   margin-bottom: 1rem;
@@ -90,51 +79,7 @@ const ItemTitle = styled.h1`
 `;
 
 
-
-InputFormItem1.propTypes = {};
-
-// eslint-disable-next-line react/prop-types
-function EditFormItemList({ items, setItems, errorStyle, isDraft, register, control }) {
-
-  // const { handleSubmit, control, reset } = useForm({
-  //   defaultValues: {
-  //     // checkbox: false,
-  //   }
-  // });
-  //
-  // const { watch } = useFormContext();
-
-  // const { fields, append } = useFieldArray({
-  //   control,
-  //   name: "fieldArray"
-  // });
-  // const watchFieldArray = watch("fieldArray");
-  //
-  // const controlledFields = fields.map((field, index) => {
-  //   return {
-  //     ...field,
-  //     ...watchFieldArray[index]
-  //   };
-  // });
-
-
-  const dispatch = useDispatch();
-  const [count, setCount] = useState(0);
-
-  const returnCountAndIncrement = () => {
-    setCount(count + 1);
-    return count;
-  };
-
-  const handleAddNewItem = (e) => {
-    e.preventDefault();
-    setItems([
-      ...items,
-      { id: uuidv4(), name: "", quantity: 0, price: 0, total: 0 },
-    ]);
-
-    dispatch(addIdToExistingInvoices());
-  };
+function EditFormItemList({ errorStyle, isDraft, invoice, isEditOpen }) {
 
 
   return (
@@ -147,7 +92,7 @@ function EditFormItemList({ items, setItems, errorStyle, isDraft, register, cont
         <Col>Total</Col>
       </ItemsHeader>
       <ItemsContainer>
-        <InputFormItem1 errorStyle={errorStyle} isDraft={isDraft} register={register} control={control}/>
+        <InputFormItem1 errorStyle={errorStyle} isDraft={isDraft}invoice={invoice} isEditOpen={isEditOpen}/>
         {/*{items.map((item) => {*/}
         {/*    return (*/}
         {/*  <Controller name={item.id}*/}
@@ -171,7 +116,6 @@ function EditFormItemList({ items, setItems, errorStyle, isDraft, register, cont
       </ItemsContainer>
       {/*<NewItemButton handleAddNewItem={handleAddNewItem} items={ items } setCount={setCount}/>*/}
 
-
     </ListContainer>
   );
 }
@@ -180,7 +124,10 @@ export default EditFormItemList;
 
 EditFormItemList.propTypes = {
   invoice: PropTypes.object,
-  items: PropTypes.arrayOf(PropTypes.object).isRequired,
-  setItems: PropTypes.func.isRequired,
-  submitCount: PropTypes.number
+  submitCount: PropTypes.number,
+  errorStyle: PropTypes.func.isRequired,
+  isDraft: PropTypes.bool,
+  isEditOpen: PropTypes.bool,
+
+
 };
