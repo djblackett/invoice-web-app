@@ -12,79 +12,82 @@ import React from "react";
 import PropTypes from "prop-types";
 import LongFormEntry from "./LongFormEntry";
 import { useWindowWidth } from "../../hooks/useWindowWidth";
+import { useFormContext } from "react-hook-form";
 
-export function ClientFormInfo(props) {
+export function ClientFormInfo({ invoice, isDraft, editPageWidth }) {
 
   const width = useWindowWidth();
+
+  const { formState: { errors }, register } = useFormContext();
   const countryChildren = (
     <>
       <Label
         htmlFor="country"
-        style={{ color: props.errors.clientCountry ? "red" : "" }}
+        style={{ color: errors.clientCountry ? "#EC5757" : "" }}
       >
                 Country
       </Label>
       <CountryInput
         style={{
-          border: props.errors.clientCountry ? "1px solid red" : "",
+          border: errors.clientCountry ? "1px solid #EC5757" : "",
         }}
         type="text"
-        defaultValue={props.clientAddress.country}
-        {...props.useFormRegisterReturn5}
+        defaultValue={invoice ? invoice.clientAddress.country : ""}
+        {...register("clientCountry", { required: !isDraft })}
       />
     </>
   );
 
   return <>
-    <LongFormEntry isLongOnMobile={props.editPageWidth < 768}>
+    <LongFormEntry isLongOnMobile={editPageWidth < 768}>
       <Label
         htmlFor="clientName"
-        style={{ color: props.errors.clientName ? "red" : "" }}
+        style={{ color: errors.clientName ? "#EC5757" : "" }}
       >
         {"Client's Name"}
       </Label>
-      {props.errors.clientName?.type === "required" && (
+      {errors.clientName?.type === "required" && (
         <ErrorTextInline>{"can't be empty"}</ErrorTextInline>
       )}
       <Input
         long
-        style={{ border: props.errors.clientName ? "1px solid red" : "" }}
+        style={{ border: errors.clientName ? "1px solid #EC5757" : "" }}
         type="text"
-        defaultValue={props.clientName}
-        {...props.useFormRegisterReturn}
+        defaultValue={invoice ? invoice.clientName : ""}
+        {...register("clientName", { required: !isDraft })}
       />
     </LongFormEntry>
-    <LongFormEntry isLongOnMobile={props.editPageWidth < 768}>
+    <LongFormEntry isLongOnMobile={editPageWidth < 768}>
       <Label
         htmlFor="clientEmail"
-        style={{ color: props.errors.clientEmail ? "red" : "" }}
+        style={{ color: errors.clientEmail ? "#EC5757" : "" }}
       >
         {"Client's Email"}
       </Label>
-      {props.errors.clientEmail?.type === "pattern" && (
+      {errors.clientEmail?.type === "pattern" && (
         <ErrorTextInline style={{ position: "absolute", top: "-8px" }}>{"Invalid email"}</ErrorTextInline>
       )}
       <Input
         long
-        style={{ border: props.errors.clientEmail ? "1px solid red" : "" }}
-        defaultValue={props.clientEmail}
-        {...props.useFormRegisterReturn1}
+        style={{ border: errors.clientEmail ? "1px solid #EC5757" : "" }}
+        defaultValue={invoice ? invoice.clientEmail : ""}
+        {...register("clientEmail", { required: !isDraft })}
       />
     </LongFormEntry>
 
-    <LongFormEntry isLongOnMobile={props.editPageWidth < 768}>
+    <LongFormEntry isLongOnMobile={editPageWidth < 768}>
       <Label
         htmlFor="clientStreetAddress"
-        style={{ color: props.errors.clientStreetAddress ? "red" : "" }}
+        style={{ color: errors.clientStreetAddress ? "#EC5757" : "" }}
       >
                 Street Address
       </Label>
       <StreetAddressInput
         style={{
-          border: props.errors.clientStreetAddress ? "1px solid red" : "",
+          border: errors.clientStreetAddress ? "1px solid #EC5757" : "",
         }}
-        defaultValue={props.clientAddress.street}
-        {...props.useFormRegisterReturn2}
+        defaultValue={invoice ? invoice.clientAddress.street : ""}
+        {...register("clientStreetAddress", { required: !isDraft })}
       />
     </LongFormEntry>
 
@@ -92,38 +95,38 @@ export function ClientFormInfo(props) {
       <FormEntry>
         <Label
           htmlFor="clientCity"
-          style={{ color: props.errors.clientCity ? "red" : "" }}
+          style={{ color: errors.clientCity ? "#EC5757" : "" }}
         >
                     City
         </Label>
         <AddressDetailInput
           style={{
-            border: props.errors.clientCity ? "1px solid red" : "",
+            border: errors.clientCity ? "1px solid #EC5757" : "",
           }}
           type="text"
-          defaultValue={props.clientAddress.city}
-          {...props.useFormRegisterReturn3}
+          defaultValue={invoice ? invoice.clientAddress.city : ""}
+          {...register("clientCity", { required: !isDraft })}
         />
       </FormEntry>
 
       <FormEntry>
         <Label
           htmlFor="clientPostalCode"
-          style={{ color: props.errors.clientPostalCode ? "red" : "" }}
+          style={{ color: errors.clientPostalCode ? "#EC5757" : "" }}
         >
                     Post Code
         </Label>
         <AddressDetailInput
           style={{
-            border: props.errors.clientPostalCode ? "1px solid red" : "",
+            border: errors.clientPostalCode ? "1px solid #EC5757" : "",
           }}
           type="text"
-          defaultValue={props.clientAddress.postCode}
-          {...props.useFormRegisterReturn4}
+          defaultValue={invoice ? invoice.clientAddress.postCode : ""}
+          {...register("clientPostalCode", { required: !isDraft, minLength: 5 })}
         />
       </FormEntry>
 
-      { width < 768 && <LongFormEntry isLongOnMobile={props.editPageWidth < 768}>
+      { width < 768 && <LongFormEntry isLongOnMobile={editPageWidth < 768}>
         {countryChildren}
       </LongFormEntry>}
 

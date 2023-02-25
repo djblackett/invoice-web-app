@@ -92,7 +92,6 @@ export function DateAndPayment(props) {
                 Invoice Date
       </Label>
       <DatePicker
-
         customInput={<ExampleCustomInput/>}
         selected={props.selected}
         onChange={props.onChange}

@@ -164,7 +164,6 @@ function FormDropDown({
   handleChangeSelectedOption,
   isPaymentOpen,
   handlePaymentClick,
-  setIsPaymentOpen
 }) {
   const [selected, setSelected] = useState(String(selectedPaymentOption) || "");
 
@@ -185,15 +184,9 @@ function FormDropDown({
   }, [selectedPaymentOption]);
 
 
-  const handleKeyDown = (e) => {
-    if (e.key === "Enter") {
-      setIsPaymentOpen(false);
-    }
-  };
-
   return (
     <Main>
-      <DropDownHeader onClick={handlePaymentClick} onKeyDown={handleKeyDown}
+      <DropDownHeader onClick={handlePaymentClick}
         tabIndex={-1}
       >
         <h2>{selected}</h2>
@@ -218,7 +211,6 @@ export default FormDropDown;
 FormDropDown.propTypes = {
   isPaymentOpen: PropTypes.bool.isRequired,
   handlePaymentClick: PropTypes.func.isRequired,
-  handlePaymentSelect: PropTypes.func.isRequired,
   selectedPaymentOption: PropTypes.number,
   handleChangeSelectedOption: PropTypes.func,
 };

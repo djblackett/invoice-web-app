@@ -17,13 +17,6 @@ import { useEffect, useState } from "react";
 // eslint-disable-next-line react/prop-types
 export const InputFormItem1 = ({ isDraft, control, invoice, isEditOpen }) => {
 
-
-  const [total, setTotal] = useState("");
-  const handleChange = () => {
-
-  };
-
-
   const { formState, register, getValues, watch, trigger, clearErrors } = useFormContext();
 
   const { fields, remove, append } = useFieldArray({
@@ -46,6 +39,8 @@ export const InputFormItem1 = ({ isDraft, control, invoice, isEditOpen }) => {
   }, [invoice, isEditOpen]);
 
   console.log("errors", errors);
+  console.log(errors?.fieldArray?.root);
+
   return (
     <>
 
@@ -90,34 +85,13 @@ export const InputFormItem1 = ({ isDraft, control, invoice, isEditOpen }) => {
                     {deleteIcon}
                   </SVG>
                 </ItemContainer>
-                {/*<Button*/}
-                {/*  color="primary"*/}
-                {/*  variant="outlined"*/}
-                {/*  type="button"*/}
-                {/*  onClick={() => remove(index)}*/}
-                {/*>*/}
-                {/*                      - Address*/}
-                {/*</Button>*/}
-              </div>
-
-              <div>
-                {/*<NestedField control={control} index={index} />*/}
               </div>
             </li>
           );
         })}
       </ul>
-      {/*<button*/}
-      {/*    type="button"*/}
-      {/*  style={{ margin: "10px" }}*/}
-      {/*  onClick={() => append({})}*/}
-      {/*>*/}
-      {/*              + Address*/}
-      {/*</button>*/}
+
       <NewItemButton append={append}/>
-      {/*<Button type="submit">*/}
-      {/*            Submit*/}
-      {/*</Button>*/}
     </>
   );
 };

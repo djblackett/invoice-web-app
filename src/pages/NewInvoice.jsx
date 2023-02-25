@@ -3,23 +3,16 @@
 /* eslint-disable no-unused-vars */
 
 import React, { useState, useEffect, useLayoutEffect, forwardRef } from "react";
-import { useForm } from "react-hook-form";
 import PropTypes from "prop-types";
-import { useDispatch } from "react-redux";
-import { addInvoice } from "../features/invoices/invoicesSlice";
 import { v4 as uuidv4 } from "uuid";
-import { generateId } from "../utils/utilityFunctions";
 import NewInvoiceForm from "../components/form-components/NewInvoiceForm";
 import "../styles/react-datepicker.css";
 import { useWindowWidth } from "../hooks/useWindowWidth";
 import {
   DarkenScreen, EditTitle, FormContainerDarkenModal,
 } from "../styles/editStyles";
-import { convertDateToString } from "./EditForm";
 
 
-
-// This component needs help
 function NewInvoice({
   isNewOpen,
   setIsNewOpen, padding,
@@ -36,25 +29,6 @@ function NewInvoice({
   const [items, setItems] = useState([]);
   const [selectedPaymentOption, setSelectedPaymentOption] = useState(1);
   const [hasEmptyField, setHasEmptyField] = useState(false);
-
-
-
-  const dispatch = useDispatch();
-
-
-
-
-
-  // function resetForm() {
-  //   reset();
-  //   setIsNewOpen(false);
-  //
-  //   setItems([]);
-  //   setSelectedPaymentOption(1);
-  //   setSubmitDirty(false);
-  // }
-
-
 
   // checks for empty form inputs on every render
   useEffect(() => {

@@ -4,13 +4,11 @@ import React, { useEffect, useLayoutEffect, useState } from "react";
 import { FormProvider, useForm } from "react-hook-form";
 import PropTypes from "prop-types";
 import { useDispatch } from "react-redux";
-import { addInvoice, updateInvoice } from "../features/invoices/invoicesSlice";
+import { updateInvoice } from "../features/invoices/invoicesSlice";
 import { v4 as uuidv4 } from "uuid";
-
 import "../styles/react-datepicker.css";
 import { useWindowWidth } from "../hooks/useWindowWidth";
 import EditBottomMenu from "../components/menus-toolbars/EditBottomMenu";
-import EditFormItemList from "../components/form-components/EditFormItemList";
 import {
   BillText,
   DarkenScreen,
@@ -26,7 +24,6 @@ import LongFormEntry from "../components/form-components/LongFormEntry";
 import { validationSchema } from "../components/form-components/NewInvoiceForm";
 import { yupResolver } from "@hookform/resolvers/yup";
 import { InputFormItem1 } from "../components/form-components/InputFormItem1";
-import { generateId } from "../utils/utilityFunctions";
 import { useParams } from "react-router-dom";
 
 
@@ -53,11 +50,6 @@ function EditForm({
   invoice,
 }) {
 
-  // const {
-  //   register,
-  //   handleSubmit,
-  //   formState: { errors, submitCount },
-  // } = useForm();
 
   const methods = useForm(
     { formOptions }
@@ -78,7 +70,6 @@ function EditForm({
   const { id } = useParams();
   const [editPageWidth, setEditPageWidth] = useState(0);
   const [startDate, setStartDate] = useState(convertStringToDate(invoice.createdAt));
-  // const [items, setItems] = useState(invoice.items || []);
   const [hasEmptyField, setHasEmptyField] = useState(false);
   const dispatch = useDispatch();
   const [selectedPaymentOption, setSelectedPaymentOption] = useState(
@@ -241,23 +232,6 @@ function EditForm({
   }, [width, padding, isEditOpen]);
 
 
-  // gives unique ids to all invoice items
-  // useLayoutEffect(() => {
-  //   const newItems = items.map((item) => {
-  //     return { ...item, id: uuidv4() };
-  //   });
-  //   setItems(newItems);
-  // }, []);
-
-  // form validation -- adds red border for empty elements
-  // const handleChange = (e) => {
-  //   if (e.target.value.length === 0 && e.target.defaultValue.length === 0) {
-  //     e.target.style.setProperty("border", "1px solid red");
-  //   } else {
-  //     e.target.style.setProperty("border", "none");
-  //   }
-  // };
-
   // sets the payment option after change
   const handleChangeSelectedOption = (option) => {
     setSelectedPaymentOption(option);
@@ -267,13 +241,6 @@ function EditForm({
   const handlePaymentClick = (e) => {
     setIsPaymentOpen(!isPaymentOpen);
   };
-
-  // todo is this redundant now that the above toggles?
-  // closes payment dropdown once an option is selected
-  const handlePaymentSelect = () => {
-    setIsPaymentOpen(false);
-  };
-
 
   return (
     <DarkenScreen style={{ visibility: isEditOpen ? "visible" : "hidden" }}>
@@ -298,27 +265,15 @@ function EditForm({
             <BillText>Bill From</BillText>
             <CompanyFormInfo errors={errors} senderAddress={invoice.senderAddress}
               invoice={invoice}
-              useFormRegisterReturn={register("streetAddress", { required: true, pattern: /^[A-Za-z0-9 ]+$/i, maxLength: 50 })}
-              useFormRegisterReturn1={register("city", { required: true, pattern: /^\w+$/i, maxLength: 30 })}
-              useFormRegisterReturn2={register("postalCode", { required: true, pattern: /^\w+[\w ]+$/i, maxLength: 10, minLength: 5 })}
-              editPageWidth={editPageWidth}
-              useFormRegisterReturn3={register("country", { required: true, pattern: /^[A-Za-z0-9 ]+$/i, maxLength: 30 })}/>
+              editPageWidth={editPageWidth}/>
 
             {/* //  Client details */}
             <BillText>Bill To</BillText>
-            <ClientFormInfo errors={errors} clientName={invoice.clientName}
-              useFormRegisterReturn={register("clientName", { required: true })}
-              clientEmail={invoice.clientEmail}
-              useFormRegisterReturn1={register("clientEmail", { required: true, pattern: /^\w+([.-]?\w+)*@\w+([.-]?\w+)*(\.\w{2,3})+$/ })}
-              clientAddress={invoice.clientAddress}
-              useFormRegisterReturn2={register("clientStreetAddress", { required: true })}
-              useFormRegisterReturn3={register("clientCity", { required: true })}
-              useFormRegisterReturn4={register("clientPostalCode", { required: true })}
-              editPageWidth={editPageWidth}
-              useFormRegisterReturn5={register("clientCountry", { required: true })}/>
+            <ClientFormInfo
+              editPageWidth={editPageWidth} invoice={invoice}/>
 
             <DateAndPayment editPageWidth={editPageWidth} selected={startDate} onChange={(date) => setStartDate(date)}
-              handlePaymentSelect={handlePaymentSelect} paymentOpen={isPaymentOpen}
+              paymentOpen={isPaymentOpen}
               handlePaymentClick={handlePaymentClick} selectedPaymentOption={selectedPaymentOption}
               handleChangeSelectedOption={handleChangeSelectedOption}/>
 
@@ -341,12 +296,6 @@ function EditForm({
               />
             </LongFormEntry>
 
-            {/*<EditFormItemList*/}
-            {/*  invoice={invoice}*/}
-            {/*  items={items}*/}
-            {/*  setItems={setItems}*/}
-            {/*/>*/}
-
             <InputFormItem1 invoice={invoice} isEditOpen={ isEditOpen }/>
 
             <ErrorText style={{ marginTop: "2rem", display: submitCount > 0 ? "block" : "none" }}>- All fields must be added</ErrorText>
@@ -357,7 +306,6 @@ function EditForm({
               setIsOpen={setIsEditOpen}
               saveText={"Save Changes"}
               closeText={"Cancel"}
-              // setItems={setItems}
               invoice={invoice}
               onSubmit={onSubmit}
             />

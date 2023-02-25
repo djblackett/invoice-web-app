@@ -196,7 +196,6 @@ export default function NewInvoiceForm({
   }, [isSubmitSuccessful]);
 
   const handlePaymentClick = (e) => {
-
     setIsPaymentOpen(!isPaymentOpen);
   };
   const handleChangeSelectedOption = (option) => {
@@ -321,7 +320,9 @@ export default function NewInvoiceForm({
           register={register}
           control={control}
         />
-        {/* The below ternary operator is a hack to show "all fields must be added" if any field has errors but not including the items array being empty */}
+
+        {/* The below ternary operator is a hack to show "all fields must be added" if any field has errors but not including the items array being empty
+         I'm not sure if it works, but at this point I'm afraid to ask... */}
         <ErrorText style={{ marginTop: "2rem", display: submitCount > 0 && (errors.items && Object.entries() > 1 || errors) ? "block" : "none" }}>- All fields must be
                     added</ErrorText>
         {errors.items && <ErrorText style={{
