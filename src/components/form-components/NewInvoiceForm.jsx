@@ -66,6 +66,7 @@ export default function NewInvoiceForm({
 
   const methods = useForm(
     {
+      mode: "onChange",
       formOptions,
       defaultValues: {
         status: "draft",
@@ -82,7 +83,6 @@ export default function NewInvoiceForm({
         projectDescription: "",
         items: [{ id: "", name: "", quantity: "", price: "", total: "" }]
       },
-      mode: "onChange"
     }
   );
 
