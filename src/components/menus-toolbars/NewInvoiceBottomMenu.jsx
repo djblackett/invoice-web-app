@@ -76,13 +76,10 @@ function NewInvoiceBottomMenu({
   saveText,
   closeText,
   justifyCancel,
-  setSubmitDirty,
-  reset,
-  setItems,
   onSubmit
 }) {
 
-  const { clearErrors, setValue } = useFormContext();
+  const { clearErrors, setValue, formState, reset } = useFormContext();
 
   // useEffect(() => {
   //   if (isDraft === false) {
@@ -92,10 +89,8 @@ function NewInvoiceBottomMenu({
 
   const closeMenu = (e) => {
     // e.preventDefault();
-    setSubmitDirty(false);
     clearErrors();
     setIsOpen(false);
-    setItems([]);
     // HTMLFormElement.reset();
     reset();
   };
@@ -109,8 +104,6 @@ function NewInvoiceBottomMenu({
   };
 
   const setToPending = (e) => {
-    // e.preventDefault();
-    // e.stopPropagation();
     setIsDraft(false);
     setValue("status", "pending");
     // console.log(isDraft);
@@ -147,9 +140,6 @@ NewInvoiceBottomMenu.propTypes = {
   saveText: PropTypes.string.isRequired,
   closeText: PropTypes.string.isRequired,
   justifyCancel: PropTypes.string,
-  setSubmitDirty: PropTypes.func.isRequired,
-  reset: PropTypes.func,
-  setItems: Proptypes.func.isRequired,
   isDraft: PropTypes.bool.isRequired,
   onSubmit: PropTypes.func.isRequired
 };

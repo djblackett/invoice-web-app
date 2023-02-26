@@ -2,7 +2,7 @@
 /* eslint-disable react/display-name */
 /* eslint-disable no-unused-vars */
 
-import React, { useState, useEffect, useLayoutEffect, forwardRef } from "react";
+import React, { useState, useLayoutEffect } from "react";
 import PropTypes from "prop-types";
 import { v4 as uuidv4 } from "uuid";
 import NewInvoiceForm from "../components/form-components/NewInvoiceForm";
@@ -15,7 +15,8 @@ import {
 
 function NewInvoice({
   isNewOpen,
-  setIsNewOpen, padding,
+  setIsNewOpen,
+  padding,
   setPadding,
 }) {
 
@@ -23,33 +24,10 @@ function NewInvoice({
 
   // initial state and default values for form
   const [isDraft, setIsDraft] = useState(true);
-  const [isSubmitDirty, setSubmitDirty] = useState(false);
   const [editPageWidth, setEditPageWidth] = useState(null);
   const [startDate, setStartDate] = useState(new Date());
   const [items, setItems] = useState([]);
   const [selectedPaymentOption, setSelectedPaymentOption] = useState(1);
-  const [hasEmptyField, setHasEmptyField] = useState(false);
-
-  // checks for empty form inputs on every render
-  useEffect(() => {
-    const inputs = document.querySelectorAll("input");
-    let count = 0;
-    for (let i = 0; i < inputs.length; i++) {
-      if (
-        inputs.item(i).value.length === 0 &&
-          inputs.item(i).defaultValue.length === 0
-      ) {
-        count++;
-        break;
-      }
-    }
-
-    if (count > 0) {
-      setHasEmptyField(true);
-    } else {
-      setHasEmptyField(false);
-    }
-  });
 
   useLayoutEffect(() => {
     if (width > 1200 && isNewOpen) {
@@ -90,7 +68,7 @@ function NewInvoice({
         </EditTitle>
 
         <NewInvoiceForm
-          startDate={startDate} setStartDate={setStartDate} setIsNewOpen={setIsNewOpen} setItems={setItems} editPageWidth={editPageWidth} items={items} isSubmitDirty={isSubmitDirty} setSubmitDirty={setSubmitDirty} isDraft={isDraft} setIsDraft={setIsDraft}  selectedPaymentOption={selectedPaymentOption} setSelectedPaymentOption={setSelectedPaymentOption}/>
+          startDate={startDate} setStartDate={setStartDate} setIsNewOpen={setIsNewOpen} setItems={setItems} editPageWidth={editPageWidth} items={items} isDraft={isDraft} setIsDraft={setIsDraft}  selectedPaymentOption={selectedPaymentOption} setSelectedPaymentOption={setSelectedPaymentOption}/>
 
       </FormContainerDarkenModal>
     </DarkenScreen>

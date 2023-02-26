@@ -26,6 +26,7 @@ const OppositeWidthContainer = styled(FormEntryContainer)`
   }
 `;
 
+// todo double check the mobile layout here
 function FormEntry({ className, isLongOnMobile = false, children }) {
   const [isDirty, setIsDirty] = useState(false);
   const windowWidth = useWindowWidth();

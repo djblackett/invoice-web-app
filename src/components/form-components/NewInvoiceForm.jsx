@@ -20,6 +20,7 @@ import { generateId } from "../../utils/utilityFunctions";
 import { useDispatch } from "react-redux";
 import { v4 as uuidv4 } from "uuid";
 import FormErrorList from "./FormErrorList";
+import { ClientFormInfo } from "./ClientFormInfo";
 
 
 export const validationSchema = Yup.object().shape({
@@ -53,10 +54,7 @@ export default function NewInvoiceForm({
   editPageWidth,
   startDate,
   setStartDate,
-  items,
-  setItems,
   setIsNewOpen,
-  setSubmitDirty,
   isDraft,
   setIsDraft,
   setSelectedPaymentOption,
@@ -149,7 +147,7 @@ export default function NewInvoiceForm({
     const [month, day, year] = [date.getMonth(), date.getDate(), date.getFullYear()];
     newInvoice.paymentDue = [year, month, day].join("-");
 
-    console.log("end of newVoice function", newInvoice);
+    console.log("end of newInvoice function", newInvoice);
     return newInvoice;
   };
 
@@ -159,6 +157,12 @@ export default function NewInvoiceForm({
     console.log(errors);
 
     const data = getValues();
+
+    if (!data.items || data.items.length === 0) {
+      setError("items", { type: "custom", message: "An item must be added" });
+      // trigger();
+      return;
+    }
 
     //trigger validation on fields
     trigger()
@@ -200,16 +204,21 @@ export default function NewInvoiceForm({
     setIsPaymentOpen(false);
   };
 
+  useEffect(() => {
+    if (!watcher.items || watcher.items.length === 0) {
+      setError("items", { type: "custom", message: "An item must be added" });
+    }
+  }, [watcher.items]);
 
   const clientCountryChildren = (
     <>
       <Label
-        htmlFor="country"
+        htmlFor="clientCountry"
       >
                 Country
       </Label>
       <CountryInput
-        style={errorStyle("country")}
+        style={errorStyle("clientCountry")}
         type="text"
 
         {...register("clientCountry", { required: !isDraft })}
@@ -227,67 +236,69 @@ export default function NewInvoiceForm({
         {/* register your input into the hook by invoking the "register" function , {required: !isDraft */}
 
         <BillText>Bill From</BillText>
-        <CompanyFormInfo isDraft={isDraft}/>
+        <CompanyFormInfo isDraft={isDraft} editPageWidth={editPageWidth} />
 
         {/*   client details */}
         <BillText>Bill To</BillText>
-        <LongFormEntry>
-          <Label htmlFor="clientName">Client's Name</Label>
-          <Input
-            type="text"
-            long
-            style={errorStyle("clientName")}
-            {...register("clientName", { required: !isDraft })}
-          />
-        </LongFormEntry>
-        <LongFormEntry>
-          <Label htmlFor="clientEmail">Client's Email</Label>
-          <Input
-            long
-            style={errorStyle("clientEmail")}
-            {...register("clientEmail", { required: !isDraft })}
-          />
-        </LongFormEntry>
-        <LongFormEntry>
-          <Label htmlFor="clientStreetAddress">Street Address</Label>
-          <Input
-            long
-            style={errorStyle("clientStreetAddress")}
-            {...register("clientStreetAddress", { required: !isDraft })}
-          />
-        </LongFormEntry>
-        <AddressBox>
-          <CityPostContainer>
-            <FormEntry>
-              <Label htmlFor="clientCity">City</Label>
-              <AddressDetailInput
-                style={errorStyle("clientCity")}
-                type="text"
-                {...register("clientCity", { required: !isDraft })}
-              />
-            </FormEntry>
+        {/*<LongFormEntry>*/}
+        {/*  <Label htmlFor="clientName">Client's Name</Label>*/}
+        {/*  <Input*/}
+        {/*    type="text"*/}
+        {/*    long*/}
+        {/*    style={errorStyle("clientName")}*/}
+        {/*    {...register("clientName", { required: !isDraft })}*/}
+        {/*  />*/}
+        {/*</LongFormEntry>*/}
+        {/*<LongFormEntry>*/}
+        {/*  <Label htmlFor="clientEmail">Client's Email</Label>*/}
+        {/*  <Input*/}
+        {/*    long*/}
+        {/*    type="text"*/}
+        {/*    style={errorStyle("clientEmail")}*/}
+        {/*    {...register("clientEmail", { required: !isDraft })}*/}
+        {/*  />*/}
+        {/*</LongFormEntry>*/}
+        {/*<LongFormEntry>*/}
+        {/*  <Label htmlFor="clientStreetAddress">Street Address</Label>*/}
+        {/*  <Input*/}
+        {/*    type="text"*/}
+        {/*    long*/}
+        {/*    style={errorStyle("clientStreetAddress")}*/}
+        {/*    {...register("clientStreetAddress", { required: !isDraft })}*/}
+        {/*  />*/}
+        {/*</LongFormEntry>*/}
+        {/*<AddressBox>*/}
+        {/*  <CityPostContainer>*/}
+        {/*    <FormEntry>*/}
+        {/*      <Label htmlFor="clientCity">City</Label>*/}
+        {/*      <AddressDetailInput*/}
+        {/*        style={errorStyle("clientCity")}*/}
+        {/*        type="text"*/}
+        {/*        {...register("clientCity", { required: !isDraft })}*/}
+        {/*      />*/}
+        {/*    </FormEntry>*/}
 
-            <FormEntry>
-              <Label htmlFor="clientPostalCode">Post Code</Label>
-              <AddressDetailInput
-                type="text"
-                style={errorStyle("clientPostalCode")}
-                {...register("clientPostalCode", { required: !isDraft })}
-              />
-            </FormEntry>
-          </CityPostContainer>
+        {/*    <FormEntry>*/}
+        {/*      <Label htmlFor="clientPostalCode">Post Code</Label>*/}
+        {/*      <AddressDetailInput*/}
+        {/*        type="text"*/}
+        {/*        style={errorStyle("clientPostalCode")}*/}
+        {/*        {...register("clientPostalCode", { required: !isDraft })}*/}
+        {/*      />*/}
+        {/*    </FormEntry>*/}
+        {/*  </CityPostContainer>*/}
 
 
-          {width < 768 && <LongFormEntry isLongOnMobile={editPageWidth < 768}>
-            {clientCountryChildren}
-          </LongFormEntry>}
+        {/*  {width < 768 && <LongFormEntry isLongOnMobile={editPageWidth < 768}>*/}
+        {/*    {clientCountryChildren}*/}
+        {/*  </LongFormEntry>}*/}
 
-          {width >= 768 && <FormEntry>
-            {clientCountryChildren}
-          </FormEntry>}
+        {/*  {width >= 768 && <FormEntry>*/}
+        {/*    {clientCountryChildren}*/}
+        {/*  </FormEntry>}*/}
 
-        </AddressBox>
-
+        {/*</AddressBox>*/}
+        <ClientFormInfo  isDraft={isDraft} editPageWidth={editPageWidth} />
 
         <DateAndPayment editPageWidth={editPageWidth} selected={startDate}
           onChange={(date) => setStartDate(date)}
@@ -311,13 +322,12 @@ export default function NewInvoiceForm({
         <EditFormItemList
           isDraft={isDraft}
           register={register}
-        />
+          errorStyle={errorStyle}/>
 
         <FormErrorList />
-        <NewInvoiceBottomMenu setSubmitDirty={setSubmitDirty} setIsDraft={setIsDraft} setIsOpen={setIsNewOpen}
+        <NewInvoiceBottomMenu setIsDraft={setIsDraft} setIsOpen={setIsNewOpen}
           saveText={"Save & Send"} closeText={"Discard"}
           justifyCancel={"flex-start"} reset={reset}
-          setItems={setItems}
           onSubmit={onSubmit}
           isDraft={isDraft}
         />
@@ -330,11 +340,7 @@ NewInvoiceForm.propTypes = {
   editPageWidth: PropTypes.number,
   startDate: PropTypes.object.isRequired,
   setStartDate: PropTypes.func.isRequired,
-  items: PropTypes.array.isRequired,
-  setItems: PropTypes.func.isRequired,
   setIsNewOpen: PropTypes.func.isRequired,
-  isSubmitDirty: PropTypes.bool.isRequired,
-  setSubmitDirty: PropTypes.func.isRequired,
   isDraft: PropTypes.bool.isRequired,
   setIsDraft: PropTypes.func.isRequired,
   setSelectedPaymentOption: PropTypes.func.isRequired,

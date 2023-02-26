@@ -5,7 +5,7 @@ function FormErrorList() {
 
   const { formState: { errors } } = useFormContext();
 
-  const isFieldErrors = () => Object.keys(errors).find(item => item !== "myFieldArray");
+  const isFieldErrors = () => Object.keys(errors).find(item => item !== "myFieldArray" && item !== "items");
 
   return <ErrorList>
     <ErrorText style={{ display: isFieldErrors() ? "block" : "none" }}>- All fields must be

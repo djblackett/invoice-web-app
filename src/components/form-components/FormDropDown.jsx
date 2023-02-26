@@ -3,6 +3,9 @@ import React, { useState, useCallback, useEffect } from "react";
 import styled from "styled-components";
 import PropTypes from "prop-types";
 import { SVG } from "../buttons/NewItemButton";
+import { useParams } from "react-router-dom";
+import { useSelector } from "react-redux";
+import { selectInvoiceById } from "../../features/invoices/invoicesSlice";
 
 const Main = styled.div.attrs({
   tabIndex: 0,
@@ -131,9 +134,10 @@ const ItemButton = styled.button`
   /* identical to box height, or 125% */
   letter-spacing: -0.25px;
   color: ${({ theme }) => theme.textPlain};
-
+  padding: 0.5rem;
+  
   &:first-child {
-    padding-top: 0.8em;
+    //padding-top: 0.8em;
   }
 
   &:last-child {
@@ -165,7 +169,11 @@ function FormDropDown({
   isPaymentOpen,
   handlePaymentClick,
 }) {
-  const [selected, setSelected] = useState(String(selectedPaymentOption) || "");
+
+  const { id } = useParams();
+  const invoice = useSelector(state => selectInvoiceById(state, id));
+  // const selectedPaymentOption = invoice?.paymentTerms || 1;
+  const [selected, setSelected] = useState("Net 1 Day");
 
   const onOptionClicked = (option) => (e) => {
     e.preventDefault();

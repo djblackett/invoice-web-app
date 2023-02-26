@@ -70,10 +70,9 @@ function EditForm({
   const invoice = useSelector((state) => selectInvoiceById(state, id));
   const [editPageWidth, setEditPageWidth] = useState(0);
   const [startDate, setStartDate] = useState(convertStringToDate(invoice.createdAt));
-  const [hasEmptyField, setHasEmptyField] = useState(false);
   const dispatch = useDispatch();
   const [selectedPaymentOption, setSelectedPaymentOption] = useState(
-    invoice.paymentTerms || 1
+    invoice?.paymentTerms || 1
   );
 
 
@@ -139,19 +138,21 @@ function EditForm({
     }
   }, [watcher.items]);
 
-
+  useEffect(() => {
+    setSelectedPaymentOption(invoice.paymentTerms);
+  }, [invoice]);
 
   const onSubmit = (e) => {
     const watcher = watch();
     // console.log(watcher);
-
+    console.log(errors);
     const data = getValues();
 
-    // if (!data.items || data.items.length === 0) {
-    //   setError("items", { type: "custom", message: "An item must be added" });
-    //   // trigger();
-    //   return;
-    // }
+    if (!data.items || data.items.length === 0) {
+      setError("items", { type: "custom", message: "An item must be added" });
+      // trigger();
+      return;
+    }
 
     console.log("errors", errors);
     //trigger validation on fields
@@ -237,6 +238,9 @@ function EditForm({
     }
   }, [width, padding, isEditOpen]);
 
+  const errorStyle = (name) => {
+    return { border: errors[name] ? "1px solid #EC5757" : "" };
+  };
 
   // sets the payment option after change
   const handleChangeSelectedOption = (option) => {
@@ -271,12 +275,12 @@ function EditForm({
             <BillText>Bill From</BillText>
             <CompanyFormInfo errors={errors} senderAddress={invoice.senderAddress}
               invoice={invoice}
-              editPageWidth={editPageWidth}/>
+              editPageWidth={editPageWidth} isDraft={false}/>
 
             {/* //  Client details */}
             <BillText>Bill To</BillText>
             <ClientFormInfo
-              editPageWidth={editPageWidth} invoice={invoice}/>
+              editPageWidth={editPageWidth} invoice={invoice} isDraft={false}/>
 
             <DateAndPayment editPageWidth={editPageWidth} selected={startDate} onChange={(date) => setStartDate(date)}
               paymentOpen={isPaymentOpen}
@@ -294,7 +298,7 @@ function EditForm({
                 long
                 type="text"
                 defaultValue={invoice.description}
-                error={!!errors?.title}
+                // error={!!errors?.title}
                 {...register("projectDescription", { required: true })}
                 style={{
                   border: errors.projectDescription ? "1px solid red" : "",
@@ -302,7 +306,7 @@ function EditForm({
               />
             </LongFormEntry>
 
-            <EditFormItemList invoice={invoice} isEditOpen={ isEditOpen } isDraft={ false } />
+            <EditFormItemList invoice={invoice} isEditOpen={ isEditOpen } isDraft={ false } errorStyle={errorStyle}/>
 
 
             <FormErrorList />

@@ -23,9 +23,8 @@ export function CompanyFormInfo({ isDraft, editPageWidth, invoice }) {
   const width = useWindowWidth();
   const { register, formState: { errors } } = useFormContext();
 
-
   const countryChildren = (
-    <>
+    <FormEntry>
       <Label
         htmlFor="country"
         style={{ color: errors?.country ? "#EC5757" : "" }}
@@ -38,7 +37,7 @@ export function CompanyFormInfo({ isDraft, editPageWidth, invoice }) {
         defaultValue={invoice? invoice.senderAddress.country : ""}
         { ...register("country", { required: !isDraft, pattern: /^[A-Za-z0-9 ]+$/i, maxLength: 30  }) }
       />
-    </>
+    </FormEntry>
   );
 
   return <>
@@ -96,13 +95,9 @@ export function CompanyFormInfo({ isDraft, editPageWidth, invoice }) {
 }
 
 CompanyFormInfo.propTypes = {
-  errors: PropTypes.any,
-  senderAddress: PropTypes.any,
-  useFormRegisterReturn: PropTypes.any,
-  onChange: PropTypes.func,
-  useFormRegisterReturn1: PropTypes.any,
-  useFormRegisterReturn2: PropTypes.any,
-  editPageWidth: PropTypes.any,
-  onChange1: PropTypes.func,
-  useFormRegisterReturn3: PropTypes.any
+
+  editPageWidth: PropTypes.number,
+  isDraft: PropTypes.bool.isRequired,
+  invoice: PropTypes.object
+
 };

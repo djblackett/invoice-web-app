@@ -1,9 +1,8 @@
 import InvoiceToolbar from "../components/invoice-components/InvoiceToolbar";
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import FullInvoice from "../components/invoice-components/FullInvoice";
 import EditForm from "./EditForm";
-
 import { useSelector } from "react-redux";
 import {  selectInvoiceById } from "../features/invoices/invoicesSlice";
 import DeleteModal from "../components/DeleteModal";
@@ -56,7 +55,6 @@ function ViewInvoice({ scrollPosition }) {
         isEditOpen={isEditOpen}
       />
       <FullInvoice invoice={invoice} />
-
       <DeleteModal
         setIsModalOpen={setIsModalOpen}
         invoice={invoice}

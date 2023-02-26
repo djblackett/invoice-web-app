@@ -32,7 +32,7 @@ export const InputFormItem1 = ({ isDraft, invoice, isEditOpen }) => {
   useEffect(() => {
     if (!fields.length && !isInitialRender.current) {
       setError("myFieldArray", {
-        type: "min",
+        type: "required",
         message: "At least one item is required",
       });
     } else {
@@ -42,6 +42,8 @@ export const InputFormItem1 = ({ isDraft, invoice, isEditOpen }) => {
       isInitialRender.current = false;
     }
   }, [fields, isSubmitting]);
+
+
 
   useEffect(() => {
     if (invoice && isEditOpen) {
@@ -59,11 +61,11 @@ export const InputFormItem1 = ({ isDraft, invoice, isEditOpen }) => {
   // validation check for at least one item
 
 
-  // useEffect(() => {
-  //   if (!watcher.items || watcher.items.length === 0) {
-  //     setError("items", { type: "custom", message: "An item must be added" });
-  //   }
-  // }, [watcher.items]);
+  useEffect(() => {
+    if (!watcher.items || watcher.items.length === 0) {
+      setError("items", { type: "custom", message: "An item must be added" });
+    }
+  }, [watcher.items]);
 
   return (
     <>

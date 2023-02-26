@@ -14,19 +14,17 @@ import LongFormEntry from "./LongFormEntry";
 import { useWindowWidth } from "../../hooks/useWindowWidth";
 import { useFormContext } from "react-hook-form";
 
-export function ClientFormInfo({ invoice, isDraft, editPageWidth }) {
 
-  const width = useWindowWidth();
+const CountryChildren = ({ invoice, isDraft }) => {
 
-  const { formState: { errors }, register } = useFormContext();
-
-  const countryChildren = (
+  const { register, formState: errors } = useFormContext();
+  return (
     <>
       <Label
-        htmlFor="country"
+        htmlFor="clientCountry"
         style={{ color: errors.clientCountry ? "#EC5757" : "" }}
       >
-                Country
+        Country
       </Label>
       <CountryInput
         style={{
@@ -38,6 +36,21 @@ export function ClientFormInfo({ invoice, isDraft, editPageWidth }) {
       />
     </>
   );
+};
+
+CountryChildren.propTypes = {
+  invoice: PropTypes.object,
+  isDraft: PropTypes.bool,
+};
+
+export function ClientFormInfo({ invoice, isDraft, editPageWidth }) {
+
+  const width = useWindowWidth();
+
+  const { formState: { errors }, register } = useFormContext();
+
+  console.log(width);
+
 
   return <>
     <LongFormEntry isLongOnMobile={editPageWidth < 768}>
@@ -127,30 +140,19 @@ export function ClientFormInfo({ invoice, isDraft, editPageWidth }) {
         />
       </FormEntry>
 
-      { width < 768 && <LongFormEntry isLongOnMobile={editPageWidth < 768}>
-        {countryChildren}
-      </LongFormEntry>}
 
-      {width >= 768 && <FormEntry>
-        {countryChildren}
-      </FormEntry>}
+      <FormEntry style={{ display: width >= 768 ? "flex" : "contents" }}>
+        <CountryChildren invoice={invoice} isDraft={isDraft}/>
+      </FormEntry>
+
+      {/*// todo figure out the layout for mobile - hook-form doesn't like the way I set this up */}
+
     </AddressBox>
   </>;
 }
 
-
 ClientFormInfo.propTypes = {
-  errors: PropTypes.any,
-  clientName: PropTypes.any,
-  useFormRegisterReturn: PropTypes.any,
-  clientEmail: PropTypes.any,
-  useFormRegisterReturn1: PropTypes.any,
-  clientAddress: PropTypes.any,
-  useFormRegisterReturn2: PropTypes.any,
-  useFormRegisterReturn3: PropTypes.any,
-  useFormRegisterReturn4: PropTypes.any,
   editPageWidth: PropTypes.any,
-  useFormRegisterReturn5: PropTypes.any,
   invoice: PropTypes.object,
   isDraft: PropTypes.bool
 };

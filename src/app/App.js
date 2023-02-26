@@ -62,6 +62,7 @@ const Main = styled.div`
 // todo should not submit when 0 items --fixed
 // todo items do not get auto added in edit form --fixed
 // todo removing items and then adding new ones will just add the old ones back in --fixed
+// todo fix editform payment option so that it updates properly -- fixed
 
 // returning window scroll to proper position is currently non-functional
 function App() {
