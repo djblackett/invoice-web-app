@@ -39,7 +39,6 @@ export const convertStringToDate = (str) => {
   }
   const dateArray = str.split("-");
   return new Date(Date.UTC(dateArray[0], dateArray[1], dateArray[2]));
-
 };
 
 function EditForm({
@@ -51,7 +50,8 @@ function EditForm({
 
 
   const methods = useForm(
-    { formOptions }
+    { formOptions,
+      mode: "onChange" },
   );
 
   const {
@@ -290,7 +290,7 @@ function EditForm({
             <LongFormEntry isLongOnMobile={editPageWidth < 768}>
               <Label
                 htmlFor="projectDescription"
-                style={{ color: errors.projectDescription ? "red" : "" }}
+                style={{ color: errors.projectDescription ? "#EC5757" : "" }}
               >
               Project Description
               </Label>
@@ -298,10 +298,9 @@ function EditForm({
                 long
                 type="text"
                 defaultValue={invoice.description}
-                // error={!!errors?.title}
                 {...register("projectDescription", { required: true })}
                 style={{
-                  border: errors.projectDescription ? "1px solid red" : "",
+                  border: errors.projectDescription ? "1px solid #EC5757" : "",
                 }}
               />
             </LongFormEntry>

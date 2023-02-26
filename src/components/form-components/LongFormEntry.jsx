@@ -13,15 +13,15 @@ export const FormEntryContainer = styled.div`
 `;
 
 function LongFormEntry({ className, children }) {
-  const [isDirty, setIsDirty] = useState(false);
+  // const [isDirty, setIsDirty] = useState(false);
   const handleChange = () => {
-    setIsDirty(true);
+    // setIsDirty(true);
   };
 
   return (
     <FormEntryContainer
       onChange={handleChange}
-      isDirty={isDirty}
+      // isDirty={isDirty}
       className={className}
     >
       {children}

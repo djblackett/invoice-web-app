@@ -1,17 +1,15 @@
 /* eslint-disable react/no-unescaped-entities */
 
-import { AddressDetailInput, BillText, CountryInput, ErrorList, ErrorText, Input, Label } from "../../styles/editStyles";
+import {  BillText, Input, Label } from "../../styles/editStyles";
 import LongFormEntry from "./LongFormEntry";
-import AddressBox from "./AddressBox";
-import { CityPostContainer, CompanyFormInfo } from "./CompanyFormInfo";
-import FormEntry from "./FormEntry";
+import { CompanyFormInfo } from "./CompanyFormInfo";
 import { DateAndPayment } from "./DateAndPayment";
 import EditFormItemList from "./EditFormItemList";
 import NewInvoiceBottomMenu from "../menus-toolbars/NewInvoiceBottomMenu";
 import { FormProvider, useForm } from "react-hook-form";
 import PropTypes from "prop-types";
 import { useWindowWidth } from "../../hooks/useWindowWidth";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useState } from "react";
 import { yupResolver } from "@hookform/resolvers/yup";
 import * as Yup from "yup";
 import { addInvoice } from "../../features/invoices/invoicesSlice";
@@ -35,6 +33,8 @@ export const validationSchema = Yup.object().shape({
     .required("City is required"),
   clientPostalCode: Yup.string()
     .required("Postal code is required"),
+  clientCountry: Yup.string()
+    .required("Country is required"),
   projectDescription: Yup.string()
     .required("Project description is required"),
   items: Yup.array().of(
@@ -66,7 +66,7 @@ export default function NewInvoiceForm({
 
   const methods = useForm(
     {
-      // formOptions,
+      formOptions,
       defaultValues: {
         status: "draft",
         city: "",
@@ -88,9 +88,8 @@ export default function NewInvoiceForm({
 
   const {
     register,
-    formState: { errors, isSubmitSuccessful, submitCount, isValid },
+    formState: { errors, isSubmitSuccessful },
     reset,
-    control,
     getValues,
     trigger,
     watch,
@@ -140,7 +139,6 @@ export default function NewInvoiceForm({
     newInvoice.total = invoiceTotal;
     newInvoice.id = newInvoice.id ? newInvoice.id : generateId();
     newInvoice.paymentTerms = selectedPaymentOption;
-    // newInvoice.status = isDraft ?  "draft" : "pending";
     newInvoice.status = data.status;
     const date = new Date(startDate.getTime() + 86400000 * newInvoice.paymentTerms);
 
@@ -161,7 +159,7 @@ export default function NewInvoiceForm({
     if (!data.items || data.items.length === 0) {
       setError("items", { type: "custom", message: "An item must be added" });
       // trigger();
-      return;
+      // return;
     }
 
     //trigger validation on fields
@@ -210,23 +208,8 @@ export default function NewInvoiceForm({
     }
   }, [watcher.items]);
 
-  const clientCountryChildren = (
-    <>
-      <Label
-        htmlFor="clientCountry"
-      >
-                Country
-      </Label>
-      <CountryInput
-        style={errorStyle("clientCountry")}
-        type="text"
 
-        {...register("clientCountry", { required: !isDraft })}
-      />
-    </>
-  );
-
-
+  console.log("isDraft", isDraft);
 
 
   return (
@@ -240,64 +223,6 @@ export default function NewInvoiceForm({
 
         {/*   client details */}
         <BillText>Bill To</BillText>
-        {/*<LongFormEntry>*/}
-        {/*  <Label htmlFor="clientName">Client's Name</Label>*/}
-        {/*  <Input*/}
-        {/*    type="text"*/}
-        {/*    long*/}
-        {/*    style={errorStyle("clientName")}*/}
-        {/*    {...register("clientName", { required: !isDraft })}*/}
-        {/*  />*/}
-        {/*</LongFormEntry>*/}
-        {/*<LongFormEntry>*/}
-        {/*  <Label htmlFor="clientEmail">Client's Email</Label>*/}
-        {/*  <Input*/}
-        {/*    long*/}
-        {/*    type="text"*/}
-        {/*    style={errorStyle("clientEmail")}*/}
-        {/*    {...register("clientEmail", { required: !isDraft })}*/}
-        {/*  />*/}
-        {/*</LongFormEntry>*/}
-        {/*<LongFormEntry>*/}
-        {/*  <Label htmlFor="clientStreetAddress">Street Address</Label>*/}
-        {/*  <Input*/}
-        {/*    type="text"*/}
-        {/*    long*/}
-        {/*    style={errorStyle("clientStreetAddress")}*/}
-        {/*    {...register("clientStreetAddress", { required: !isDraft })}*/}
-        {/*  />*/}
-        {/*</LongFormEntry>*/}
-        {/*<AddressBox>*/}
-        {/*  <CityPostContainer>*/}
-        {/*    <FormEntry>*/}
-        {/*      <Label htmlFor="clientCity">City</Label>*/}
-        {/*      <AddressDetailInput*/}
-        {/*        style={errorStyle("clientCity")}*/}
-        {/*        type="text"*/}
-        {/*        {...register("clientCity", { required: !isDraft })}*/}
-        {/*      />*/}
-        {/*    </FormEntry>*/}
-
-        {/*    <FormEntry>*/}
-        {/*      <Label htmlFor="clientPostalCode">Post Code</Label>*/}
-        {/*      <AddressDetailInput*/}
-        {/*        type="text"*/}
-        {/*        style={errorStyle("clientPostalCode")}*/}
-        {/*        {...register("clientPostalCode", { required: !isDraft })}*/}
-        {/*      />*/}
-        {/*    </FormEntry>*/}
-        {/*  </CityPostContainer>*/}
-
-
-        {/*  {width < 768 && <LongFormEntry isLongOnMobile={editPageWidth < 768}>*/}
-        {/*    {clientCountryChildren}*/}
-        {/*  </LongFormEntry>}*/}
-
-        {/*  {width >= 768 && <FormEntry>*/}
-        {/*    {clientCountryChildren}*/}
-        {/*  </FormEntry>}*/}
-
-        {/*</AddressBox>*/}
         <ClientFormInfo  isDraft={isDraft} editPageWidth={editPageWidth} />
 
         <DateAndPayment editPageWidth={editPageWidth} selected={startDate}
@@ -310,12 +235,18 @@ export default function NewInvoiceForm({
 
 
         <LongFormEntry isLongOnMobile={editPageWidth < 768}>
-          <Label htmlFor="projectDescription">Project Description</Label>
+          <Label htmlFor="projectDescription"
+            style={{ color: errors.projectDescription ? "#EC5757" : "" }}
+          >
+            Project Description
+          </Label>
           <Input
-            style={errorStyle("projectDescription")}
-            type="text"
             long
+            type="text"
             {...register("projectDescription", { required: !isDraft })}
+            style={{
+              border: errors.projectDescription ? "1px solid #EC5757" : ""
+            }}
           />
         </LongFormEntry>
 

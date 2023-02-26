@@ -144,13 +144,12 @@ export const ErrorText = styled.li`
   color: #EC5757;
   margin: 0;
   padding: 0;
-  
-  
 `;
 
-// todo make a list container that has a larger top margin for the first item
-
-export const ErrorTextInline = styled(ErrorText)`
+export const ErrorTextInline = styled.p`
+  color: #EC5757;
+  margin: 0;
+  padding: 0;
   position: absolute;
   right: 1.5rem;
 `;

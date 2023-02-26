@@ -14,7 +14,10 @@ import LongFormEntry from "./LongFormEntry";
 import { useWindowWidth } from "../../hooks/useWindowWidth";
 import { useFormContext } from "react-hook-form";
 
-
+const emailRegex = "/(?:[a-z0-9!#$%&'*+\\/=?^_`{|}~-]+(?:\\.[a-z0-9!#$%&'*+\\/=?^_`{|}~-]+)*|\"(?:[\x01-\x08\x0b\x0c\x0e-\x1f\x21\x23-\x5b\x5d-\x7f]|\n" +
+    "\\\\[\x01-\x09\x0b\x0c\x0e-\x7f])*\")@(?:(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?|\n" +
+    "\\[(?:(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\\.){3}(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?|[a-z0-9-]*[a-z0-9]:\n" +
+    "(?:[\x01-\x08\x0b\x0c\x0e-\x1f\x21-\x5a\x53-\x7f]|\\\\[\x01-\x09\x0b\x0c\x0e-\x7f])+)\\])/";
 const CountryChildren = ({ invoice, isDraft }) => {
 
   const { register, formState: errors } = useFormContext();
@@ -23,12 +26,14 @@ const CountryChildren = ({ invoice, isDraft }) => {
       <Label
         htmlFor="clientCountry"
         style={{ color: errors.clientCountry ? "#EC5757" : "" }}
+
       >
         Country
       </Label>
-      <CountryInput
+      <Input
         style={{
-          border: errors.clientCountry ? "1px solid #EC5757" : "",
+          border: errors?.clientCountry ? "1px solid #EC5757" : ""
+
         }}
         type="text"
         defaultValue={invoice ? invoice.clientAddress.country : ""}
@@ -84,8 +89,9 @@ export function ClientFormInfo({ invoice, isDraft, editPageWidth }) {
       <Input
         long
         style={{ border: errors.clientEmail ? "1px solid #EC5757" : "" }}
+        type="text"
         defaultValue={invoice ? invoice.clientEmail : ""}
-        {...register("clientEmail", { required: !isDraft })}
+        {...register("clientEmail", { required: !isDraft, pattern: /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/ })}
       />
     </LongFormEntry>
 
@@ -141,8 +147,23 @@ export function ClientFormInfo({ invoice, isDraft, editPageWidth }) {
       </FormEntry>
 
 
-      <FormEntry style={{ display: width >= 768 ? "flex" : "contents" }}>
-        <CountryChildren invoice={invoice} isDraft={isDraft}/>
+      <FormEntry >
+        <Label
+          htmlFor="clientCountry"
+          style={{ color: errors.clientCountry ? "#EC5757" : "" }}
+
+        >
+          Country
+        </Label>
+        <CountryInput
+          style={{
+            border: errors?.clientCountry ? "1px solid #EC5757" : ""
+
+          }}
+          type="text"
+          defaultValue={invoice ? invoice.clientAddress.country : ""}
+          {...register("clientCountry", { required: !isDraft })}
+        />
       </FormEntry>
 
       {/*// todo figure out the layout for mobile - hook-form doesn't like the way I set this up */}

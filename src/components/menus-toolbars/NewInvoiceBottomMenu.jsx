@@ -5,6 +5,7 @@ import { useForm, useFormContext } from "react-hook-form";
 import Proptypes from "prop-types";
 import { isDraft } from "immer";
 import { useEffect } from "react";
+import { flushSync } from "react-dom";
 
 const MenuContainer = styled.div`
   width: 100%;
@@ -71,7 +72,6 @@ const SaveAndDraftContainer = styled.div`
 
 function NewInvoiceBottomMenu({
   setIsDraft,
-  isDraft,
   setIsOpen,
   saveText,
   closeText,
@@ -79,36 +79,30 @@ function NewInvoiceBottomMenu({
   onSubmit
 }) {
 
-  const { clearErrors, setValue, formState, reset } = useFormContext();
-
-  // useEffect(() => {
-  //   if (isDraft === false) {
-  //     onSubmit();
-  //   }
-  // }, [isDraft]);
+  const { clearErrors, setValue, reset } = useFormContext();
 
   const closeMenu = (e) => {
-    // e.preventDefault();
     clearErrors();
     setIsOpen(false);
-    // HTMLFormElement.reset();
     reset();
   };
 
-  const setToDraft = async (e) => {
-    // e.stopPropagation();
-    setIsDraft(true);
-    setValue("status", "draft");
-    // setTimeout(() => onSubmit(), 500);
+  const setToDraft = (e) => {
+
+    flushSync(() => {
+      setIsDraft(true);
+      setValue("status", "draft");
+    });
+
     onSubmit();
   };
 
   const setToPending = (e) => {
-    setIsDraft(false);
-    setValue("status", "pending");
-    // console.log(isDraft);
-    // setTimeout(() => console.log(isDraft), 5000);
-    // setTimeout(() => onSubmit(), 1000);
+
+    flushSync(() => {
+      setIsDraft(false);
+      setValue("status", "pending");
+    });
     onSubmit();
   };
 
