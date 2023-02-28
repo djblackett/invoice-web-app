@@ -21,7 +21,7 @@ export const ItemsHeader = styled.div`
     margin-top: 1rem;
     padding-left: 0;
     border-radius: 8px 8px 0 0;
-    justify-items: start;
+    justify-items: flex-start;
   }
 `;
 
@@ -37,6 +37,7 @@ export const Col = styled.p`
   line-height: 18px;
   /* identical to box height, or 164% */
   letter-spacing: -0.229167px;
+  justify-self: center;
 `;
 
 export const Col1 = styled(Col)`
@@ -48,10 +49,10 @@ const ItemsContainer = styled.div`
   flex-direction: column;
   width: 100%;
   height: fit-content;
-  max-width: 504px;
+  //max-width: 504px;
   border-radius: 8px 8px 0 0;
-  background-color: ${({ theme }) => theme.formBackground};
-
+  background-color: ${({ theme }) => theme.formBackground};  
+  padding: 0;
   transition: all 250ms ease-in-out;
 
   @media (min-width: 768px) {
@@ -78,44 +79,20 @@ const ItemTitle = styled.h1`
   }
 `;
 
-
 function EditFormItemList({ errorStyle, isDraft, invoice, isEditOpen }) {
-
 
   return (
     <ListContainer>
       <ItemTitle>Item List</ItemTitle>
       <ItemsHeader>
         <Col1>Item Name</Col1>
-        <Col>Qty.</Col>
-        <Col>Price</Col>
+        <Col1>Qty.</Col1>
+        <Col1>Price</Col1>
         <Col>Total</Col>
       </ItemsHeader>
       <ItemsContainer>
-        <InputFormItem1 errorStyle={errorStyle} isDraft={isDraft}invoice={invoice} isEditOpen={isEditOpen}/>
-        {/*{items.map((item) => {*/}
-        {/*    return (*/}
-        {/*  <Controller name={item.id}*/}
-        {/*              control={control}*/}
-        {/*              rules={{required: true}}*/}
-        {/*              key={"controller" + item.id}*/}
-        {/*              render={({field}) => <EditFormItem*/}
-        {/*                  item={item}*/}
-        {/*                  items={items}*/}
-        {/*                  key={"editItemList-" + item.id}*/}
-        {/*                  setItems={setItems}*/}
-        {/*              />}*/}
-        {/*  />*/}
-        {/*)})}*/}
-
-        {/*{controlledFields.map((field, index) => {*/}
-        {/*  return;*/}
-        {/*  // <input {...register(`fieldArray.${index}.name` as const)} />;*/}
-        {/*})}*/}
-
+        <InputFormItem1 errorStyle={errorStyle} isDraft={isDraft} invoice={invoice} isEditOpen={isEditOpen}/>
       </ItemsContainer>
-      {/*<NewItemButton handleAddNewItem={handleAddNewItem} items={ items } setCount={setCount}/>*/}
-
     </ListContainer>
   );
 }

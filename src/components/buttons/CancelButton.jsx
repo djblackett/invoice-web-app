@@ -12,9 +12,15 @@ const Button = styled.button`
   font-weight: 700;
   font-size: 12px;
   line-height: 15px;
-  margin: 0.25rem;
+  //margin: 0.25rem;
   /* identical to box height, or 125% */
   letter-spacing: -0.25px;
+  scale: 0.9;
+  
+  @media (min-width: 325px) {
+    scale: none;
+    margin: 0.25rem;
+  }
 
   &:hover {
     background-color: ${({ theme }) => theme.editButtonHover};

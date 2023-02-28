@@ -1,6 +1,6 @@
 import styled from "styled-components";
 import PropTypes from "prop-types";
-
+/* eslint-disable no-undef */
 const HeaderContainer = styled.div`
   width: 100%;
   max-width: 100vw;
@@ -138,6 +138,7 @@ function Header({ themeToggler, theme }) {
 
         <AvatarBox>
           <img
+
             src={process.env.PUBLIC_URL + "/assets/image-avatar.jpg"}
             alt=""
 

@@ -100,7 +100,7 @@ export const AddressDetailInput = styled(Input)`
   }
 `;
 export const CountryInput = styled(Input)`
-  width: 100%;
+  width: max-content;
  
 
   @media (min-width: 768px) {

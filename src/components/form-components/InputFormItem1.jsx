@@ -5,15 +5,18 @@ import { useFieldArray, useFormContext } from "react-hook-form";
 import NewItemButton from "../buttons/NewItemButton";
 import { v4 as uuidv4 } from "uuid";
 import {
+  Box,
   deleteIcon,
   ItemContainer,
   ItemName,
   MobileHelperContainer, MobileQuantityPrice, Price,
   Quantity,
-  QuantityPriceContainer, SVG, Total
+  QuantityPriceContainer, SmallBoxContainer, SVG, Total, TotalBox
 } from "../../styles/editFormItemStyles";
 import React, { useEffect, useState, useRef } from "react";
 import PropTypes from "prop-types";
+import { Col, Col1 } from "./EditFormItemList";
+import { useWindowWidth } from "../../hooks/useWindowWidth";
 
 export const InputFormItem1 = ({ isDraft, invoice, isEditOpen }) => {
 
@@ -26,6 +29,7 @@ export const InputFormItem1 = ({ isDraft, invoice, isEditOpen }) => {
   const { errors, isSubmitting, isSubmitted } = formState;
   const watchItems = watch("items", []);
   const watcher = watch();
+  const width = useWindowWidth();
   // console.log(invoice);
   // console.log(isEditOpen);
 
@@ -67,6 +71,85 @@ export const InputFormItem1 = ({ isDraft, invoice, isEditOpen }) => {
     }
   }, [watcher.items]);
 
+
+
+  const mobileRender = (index) => {
+    return (
+      <ItemContainer>
+        <Box style={{ width: "100%", marginBottom: "1.5rem" }}>
+          <Col1 style={{ marginBottom: "1rem" }}>Item Name</Col1>
+          <ItemName
+            {...register(`items[${index}].name`, { required: !isDraft })}
+            placeholder="Item name"
+            defaultValue={invoice? invoice?.items?.[index]?.name : "" }
+            type="text"
+            style={{ border: errors?.items?.[index]?.name ? "1px solid #EC5757" : "" }}
+          />
+        </Box>
+        <SmallBoxContainer>
+          <Box>
+            <Col style={{ marginBottom: "0.625rem" }}>Qty.</Col>
+            <Quantity {...register(`items[${index}].quantity`, { required: !isDraft, max: 100 } )} placeholder="0" type="text"
+              style={{ border: errors?.items?.[index]?.quantity ? "1px solid #EC5757" : "" }}
+              defaultValue={invoice? invoice?.items?.[index]?.quantity : "" }/>
+          </Box>
+          <Box>
+            <Col style={{ marginBottom: "0.625rem" }}>Price</Col>
+            <Price {...register(`items[${index}].price`, { required: !isDraft, max: 100000 } )} placeholder="0.00" type="text"
+              defaultValue={invoice? invoice?.items?.[index]?.price : "" }
+              style={{ border: errors?.items?.[index]?.price ? "1px solid #EC5757" : "" }} />
+
+          </Box>
+          <TotalBox style={{ width: "fit-content" }}>
+            <Col style={{ marginBottom: "0.625rem" }}>Total</Col>
+            <Total name={"total"}>
+              { (Number(watchItems?.[index]?.quantity) * Number(watchItems?.[index]?.price)).toFixed(2)}
+            </Total>
+          </TotalBox>
+        </SmallBoxContainer>
+        <Box>
+          <Col style={{ marginBottom: "0.625rem" }}>{"  "}</Col>
+          <SVG
+            name="removeButton" onClick={() => remove(index)}>
+            {deleteIcon}
+          </SVG>
+        </Box>
+      </ItemContainer>
+    );
+  };
+
+  const tabletAndDesktopRender = index => {
+    return (
+      <ItemContainer>
+        <MobileHelperContainer>
+          <ItemName
+            {...register(`items[${index}].name`, { required: !isDraft })}
+            placeholder="Item name"
+            defaultValue={invoice? invoice?.items?.[index]?.name : "" }
+            type="text"
+            style={{ border: errors?.items?.[index]?.name ? "1px solid #EC5757" : "" }}
+          />
+          <Quantity {...register(`items[${index}].quantity`, { required: !isDraft, max: 100 } )} placeholder="0" type="text"
+            style={{ border: errors?.items?.[index]?.quantity ? "1px solid #EC5757" : "" }}
+            defaultValue={invoice? invoice?.items?.[index]?.quantity : "" }/>
+
+
+          <Price {...register(`items[${index}].price`, { required: !isDraft, max: 100000 } )} placeholder="0.00" type="text"
+            defaultValue={invoice? invoice?.items?.[index]?.price : "" }
+            style={{ border: errors?.items?.[index]?.price ? "1px solid #EC5757" : "" }} />
+
+          <Total name={"total"}>
+            { (Number(watchItems?.[index]?.quantity) * Number(watchItems?.[index]?.price)).toFixed(2)}
+          </Total>
+          <SVG
+            name="removeButton" onClick={() => remove(index)}>
+            {deleteIcon}
+          </SVG>
+        </MobileHelperContainer>
+      </ItemContainer>
+    );
+  };
+
   return (
     <>
 
@@ -75,42 +158,8 @@ export const InputFormItem1 = ({ isDraft, invoice, isEditOpen }) => {
           return (
             <li key={item.id}>
               <div>
-                <ItemContainer>
-                  <MobileHelperContainer>
-                    <ItemName
-                      {...register(`items[${index}].name`, { required: !isDraft })}
-                      placeholder="Item name"
-                      defaultValue={invoice? invoice?.items?.[index]?.name : "" }
-                      type="text"
-                      style={{ border: errors?.items?.[index]?.name ? "1px solid #EC5757" : "" }}
-
-                    />
-                    <QuantityPriceContainer>
-
-                      <Quantity {...register(`items[${index}].quantity`, { required: !isDraft, max: 100 } )} placeholder="0" type="text"
-                        style={{ border: errors?.items?.[index]?.quantity ? "1px solid #EC5757" : "" }}
-                        defaultValue={invoice? invoice?.items?.[index]?.quantity : "" }/>
-
-
-                      <Price {...register(`items[${index}].price`, { required: !isDraft, max: 100000 } )} placeholder="0.00" type="text"
-                        defaultValue={invoice? invoice?.items?.[index]?.price : "" }
-                        style={{ border: errors?.items?.[index]?.price ? "1px solid #EC5757" : "" }} />
-
-                    </QuantityPriceContainer>
-
-                    {/*What is the point of this?*/}
-                    <MobileQuantityPrice>
-                      {/*{item?.[index]?.quantity + " x £ " + Number(item?.[index]?.price).toFixed(2)}*/}
-                    </MobileQuantityPrice>
-                  </MobileHelperContainer>
-                  <Total name={"total"}>
-                    { (Number(watchItems?.[index]?.quantity) * Number(watchItems?.[index]?.price)).toFixed(2)}
-                  </Total>
-                  <SVG
-                    name="removeButton" onClick={() => remove(index)}>
-                    {deleteIcon}
-                  </SVG>
-                </ItemContainer>
+                {width < 600 && mobileRender(index)}
+                {width >= 600 && tabletAndDesktopRender(index)}
               </div>
             </li>
           );
@@ -172,65 +221,3 @@ InputFormItem1.propTypes = {
 //         submit count: {submitCount}
 //   </ItemContainer>
 // );
-
-// export const NestedField = ({ control, index }) => {
-//   const { fields, append, remove } = useFieldArray({
-//     control,
-//     name: `address[${index}].places`
-//   });
-//   return (
-//     <>
-//       <ul>
-//         {fields.map((i, indexI) => (
-//           <li key={i.id}>
-//             <Controller
-//               name={`address[${index}].places[${indexI}.first`}
-//               control={control}
-//               defaultValue={i.first}
-//               render={(props) => {
-//                 return (
-//                   <input
-//                     className="input-custom"
-//                     placeholder="First-places"
-//                     {...props}
-//                   />
-//                 );
-//               }}
-//             />
-//
-//             <Controller
-//               name={`address[${index}].places[${indexI}].second`}
-//               control={control}
-//               defaultValue={i.second}
-//               render={(props) => {
-//                 return (
-//                   <input
-//                     placeholder="second-place"
-//                     {...props}
-//                     className="input-custom"
-//                   />
-//                 );
-//               }}
-//             />
-//             <NewItemButton
-//               type="button"
-//               variant="outlined"
-//               onClick={() => remove(indexI)}
-//             >
-//                             - place
-//             </NewItemButton>
-//           </li>
-//         ))}
-//       </ul>
-//       <Button
-//         color="secondary"
-//         variant="contained"
-//         type="button"
-//         onClick={() => append({})}
-//       >
-//                 + Place
-//       </Button>
-//     </>
-//   );
-// };
-//

@@ -51,11 +51,29 @@ CountryChildren.propTypes = {
 export function ClientFormInfo({ invoice, isDraft, editPageWidth }) {
 
   const width = useWindowWidth();
-
   const { formState: { errors }, register } = useFormContext();
 
-  console.log(width);
+  const clientCountry = (
+    <LongFormEntry style={{ width: width < 768 ? "100%" : "" }}>
+      <Label
+        htmlFor="clientCountry"
+        style={{ color: errors.clientCountry ? "#EC5757" : "" }}
 
+      >
+    Country
+      </Label>
+      <CountryInput
+        style={{
+          border: errors?.clientCountry ? "1px solid #EC5757" : "",
+          width: width < 768 ? "100%" : ""
+
+        }}
+        type="text"
+        defaultValue={invoice ? invoice.clientAddress.country : ""}
+        {...register("clientCountry", { required: !isDraft })}
+      />
+    </LongFormEntry>
+  );
 
   return <>
     <LongFormEntry isLongOnMobile={editPageWidth < 768}>
@@ -147,24 +165,13 @@ export function ClientFormInfo({ invoice, isDraft, editPageWidth }) {
       </FormEntry>
 
 
-      <FormEntry >
-        <Label
-          htmlFor="clientCountry"
-          style={{ color: errors.clientCountry ? "#EC5757" : "" }}
+      { width < 768 && <LongFormEntry isLongOnMobile={editPageWidth < 768}>
+        {clientCountry}
+      </LongFormEntry>}
 
-        >
-          Country
-        </Label>
-        <CountryInput
-          style={{
-            border: errors?.clientCountry ? "1px solid #EC5757" : ""
-
-          }}
-          type="text"
-          defaultValue={invoice ? invoice.clientAddress.country : ""}
-          {...register("clientCountry", { required: !isDraft })}
-        />
-      </FormEntry>
+      {width >= 768 && <FormEntry>
+        {clientCountry}
+      </FormEntry>}
 
       {/*// todo figure out the layout for mobile - hook-form doesn't like the way I set this up */}
 

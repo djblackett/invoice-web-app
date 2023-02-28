@@ -23,8 +23,6 @@ function EditFormItem({ item, items, setItems }) {
   const methods = useFormContext();
   const { submitCount } = methods.formState;
 
-  // todo why no state for name? WOuld make error validation easier
-
   const [name, setName] = useState(item.name);
   const [quantity, setQuantity] = useState(String(item.quantity));
   const [price, setPrice] = useState(String(item.price.toFixed(2)));
