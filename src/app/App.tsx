@@ -55,14 +55,15 @@ const Main = styled.div`
   }
 `;
 
-// returning window scroll to proper position is currently non-functional
+// todo - returning window scroll to proper position is currently non-functional
 function App() {
   const [theme, setTheme] = useState("light");
   const [scrollPosition, setScrollPosition] = useState({ x: 0, y: 0 });
 
   useLayoutEffect(() => {
-    if (localStorage.getItem("theme")) {
-      setTheme(localStorage.getItem("theme"));
+    if (localStorage.getItem("theme") !== null) {
+      const storedTheme = localStorage.getItem("theme") as string;
+      setTheme(storedTheme);
     }
   }, []);
 

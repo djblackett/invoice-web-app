@@ -4,9 +4,11 @@ import { Provider } from "react-redux";
 import { store } from "./app/store";
 import App from "./app/App";
 import "./styles/index.css";
+// @ts-ignore
 import { HashRouter } from "react-router-dom";
 
 const container = document.getElementById("root");
+// @ts-ignore
 const root = createRoot(container);
 
 root.render(

@@ -8,18 +8,17 @@ export const generateId = () => {
 
   for(let i = 0; i < 4; i++) {
     res = res + String(Math.floor(Math.random() * 9));
-
   }
   return res;
 };
 
-export function getCurrency(money) {
+export function getCurrency(money: number | bigint) {
   return new Intl.NumberFormat("en-GB", {
     currency: "GBP",
     style: "currency",
   }).format(money); // 'CA$ 100.00'
 }
 
-export function getMoney(amount) {
+export function getMoney(amount:  string) {
   return parseFloat(amount).toFixed(2).replace(/(\d)(?=(\d{3})+\.)/g, "$1,");
 }
