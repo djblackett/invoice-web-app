@@ -116,19 +116,13 @@ const ItemButton = styled.button`
   color: ${({ theme }) => theme.text};
   box-sizing: border-box;
   cursor: pointer;
-  
-  // &:hover {
-  //   .styledCheckbox {
-  //     border: 1px solid ${({ theme }) => theme.outline};
-  //     border-radius: 3px;
-  //   }
-  // }
 `;
 
 
 export default function FilterDropDown({ icon, isOpen, options }) {
 
   const dispatch = useDispatch();
+
   const clickCallback =  (option) => (e) => {
     e.stopPropagation();
     dispatch(changeFilter(option.toLowerCase()));

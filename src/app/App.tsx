@@ -5,9 +5,6 @@ import styled from "styled-components";
 import { GlobalStyles } from "../styles/GlobalStyles";
 import { ThemeProvider } from "styled-components";
 import { lightTheme, darkTheme } from "../styles/Themes";
-import { doc, getDoc } from "firebase/firestore";
-import { firestoreDb } from "../utils/firebase";
-import { collection, getDocs } from "firebase/firestore";
 import { useRoutes } from "react-router-dom";
 import ViewInvoice from "../pages/ViewInvoice";
 import Layout from "../components/Layout";
@@ -44,7 +41,6 @@ const Main = styled.div`
       background: rgb(255, 143, 0);
     }
   }
-
   
   .paid {
     background-color: rgba(51, 214, 159, 0.06);
@@ -54,6 +50,8 @@ const Main = styled.div`
     }
   }
 `;
+
+
 
 // todo - returning window scroll to proper position is currently non-functional
 function App() {
@@ -76,23 +74,23 @@ function App() {
     localStorage.setItem("theme", theme === "light" ? "dark" : "light");
   };
 
-  // for testing firebase DB functionality (Not fully implemented yet)
-  async function testDBFunction() {
-    const docRef = doc(firestoreDb, "cities", "SF");
-    const docSnap = await getDoc(docRef);
-
-    if (docSnap.exists()) {
-      console.log("Document data:", docSnap.data());
-    } else {
-      // doc.data() will be undefined in this case
-      console.log("No such document!");
-    }
-
-    const querySnapshot = await getDocs(collection(firestoreDb, "invoices"));
-    querySnapshot.forEach((doc) => {
-      console.log(`${doc.id} => ${doc.data()}`);
-    });
-  }
+  // // for testing firebase DB functionality (Not fully implemented yet)
+  // async function testDBFunction() {
+  //   const docRef = doc(firestoreDb, "cities", "SF");
+  //   const docSnap = await getDoc(docRef);
+  //
+  //   if (docSnap.exists()) {
+  //     console.log("Document data:", docSnap.data());
+  //   } else {
+  //     // doc.data() will be undefined in this case
+  //     console.log("No such document!");
+  //   }
+  //
+  //   const querySnapshot = await getDocs(collection(firestoreDb, "invoices"));
+  //   querySnapshot.forEach((doc) => {
+  //     console.log(`${doc.id} => ${doc.data()}`);
+  //   });
+  // }
 
   // todo must fix credentials for db connection
   // useEffect(() => {

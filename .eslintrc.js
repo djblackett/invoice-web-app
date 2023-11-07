@@ -5,7 +5,8 @@ module.exports = {
     es2021: true,
     "jest/globals": true,
   },
-  extends: ["eslint:recommended", 'plugin:@typescript-eslint/recommended-type-checked'],
+  extends: ["eslint:recommended", 'plugin:@typescript-eslint/recommended-type-checked',
+  "plugin:@typescript-eslint/recommended"],
   parserOptions: {
     ecmaFeatures: {
       jsx: true,
@@ -15,7 +16,7 @@ module.exports = {
     project: true,
     tsconfigRootDir: __dirname,
   },
-  plugins: ["react", "jest"],
+  plugins: ["react", "jest", "@typescript-eslint"],
   rules: {
     indent: ["error", 2],
     "linebreak-style": [0, "unix"],

@@ -45,7 +45,8 @@ function EditForm({
   isEditOpen,
   setIsEditOpen,
   padding,
-  setPadding
+  setPadding,
+    items
 }) {
 
 

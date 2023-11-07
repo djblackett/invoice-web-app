@@ -22,3 +22,11 @@ export function getCurrency(money: number | bigint) {
 export function getMoney(amount:  string) {
   return parseFloat(amount).toFixed(2).replace(/(\d)(?=(\d{3})+\.)/g, "$1,");
 }
+
+export const convertedDate = (dateString: string) => {
+  if (dateString) {
+    const date = dateString.split("-");
+    const dateObj = new Date(Date.UTC(Number(date[0]), Number(date[1]), Number(date[2])));
+    return dateObj.toDateString().substring(4);
+  }
+};
