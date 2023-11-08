@@ -1,12 +1,12 @@
 /* eslint-disable react/display-name */
 /* eslint-disable react/prop-types */
-import { DateAndPaymentContainer, Label } from "../../styles/editStyles";
-import FormEntry from "./FormEntry";
 import DatePicker from "react-datepicker";
-import FormDropDown from "./FormDropDown";
 import React, { forwardRef } from "react";
 import PropTypes from "prop-types";
 import styled, { css } from "styled-components";
+import FormDropDown from "./FormDropDown";
+import FormEntry from "./FormEntry";
+import { DateAndPaymentContainer, Label } from "../../styles/editStyles";
 
 
 const CustomDateBox = styled.div`
@@ -62,70 +62,79 @@ const DateInput = styled.input`
 `;
 
 
-export function DateAndPayment(props) {
+export function DateAndPayment({
+    handleChangeSelectedOption,
+    handlePaymentClick,
+    handlePaymentSelect,
+    onChange,
+    paymentOpen,
+    selected,
+    selectedPaymentOption,
+    setIsPaymentOpen
+}) {
 
-  const dateIcon = <svg width="16" height="16" xmlns="http://www.w3.org/2000/svg"><path d="M14 2h-.667V.667A.667.667 0 0012.667 0H12a.667.667 0 00-.667.667V2H4.667V.667A.667.667 0 004 0h-.667a.667.667 0 00-.666.667V2H2C.897 2 0 2.897 0 4v10c0 1.103.897 2 2 2h12c1.103 0 2-.897 2-2V4c0-1.103-.897-2-2-2zm.667 12c0 .367-.3.667-.667.667H2A.668.668 0 011.333 14V6.693h13.334V14z" fill="#7E88C3" fillRule="nonzero" opacity=".5"/></svg>;
+    const dateIcon = <svg width="16" height="16" xmlns="http://www.w3.org/2000/svg"><path d="M14 2h-.667V.667A.667.667 0 0012.667 0H12a.667.667 0 00-.667.667V2H4.667V.667A.667.667 0 004 0h-.667a.667.667 0 00-.666.667V2H2C.897 2 0 2.897 0 4v10c0 1.103.897 2 2 2h12c1.103 0 2-.897 2-2V4c0-1.103-.897-2-2-2zm.667 12c0 .367-.3.667-.667.667H2A.668.668 0 011.333 14V6.693h13.334V14z" fill="#7E88C3" fillRule="nonzero" opacity=".5"/></svg>;
 
-  const ExampleCustomInput = forwardRef(({ value, onClick }, ref) => (
-    <CustomDateBox
-      className="custom-input"
-      onClick={onClick}
-      style={{ cursor: "pointer" }}>
-      <DateInput
-        ref={ref}
-        defaultValue={value}
-        readOnly
-      />
-      {dateIcon}
-    </CustomDateBox>
-  ));
+    const ExampleCustomInput = forwardRef(({ value, onClick }, ref) => (
+        <CustomDateBox
+            className="custom-input"
+            onClick={onClick}
+            style={{ cursor: "pointer" }}>
+            <DateInput
+                ref={ref}
+                defaultValue={value}
+                readOnly
+            />
+            {dateIcon}
+        </CustomDateBox>
+    ));
 
 
-  return <DateAndPaymentContainer>
-    <FormEntry isLongOnMobile>
-      <Label
-        htmlFor="invoiceDate"
-      >
+    return <DateAndPaymentContainer>
+        <FormEntry isLongOnMobile>
+            <Label
+                htmlFor="invoiceDate"
+            >
                 Invoice Date
-      </Label>
-      <DatePicker
-        customInput={<ExampleCustomInput/>}
-        selected={props.selected}
-        onChange={props.onChange}
-        style={{
-          width: "100%",
-        }}
-      />
-    </FormEntry>
+            </Label>
+            <DatePicker
+                customInput={<ExampleCustomInput/>}
+                selected={selected}
+                onChange={onChange}
+                style={{
+                    width: "100%",
+                }}
+            />
+        </FormEntry>
 
-    <FormEntry isLongOnMobile>
-      <Label
-        htmlFor="paymentTerms"
-      >
+        <FormEntry isLongOnMobile>
+            <Label
+                htmlFor="paymentTerms"
+            >
                 Payment Terms
-      </Label>
+            </Label>
 
-      <FormDropDown
-        handlePaymentSelect={props.handlePaymentSelect}
-        isPaymentOpen={props.paymentOpen}
-        setIsPaymentOpen={props.setIsPaymentOpen}
-        handlePaymentClick={props.handlePaymentClick}
-        selectedPaymentOption={props.selectedPaymentOption}
-        handleChangeSelectedOption={props.handleChangeSelectedOption}
-      />
-    </FormEntry>
-  </DateAndPaymentContainer>;
+            <FormDropDown
+                handlePaymentSelect={handlePaymentSelect}
+                isPaymentOpen={paymentOpen}
+                setIsPaymentOpen={setIsPaymentOpen}
+                handlePaymentClick={handlePaymentClick}
+                selectedPaymentOption={selectedPaymentOption}
+                handleChangeSelectedOption={handleChangeSelectedOption}
+            />
+        </FormEntry>
+    </DateAndPaymentContainer>;
 }
 
 DateAndPayment.propTypes = {
-  editPageWidth: PropTypes.any,
-  selected: PropTypes.any,
-  onChange: PropTypes.func,
-  useFormRegisterReturn: PropTypes.any,
-  errors: PropTypes.any,
-  handlePaymentSelect: PropTypes.func,
-  paymentOpen: PropTypes.bool,
-  handlePaymentClick: PropTypes.func,
-  selectedPaymentOption: PropTypes.any,
-  handleChangeSelectedOption: PropTypes.func
+    editPageWidth: PropTypes.any,
+    selected: PropTypes.any,
+    onChange: PropTypes.func,
+    useFormRegisterReturn: PropTypes.any,
+    errors: PropTypes.any,
+    handlePaymentSelect: PropTypes.func,
+    paymentOpen: PropTypes.bool,
+    handlePaymentClick: PropTypes.func,
+    selectedPaymentOption: PropTypes.any,
+    handleChangeSelectedOption: PropTypes.func
 };

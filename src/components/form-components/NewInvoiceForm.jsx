@@ -4,7 +4,6 @@ import { FormProvider, useForm } from "react-hook-form";
 import PropTypes from "prop-types";
 import { useEffect, useState } from "react";
 import { yupResolver } from "@hookform/resolvers/yup";
-import * as Yup from "yup";
 import { useDispatch } from "react-redux";
 import { v4 as uuidv4 } from "uuid";
 import {  BillText, Input, Label } from "../../styles/editStyles";
@@ -13,12 +12,13 @@ import { CompanyFormInfo } from "./CompanyFormInfo";
 import { DateAndPayment } from "./DateAndPayment";
 import EditFormItemList from "./EditFormItemList";
 import NewInvoiceBottomMenu from "../menus-toolbars/NewInvoiceBottomMenu";
-import { useWindowWidth } from "../../hooks/useWindowWidth";
+import  useWindowWidth  from "../../hooks/useWindowWidth";
 import { addInvoice } from "../../features/invoices/invoicesSlice";
 import { convertDateToString } from "../../pages/EditForm";
 import { generateId } from "../../utils/utilityFunctions";
 import FormErrorList from "./FormErrorList";
 import { ClientFormInfo } from "./ClientFormInfo";
+import {validationSchema} from "../../types/schemas";
 
 
 export default function NewInvoiceForm({
@@ -238,7 +238,7 @@ export default function NewInvoiceForm({
 }
 
 NewInvoiceForm.propTypes = {
-    editPageWidth: PropTypes.number,
+    editPageWidth: PropTypes.number.isRequired,
     startDate: PropTypes.object.isRequired,
     setStartDate: PropTypes.func.isRequired,
     setIsNewOpen: PropTypes.func.isRequired,

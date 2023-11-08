@@ -1,6 +1,6 @@
 import styled from "styled-components";
 import PropTypes from "prop-types";
-import React, {JSX} from "react";
+import React from "react";
 
 const FlexContainer = styled.div`
   display: flex;
@@ -30,6 +30,6 @@ function InvoiceGrid({ children } :InvoiceGridProps) {
 }
 
 InvoiceGrid.propTypes = {
-    children: PropTypes.node,
+    children: PropTypes.node.isRequired,
 };
 export default InvoiceGrid;
