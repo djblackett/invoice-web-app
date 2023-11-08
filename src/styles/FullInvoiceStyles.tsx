@@ -154,4 +154,4 @@ const InfoGrid = styled.div`
 
 export {
     Card, Address, AddressEntry, BottomEntry, EmbeddedAddress, GenericInvoiceEntry, NamePlusAddress, TopEntry, TopRow, IdAndDescription, Description, InfoGrid, IDNumber
-}
+};

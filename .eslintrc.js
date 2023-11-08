@@ -1,39 +1,86 @@
-/* eslint-env node */
 module.exports = {
-  env: {
-    browser: true,
-    es2021: true,
-    "jest/globals": true,
-  },
-  extends: ["eslint:recommended", 'plugin:@typescript-eslint/recommended-type-checked',
-  "plugin:@typescript-eslint/recommended"],
-  parserOptions: {
-    ecmaFeatures: {
-      jsx: true,
+    "env": {
+        "browser": true,
+        "es2021": true
     },
-    ecmaVersion: 2021,
-    sourceType: "module",
-    project: true,
-    tsconfigRootDir: __dirname,
-  },
-  plugins: ["react", "jest", "@typescript-eslint"],
-  rules: {
-    indent: ["error", 2],
-    "linebreak-style": [0, "unix"],
-    quotes: ["error", "double"],
-    semi: ["error", "always"],
-    eqeqeq: "error",
-    "no-trailing-spaces": "error",
-    "object-curly-spacing": ["error", "always"],
-    "arrow-spacing": ["error", { before: true, after: true }],
-    "no-console": 0,
-    "react/prop-types": 1,
-    "react/react-in-jsx-scope": "off",
-    "no-unused-vars": 0,
-  },
-  settings: {
-    react: {
-      version: "detect",
+    "extends": [
+        "eslint:recommended",
+        "plugin:import/recommended",
+        "airbnb",
+        "airbnb-typescript",
+        "plugin:react/jsx-runtime",
+        "plugin:react-hooks/recommended",
+        "plugin:jsx-a11y/recommended",
+        "plugin:jest/recommended",
+        "plugin:typescript-sort-keys/recommended",
+        "plugin:@typescript-eslint/recommended",
+        "plugin:react/recommended",
+        // "plugin:unicorn/recommended",
+        "plugin:cypress/recommended",
+        "prettier"
+    ],
+    "overrides": [
+        {
+            "env": {
+                "node": true
+            },
+            "files": [
+                ".eslintrc.{js,cjs}"
+            ],
+            "parserOptions": {
+                "sourceType": "script",
+                "project": true
+            }
+        }
+    ],
+    "parser": "@typescript-eslint/parser",
+    "parserOptions": {
+        "ecmaVersion": "latest",
+        sourceType: "module",
+        tsconfigRootDir: __dirname,
+        project: ["./tsconfig.json"], // could be tsconfig.json too
     },
-  },
-};
+    "plugins": [
+        "@typescript-eslint",
+        "react",
+        "prettier",
+        "cypress",
+        "jest"
+    ],
+    "rules": {
+        "indent": [
+            "warn",
+            4
+        ],
+        "linebreak-style": [
+            "warn",
+            "windows"
+        ],
+        "quotes": [
+            "warn",
+            "double"
+        ],
+        "semi": [
+            "warn",
+            "always"
+        ],
+        "array-callback-return": [
+            0
+        ],
+        "consistent-return": [
+            0
+        ],
+        "react/react-in-jsx-scope": [
+            0
+        ],
+        "react/prop-types": [
+            0
+        ],
+        "react/jsx-props-no-spreading": [
+            0
+        ],
+        "no-plusplus": [
+            0
+        ]
+    }
+}

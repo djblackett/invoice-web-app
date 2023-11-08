@@ -1,6 +1,5 @@
 import styled from "styled-components";
 import React from "react";
-import PropTypes from "prop-types";
 
 export const InputStyles = styled.input`
   width: 240px;
@@ -30,10 +29,7 @@ export const InputStyles = styled.input`
 `;
 
 function Input({ width }) {
-  return <InputStyles style={{ width: `${width}px` }} />;
+    return <InputStyles style={{ width: `${width}px` }} />;
 }
 
 export default Input;
-Input.propTypes = {
-  width: PropTypes.string,
-};

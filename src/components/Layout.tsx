@@ -12,12 +12,10 @@ const Container = styled.div`
   justify-self: center;
 `;
 
-const Layout = React.memo(() => {
-  return (
+const Layout = React.memo(() => (
     <Container>
-      <Outlet />
+        <Outlet />
     </Container>
-  );
-});
+));
 
 export default Layout;

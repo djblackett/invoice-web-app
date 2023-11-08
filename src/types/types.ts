@@ -1,6 +1,6 @@
 import {Dispatch, SetStateAction} from "react";
 
-export type StatusKey = 'draft' | 'paid' | 'pending';
+export type StatusKey = "draft" | "paid" | "pending";
 
 export interface Filter {
     [key: string]: {
@@ -11,39 +11,39 @@ export interface Filter {
 }
 
 export interface Invoice {
-    id: string
-    createdAt: string
-    paymentDue: string
-    description: string
-    paymentTerms: number
-    clientName: string
-    clientEmail: string
-    status: string
-    senderAddress: SenderAddress
-    clientAddress: ClientAddress
-    items: Item[]
+    clientAddress: ClientAddress,
+    clientEmail: string,
+    clientName: string,
+    createdAt: string,
+    description: string,
+    id: string,
+    items: Item[],
+    paymentDue: string,
+    paymentTerms: number,
+    senderAddress: SenderAddress,
+    status: string,
     total: number
 }
 
 export interface SenderAddress {
-    street: string
-    city: string
+    city: string,
+    country: string,
     postCode: string
-    country: string
+    street: string
 }
 
 export interface ClientAddress {
-    street: string
-    city: string
+    city: string,
+    country: string,
     postCode: string
-    country: string
+    street: string
 }
 
 export interface Item {
     id?: string,
     name: string
-    quantity: number
-    price: number
+    price: number,
+    quantity: number,
     total: number
 }
 
