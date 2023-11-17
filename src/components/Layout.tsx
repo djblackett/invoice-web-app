@@ -13,9 +13,9 @@ const Container = styled.div`
 `;
 
 const Layout = React.memo(() => (
-    <Container>
-        <Outlet />
-    </Container>
+  <Container>
+    <Outlet />
+  </Container>
 ));
 
 export default Layout;

@@ -112,15 +112,15 @@ const SVGContainer = styled.div`
   }
 `;
 const arrowRightSVG = (
-    <svg width="7" height="10" xmlns="http://www.w3.org/2000/svg">
-        <path
-            d="M1 1l4 4-4 4"
-            stroke="#7C5DFA"
-            strokeWidth="2"
-            fill="none"
-            fillRule="evenodd"
-        />
-    </svg>
+  <svg width="7" height="10" xmlns="http://www.w3.org/2000/svg">
+    <path
+      d="M1 1l4 4-4 4"
+      stroke="#7C5DFA"
+      strokeWidth="2"
+      fill="none"
+      fillRule="evenodd"
+    />
+  </svg>
 );
 
 export type InvoiceCardProps = {
@@ -128,46 +128,46 @@ export type InvoiceCardProps = {
 }
 
 function InvoiceCard({ invoice }: InvoiceCardProps) {
-    const invoiceStatus = useMemo(() => {
-        if (invoice.status === "paid") {
-            return <InvoiceStatus statusType="paid" text="Paid"/>;
-        } if (invoice.status === "pending") {
-            return <InvoiceStatus statusType="pending" text="Pending"/>;
-        } if (invoice.status === "draft") {
-            return <InvoiceStatus statusType="draft" text="Draft"/>;
-        }
-    }, [invoice]);
+  const invoiceStatus = useMemo(() => {
+    if (invoice.status === "paid") {
+      return <InvoiceStatus statusType="paid" text="Paid"/>;
+    } if (invoice.status === "pending") {
+      return <InvoiceStatus statusType="pending" text="Pending"/>;
+    } if (invoice.status === "draft") {
+      return <InvoiceStatus statusType="draft" text="Draft"/>;
+    }
+  }, [invoice]);
 
-    const convertedDate = () => {
-        if (invoice.paymentDue) {
-            const date = invoice.paymentDue.split("-");
-            const dateObj = new Date(Date.UTC(Number(date[0]), Number(date[1]), Number(date[2])));
-            const utcDateArr = dateObj.toUTCString().split(" ");
-            return `${utcDateArr[1]}  ${utcDateArr[2]} ${utcDateArr[3]}`;
-        }
-    };
+  const convertedDate = () => {
+    if (invoice.paymentDue) {
+      const date = invoice.paymentDue.split("-");
+      const dateObj = new Date(Date.UTC(Number(date[0]), Number(date[1]), Number(date[2])));
+      const utcDateArr = dateObj.toUTCString().split(" ");
+      return `${utcDateArr[1]}  ${utcDateArr[2]} ${utcDateArr[3]}`;
+    }
+  };
 
-    return (
-        <Card>
-            <IDNumber>
-                <span style={{ color: "#7E88C3" }}>#</span>
-                {invoice.id.substring(0, 6)}
-            </IDNumber>
-            <CustomerName>{invoice.clientName}</CustomerName>
-            <DueDateAmountBox>
-                <DueDate>Due {convertedDate()}</DueDate>
+  return (
+    <Card>
+      <IDNumber>
+        <span style={{ color: "#7E88C3" }}>#</span>
+        {invoice.id.substring(0, 6)}
+      </IDNumber>
+      <CustomerName>{invoice.clientName}</CustomerName>
+      <DueDateAmountBox>
+        <DueDate>Due {convertedDate()}</DueDate>
 
-                <InvoiceAmount>£ {getMoney(invoice.total)}</InvoiceAmount>
-            </DueDateAmountBox>
+        <InvoiceAmount>£ {getMoney(invoice.total)}</InvoiceAmount>
+      </DueDateAmountBox>
 
-            {invoiceStatus}
-            <SVGContainer>{arrowRightSVG}</SVGContainer>
-        </Card>
-    );
+      {invoiceStatus}
+      <SVGContainer>{arrowRightSVG}</SVGContainer>
+    </Card>
+  );
 }
 
 InvoiceCard.propTypes = {
-    invoice: PropTypes.object.isRequired,
+  invoice: PropTypes.object.isRequired,
 };
 
 export default InvoiceCard;

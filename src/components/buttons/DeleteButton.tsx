@@ -24,11 +24,11 @@ type DeleteProps = {
     handleClick: () => void;
 }
 function DeleteButton({ handleClick }: DeleteProps) {
-    return <Button onClick={handleClick} type="button">Delete</Button>;
+  return <Button onClick={handleClick} type="button">Delete</Button>;
 }
 
 export default DeleteButton;
 
 DeleteButton.propTypes = {
-    handleClick: PropTypes.func.isRequired,
+  handleClick: PropTypes.func.isRequired,
 };

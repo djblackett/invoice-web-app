@@ -1,8 +1,8 @@
-import React, { useCallback, useEffect, useRef, useState } from "react";
+import React from "react";
 import styled from "styled-components";
 import PropTypes from "prop-types";
-import CheckboxSelection from "./CheckboxSelection";
 import { useDispatch } from "react-redux";
+import CheckboxSelection from "./CheckboxSelection";
 import { changeFilter } from "../../features/invoices/filterSlice";
 
 const Main = styled("div")`

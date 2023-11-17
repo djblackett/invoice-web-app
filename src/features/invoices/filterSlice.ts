@@ -4,18 +4,18 @@ import {Filter, StatusKey} from "../../types/types";
 
 
 const initialState: Filter = {
-    filter: { draft: false, paid: false, pending: false },
+  filter: { draft: false, paid: false, pending: false },
 };
 
 export const filterSlice = createSlice({
-    name: "filter",
-    initialState,
-    reducers: {
-        changeFilter: (state, action: PayloadAction<StatusKey>) => {
-            const status = action.payload;
-            state.filter[status] = !state.filter[status] ;
-        },
+  name: "filter",
+  initialState,
+  reducers: {
+    changeFilter: (state, action: PayloadAction<StatusKey>) => {
+      const status = action.payload;
+      state.filter[status] = !state.filter[status] ;
     },
+  },
 });
 
 export const { changeFilter } = filterSlice.actions;

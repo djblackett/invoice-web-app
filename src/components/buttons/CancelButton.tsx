@@ -28,25 +28,25 @@ const Button = styled.button`
 
 type CancelButtonProps = {
     handleClick: () => void;
-    justifySelf: string,
+    justifySelf?: string,
     text: string;
 }
 function CancelButton({ handleClick, text, justifySelf }: CancelButtonProps) {
-    return (
-        <Button
-            style={{ justifySelf: justifySelf || "auto" }}
-            onClick={handleClick}
-            type="button"
-        >
-            {text}
-        </Button>
-    );
+  return (
+    <Button
+      style={{ justifySelf: justifySelf || "auto" }}
+      onClick={handleClick}
+      type="button"
+    >
+      {text}
+    </Button>
+  );
 }
 
 export default CancelButton;
 
 CancelButton.propTypes = {
-    handleClick: Proptypes.func.isRequired,
-    text: Proptypes.string.isRequired,
-    justifySelf: Proptypes.string.isRequired,
+  handleClick: Proptypes.func.isRequired,
+  text: Proptypes.string.isRequired,
+  justifySelf: Proptypes.string.isRequired,
 };

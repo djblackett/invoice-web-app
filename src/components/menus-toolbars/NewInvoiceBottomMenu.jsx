@@ -1,11 +1,8 @@
-import CancelButton from "../buttons/CancelButton";
 import styled from "styled-components";
 import PropTypes from "prop-types";
-import { useForm, useFormContext } from "react-hook-form";
-import Proptypes from "prop-types";
-import { isDraft } from "immer";
-import { useEffect } from "react";
+import { useFormContext } from "react-hook-form";
 import { flushSync } from "react-dom";
+import CancelButton from "../buttons/CancelButton";
 
 const MenuContainer = styled.div`
   width: 100%;
@@ -90,13 +87,13 @@ function NewInvoiceBottomMenu({
 
   const { clearErrors, setValue, reset } = useFormContext();
 
-  const closeMenu = (e) => {
+  const closeMenu = () => {
     clearErrors();
     setIsOpen(false);
     reset();
   };
 
-  const setToDraft = (e) => {
+  const setToDraft = () => {
 
     flushSync(() => {
       setIsDraft(true);
@@ -106,7 +103,7 @@ function NewInvoiceBottomMenu({
     onSubmit();
   };
 
-  const setToPending = (e) => {
+  const setToPending = () => {
 
     flushSync(() => {
       setIsDraft(false);
@@ -138,11 +135,11 @@ function NewInvoiceBottomMenu({
 export default NewInvoiceBottomMenu;
 
 NewInvoiceBottomMenu.propTypes = {
-  setIsDraft: PropTypes.func,
+  setIsDraft: PropTypes.func.isRequired,
   setIsOpen: PropTypes.func.isRequired,
   saveText: PropTypes.string.isRequired,
   closeText: PropTypes.string.isRequired,
-  justifyCancel: PropTypes.string,
-  isDraft: PropTypes.bool.isRequired,
+  justifyCancel: PropTypes.string.isRequired,
+  // isDraft: PropTypes.bool.isRequired,
   onSubmit: PropTypes.func.isRequired
 };

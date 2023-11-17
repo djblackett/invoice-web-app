@@ -1,7 +1,7 @@
 import styled from "styled-components";
 import Proptypes from "prop-types";
 import React, { useMemo } from "react";
-import { useWindowWidth } from "../../hooks/useWindowWidth";
+import useWindowWidth from "../../hooks/useWindowWidth";
 import ToolbarButtons from "../menus-toolbars/ToolbarButtons";
 import InvoiceStatus from "./InvoiceStatus";
 import {Invoice, Item} from "../../types/types";
@@ -62,53 +62,53 @@ export type InvoiceToolBarProps = {
 
 
 function InvoiceToolbar({
-    invoice,
-    setEdit,
-    setIsModalOpen,
-    setItems,
+  invoice,
+  setEdit,
+  setIsModalOpen,
+  setItems,
 }: InvoiceToolBarProps) {
 
-    const openModal = () => setIsModalOpen(true);
+  const openModal = () => setIsModalOpen(true);
 
-    const invoiceStatus = useMemo(() => {
-        if (invoice.status === "paid") {
-            return <InvoiceStatus statusType="paid" text="Paid"/>;
-        } if (invoice.status === "pending") {
-            return <InvoiceStatus statusType="pending" text="Pending"/>;
-        } if (invoice.status === "draft") {
-            return <InvoiceStatus statusType="draft" text="Draft"/>;
-        }
-    }, [invoice]);
+  const invoiceStatus = useMemo(() => {
+    if (invoice.status === "paid") {
+      return <InvoiceStatus statusType="paid" text="Paid"/>;
+    } if (invoice.status === "pending") {
+      return <InvoiceStatus statusType="pending" text="Pending"/>;
+    } if (invoice.status === "draft") {
+      return <InvoiceStatus statusType="draft" text="Draft"/>;
+    }
+  }, [invoice]);
 
-    const width = useWindowWidth();
+  const width = useWindowWidth();
 
-    return (
-        <Toolbar
-            className="invoice-toolbar"
-            style={{
-                display: width < 600 ? "contents" : "flex"
-            }}
-        >
-            <StatusContainer>
-                <StatusText>Status</StatusText>
-                {invoiceStatus}
-            </StatusContainer>
-            <ToolbarButtons
-                toggleEditTab={setEdit}
-                invoice={invoice}
-                openModal={openModal}
-                setItems={setItems}
-            />
-        </Toolbar>
-    );
+  return (
+    <Toolbar
+      className="invoice-toolbar"
+      style={{
+        display: width < 600 ? "contents" : "flex"
+      }}
+    >
+      <StatusContainer>
+        <StatusText>Status</StatusText>
+        {invoiceStatus}
+      </StatusContainer>
+      <ToolbarButtons
+        toggleEditTab={setEdit}
+        invoice={invoice}
+        openModal={openModal}
+        setItems={setItems}
+      />
+    </Toolbar>
+  );
 }
 
 export default InvoiceToolbar;
 
 InvoiceToolbar.propTypes = {
-    invoice: Proptypes.object.isRequired,
-    setEdit: Proptypes.func.isRequired,
-    setIsModalOpen: Proptypes.func.isRequired,
-    setItems: Proptypes.func,
-    isEditOpen: Proptypes.bool.isRequired,
+  // invoice: Proptypes.object.isRequired,
+  setEdit: Proptypes.func.isRequired,
+  setIsModalOpen: Proptypes.func.isRequired,
+  // setItems: Proptypes.func,
+  // isEditOpen: Proptypes.bool.isRequired,
 };

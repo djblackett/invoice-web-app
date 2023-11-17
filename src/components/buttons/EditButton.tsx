@@ -25,11 +25,11 @@ type EditButtonProps = {
 }
 
 function EditButton({ toggleEditTab }: EditButtonProps) {
-    return <Button onClick={toggleEditTab} type="button">Edit</Button>;
+  return <Button onClick={toggleEditTab} type="button">Edit</Button>;
 }
 
 export default EditButton;
 
 EditButton.propTypes = {
-    toggleEditTab: Proptypes.func.isRequired,
+  toggleEditTab: Proptypes.func.isRequired,
 };

@@ -1,7 +1,7 @@
-import Checkbox from "../buttons/Checkbox";
 import PropTypes from "prop-types";
 import styled from "styled-components";
 import { useSelector } from "react-redux";
+import Checkbox from "../buttons/Checkbox";
 import { selectFilter } from "../../features/invoices/filterSlice";
 
 const CheckboxContainer = styled.div`
@@ -30,7 +30,7 @@ function CheckboxSelection({ option }) {
     <CheckboxContainer checked={filter[option.toLowerCase()]} >
       <Label>
         <Checkbox
-          checked={filter[option.toLowerCase()]}
+          $checked={filter[option.toLowerCase()]}
           onChange={handleCheckboxChange}
         />
         <span style={{ marginLeft: "13px", fontFamily: "League Spartan", fontWeight: 700 }}>{option}</span>
@@ -41,7 +41,7 @@ function CheckboxSelection({ option }) {
 
 CheckboxSelection.propTypes = {
   option: PropTypes.string.isRequired,
-  handleOptionClick: PropTypes.func,
+  // handleOptionClick: PropTypes.func,
 };
 
 export default CheckboxSelection;

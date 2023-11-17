@@ -1,10 +1,9 @@
 import styled from "styled-components";
-import FilterDropDown from "./FilterDropDown";
-import PropTypes from "prop-types";
 import React, { useState, useEffect } from "react";
-import { selectFilter } from "../../features/invoices/filterSlice";
 import { useSelector } from "react-redux";
-import { useWindowWidth } from "../../hooks/useWindowWidth";
+import FilterDropDown from "./FilterDropDown";
+import { selectFilter } from "../../features/invoices/filterSlice";
+import useWindowWidth from "../../hooks/useWindowWidth";
 
 const GridContainer = styled.div`
   display: grid;
@@ -223,7 +222,7 @@ function AllInvoicesToolbar({ invoiceList, setIsNewOpen }) {
     setIsNewOpen(true);
   };
 
-  const toggling = (e) => {
+  const toggling = () => {
     setIsOpen(!isOpen);
   };
   const togglingButton = (e) => {
@@ -282,11 +281,11 @@ function AllInvoicesToolbar({ invoiceList, setIsNewOpen }) {
   );
 }
 
-AllInvoicesToolbar.propTypes = {
-  handleChangeFilter: PropTypes.func,
-  invoiceList: PropTypes.array.isRequired,
-  setIsNewOpen: PropTypes.func,
-};
+// AllInvoicesToolbar.propTypes = {
+//   handleChangeFilter: PropTypes.func,
+//   invoiceList: PropTypes.array.isRequired,
+//   setIsNewOpen: PropTypes.func,
+// };
 
 export default AllInvoicesToolbar;
 

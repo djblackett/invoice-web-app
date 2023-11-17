@@ -127,25 +127,25 @@ export type ItemProps = {
 
 function InvoiceItem({ item }: ItemProps) {
 
-    return (
-        <ItemContainer>
-            <MobileHelperContainer>
-                <ItemName>{item.name}</ItemName>
-                <QuantityPriceContainer>
-                    <Quantity>{item.quantity}</Quantity>
-                    <Price>£ {getMoney(Number(item.price))}</Price>
-                </QuantityPriceContainer>
-                <MobileQuantityPrice>
-                    {`${item.quantity  } x £ ${  Number(item.price).toFixed(2)}`}{" "}
-                </MobileQuantityPrice>
-            </MobileHelperContainer>
-            <Total>£ {getMoney(Number(item.total))}</Total>
-        </ItemContainer>
-    );
+  return (
+    <ItemContainer>
+      <MobileHelperContainer>
+        <ItemName>{item.name}</ItemName>
+        <QuantityPriceContainer>
+          <Quantity>{item.quantity}</Quantity>
+          <Price>£ {getMoney(Number(item.price))}</Price>
+        </QuantityPriceContainer>
+        <MobileQuantityPrice>
+          {`${item.quantity  } x £ ${  Number(item.price).toFixed(2)}`}{" "}
+        </MobileQuantityPrice>
+      </MobileHelperContainer>
+      <Total>£ {getMoney(Number(item.total))}</Total>
+    </ItemContainer>
+  );
 }
 
 export default InvoiceItem;
 
 InvoiceItem.propTypes = {
-    item: PropTypes.object.isRequired,
+  item: PropTypes.object.isRequired,
 };

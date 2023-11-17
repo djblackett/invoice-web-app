@@ -1,8 +1,8 @@
 import styled from "styled-components";
+import PropTypes from "prop-types";
 import EditButton from "../buttons/EditButton";
 import DeleteButton from "../buttons/DeleteButton";
 import MarkAsPaidButton from "../buttons/MarkAsPaidButton";
-import PropTypes from "prop-types";
 
 const ButtonsContainer = styled.div`
   display: flex;
@@ -48,7 +48,7 @@ export default ToolbarButtons;
 
 ToolbarButtons.propTypes = {
   toggleEditTab: PropTypes.func.isRequired,
-  invoice: PropTypes.object.isRequired,
+  // invoice: PropTypes.object.isRequired,
   openModal: PropTypes.func.isRequired,
-  setItems: PropTypes.func,
+  setItems: PropTypes.func.isRequired,
 };

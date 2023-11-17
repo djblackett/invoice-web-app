@@ -113,37 +113,37 @@ type ItemListProps = {
 }
 
 function ItemList({ invoice }: ItemListProps) {
-    const dispatch = useDispatch();
-    useLayoutEffect(() => {
-        dispatch(addIdToExistingInvoices());
-    }, []);
+  const dispatch = useDispatch();
+  useLayoutEffect(() => {
+    dispatch(addIdToExistingInvoices());
+  }, []);
 
-    return (
-        <ListContainer>
-            <ItemsHeader>
-                <Col1>Item Name</Col1>
-                <Col>QTY.</Col>
-                <Col>Price</Col>
-                <Col>Total</Col>
-            </ItemsHeader>
-            <ItemsContainer>
-                {invoice.items.map((item) => (
-                    <InvoiceItem item={item} key={`itemList-${  item.id || ++count}`} />
-                ))}
-            </ItemsContainer>
-            <AmountDue>
-                <AmountDueTitle>
-                    <span className="amount-due">Amount Due</span>
-                    <span className="grand-total">Grand Total</span>
-                </AmountDueTitle>
-                <AmountDueTotal>£ {getMoney(invoice.total)}</AmountDueTotal>
-            </AmountDue>
-        </ListContainer>
-    );
+  return (
+    <ListContainer>
+      <ItemsHeader>
+        <Col1>Item Name</Col1>
+        <Col>QTY.</Col>
+        <Col>Price</Col>
+        <Col>Total</Col>
+      </ItemsHeader>
+      <ItemsContainer>
+        {invoice.items.map((item) => (
+          <InvoiceItem item={item} key={`itemList-${  item.id || ++count}`} />
+        ))}
+      </ItemsContainer>
+      <AmountDue>
+        <AmountDueTitle>
+          <span className="amount-due">Amount Due</span>
+          <span className="grand-total">Grand Total</span>
+        </AmountDueTitle>
+        <AmountDueTotal>£ {getMoney(invoice.total)}</AmountDueTotal>
+      </AmountDue>
+    </ListContainer>
+  );
 }
 
 export default ItemList;
 
 ItemList.propTypes = {
-    invoice: PropTypes.object.isRequired,
+  // invoice: PropTypes.object.isRequired,
 };

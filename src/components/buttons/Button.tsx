@@ -19,7 +19,7 @@ type ButtonProps = {
 }
 
 function Button({ children }: ButtonProps) {
-    return <PrimaryButton type="button">{children}</PrimaryButton>;
+  return <PrimaryButton type="button">{children}</PrimaryButton>;
 }
 
 Button.propTypes = { children: Proptypes.node.isRequired };

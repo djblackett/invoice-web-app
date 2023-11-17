@@ -4,7 +4,6 @@ import styled, { ThemeProvider } from "styled-components";
 import { useRoutes } from "react-router-dom";
 import Header from "../components/menus-toolbars/Header";
 import { GlobalStyles } from "../styles/GlobalStyles";
-
 import { lightTheme, darkTheme } from "../styles/Themes";
 import ViewInvoice from "../pages/ViewInvoice";
 import Layout from "../components/Layout";
@@ -55,76 +54,77 @@ const Main = styled.div`
 
 // todo - returning window scroll to proper position is currently non-functional
 function App() {
-    const [theme, setTheme] = useState("light");
-    const [scrollPosition, setScrollPosition] = useState({ x: 0, y: 0 });
+  const [theme, setTheme] = useState("light");
+  const [scrollPosition, setScrollPosition] = useState({ x: 0, y: 0 });
 
-    useLayoutEffect(() => {
-        if (localStorage.getItem("theme") !== null) {
-            const storedTheme = localStorage.getItem("theme") as string;
-            setTheme(storedTheme);
-        }
-    }, []);
+  useLayoutEffect(() => {
+    if (localStorage.getItem("theme") !== null) {
+      const storedTheme = localStorage.getItem("theme") as string;
+      setTheme(storedTheme);
+    }
+  }, []);
 
-    useEffect(() => {
-        window.scrollTo(scrollPosition.x, scrollPosition.y);
-    }, []);
+  useEffect(() => {
+    window.scrollTo(scrollPosition.x, scrollPosition.y);
+  }, []);
 
-    const themeToggler = () => {
-        theme === "light" ? setTheme("dark") : setTheme("light");
-        localStorage.setItem("theme", theme === "light" ? "dark" : "light");
-    };
+  const themeToggler = () => {
+    // eslint-disable-next-line @typescript-eslint/no-unused-expressions
+    theme === "light" ? setTheme("dark") : setTheme("light");
+    localStorage.setItem("theme", theme === "light" ? "dark" : "light");
+  };
 
-    // // for testing firebase DB functionality (Not fully implemented yet)
-    // async function testDBFunction() {
-    //   const docRef = doc(firestoreDb, "cities", "SF");
-    //   const docSnap = await getDoc(docRef);
-    //
-    //   if (docSnap.exists()) {
-    //     console.log("Document data:", docSnap.data());
-    //   } else {
-    //     // doc.data() will be undefined in this case
-    //     console.log("No such document!");
-    //   }
-    //
-    //   const querySnapshot = await getDocs(collection(firestoreDb, "invoices"));
-    //   querySnapshot.forEach((doc) => {
-    //     console.log(`${doc.id} => ${doc.data()}`);
-    //   });
-    // }
+  // // for testing firebase DB functionality (Not fully implemented yet)
+  // async function testDBFunction() {
+  //   const docRef = doc(firestoreDb, "cities", "SF");
+  //   const docSnap = await getDoc(docRef);
+  //
+  //   if (docSnap.exists()) {
+  //     console.log("Document data:", docSnap.data());
+  //   } else {
+  //     // doc.data() will be undefined in this case
+  //     console.log("No such document!");
+  //   }
+  //
+  //   const querySnapshot = await getDocs(collection(firestoreDb, "invoices"));
+  //   querySnapshot.forEach((doc) => {
+  //     console.log(`${doc.id} => ${doc.data()}`);
+  //   });
+  // }
 
-    // todo must fix credentials for db connection
-    // useEffect(() => {
-    //   testDBFunction();
-    // }, []);
+  // todo must fix credentials for db connection
+  // useEffect(() => {
+  //   testDBFunction();
+  // }, []);
 
-    const routes = [
+  const routes = [
+    {
+      path: "/",
+      element: <Layout />,
+      children: [
         {
-            path: "/",
-            element: <Layout />,
-            children: [
-                {
-                    index: true,
-                    element: <AllInvoices scrollPosition={scrollPosition} setScrollPosition={setScrollPosition}/>,
-                },
-                {
-                    path: ":id",
-                    element: <ViewInvoice scrollPosition={scrollPosition} setScrollPosition={setScrollPosition}/>,
-                },
-            ],
+          index: true,
+          element: <AllInvoices setScrollPosition={setScrollPosition}/>,
         },
-    ];
+        {
+          path: ":id",
+          element: <ViewInvoice scrollPosition={scrollPosition} />,
+        },
+      ],
+    },
+  ];
 
-    const element = useRoutes(routes);
+  const element = useRoutes(routes);
 
-    return (
-        <ThemeProvider theme={theme === "light" ? lightTheme : darkTheme}>
-            <GlobalStyles />
-            <Main id="container">
-                <Header themeToggler={themeToggler} theme={theme} />
-                {element}
-            </Main>
-        </ThemeProvider>
-    );
+  return (
+    <ThemeProvider theme={theme === "light" ? lightTheme : darkTheme}>
+      <GlobalStyles />
+      <Main id="container">
+        <Header themeToggler={themeToggler} theme={theme} />
+        {element}
+      </Main>
+    </ThemeProvider>
+  );
 }
 
 export default App;

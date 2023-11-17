@@ -1,4 +1,4 @@
-import styled, { css } from "styled-components";
+import styled from "styled-components";
 import PropTypes from "prop-types";
 
 const InvoiceStatusBox = styled.div`
@@ -49,19 +49,19 @@ export type InvoiceStatusProps = {
 }
 
 function InvoiceStatus({ text, statusType }: InvoiceStatusProps ) {
-    return (
-        <InvoiceStatusBox className={statusType}>
-            <TextCircleBox>
-                <Circle className="circle"/>
-                <StatusText >{text}</StatusText>
-            </TextCircleBox>
-        </InvoiceStatusBox>
-    );
+  return (
+    <InvoiceStatusBox className={statusType}>
+      <TextCircleBox>
+        <Circle className="circle"/>
+        <StatusText >{text}</StatusText>
+      </TextCircleBox>
+    </InvoiceStatusBox>
+  );
 }
 
 InvoiceStatus.propTypes = {
-    text: PropTypes.string.isRequired,
-    statusType: PropTypes.string
+  text: PropTypes.string.isRequired,
+  statusType: PropTypes.string
 
 };
 export default InvoiceStatus;

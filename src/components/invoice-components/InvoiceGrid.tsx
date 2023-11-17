@@ -26,10 +26,10 @@ export type InvoiceGridProps = {
 }
 
 function InvoiceGrid({ children } :InvoiceGridProps) {
-    return <FlexContainer>{children}</FlexContainer>;
+  return <FlexContainer>{children}</FlexContainer>;
 }
 
 InvoiceGrid.propTypes = {
-    children: PropTypes.node.isRequired,
+  children: PropTypes.node.isRequired,
 };
 export default InvoiceGrid;

@@ -70,38 +70,38 @@ export type DeleteModalProps = {
 }
 
 function DeleteModal({ isModalOpen, setIsModalOpen, invoice }: DeleteModalProps) {
-    const dispatch = useDispatch();
-    const navigate = useNavigate();
+  const dispatch = useDispatch();
+  const navigate = useNavigate();
 
-    const handleClick = () => {
-        navigate("/");
-        dispatch(removeInvoice(invoice.id));
+  const handleClick = () => {
+    navigate("/");
+    dispatch(removeInvoice(invoice.id));
 
-    };
+  };
 
-    const closeModal = () => setIsModalOpen(false);
+  const closeModal = () => setIsModalOpen(false);
 
-    return (
-        <DarkenScreen style={{ display: isModalOpen ? "flex" : "none" }}>
-            <ModalContainer>
-                <Confirm>Confirm Deletion</Confirm>
-                <Description>
+  return (
+    <DarkenScreen style={{ display: isModalOpen ? "flex" : "none" }}>
+      <ModalContainer>
+        <Confirm>Confirm Deletion</Confirm>
+        <Description>
           Are you sure you want to delete invoice #XM9141? This action cannot be
           undone.
-                </Description>
-                <ButtonContainer>
-                    <CancelButton handleClick={closeModal} text="Cancel" />
-                    <DeleteButton handleClick={handleClick} />
-                </ButtonContainer>
-            </ModalContainer>
-        </DarkenScreen>
-    );
+        </Description>
+        <ButtonContainer>
+          <CancelButton handleClick={closeModal} text="Cancel" />
+          <DeleteButton handleClick={handleClick} />
+        </ButtonContainer>
+      </ModalContainer>
+    </DarkenScreen>
+  );
 }
 
 export default DeleteModal;
 
-DeleteModal.propTypes = {
-    isModalOpen: PropTypes.bool,
-    setIsModalOpen: PropTypes.func.isRequired,
-    invoice: PropTypes.object.isRequired,
-};
+// DeleteModal.propTypes = {
+//   isModalOpen: PropTypes.bool,
+//   setIsModalOpen: PropTypes.func.isRequired,
+//   invoice: PropTypes.object.isRequired,
+// };
