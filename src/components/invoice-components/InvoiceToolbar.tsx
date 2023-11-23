@@ -4,7 +4,7 @@ import React, { useMemo } from "react";
 import useWindowWidth from "../../hooks/useWindowWidth";
 import ToolbarButtons from "../menus-toolbars/ToolbarButtons";
 import InvoiceStatus from "./InvoiceStatus";
-import {Invoice, Item} from "../../types/types";
+import {Invoice } from "../../types/types";
 
 const Toolbar = styled.div`
   height: 88px;
@@ -55,17 +55,17 @@ const StatusText = styled.p`
 
 export type InvoiceToolBarProps = {
   invoice: Invoice;
+  isEditOpen: boolean;
   setEdit: React.Dispatch<React.SetStateAction<boolean>>;
   setIsModalOpen: React.Dispatch<React.SetStateAction<boolean>>
-  setItems: React.Dispatch<React.SetStateAction<Item[]>>
 }
 
 
 function InvoiceToolbar({
   invoice,
+  isEditOpen,
   setEdit,
   setIsModalOpen,
-  setItems,
 }: InvoiceToolBarProps) {
 
   const openModal = () => setIsModalOpen(true);
@@ -95,9 +95,9 @@ function InvoiceToolbar({
       </StatusContainer>
       <ToolbarButtons
         toggleEditTab={setEdit}
+        isEditOpen={isEditOpen}
         invoice={invoice}
         openModal={openModal}
-        setItems={setItems}
       />
     </Toolbar>
   );
@@ -108,6 +108,7 @@ export default InvoiceToolbar;
 InvoiceToolbar.propTypes = {
   // invoice: Proptypes.object.isRequired,
   setEdit: Proptypes.func.isRequired,
+  isEditOpen: Proptypes.bool.isRequired,
   setIsModalOpen: Proptypes.func.isRequired,
   // setItems: Proptypes.func,
   // isEditOpen: Proptypes.bool.isRequired,

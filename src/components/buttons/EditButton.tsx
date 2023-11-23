@@ -1,5 +1,6 @@
 import styled from "styled-components";
 import Proptypes from "prop-types";
+import React from "react";
 
 const Button = styled.button`
   background-color: ${({ theme }) => theme.editButton};
@@ -21,11 +22,16 @@ const Button = styled.button`
 `;
 
 type EditButtonProps = {
-    toggleEditTab: () => void
+    isEditOpen: boolean;
+    toggleEditTab: React.Dispatch<React.SetStateAction<boolean>>;
 }
 
-function EditButton({ toggleEditTab }: EditButtonProps) {
-  return <Button onClick={toggleEditTab} type="button">Edit</Button>;
+function EditButton({ toggleEditTab, isEditOpen }: EditButtonProps) {
+
+  const handleClick = () => {
+    toggleEditTab(!isEditOpen);
+  };
+  return <Button onClick={handleClick} type="button">Edit</Button>;
 }
 
 export default EditButton;

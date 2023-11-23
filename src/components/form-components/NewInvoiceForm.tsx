@@ -11,12 +11,11 @@ import DateAndPayment from "./DateAndPayment";
 import EditFormItemList from "./EditFormItemList";
 import NewInvoiceBottomMenu from "../menus-toolbars/NewInvoiceBottomMenu";
 import { addInvoice } from "../../features/invoices/invoicesSlice";
-import { convertDateToString } from "../../pages/EditForm";
-import { generateId } from "../../utils/utilityFunctions";
+import { convertDateToString , generateId } from "../../utils/utilityFunctions";
 import FormErrorList from "./FormErrorList";
 import ClientFormInfo from "./ClientFormInfo";
 import { validationSchema } from "../../types/schemas";
-import { Invoice } from "../../types/types";
+import {FormType, Invoice} from "../../types/types";
 
 type NewInvoiceFormProps = {
   editPageWidth: number;
@@ -42,29 +41,7 @@ export default function NewInvoiceForm({
   selectedPaymentOption,
 }: NewInvoiceFormProps) {
 
-  type FormType = {
-    city: string;
-    clientCity: string;
-    clientCountry: string;
-    clientEmail: string;
-    clientName: string;
-    clientPostalCode: string;
-    clientStreetAddress: string;
-    country: string;
-    items: [
-      {
-        id: string;
-        name: string;
-        price: number;
-        quantity: number;
-        total: number;
-      },
-    ];
-    postalCode: string;
-    projectDescription: string;
-    status: string;
-    streetAddress: string;
-  };
+
 
   const methods = useForm<FormType>({
     mode: "onChange",
@@ -251,6 +228,7 @@ export default function NewInvoiceForm({
 
         <EditFormItemList
           isDraft={isDraft}
+          invoice={undefined}
           // register={register}
           // todo - these unused props are messy. Must retweak type definitions to be more flexible
         />

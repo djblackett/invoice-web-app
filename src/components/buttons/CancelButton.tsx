@@ -48,5 +48,5 @@ export default CancelButton;
 CancelButton.propTypes = {
   handleClick: Proptypes.func.isRequired,
   text: Proptypes.string.isRequired,
-  justifySelf: Proptypes.string.isRequired,
+  justifySelf: Proptypes.string
 };

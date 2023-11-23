@@ -53,8 +53,8 @@ function ViewInvoice({ scrollPosition }: ViewInvoiceProps) {
         invoice={invoice}
         setEdit={toggleEditTab}
         setIsModalOpen={setIsModalOpen}
-        setItems={setItems}
-        // isEditOpen={isEditOpen}
+        // setItems={setItems}
+        isEditOpen={isEditOpen}
       />
       <FullInvoice invoice={invoice} />
       <DeleteModal

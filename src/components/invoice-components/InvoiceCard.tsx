@@ -1,5 +1,4 @@
 import styled from "styled-components";
-import PropTypes from "prop-types";
 import { useMemo } from "react";
 import InvoiceStatus from "./InvoiceStatus";
 import { getMoney } from "../../utils/utilityFunctions";
@@ -167,7 +166,7 @@ function InvoiceCard({ invoice }: InvoiceCardProps) {
 }
 
 InvoiceCard.propTypes = {
-  invoice: PropTypes.object.isRequired,
+  // invoice: PropTypes.object.isRequired,
 };
 
 export default InvoiceCard;

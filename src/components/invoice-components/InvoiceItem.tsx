@@ -147,5 +147,6 @@ function InvoiceItem({ item }: ItemProps) {
 export default InvoiceItem;
 
 InvoiceItem.propTypes = {
+  // eslint-disable-next-line react/forbid-prop-types
   item: PropTypes.object.isRequired,
 };

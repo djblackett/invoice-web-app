@@ -1,5 +1,4 @@
 import styled from "styled-components";
-import PropTypes from "prop-types";
 import { useLayoutEffect } from "react";
 import { useDispatch } from "react-redux";
 import InvoiceItem from "./InvoiceItem";
@@ -113,7 +112,9 @@ type ItemListProps = {
 }
 
 function ItemList({ invoice }: ItemListProps) {
+
   const dispatch = useDispatch();
+
   useLayoutEffect(() => {
     dispatch(addIdToExistingInvoices());
   }, []);

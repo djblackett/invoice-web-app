@@ -25,7 +25,8 @@ module.exports = {
                 "node": true
             },
             "files": [
-                ".eslintrc.{js,cjs}"
+                ".eslintrc.{js,cjs}",
+                // "babel.config.js"
             ],
             "parserOptions": {
                 "sourceType": "script",
@@ -80,6 +81,12 @@ module.exports = {
             0
         ],
         "no-plusplus": [
+            0
+        ],
+        "no-param-reassign": [
+            0
+        ],
+        "react/require-default-props": [
             0
         ]
     }

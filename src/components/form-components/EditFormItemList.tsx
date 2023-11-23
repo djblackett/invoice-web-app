@@ -26,8 +26,8 @@ function EditFormItemList({ isDraft, invoice, isEditOpen }: EditFormItemListProp
   );
 }
 EditFormItemList.defaultProps = {
-  invoice: null,
-  isEditOpen: true
+  isEditOpen: true,
+  invoice: null
 };
 
 export default EditFormItemList;

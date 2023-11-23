@@ -1,5 +1,5 @@
 import styled from "styled-components";
-import React from "react";
+import React, {CSSProperties} from "react";
 
 export const FormEntryContainer = styled.div`
   display: flex;
@@ -27,16 +27,16 @@ const OppositeWidthContainer = styled(FormEntryContainer)`
 type FormEntryProps = {
   children: React.ReactNode;
   className: string;
-  isLongOnMobile: boolean;
-  // style: CSSProperties
+  isLongOnMobile?: boolean;
+  style?: CSSProperties
 }
 
 // todo double check the mobile layout here
 function FormEntry({
   className,
-  isLongOnMobile = false,
+  isLongOnMobile,
   children,
-  // ...style
+  style
 }: FormEntryProps
 ) {
 
@@ -58,7 +58,7 @@ function FormEntry({
         // onChange={handleChange}
         // isDirty={isDirty}
         className={className}
-        // style={{...style}}
+        style={{...style}}
       >
         {children}
       </OppositeWidthContainer>
@@ -77,6 +77,11 @@ function FormEntry({
   );
 
 }
+
+FormEntry.defaultProps = {
+  isLongOnMobile: false,
+  style: {}
+};
 
 export default FormEntry;
 

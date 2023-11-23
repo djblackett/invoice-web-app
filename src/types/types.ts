@@ -2,13 +2,39 @@ import {Dispatch, SetStateAction} from "react";
 
 export type StatusKey = "draft" | "paid" | "pending";
 
-export interface Filter {
-    [key: string]: {
-        draft: boolean,
-        paid: boolean,
-        pending: boolean
-    }
+export interface FilterOptions {
+    draft: boolean,
+    paid: boolean,
+    pending: boolean
 }
+
+export interface Filter {
+    filter: FilterOptions
+}
+
+export interface FormType {
+    city: string;
+    clientCity: string;
+    clientCountry: string;
+    clientEmail: string;
+    clientName: string;
+    clientPostalCode: string;
+    clientStreetAddress: string;
+    country: string;
+    items: [
+        {
+            id: string;
+            name: string;
+            price: number;
+            quantity: number;
+            total: number;
+        },
+    ];
+    postalCode: string;
+    projectDescription: string;
+    status: string;
+    streetAddress: string;
+};
 
 export interface Invoice {
     clientAddress: ClientAddress,

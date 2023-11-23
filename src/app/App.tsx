@@ -3,7 +3,7 @@ import "../styles/App.css";
 import styled, { ThemeProvider } from "styled-components";
 import { useRoutes } from "react-router-dom";
 import Header from "../components/menus-toolbars/Header";
-import { GlobalStyles } from "../styles/GlobalStyles";
+import GlobalStyles from "../styles/GlobalStyles";
 import { lightTheme, darkTheme } from "../styles/Themes";
 import ViewInvoice from "../pages/ViewInvoice";
 import Layout from "../components/Layout";

@@ -61,7 +61,7 @@ function InvoiceStatus({ text, statusType }: InvoiceStatusProps ) {
 
 InvoiceStatus.propTypes = {
   text: PropTypes.string.isRequired,
-  statusType: PropTypes.string
+  statusType: PropTypes.string.isRequired
 
 };
 export default InvoiceStatus;
