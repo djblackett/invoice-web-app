@@ -39,7 +39,7 @@ function CheckboxSelection({ option }: CheckboxSelectionProps) {
     <CheckboxContainer >
       <Label>
         <Checkbox
-          $checked={isSelected}
+          checked={isSelected}
 
         />
         <span style={{ marginLeft: "13px", fontFamily: "League Spartan", fontWeight: 700 }}>{option}</span>

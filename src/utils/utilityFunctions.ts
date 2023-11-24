@@ -48,7 +48,7 @@ export const convertStringToDate = (str: string | undefined) => {
   return new Date(Date.UTC(Number(dateArray[0]), Number(dateArray[1]), Number(dateArray[2])));
 };
 
-export const createInvoiceObject = (data: FieldValues, startDate: Date, selectedPaymentOption: number, id: string | undefined) => {
+export const createInvoiceObject = (data: FieldValues, startDate: Date, selectedPaymentOption: number, id: string | undefined, invoice: Invoice | undefined) => {
   const newInvoice: Invoice = {
     id: id || "",
     clientName: data.clientName,
@@ -70,7 +70,7 @@ export const createInvoiceObject = (data: FieldValues, startDate: Date, selected
     items: [...data.items],
     paymentDue: "",
     paymentTerms: 0,
-    status: "",
+    status: invoice?.status || "draft",
     total: 0,
   };
 
@@ -90,7 +90,7 @@ export const createInvoiceObject = (data: FieldValues, startDate: Date, selected
   // newInvoice.id = newInvoice.id ? newInvoice.id : generateId();
   newInvoice.paymentTerms = selectedPaymentOption;
   // newInvoice.status = isDraft ?  "draft" : "pending";
-  newInvoice.status = data.status;
+  // newInvoice.status = data.status;
   const date = new Date(startDate.getTime() + 86400000 * newInvoice.paymentTerms);
 
   const [month, day, year] = [date.getMonth(), date.getDate(), date.getFullYear()];

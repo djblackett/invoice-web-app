@@ -101,16 +101,16 @@ function EditForm({
       .then(value => {
         if (value){
           // console.log("validation success");
-          const newInvoice = createInvoiceObject(data, startDate, selectedPaymentOption, id);
-          console.log(data.items);
+          const newInvoice = createInvoiceObject(data, startDate, selectedPaymentOption, id, invoice);
+          // console.log(data.items);
           dispatch(updateInvoice(newInvoice));
 
           clearErrors();
           setIsEditOpen(false);
           setSelectedPaymentOption(1); // todo check this
-          // console.log(newInvoice);
+          console.log(newInvoice);
           reset();
-          console.log("Form reset");
+          // console.log("Form reset");
         }
       });
 

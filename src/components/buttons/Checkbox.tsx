@@ -11,7 +11,7 @@ const uncheckedStyles = css`
 `;
 
 interface CheckedProps {
-  readonly $checked: boolean;
+  readonly checked: boolean;
 }
 
 const CheckboxContainer = styled.div<CheckedProps>`
@@ -19,7 +19,7 @@ const CheckboxContainer = styled.div<CheckedProps>`
   vertical-align: middle;
   border: 1px solid transparent;
   border-radius: 2px;
-  ${( props ) => (props.$checked ? checkedStyles : uncheckedStyles)};
+  ${( props ) => (props.checked ? checkedStyles : uncheckedStyles)};
 
 `;
 
@@ -49,24 +49,24 @@ const StyledCheckbox = styled.div<CheckedProps>`
   height: 16px;
   border-radius: 2px;
   transition: all 200ms;
-  ${(props ) => (props.$checked ? checkedStyles : uncheckedStyles)};
+  ${(props ) => (props.checked ? checkedStyles : uncheckedStyles)};
   ${Icon} {
-    visibility: ${(props) => (props.$checked ? "visible" : "hidden")};
+    visibility: ${(props) => (props.checked ? "visible" : "hidden")};
   }
 `;
 
 export interface CheckboxProps extends CheckedProps {
-  checked?: boolean,
+  checked: boolean,
   className?: string;
 }
 
-function Checkbox({ className, checked = false, ...props }: CheckboxProps) {
+function Checkbox({ className, checked=false, ...props }: CheckboxProps) {
 
 
 
-  return <CheckboxContainer className="styledCheckbox" $checked={checked}>
+  return <CheckboxContainer className="styledCheckbox" checked={checked}>
     <HiddenCheckbox checked={checked} {...props} />
-    <StyledCheckbox $checked={checked} >
+    <StyledCheckbox checked={checked} >
       <Icon width="10" height="8" viewBox="0 0 10 8">
         <path d="M1.5 4.5l2.124 2.124L8.97 1.28" />
       </Icon>
@@ -75,10 +75,7 @@ function Checkbox({ className, checked = false, ...props }: CheckboxProps) {
 }
 export default Checkbox;
 
-Checkbox.defaultProps = {
-  checked: false,
-};
 Checkbox.propTypes = {
   className: PropTypes.string.isRequired,
-  checked: PropTypes.bool,
+  checked: PropTypes.bool.isRequired,
 };
