@@ -22,22 +22,23 @@ import {Invoice} from "../../types/types";
 
 type ClientFormInfoProps = {
     editPageWidth: number,
-    // eslint-disable-next-line react/require-default-props
     invoice?: Invoice;
     isDraft: boolean;
 }
 
 export default function ClientFormInfo({ invoice, isDraft }: ClientFormInfoProps) {
 
+  console.log("ClientForm - isDraft:", isDraft);
   const width = useWindowWidth();
-  const { formState: { errors }, register } = useFormContext();
+  const { formState: { errors }, register, getValues } = useFormContext();
+  console.log("Client Form Values:", getValues());
+  console.log("Client Errors:", errors);
 
   const clientCountry = (
     <LongFormEntry style={{ width: width < 768 ? "100%" : "" }} className="client-country">
       <Label
-        htmlFor="clientCountry"
+        // htmlFor="clientCountry"
         style={{ color: errors.clientCountry ? "#EC5757" : "" }}
-
       >
     Country
       </Label>
@@ -49,7 +50,7 @@ export default function ClientFormInfo({ invoice, isDraft }: ClientFormInfoProps
         }}
         type="text"
         defaultValue={invoice ? invoice.clientAddress.country : ""}
-        {...register("clientCountry", { required: !isDraft })}
+        {...register("clientCountry", { required: !isDraft, pattern: /^[A-Za-z0-9 ]+$/i, maxLength: 30 })}
       />
     </LongFormEntry>
   );
@@ -122,7 +123,7 @@ export default function ClientFormInfo({ invoice, isDraft }: ClientFormInfoProps
           }}
           type="text"
           defaultValue={invoice ? invoice.clientAddress.city : ""}
-          {...register("clientCity", { required: !isDraft })}
+          {...register("clientCity", { required: !isDraft, pattern: /^\w+$/i, maxLength: 30 })}
         />
       </FormEntry>
 
@@ -139,7 +140,7 @@ export default function ClientFormInfo({ invoice, isDraft }: ClientFormInfoProps
           }}
           type="text"
           defaultValue={invoice ? invoice.clientAddress.postCode : ""}
-          {...register("clientPostalCode", { required: !isDraft, minLength: 5 })}
+          {...register("clientPostalCode", { required: !isDraft, pattern: /^\w+[\w ]+$/i, maxLength: 10, minLength: 5 })}
         />
       </FormEntry>
 

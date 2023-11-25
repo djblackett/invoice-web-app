@@ -3,7 +3,6 @@ import styled from "styled-components";
 import { useSelector } from "react-redux";
 import Checkbox from "../buttons/Checkbox";
 import { selectFilter } from "../../features/invoices/filterSlice";
-// import {Label} from "../../styles/editStyles";
 import {FilterOptions, StatusKey} from "../../types/types";
 
 const CheckboxContainer = styled.div`
@@ -11,7 +10,6 @@ const CheckboxContainer = styled.div`
 `;
 
 const Label = styled.div`
-  //pointer-events: none;
   cursor: pointer;
   box-sizing: border-box;
   margin-left: 0.5rem;
@@ -21,15 +19,11 @@ const Label = styled.div`
   /* identical to box height, or 125% */
   letter-spacing: -0.25px;
   color: ${({ theme }) => theme.textPlain};
-  
-  
 `;
 
 type CheckboxSelectionProps = {
   option: string
 }
-
-
 
 function CheckboxSelection({ option }: CheckboxSelectionProps) {
   const filter: FilterOptions = useSelector(selectFilter);
@@ -38,10 +32,7 @@ function CheckboxSelection({ option }: CheckboxSelectionProps) {
   return (
     <CheckboxContainer >
       <Label>
-        <Checkbox
-          checked={isSelected}
-
-        />
+        <Checkbox checked={isSelected} />
         <span style={{ marginLeft: "13px", fontFamily: "League Spartan", fontWeight: 700 }}>{option}</span>
       </Label>
     </CheckboxContainer>
@@ -50,7 +41,6 @@ function CheckboxSelection({ option }: CheckboxSelectionProps) {
 
 CheckboxSelection.propTypes = {
   option: PropTypes.string.isRequired,
-  // handleOptionClick: PropTypes.func,
 };
 
 export default CheckboxSelection;

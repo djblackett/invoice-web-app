@@ -65,7 +65,7 @@ function Checkbox({ className, checked=false, ...props }: CheckboxProps) {
 
 
   return <CheckboxContainer className="styledCheckbox" checked={checked}>
-    <HiddenCheckbox checked={checked} {...props} />
+    <HiddenCheckbox checked={checked} {...props} readOnly/>
     <StyledCheckbox checked={checked} >
       <Icon width="10" height="8" viewBox="0 0 10 8">
         <path d="M1.5 4.5l2.124 2.124L8.97 1.28" />
@@ -76,6 +76,6 @@ function Checkbox({ className, checked=false, ...props }: CheckboxProps) {
 export default Checkbox;
 
 Checkbox.propTypes = {
-  className: PropTypes.string.isRequired,
+  className: PropTypes.string,
   checked: PropTypes.bool.isRequired,
 };

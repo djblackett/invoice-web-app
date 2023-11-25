@@ -21,14 +21,18 @@ export const CityPostContainer = styled.div`
 
 type CompanyFormInfoProps = {
     editPageWidth: number;
-    invoice: Invoice | null;
+    invoice?: Invoice;
     isDraft: boolean;
 }
 
 export function CompanyFormInfo({ isDraft , invoice }: CompanyFormInfoProps) {
 
   const width = useWindowWidth();
-  const { register, formState: { errors } } = useFormContext();
+  const {formState: {errors}, register, getValues} = useFormContext();
+  console.log("Company Form Values:", getValues());
+  console.log("Company Errors:", errors);
+
+  console.log("CompanyForm - isDraft:", isDraft);
 
   const countryChildren = (
     <LongFormEntry style={{ width: width < 768 ? "100%" : "" }} className="company-country">

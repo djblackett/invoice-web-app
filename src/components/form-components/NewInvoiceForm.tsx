@@ -1,9 +1,7 @@
 import { FormProvider, useForm} from "react-hook-form";
 import PropTypes from "prop-types";
 import React, {useEffect, useState} from "react";
-import { yupResolver } from "@hookform/resolvers/yup";
 import { useDispatch } from "react-redux";
-import { v4 as uuidv4 } from "uuid";
 import { BillText, Input, Label } from "../../styles/editStyles";
 import LongFormEntry from "./LongFormEntry";
 import { CompanyFormInfo } from "./CompanyFormInfo";
@@ -11,11 +9,10 @@ import DateAndPayment from "./DateAndPayment";
 import EditFormItemList from "./EditFormItemList";
 import NewInvoiceBottomMenu from "../menus-toolbars/NewInvoiceBottomMenu";
 import { addInvoice } from "../../features/invoices/invoicesSlice";
-import { convertDateToString , generateId } from "../../utils/utilityFunctions";
+import { createInvoiceObject } from "../../utils/utilityFunctions";
 import FormErrorList from "./FormErrorList";
 import ClientFormInfo from "./ClientFormInfo";
-import { validationSchema } from "../../types/schemas";
-import {FormType, Invoice} from "../../types/types";
+import { FormType } from "../../types/types";
 
 type NewInvoiceFormProps = {
   editPageWidth: number;
@@ -41,11 +38,8 @@ export default function NewInvoiceForm({
   selectedPaymentOption,
 }: NewInvoiceFormProps) {
 
-
-
   const methods = useForm<FormType>({
     mode: "onChange",
-    resolver: yupResolver(validationSchema),
     defaultValues: {
       status: "draft",
       city: "",
@@ -77,63 +71,6 @@ export default function NewInvoiceForm({
 
   const watcher = watch();
 
-  const createInvoiceObject = (data: FormType) => {
-    const newInvoice: Invoice = {
-      id: "",
-      clientName: data.clientName,
-      clientAddress: {
-        city: data.clientCity,
-        country: data.clientCountry,
-        postCode: data.clientPostalCode,
-        street: data.clientStreetAddress,
-      },
-      senderAddress: {
-        city: data.city,
-        country: data.country,
-        postCode: data.postalCode,
-        street: data.streetAddress,
-      },
-      clientEmail: data.clientEmail,
-      createdAt: convertDateToString(startDate),
-      description: data.projectDescription,
-      items: [...data.items],
-      paymentDue: "",
-      paymentTerms: 0,
-      status: "",
-      total: 0,
-    };
-
-    let invoiceTotal = 0;
-
-    const { items } = newInvoice;
-
-    for (let i = 0; i < items.length; i++) {
-      items[i].total = items[i].quantity * items[i].price;
-      invoiceTotal += Number(items[i].total);
-      if (!items[i].id) {
-        items[i].id = uuidv4();
-      }
-    }
-
-    newInvoice.total = invoiceTotal;
-    newInvoice.id = newInvoice.id ? newInvoice.id : generateId();
-    newInvoice.paymentTerms = selectedPaymentOption;
-    newInvoice.status = data.status;
-    const date = new Date(
-      startDate.getTime() + 86400000 * newInvoice.paymentTerms,
-    );
-
-    const [month, day, year] = [
-      date.getMonth(),
-      date.getDate(),
-      date.getFullYear(),
-    ];
-    newInvoice.paymentDue = [year, month, day].join("-");
-
-    // console.log("end of newInvoice function", newInvoice);
-    return newInvoice;
-  };
-
   const onSubmit = () => {
     const data = getValues();
 
@@ -147,7 +84,8 @@ export default function NewInvoiceForm({
     trigger().then((value) => {
       if (value) {
         // console.log("validation success");
-        const newInvoice = createInvoiceObject(data);
+        // todo - refactor so no undefined are necessary here
+        const newInvoice = createInvoiceObject(data, startDate, selectedPaymentOption, undefined, undefined);
         dispatch(addInvoice(newInvoice));
         setIsNewOpen(false);
         setSelectedPaymentOption(1);
@@ -191,7 +129,7 @@ export default function NewInvoiceForm({
         {/* register your input into the hook by invoking the "register" function , {required: !isDraft */}
 
         <BillText>Bill From</BillText>
-        <CompanyFormInfo isDraft={isDraft} editPageWidth={editPageWidth} invoice={null} />
+        <CompanyFormInfo isDraft={isDraft} editPageWidth={editPageWidth} />
 
         {/*   client details */}
         <BillText>Bill To</BillText>
@@ -208,8 +146,7 @@ export default function NewInvoiceForm({
           // setIsPaymentOpen={setIsPaymentOpen}
         />
 
-        {/* todo - find way to avoid passing undefined here */}
-        <LongFormEntry className="project-description" style={undefined}>
+        <LongFormEntry className="project-description" >
           <Label
             htmlFor="projectDescription"
             style={{ color: errors.projectDescription ? "#EC5757" : "" }}

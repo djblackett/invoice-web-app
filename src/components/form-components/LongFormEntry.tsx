@@ -13,7 +13,6 @@ export const FormEntryContainer = styled.div`
 type LongFormEntryProps = {
   children: React.ReactNode;
   className: string;
-  // eslint-disable-next-line react/require-default-props
   style?: CSSProperties | undefined
 }
 
