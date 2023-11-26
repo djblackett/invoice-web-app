@@ -7,7 +7,7 @@ import EditForm from "./EditForm";
 import {  selectInvoiceById } from "../features/invoices/invoicesSlice";
 import DeleteModal from "../components/DeleteModal";
 import { arrowLeft, GoBack, GoBackButton, Icon, ViewContainer } from "../styles/ViewInvoiceStyles";
-import {Invoice, Item, ReduxInvoiceState, ScrollPosition} from "../types/types";
+import {Invoice, ReduxInvoiceState, ScrollPosition} from "../types/types";
 
 export type ViewInvoiceProps = {
     scrollPosition: ScrollPosition
@@ -21,9 +21,6 @@ function ViewInvoice({ scrollPosition }: ViewInvoiceProps) {
   const [isEditOpen, setIsEditOpen] = useState(false);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [padding, setPadding] = useState("");
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  const [items, setItems] = useState<Item[]>(invoice.items);
-
 
   const toggleEditTab = () => {
     setIsEditOpen(!isEditOpen);

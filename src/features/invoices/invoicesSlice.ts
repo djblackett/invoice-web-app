@@ -21,7 +21,7 @@ export const invoicesSlice = createSlice({
       );
     },
     updateInvoice: (state, action: PayloadAction<Invoice>) => {
-      console.log("entered updateInvoice");
+      // console.log("entered updateInvoice");
       const oldInvoice: Invoice | undefined = state.data.find(
         (invoice: Invoice) => invoice.id === action.payload.id
       );
@@ -29,7 +29,7 @@ export const invoicesSlice = createSlice({
       if (oldInvoice) {
         const index = state.data.indexOf(oldInvoice);
         state.data.splice(index, 1, action.payload);
-        console.log("invoice updated");
+        // console.log("invoice updated");
       }},
     markAsPaid: (state, action) => {
       const invoice1 = state.data.find(

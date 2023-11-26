@@ -145,7 +145,7 @@ export default function FilterDropDown({ icon, isOpen, options }: FilterDropDown
 
   return (
     <Main>
-      <DropDownContainer>
+      <DropDownContainer data-testid="filterDropDown">
         <DropDownHeader>{icon}</DropDownHeader>
         <DropDownListContainer style={{ height: isOpen ? "130px" : 0 }}>
           <DropDownList >

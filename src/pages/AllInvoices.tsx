@@ -24,7 +24,7 @@ const AllInvoicesContainer = styled.div`
   margin-bottom: 6.5rem;
   z-index: 5;
   overflow-y: auto;
-  
+
   @media (min-width: 1200px) {
     padding-right: 48px;
     padding-left: 48px;

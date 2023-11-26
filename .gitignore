@@ -39,6 +39,7 @@ yarn-error.log*
 
 # Avoid your project being littered with annoying .DS_Store files!
 .prettierignore
-
-
-
+/test-results/
+/playwright-report/
+/blob-report/
+/playwright/.cache/

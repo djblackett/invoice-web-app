@@ -4,7 +4,7 @@ import { useSelector } from "react-redux";
 import FilterDropDown from "./FilterDropDown";
 import { selectFilter } from "../../features/invoices/filterSlice";
 import useWindowWidth from "../../hooks/useWindowWidth";
-import {Invoice} from "../../types/types";
+import { Invoice } from "../../types/types";
 
 const GridContainer = styled.div`
   display: grid;
@@ -23,7 +23,7 @@ const GridContainer = styled.div`
     padding-right: 24px;
     width: 100%;
   }
-  
+
   @media (min-width: 600px) {
     width: 100%;
   }
@@ -32,7 +32,7 @@ const GridContainer = styled.div`
     padding-left: 48px;
     padding-right: 48px;
   }
-  
+
 
   @media (min-width: 1200px) {
     min-width: 730px;
@@ -88,7 +88,7 @@ const ControlBox = styled.div`
   flex-direction: row;
   align-items: center;
   justify-content: flex-end;
-  
+
   .largeScreenText {
     display: none;
   }
@@ -196,7 +196,7 @@ const FilterButton = styled.div`
   width: fit-content;
   cursor: pointer;
   flex-direction: column;
-  
+
   @media (min-width: 325px) {
     flex-direction: row;
   }
@@ -255,7 +255,7 @@ function AllInvoicesToolbar({ invoiceList, setIsNewOpen }: AllInvoicesToolbarPro
   return (
     <GridContainer>
       <TitleBox>
-        <Title>Invoices</Title>
+        <Title data-testid="invoicesTitle">Invoices</Title>
         <InvoicesLeft>
           <span className="wideScreenText">There are </span>
           {invoiceList.length || invoiceNumber}{" "}
@@ -264,9 +264,9 @@ function AllInvoicesToolbar({ invoiceList, setIsNewOpen }: AllInvoicesToolbarPro
         </InvoicesLeft>
       </TitleBox>
       <ControlBox>
-        <FilterButton onClick={toggling}>
+        <FilterButton onClick={toggling} data-testid="filterButton">
           <Filter>
-          Filter <span className="wideScreenText">by status</span>
+            Filter <span className="wideScreenText">by status</span>
           </Filter>
           <FilterDropDown
             icon={arrowDownSVG}
@@ -274,7 +274,7 @@ function AllInvoicesToolbar({ invoiceList, setIsNewOpen }: AllInvoicesToolbarPro
             options={["Draft", "Pending", "Paid"]}
           />
         </FilterButton>
-        <NewInvoiceButton onClick={openNewInvoice}>
+        <NewInvoiceButton onClick={openNewInvoice} data-testid="newInvoiceButton">
           <WhiteCircle>{plusSignSVG}</WhiteCircle>
           <NewText>
             New <span className="largeScreenText">Invoice</span>

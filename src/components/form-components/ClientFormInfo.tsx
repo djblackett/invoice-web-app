@@ -28,16 +28,14 @@ type ClientFormInfoProps = {
 
 export default function ClientFormInfo({ invoice, isDraft }: ClientFormInfoProps) {
 
-  console.log("ClientForm - isDraft:", isDraft);
+  // console.log("ClientForm - isDraft:", isDraft);
   const width = useWindowWidth();
-  const { formState: { errors }, register, getValues } = useFormContext();
-  console.log("Client Form Values:", getValues());
-  console.log("Client Errors:", errors);
+  const { formState: { errors }, register} = useFormContext();
 
   const clientCountry = (
     <LongFormEntry style={{ width: width < 768 ? "100%" : "" }} className="client-country">
       <Label
-        // htmlFor="clientCountry"
+        htmlFor="clientCountry"
         style={{ color: errors.clientCountry ? "#EC5757" : "" }}
       >
     Country

@@ -108,12 +108,11 @@ function EditForm({
           clearErrors();
           setIsEditOpen(false);
           setSelectedPaymentOption(1); // todo check this
-          console.log(newInvoice);
+          // console.log(newInvoice);
           reset();
           // console.log("Form reset");
         }
       });
-
   };
 
   // calculates width and padding of editForm depending on window width and whether the edit tab is open

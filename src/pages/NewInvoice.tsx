@@ -63,6 +63,7 @@ function NewInvoice({
           width: isNewOpen ? `${editPageWidth}px` : "0px",
           padding,
         }}
+        data-testid="newInvoicePage"
       >
         <EditTitle>
           New Invoice

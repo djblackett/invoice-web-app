@@ -28,11 +28,7 @@ type CompanyFormInfoProps = {
 export function CompanyFormInfo({ isDraft , invoice }: CompanyFormInfoProps) {
 
   const width = useWindowWidth();
-  const {formState: {errors}, register, getValues} = useFormContext();
-  console.log("Company Form Values:", getValues());
-  console.log("Company Errors:", errors);
-
-  console.log("CompanyForm - isDraft:", isDraft);
+  const {formState: {errors}, register} = useFormContext();
 
   const countryChildren = (
     <LongFormEntry style={{ width: width < 768 ? "100%" : "" }} className="company-country">

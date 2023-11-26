@@ -87,7 +87,7 @@ export const createInvoiceObject = (data: FieldValues, startDate: Date, selected
   }
 
   newInvoice.total = invoiceTotal;
-  // newInvoice.id = newInvoice.id ? newInvoice.id : generateId();
+  newInvoice.id = newInvoice.id ? newInvoice.id : generateId();
   newInvoice.paymentTerms = selectedPaymentOption;
   // newInvoice.status = isDraft ?  "draft" : "pending";
   // newInvoice.status = data.status;

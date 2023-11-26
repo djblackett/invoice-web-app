@@ -201,9 +201,9 @@ function FormDropDown({
         <SVG>{arrowDown}</SVG>
       </DropDownHeader>
 
-      <DropDownList style={{ height: isPaymentOpen ? "192px" : 0 }}>
+      <DropDownList style={{ height: isPaymentOpen ? "192px" : 0 }} data-testid="dropDownList">
         {options.map((option) => (
-          <ListItem key={`${option}-li`} onClick={onOptionClicked(option)}>
+          <ListItem key={`${option}-li`} onClick={onOptionClicked(option)} data-testid={`${option}-testID`}>
             <ItemButton key={`${option}-button`} type="button" >
               {options.find((term) => term.includes(String(option)))}
             </ItemButton>
