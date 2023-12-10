@@ -1,8 +1,8 @@
 
 import express from "express";
-import invoicesRouter from "./routes/invoices";
+import invoicesRouter from "./src/routes/invoices";
 import cors from "cors";
-import myErrorHandler from "./routes/helpers/helpers";
+import myErrorHandler from "./src/routes/helpers/helpers";
 
 process.env.NODE_ENV = "production";
 
@@ -10,7 +10,7 @@ const app = express();
 app.use(express.json());
 app.use(cors());
 
-const PORT = 5000;
+const PORT = 8000;
 
 // if (process.env.NODE_ENV === 'development') {
 //   // eslint-disable-next-line @typescript-eslint/no-unsafe-call

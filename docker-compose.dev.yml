@@ -1,0 +1,73 @@
+services:
+  frontend-dev:
+    build:
+      context: invoice-frontend
+      dockerfile: dev.Dockerfile
+    environment:
+      - REACT_APP_BACKEND_URL=http://localhost/api
+      - REACT_APP_ENV=development
+    ports:
+      - "3000:3000"
+    networks:
+      - my_network_dev
+    volumes:
+      - ./invoice-frontend:/usr/src/app/
+
+
+  backend-dev:
+    build:
+      context: invoice-backend
+      dockerfile: dev.Dockerfile
+    ports:
+      - "8000:8000"
+    environment:
+      - NODE_ENV=development
+      - PORT=8000
+      - REQUEST_ORIGIN=http://proxy
+      - SECRET=Secret
+      - DATABASE_URL=postgres://postgres:example@localhost:5432/postgres
+    networks:
+      - my_network_dev
+    volumes:
+      - ./invoice-backend:/usr/src/app/
+
+  db-dev:
+    image: postgres:16.1
+    restart: always
+    environment:
+      POSTGRES_PASSWORD: example
+      PGUSER: postgres
+      POSTGRES_USER: postgres
+    ports:
+      - "5432:5432"
+    volumes:
+      - pgdata-dev:/var/lib/postgresql/data
+      - ./init.sql:/docker-entrypoint-initdb.d/init.sql
+
+
+  adminer-dev:
+    image: adminer:4.8.1
+    restart: always
+    ports:
+      - 8080:8080
+
+  proxy-dev:
+    image: nginx:1.25.2
+    hostname: proxy-dev
+    container_name: proxy-dev
+    tty: true
+    stdin_open: true
+    volumes:
+      - ./nginx.dev.conf:/etc/nginx/nginx.conf
+    ports:
+      - "80:80"
+    networks:
+      - my_network_dev
+
+
+networks:
+  my_network_dev:
+    driver: bridge
+
+volumes:
+  pgdata-dev:
