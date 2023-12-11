@@ -24,6 +24,14 @@
     "typescript": "^4.9.5"
   },
   "dependencies": {
+    "@apollo/server": "^4.9.1",
+    "@graphql-tools/schema": "^10.0.0",
+    "apollo-server": "^3.12.1",
+    "graphql": "^16.8.0",
+    "graphql-subscriptions": "^2.0.0",
+    "graphql-ws": "^5.14.0",
+    "jsonwebtoken": "^9.0.1",
+    "ws": "^8.13.0",
     "@prisma/client": "^5.7.0",
     "@types/uuid": "^9.0.1",
     "cors": "^2.8.5",
