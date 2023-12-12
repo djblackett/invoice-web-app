@@ -1,5 +1,6 @@
 // import jwt from "jsonwebtoken";
 import {ContextArgs} from "../types";
+import {prisma} from "../../index";
 // const User = require("../Models/User");
 
 
@@ -27,10 +28,11 @@ export async function createContext({ req, connection }: ContextArgs) {
       // );
       // const currentUser = await User.findById(decodedToken.id);
       const currentUser = {};
-      return { currentUser };
+
     }
+
   }
-  return null;
+  return { prisma };
 }
 
 console.log("After createContext");

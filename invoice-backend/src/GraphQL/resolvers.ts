@@ -1,4 +1,6 @@
-// import {prisma} from "../../index";
+import {prisma} from "../../index";
+// import {PrismaClient} from "@prisma/client";
+import {getPrismaClient} from "@prisma/client/runtime/library";
 import {PrismaClient} from "@prisma/client";
 
 //
@@ -13,6 +15,7 @@ interface PrismaContext {
   prisma: PrismaClient
 }
 
+// getPrismaClient(  )
 
 
 // @ts-ignore
@@ -20,8 +23,18 @@ const resolvers = {
   Query: {
     allInvoices: async (_parent: any, _args: any, context: PrismaContext) => {
       try {
-        const response = await context.prisma.invoice.findMany();
-        console.log(response);
+
+        console.log("context:", context);
+        // console.log("context.prisma:", context.prisma);
+        const response = await prisma.invoice.findMany({
+          include: {
+            items: true,
+            clientAddress: true,
+            senderAddress: true
+          }
+        });
+        console.log("response:", response);
+        // console.log(response[0].clientAddress);
         return response;
       } catch (error) {
         console.error(error);

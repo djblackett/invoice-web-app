@@ -63,7 +63,7 @@ type Token {
  }
  
  type Query {
-   allInvoices: Invoice!
+   allInvoices: [Invoice]
  }
 
   type Invoice {

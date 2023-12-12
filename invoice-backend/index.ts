@@ -139,11 +139,14 @@ const start = async () => {
 
 
 
+
+    // @ts-ignore
     app.use(
         "/",
         cors(),
         express.json(),
         expressMiddleware(server, {
+          // @ts-ignore
           // context: async ({req, connection }: ContextArgs) => await createContext({req, connection})
         })
     );
@@ -163,7 +166,7 @@ const start = async () => {
     });
 
   } catch (error) {
-    console.log("Server error:");
+    console.log("Server error:");``
     console.log(error);
   }
 };
