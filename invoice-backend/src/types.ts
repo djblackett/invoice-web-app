@@ -1,4 +1,7 @@
 import {z} from "zod";
+import express from "express";
+import {BaseContext} from "@apollo/server/dist/cjs";
+import {Context as GraphQLWSContext} from 'graphql-ws';
 
 export interface Invoice {
     clientAddress: ClientAddress,
@@ -68,3 +71,11 @@ export const invoiceZod = z.object({
     total: z.number().min(0)
 });
 
+export interface ContextArgs {
+    req: express.Request,
+    connection?: GraphQLWSContext
+}
+
+export interface MyContext extends BaseContext {
+    token?: string;
+}

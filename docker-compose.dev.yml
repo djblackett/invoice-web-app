@@ -18,6 +18,8 @@ services:
     build:
       context: invoice-backend
       dockerfile: dev.Dockerfile
+    depends_on:
+      - db-dev
     ports:
       - "8000:8000"
     environment:
@@ -42,7 +44,7 @@ services:
       - "5432:5432"
     volumes:
       - pgdata-dev:/var/lib/postgresql/data
-      - ./init.sql:/docker-entrypoint-initdb.d/init.sql
+#      - ./init.sql:/docker-entrypoint-initdb.d/init.sql
 
 
   adminer-dev:
