@@ -27,7 +27,7 @@ function ViewInvoice({ scrollPosition }: ViewInvoiceProps) {
   };
 
   const goBack = () => {
-    navigate(-1);
+    navigate("/");
     // window.scrollTo(scrollPosition.x, scrollPosition.y);
   };
 

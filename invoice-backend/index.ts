@@ -22,15 +22,16 @@ import {
   ApolloServerPluginLandingPageProductionDefault
 } from '@apollo/server/plugin/landingPage/default';
 
-
+import "dotenv/config"
 
 process.env.NODE_ENV = "production";
 
-
+console.log(process.env.DATABASE_URL);
 
 const prisma = new PrismaClient();
 
 async function main() {
+  await prisma.$connect();
   // await prisma.invoice.create({
   //   data: {
   //     id: "RT3080",

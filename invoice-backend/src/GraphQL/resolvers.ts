@@ -1,7 +1,8 @@
 import {prisma} from "../../index";
-// import {PrismaClient} from "@prisma/client";
-import {getPrismaClient} from "@prisma/client/runtime/library";
-import {PrismaClient} from "@prisma/client";
+import {Prisma } from "@prisma/client";
+// import {getPrismaClient} from "@prisma/client/runtime/library";
+import { PrismaClient} from "@prisma/client";
+import {Invoice} from "../types";
 
 //
 // const { GraphQLError } = require("graphql/error");
@@ -18,7 +19,7 @@ interface PrismaContext {
 // getPrismaClient(  )
 
 
-// @ts-ignore
+
 const resolvers = {
   Query: {
     allInvoices: async (_parent: any, _args: any, context: PrismaContext) => {
@@ -41,7 +42,78 @@ const resolvers = {
         return error;
       }
     }
-  }
+  },
+  Mutation: {
+    editInvoice: async (_parent: any, args: Partial<Invoice>): Promise<Invoice> => {
+      // args contain all the potential fields for the invoice update
+      console.log(
+          args
+      );
+      // Build an update object dynamically
+      const update: Partial<Invoice> = {};
+
+      Object.keys(args).forEach((key) => {
+        const argKey = key as keyof ( Partial<Invoice>);
+        if (args[argKey] !== undefined && argKey !== 'id') {
+
+          // This type assertion should be safe because the two interfaces' keys mirror each other
+          // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment,@typescript-eslint/ban-ts-comment
+          // @ts-ignore
+          update[argKey] = args[argKey];
+        }
+      });
+
+      // Deleting the items before updating to ensure that new copies are made. Prisma makes updating items and
+      // adding new ones at he same time really difficult
+
+      if (update.items && update.items.length >= 1) {
+        await prisma.invoice.update({
+          where: {
+            id: args.id
+          },
+          data: {
+            items: {
+              deleteMany: {}
+            }
+          }
+        });
+        console.log("Original items deleted");
+      }
+
+      const updatedInvoice = await prisma.invoice.update({
+        where: {
+          id: args.id
+        },
+        data: {
+        ...update as (Prisma.Without<Prisma.InvoiceUpdateInput, Prisma.InvoiceUncheckedUpdateInput> &
+             Prisma.InvoiceUncheckedUpdateInput),
+        items: {
+            createMany: {
+              data: update.items as (Prisma.ItemCreateManyInvoiceInput | Prisma.ItemCreateManyInvoiceInput[]),
+              skipDuplicates: true
+            },
+          }
+        },
+        include: {
+          items: true,
+          clientAddress: true,
+          senderAddress: true
+        }
+      });
+
+
+      console.log("line 101");
+      console.log(updatedInvoice);
+      console.log("Invoice updated... I think?");
+      // Update the invoice in the database
+      // Adjusted according to your database logic
+      // const updatedInvoice = await updateInvoice(args.id, update);
+
+      return updatedInvoice as unknown as Invoice;
+    },
+
+
+  },
 
 
   // Query: {

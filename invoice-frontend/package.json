@@ -2,7 +2,21 @@
   "name": "invoice-app-project-root",
   "version": "0.1.0",
   "private": true,
+  "scripts": {
+    "start": "react-scripts start",
+    "build": "react-scripts build",
+    "test": "react-scripts test",
+    "eject": "react-scripts eject",
+    "eslint": "eslint .",
+    "lint": "eslint . --ext .js --ext .jsx",
+    "lint:fix": "eslint . --fix .",
+    "lint:css": "stylelint './src/**/*.js'",
+    "format": "prettier-eslint --eslint-config-path ./.eslintrc.js --write '**/*.js'",
+    "predeploy": "npm run build",
+    "deploy": "gh-pages -d build"
+  },
   "dependencies": {
+    "@apollo/client": "^3.8.8",
     "@hookform/resolvers": "^2.9.11",
     "@reduxjs/toolkit": "^1.8.1",
     "@testing-library/jest-dom": "^5.16.4",
@@ -13,6 +27,7 @@
     "eslint-plugin-styled-components-a11y": "^2.1.31",
     "eslint-plugin-typescript-sort-keys": "^3.1.0",
     "firebase": "^9.8.2",
+    "graphql-ws": "^5.14.2",
     "immer": "^9.0.15",
     "prop-types": "^15.8.1",
     "react": "^18.1.0",
@@ -33,19 +48,6 @@
     "web-vitals": "^2.1.4",
     "yup": "^1.0.0",
     "zod": "^3.22.4"
-  },
-  "scripts": {
-    "start": "react-scripts start",
-    "build": "react-scripts build",
-    "test": "react-scripts test",
-    "eject": "react-scripts eject",
-    "eslint": "eslint .",
-    "lint": "eslint . --ext .js --ext .jsx",
-    "lint:fix": "eslint . --fix .",
-    "lint:css": "stylelint './src/**/*.js'",
-    "format": "prettier-eslint --eslint-config-path ./.eslintrc.js --write '**/*.js'",
-    "predeploy": "npm run build",
-    "deploy": "gh-pages -d build"
   },
   "browserslist": {
     "production": [

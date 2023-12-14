@@ -18,6 +18,40 @@ export interface Invoice {
     total: number
 }
 
+export interface InvoiceUpdateArgs {
+    clientAddress?: ClientAddress;
+    clientEmail?: string;
+    clientName?: string;
+    createdAt?: string;
+    description?: string;
+    id: string;
+    items?: Item[];
+    paymentDue?: string;
+    paymentTerms?: number;
+    senderAddress?: SenderAddress;
+    status?: string;
+    total?: number;
+}
+
+
+// New interface for the update object
+export interface InvoiceUpdatePayload {
+    id: string | undefined;
+    clientAddress?: ClientAddress | undefined;
+    clientEmail?: string | undefined;
+    clientName?: string | undefined;
+    createdAt?: string | undefined;
+    description?: string | undefined;
+    items?: Item[] | undefined;
+    paymentDue?: string | undefined;
+    paymentTerms?: number | undefined;
+    senderAddress?: SenderAddress | undefined;
+    status?: string | undefined;
+    total?: number | undefined;
+}
+
+
+
 export interface SenderAddress {
     city: string,
     country: string,

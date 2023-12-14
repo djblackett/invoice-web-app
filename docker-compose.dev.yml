@@ -1,3 +1,4 @@
+version: "3"
 services:
   frontend-dev:
     build:
@@ -19,15 +20,17 @@ services:
       context: invoice-backend
       dockerfile: dev.Dockerfile
     depends_on:
-      - db-dev
+      db-dev:
+        condition: service_started
+#    restart: unless-stopped
     ports:
       - "8000:8000"
     environment:
       - NODE_ENV=development
       - PORT=8000
       - REQUEST_ORIGIN=http://proxy
-      - SECRET=Secret
-      - DATABASE_URL=postgres://postgres:example@localhost:5432/postgres
+      - SECRET=theSecretStuff
+      - DATABASE_URL=postgres://postgres:example@db-dev:5432/db-dev?schema=public&connect_timout=300
     networks:
       - my_network_dev
     volumes:
@@ -35,6 +38,8 @@ services:
 
   db-dev:
     image: postgres:16.1
+    hostname: db-dev
+    container_name: db-dev
     restart: always
     environment:
       POSTGRES_PASSWORD: example
@@ -42,9 +47,16 @@ services:
       POSTGRES_USER: postgres
     ports:
       - "5432:5432"
+    networks:
+      - my_network_dev
     volumes:
       - pgdata-dev:/var/lib/postgresql/data
 #      - ./init.sql:/docker-entrypoint-initdb.d/init.sql
+    healthcheck:
+      test: [ "CMD-SHELL", "pg_isready -U postgres" ]
+      interval: 5s
+      timeout: 5s
+      retries: 5
 
 
   adminer-dev:
@@ -52,6 +64,8 @@ services:
     restart: always
     ports:
       - 8080:8080
+    networks:
+      - my_network_dev
 
   proxy-dev:
     image: nginx:1.25.2

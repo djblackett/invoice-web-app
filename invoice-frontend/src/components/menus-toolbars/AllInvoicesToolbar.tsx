@@ -230,12 +230,6 @@ function AllInvoicesToolbar({ invoiceList, setIsNewOpen }: AllInvoicesToolbarPro
     setIsOpen(!isOpen);
   };
 
-  // const togglingButton = (e: { charCode: number; keyCode: number; }) => {
-  //   if (e.charCode === 13 || e.keyCode === 13) {
-  //     setIsOpen(!isOpen);
-  //   }
-  // };
-
   const filter = useSelector(selectFilter);
 
   useEffect(() => {

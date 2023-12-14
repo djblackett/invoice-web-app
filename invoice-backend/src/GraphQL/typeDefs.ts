@@ -1,23 +1,7 @@
 const typeDefs = `
 
-  type Book {
-    title: String!
-    published: Int!
-    author: Author!
-    id: String!
-    genres: [String!]!
-  }
-
-  type Author {
-  name: String!
-  id: String!
-  born: Int,
-  bookCount: Int
- }
-
  type User {
   username: String!
-  favoriteGenre: String!
   id: ID!
 }
 
@@ -25,48 +9,7 @@ type Token {
   value: String!
 }
 
-  type Mutation {
-    addBook(
-      title: String!
-      published: Int!
-      author: String!
-      genres: [String!]!
-  ): Book
-
-  editAuthor(
-    name: String!
-    setBornTo: Int!
-  ): Author
-
-  createUser(
-    username: String!
-    favoriteGenre: String!
-  ): User
-  login(
-    username: String!
-    password: String!
-  ): Token
-
-}
-
- type Subscription {
-    bookAdded: Book!
-    }
-
- type Query {
-   bookCount: Int!
-   authorCount: Int!,
-   author: Author!
-   allBooks(author: String, genre: String): [Book]!
-   allAuthors: [Author!]!
-   me: User
- }
- 
- type Query {
-   allInvoices: [Invoice]
- }
-
-  type Invoice {
+type Invoice {
     clientAddress: ClientAddress,
     clientEmail: String,
     clientName: String,
@@ -80,7 +23,6 @@ type Token {
     status: String,
     total: Float
 }
-
 
 type SenderAddress {
     city: String,
@@ -103,6 +45,79 @@ type Item {
     quantity: Int,
     total: Float
 }
+
+input ClientInfo {
+     city: String,
+    country: String,
+    postCode: String
+    street: String
+    }
+    
+  input SenderInfo {
+     city: String,
+    country: String,
+    postCode: String
+    street: String
+    }
+    
+    input ItemInput {
+        id: String,
+        name: String
+        price: Float,
+        quantity: Int,
+        total: Float
+    }
+
+type Query {
+   allInvoices: [Invoice]
+   invoice: Invoice
+ }
+
+  type Mutation {
+    addInvoice(
+        clientAddress: ClientInfo,
+        clientEmail: String,
+        clientName: String,
+        createdAt: String,
+        description: String,
+        id: String,
+        items: [ItemInput],
+        paymentDue: String,
+        paymentTerms: Float,
+        senderAddress: SenderInfo, 
+        status: String,
+        total: Float
+  ): Invoice
+
+  editInvoice(
+        clientAddress: ClientInfo,
+        clientEmail: String,
+        clientName: String,
+        createdAt: String,
+        description: String,
+        id: String,
+        items: [ItemInput],
+        paymentDue: String,
+        paymentTerms: Float,
+        senderAddress: SenderInfo,
+        status: String,
+        total: Float
+  ): Invoice
+
+  createUser(
+    username: String!
+  ): User
+  
+  login(
+    username: String!
+    password: String!
+  ): Token
+
+}
+
+ type Subscription {
+    invoiceAdded: Invoice!
+    }
 `;
 
 export default typeDefs;
