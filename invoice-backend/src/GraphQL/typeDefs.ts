@@ -70,7 +70,13 @@ input ClientInfo {
 
 type Query {
    allInvoices: [Invoice]
-   invoice: Invoice
+   getInvoiceById(
+     id: String!
+   ): Invoice
+   getAllClientAddresses: [ClientAddress]
+   getAllSenderAddresses: [SenderAddress]
+   allUsers: [User]
+   me: User
  }
 
   type Mutation {
@@ -104,8 +110,14 @@ type Query {
         total: Float
   ): Invoice
 
+  removeInvoice(
+  id: String!
+  ) : String
+
   createUser(
+    name: String
     username: String!
+    password: String!
   ): User
   
   login(

@@ -22,7 +22,7 @@ import {
   ApolloServerPluginLandingPageProductionDefault
 } from '@apollo/server/plugin/landingPage/default';
 
-import "dotenv/config"
+import "dotenv/config";
 
 process.env.NODE_ENV = "production";
 
@@ -32,53 +32,6 @@ const prisma = new PrismaClient();
 
 async function main() {
   await prisma.$connect();
-  // await prisma.invoice.create({
-  //   data: {
-  //     id: "RT3080",
-  //     createdAt: "2021-08-18",
-  //     paymentDue: "2021-08-19",
-  //     description: "Re-branding",
-  //     paymentTerms: 1,
-  //     clientName: "Jensen Huang",
-  //     clientEmail: "jensenh@mail.com",
-  //     status: "paid",
-  //     senderAddress: {
-  //       create: {
-  //       street: "19 Union Terrace",
-  //       city: "London",
-  //       postCode: "E1 3EZ",
-  //       country: "United Kingdom"
-  //     },},
-  //     clientAddress: {
-  //       create: {
-  //         street: "106 Kendell Street",
-  //         city: "Sharrington",
-  //         postCode: "NR24 5WQ",
-  //         country: "United Kingdom"
-  //       }
-  //     },
-  //     items: {
-  //       create: [{
-  //             id: "gbfhdsqg4783743bvh",
-  //             name: "Brand Guidelines",
-  //             quantity: 1,
-  //             price: 1800.90,
-  //             total: 1800.90
-  //       }],
-  //     },
-  //     total: 1800.90
-  //   },
-  // });
-
-  // const allInvoices = await prisma.invoice.findMany({
-  //   include: {
-  //     senderAddress: true,
-  //     clientAddress: true,
-  //     items: true
-  //   }
-  // });
-  // console.log(allInvoices);
-  // console.log(allInvoices[0].items);
 }
 
 
@@ -167,7 +120,7 @@ const start = async () => {
     });
 
   } catch (error) {
-    console.log("Server error:");``
+    console.log("Server error:");
     console.log(error);
   }
 };

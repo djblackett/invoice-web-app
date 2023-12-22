@@ -2,18 +2,20 @@ import React, {useState, useEffect } from "react";
 import { useSelector, useDispatch } from "react-redux";
 import { Link } from "react-router-dom";
 import styled from "styled-components";
+import {useQuery} from "@apollo/client";
 import { MemoizedAllInvoicesToolbar } from "../components/menus-toolbars/AllInvoicesToolbar";
 import InvoiceGrid from "../components/invoice-components/InvoiceGrid";
 import InvoiceCard from "../components/invoice-components/InvoiceCard";
 import EmptyList from "../components/EmptyList";
 import {
-  selectInvoices,
+  // selectInvoices,
   addIdToExistingInvoices,
 } from "../features/invoices/invoicesSlice";
 import { selectFilter } from "../features/invoices/filterSlice";
 import NewInvoice from "./NewInvoice";
 import useWindowWidth  from "../hooks/useWindowWidth";
-import {AllInvoicesProps} from "../types/types";
+import {AllInvoicesProps, Invoice} from "../types/types";
+import {ALL_INVOICES} from "../graphql/queries";
 
 const AllInvoicesContainer = styled.div`
   width: 100%;
@@ -31,13 +33,15 @@ const AllInvoicesContainer = styled.div`
   }
 `;
 
-function AllInvoices({ setScrollPosition}: AllInvoicesProps) {
+function AllInvoices({setScrollPosition}: AllInvoicesProps) {
 
   const filter = useSelector(selectFilter);
   const dispatch = useDispatch();
-  const data = useSelector(selectInvoices);
-  const [invoiceList, setInvoiceList] = useState(data);
+  // const data = useSelector(selectInvoices);
+  const invoiceResults = useQuery(ALL_INVOICES);
+  const [invoiceList, setInvoiceList] = useState([]);
   const width = useWindowWidth();
+
 
   const [isNewOpen, setIsNewOpen] = useState(false);
   const [padding, setPadding] = useState("");
@@ -61,44 +65,64 @@ function AllInvoices({ setScrollPosition}: AllInvoicesProps) {
   };
 
   const scrollToTop = () => {
-    setScrollPosition({ x: window.scrollX, y: window.scrollY });
+    setScrollPosition({x: window.scrollX, y: window.scrollY});
     window.scrollTo(0, 0);
   };
 
   useEffect(() => {
-    dispatch(addIdToExistingInvoices());
+    if (invoiceResults.data) {
+      dispatch(addIdToExistingInvoices());
+    }
   }, [dispatch]);
 
 
   // Because the filter menu has 3 checkboxes, there are many cases to consider
   // All of them checked is the same as none of them checked - Nobody really wants an empty list
   useEffect(() => {
-    setInvoiceList(
-      data.filter((invoice) => {
-        if (!filter.draft && !filter.pending && !filter.paid) {
-          return true;
-        } if (filter.draft && filter.pending && filter.paid) {
-          return true;
-        } if (filter.draft && filter.paid) {
-          return invoice.status === "paid" || invoice.status === "draft";
-        } if (filter.draft && filter.pending) {
-          return invoice.status === "pending" || invoice.status === "draft";
-        } if (filter.pending && filter.paid) {
-          return invoice.status === "paid" || invoice.status === "pending";
-        } if (filter.paid) {
-          return invoice.status === "paid";
-        } if (filter.pending) {
-          return invoice.status === "pending";
-        } if (filter.draft) {
-          return invoice.status === "draft";
-        }
-      })
-    );
-  }, [filter, data]);
+    if (invoiceResults.data) {
+      setInvoiceList(
+        invoiceResults?.data?.allInvoices?.filter((invoice: { status: string; }) => {
+          if (!filter.draft && !filter.pending && !filter.paid) {
+            return true;
+          }
+          if (filter.draft && filter.pending && filter.paid) {
+            return true;
+          }
+          if (filter.draft && filter.paid) {
+            return invoice.status === "paid" || invoice.status === "draft";
+          }
+          if (filter.draft && filter.pending) {
+            return invoice.status === "pending" || invoice.status === "draft";
+          }
+          if (filter.pending && filter.paid) {
+            return invoice.status === "paid" || invoice.status === "pending";
+          }
+          if (filter.paid) {
+            return invoice.status === "paid";
+          }
+          if (filter.pending) {
+            return invoice.status === "pending";
+          }
+          if (filter.draft) {
+            return invoice.status === "draft";
+          }
+        })
+      );
+    }
+  }, [filter, invoiceResults.data]);
+
+
+  if (invoiceResults.loading) {
+    return <h2>Loading</h2>;
+  }
+
+  if (invoiceResults.error) {
+    return <h1>{invoiceResults.error.message}</h1>;
+  }
 
   return (
     <AllInvoicesContainer>
-      <MemoizedAllInvoicesToolbar invoiceList={invoiceList} setIsNewOpen={setIsNewOpen} />
+      <MemoizedAllInvoicesToolbar invoiceList={invoiceList} setIsNewOpen={setIsNewOpen}/>
       <NewInvoice
         isNewOpen={isNewOpen}
         setIsNewOpen={setIsNewOpen}
@@ -107,7 +131,7 @@ function AllInvoices({ setScrollPosition}: AllInvoicesProps) {
       />
       {invoiceList.length > 0 && (
         <InvoiceGrid>
-          {invoiceList.map((invoice) => (
+          {invoiceList.map((invoice: Invoice) => (
             <Link
               key={`${invoice.id  }-link`}
               to={`/${invoice.id}`}

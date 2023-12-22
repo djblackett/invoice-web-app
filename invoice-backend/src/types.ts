@@ -113,3 +113,62 @@ export interface ContextArgs {
 export interface MyContext extends BaseContext {
     token?: string;
 }
+
+export interface User {
+    id: number;
+    name: string;
+    username: string;
+    passwordHash: string;
+}
+
+export interface ReturnedUser {
+    id: number;
+    name: string;
+    username: string;
+}
+
+export interface CreateUserArgs {
+    name: string;
+    username: string;
+    password: string;
+}
+
+export interface LoginArgs {
+    username: string;
+    password: string
+}
+
+export interface GetInvoiceByIdArgs {
+    id: string;
+}
+
+export interface InvoiceCreateArgs {
+    clientEmail: string;
+    clientName: string;
+    createdAt: string;
+    description: string;
+    id: string;
+    paymentDue: string;
+    paymentTerms: number;
+    status: string;
+    total: number;
+    clientAddress: {
+        city: string;
+        country: string;
+        postCode: string;
+        street: string;
+    };
+    senderAddress: {
+        city: string;
+        country: string;
+        postCode: string;
+        street: string;
+    };
+    items: Array<{
+        name: string;
+        price: number;
+        quantity: number;
+        total: number;
+        id?: string | undefined
+    }>;
+}
