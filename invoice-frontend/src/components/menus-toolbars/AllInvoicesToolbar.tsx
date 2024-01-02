@@ -33,7 +33,6 @@ const GridContainer = styled.div`
     padding-right: 48px;
   }
 
-
   @media (min-width: 1200px) {
     min-width: 730px;
     max-width: 50%;
@@ -62,12 +61,13 @@ const TitleBox = styled.div`
 const Title = styled.h1`
   margin: 0;
   font-size: 2rem;
+  color: var(--colors-text);
 `;
 
 const InvoicesLeft = styled.p`
   margin: 0;
 
-  color: ${({ theme }) => theme.greyText};
+  color: var(--colors-grey-text);
 
   .wideScreenText {
     display: none;
@@ -78,6 +78,7 @@ const InvoicesLeft = styled.p`
 
     .wideScreenText {
       display: inline;
+      
     }
   }
 `;
@@ -214,10 +215,13 @@ const plusSignSVG = (
 
 type AllInvoicesToolbarProps = {
   invoiceList: Invoice[];
-  setIsNewOpen: (b: boolean) => void
-}
+  setIsNewOpen: (b: boolean) => void;
+};
 
-function AllInvoicesToolbar({ invoiceList, setIsNewOpen }: AllInvoicesToolbarProps) {
+function AllInvoicesToolbar({
+  invoiceList,
+  setIsNewOpen,
+}: AllInvoicesToolbarProps) {
   const [isOpen, setIsOpen] = useState(false);
   const [filterText, setFilterText] = useState("total");
   const width = useWindowWidth();
@@ -268,7 +272,10 @@ function AllInvoicesToolbar({ invoiceList, setIsNewOpen }: AllInvoicesToolbarPro
             options={["Draft", "Pending", "Paid"]}
           />
         </FilterButton>
-        <NewInvoiceButton onClick={openNewInvoice} data-testid="newInvoiceButton">
+        <NewInvoiceButton
+          onClick={openNewInvoice}
+          data-testid="newInvoiceButton"
+        >
           <WhiteCircle>{plusSignSVG}</WhiteCircle>
           <NewText>
             New <span className="largeScreenText">Invoice</span>

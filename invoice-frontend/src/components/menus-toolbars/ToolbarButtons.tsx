@@ -4,7 +4,7 @@ import React from "react";
 import EditButton from "../buttons/EditButton";
 import DeleteButton from "../buttons/DeleteButton";
 import MarkAsPaidButton from "../buttons/MarkAsPaidButton";
-import {Invoice} from "../../types/types";
+import { Invoice } from "../../types/types";
 
 const ButtonsContainer = styled.div`
   display: flex;
@@ -17,10 +17,10 @@ const ButtonsContainer = styled.div`
   bottom: 0;
   left: 0;
   right: 0;
-  background-color: ${({ theme }) => theme.background};
+  background-color: var(--colors-background);
   margin-top: 3.5rem;
   order: 2;
-  
+
   @media (min-width: 325px) {
     width: 100%;
     padding: 1.4rem 1.5rem;
@@ -37,17 +37,21 @@ const ButtonsContainer = styled.div`
 `;
 
 type ToolbarButtonsProps = {
-    invoice: Invoice;
-    isEditOpen: boolean;
-    openModal: () => void;
-    toggleEditTab: React.Dispatch<React.SetStateAction<boolean>>
-}
+  invoice: Invoice;
+  isEditOpen: boolean;
+  openModal: () => void;
+  toggleEditTab: React.Dispatch<React.SetStateAction<boolean>>;
+};
 
-
-function ToolbarButtons({ toggleEditTab, invoice, openModal, isEditOpen}: ToolbarButtonsProps) {
+function ToolbarButtons({
+  toggleEditTab,
+  invoice,
+  openModal,
+  isEditOpen,
+}: ToolbarButtonsProps) {
   return (
     <ButtonsContainer>
-      <EditButton toggleEditTab={toggleEditTab} isEditOpen={isEditOpen}/>
+      <EditButton toggleEditTab={toggleEditTab} isEditOpen={isEditOpen} />
       <DeleteButton handleClick={openModal} />
       <MarkAsPaidButton invoice={invoice} />
     </ButtonsContainer>

@@ -16,7 +16,7 @@ const PrimaryButton = styled.button`
 
 type ButtonProps = {
   children: React.ReactNode;
-}
+};
 
 function Button({ children }: ButtonProps) {
   return <PrimaryButton type="button">{children}</PrimaryButton>;

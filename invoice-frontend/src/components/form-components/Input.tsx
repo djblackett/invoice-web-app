@@ -5,7 +5,7 @@ export const InputStyles = styled.input`
   width: 240px;
   height: 48px;
   border-radius: 4px;
-  border-color: ${({ theme }) => theme.formFieldOutline};
+  border-color: var("--color-form-field-outline");
   border-width: 1px;
   padding: 17px 20px 16px 20px;
   margin-bottom: 1.5rem;
@@ -16,8 +16,8 @@ export const InputStyles = styled.input`
   line-height: 15px;
   /* identical to box height, or 125% */
   letter-spacing: -0.25px;
-  color: ${({ theme }) => theme.textPlain};
-  background-color: ${({ theme }) => theme.editButton};
+  color: var(--colors-text-plain);
+  background-color: var("colors-edit-button");
 
   &:focus {
     border-color: black;
@@ -29,8 +29,8 @@ export const InputStyles = styled.input`
 `;
 
 type InputProps = {
-    width: number;
-}
+  width: number;
+};
 
 function Input({ width }: InputProps) {
   return <InputStyles style={{ width: `${width}px` }} />;

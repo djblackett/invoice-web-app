@@ -1,5 +1,8 @@
 import styled from "styled-components";
 import PropTypes from "prop-types";
+import { useTheme } from "next-themes";
+import React from "react";
+
 /* eslint-disable no-undef */
 const HeaderContainer = styled.div`
   width: 100%;
@@ -9,11 +12,11 @@ const HeaderContainer = styled.div`
   flex-direction: row;
   justify-content: space-between;
   align-items: center;
-  background: ${({ theme }) => theme.headerBackground};
+  background: var(--colors-header-background);
   z-index: 1000;
   position: fixed;
   //transition: background-color .2s ease-in;
-  
+
   @media (min-width: 1200px) {
     flex-direction: column;
     display: flex;
@@ -125,30 +128,34 @@ const sun = (
 );
 
 type HeaderProps = {
-    theme: string;
-    themeToggler: () => void;
-}
+  // theme?: string;
+  themeToggler?: () => void;
+};
 
-function Header({ themeToggler, theme }: HeaderProps) {
-  return (
+function Header() {
+
+    const [theme, setTheme] = React.useState('light')
+    const nextTheme = theme === 'light' ? 'dark' : 'light'
+    React.useEffect(() => {
+        document.body.dataset.theme = theme
+    }, [theme])
+
+    return (
     <HeaderContainer>
       <Logo>
         <BottomColorBoxForLogo />
         {logo}
       </Logo>
       <DarkModeProfileContainer>
-        <DarkLightBox onClick={themeToggler}>
+        <DarkLightBox onClick={() => setTheme(nextTheme)}>
           {theme === "light" ? moon : sun}
         </DarkLightBox>
 
         <AvatarBox>
           <img
-
-            src={`${process.env.PUBLIC_URL  }/assets/image-avatar.jpg`}
+            src={`/assets/image-avatar.jpg`}
             alt=""
-
-            style={{ borderRadius: "50%", height:"32px",
-              width: "32px" }}
+            style={{ borderRadius: "50%", height: "32px", width: "32px" }}
           />
         </AvatarBox>
       </DarkModeProfileContainer>

@@ -1,5 +1,5 @@
 import styled from "styled-components";
-import  PropTypes  from "prop-types";
+import PropTypes from "prop-types";
 
 const Button = styled.button`
   background-color: #ec5757;
@@ -21,10 +21,14 @@ const Button = styled.button`
 `;
 
 type DeleteProps = {
-    handleClick: () => void;
-}
+  handleClick: () => void;
+};
 function DeleteButton({ handleClick }: DeleteProps) {
-  return <Button onClick={handleClick} type="button">Delete</Button>;
+  return (
+    <Button onClick={handleClick} type="button">
+      Delete
+    </Button>
+  );
 }
 
 export default DeleteButton;

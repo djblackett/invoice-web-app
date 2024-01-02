@@ -27,6 +27,7 @@ export const lightTheme = {
   paymentTermsBackground: "white",
   paymentOptionBorder: "#DFE3FA",
 };
+
 export const darkTheme = {
   body: "#141625",
   text: "hsl(0, 0%, 100%)",
@@ -55,4 +56,3 @@ export const darkTheme = {
   paymentTermsBackground: "#252945",
   paymentOptionBorder: "#1E2139",
 };
-

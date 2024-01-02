@@ -1,11 +1,11 @@
 import styled from "styled-components";
 import { useDispatch } from "react-redux";
-import { useNavigate } from "react-router-dom";
+import { useRouter } from "next/navigation";
 import React from "react";
 import DeleteButton from "./buttons/DeleteButton";
 import { removeInvoice } from "../features/invoices/invoicesSlice";
 import CancelButton from "./buttons/CancelButton";
-import {Invoice} from "../types/types";
+import { Invoice } from "../types/types";
 
 export const DarkenScreen = styled.div`
   display: flex;
@@ -28,7 +28,7 @@ const ModalContainer = styled.div`
   justify-content: center;
   flex-direction: column;
   padding: 3rem;
-  background-color: ${({ theme }) => theme.background};
+  background-color: var(--colors-background);
   max-width: 480px;
   border-radius: 8px;
   box-shadow: 0px 10px 10px -10px rgba(72, 84, 159, 0.100397);
@@ -41,7 +41,7 @@ const Confirm = styled.h1`
   line-height: 32px;
   /* identical to box height, or 133% */
   letter-spacing: -0.5px;
-  color: ${({ theme }) => theme.text};
+  color: var(--colors-text);
   margin: 0;
   margin-bottom: 13px;
 `;
@@ -53,7 +53,7 @@ const Description = styled.p`
   /* or 183% */
 
   letter-spacing: 0.25px;
-  color: ${({ theme }) => theme.greyText};
+  color: var(--colors-grey-text);
 `;
 
 const ButtonContainer = styled.div`
@@ -63,19 +63,22 @@ const ButtonContainer = styled.div`
 `;
 
 export type DeleteModalProps = {
-  invoice: Invoice,
+  invoice: Invoice;
   isModalOpen: boolean;
   setIsModalOpen: React.Dispatch<React.SetStateAction<boolean>>;
-}
+};
 
-function DeleteModal({ isModalOpen, setIsModalOpen, invoice }: DeleteModalProps) {
+function DeleteModal({
+  isModalOpen,
+  setIsModalOpen,
+  invoice,
+}: DeleteModalProps) {
   const dispatch = useDispatch();
-  const navigate = useNavigate();
+  const router = useRouter();
 
   const handleClick = () => {
-    navigate("/");
+    router.push("/");
     dispatch(removeInvoice(invoice.id));
-
   };
 
   const closeModal = () => setIsModalOpen(false);

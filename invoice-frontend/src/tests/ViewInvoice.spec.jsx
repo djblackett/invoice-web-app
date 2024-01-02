@@ -3,7 +3,7 @@
 // import {HashRouter} from "react-router-dom";
 // import React from "react";
 // import store from "../app/store";
-// import ViewInvoice from "../pages/ViewInvoice";
+// import ViewInvoice from "../old_pages/ViewInvoice";
 // import { testInvoice } from "./testData";
 
 // describe("ViewInvoice component", () => {

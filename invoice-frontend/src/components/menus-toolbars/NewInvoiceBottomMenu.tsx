@@ -15,13 +15,13 @@ const MenuContainer = styled.div`
   margin-top: 2.6rem;
   margin-bottom: 4rem;
   align-self: center;
-  transform: scale(.90);
-  
+  transform: scale(0.9);
+
   @media (min-width: 325px) {
     justify-content: space-between;
     transform: scale(1);
   }
-  
+
   @media (min-width: 768px) {
     margin-bottom: 0;
   }
@@ -83,7 +83,7 @@ type NewInvoiceBoottemMenuProps = {
   saveText: string;
   setIsDraft: (b: boolean) => void;
   setIsOpen: (b: boolean) => void;
-}
+};
 
 function NewInvoiceBottomMenu({
   setIsDraft,
@@ -91,9 +91,8 @@ function NewInvoiceBottomMenu({
   saveText,
   closeText,
   justifyCancel,
-  onSubmit
+  onSubmit,
 }: NewInvoiceBoottemMenuProps) {
-
   const { clearErrors, setValue, reset } = useFormContext();
 
   const closeMenu = () => {
@@ -103,7 +102,6 @@ function NewInvoiceBottomMenu({
   };
 
   const setToDraft = () => {
-
     flushSync(() => {
       setIsDraft(true);
       setValue("status", "draft");
@@ -113,14 +111,12 @@ function NewInvoiceBottomMenu({
   };
 
   const setToPending = () => {
-
     flushSync(() => {
       setIsDraft(false);
       setValue("status", "pending");
     });
     onSubmit();
   };
-
 
   return (
     <MenuContainer>
@@ -149,5 +145,5 @@ NewInvoiceBottomMenu.propTypes = {
   saveText: PropTypes.string.isRequired,
   closeText: PropTypes.string.isRequired,
   justifyCancel: PropTypes.string.isRequired,
-  onSubmit: PropTypes.func.isRequired
+  onSubmit: PropTypes.func.isRequired,
 };

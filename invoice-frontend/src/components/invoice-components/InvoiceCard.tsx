@@ -2,12 +2,12 @@ import styled from "styled-components";
 import { useMemo } from "react";
 import InvoiceStatus from "./InvoiceStatus";
 import { getMoney } from "../../utils/utilityFunctions";
-import {Invoice} from "../../types/types";
+import { Invoice } from "../../types/types";
 
 const Card = styled.div`
   height: 134px;
   width: 100%;
-  background-color: ${({ theme }) => theme.background};
+  background-color: var(--colors-object-background);
   display: grid;
   grid-template-columns: 1fr 1fr;
   grid-template-rows: 43px 43px;
@@ -23,21 +23,21 @@ const Card = styled.div`
   transition: background-color 0.4s ease-in-out;
 
   &:hover {
-    border: 1px solid ${({ theme }) => theme.outline};
+    border: 1px solid var("--colors-outline");
   }
 
   @media (min-width: 600px) {
     grid-template-rows: 1fr;
-    
+
     // calculations for the grid-template-columns based on design spec
     // container = 672px  or 624px without padding
     // 1st box = 87  so 87/624 = 14%
     //2nd box = 143px so 143/624 = 23%
-    // 3rd 136 so 136/ 624 = 
-    // 130 
-    // 124 
+    // 3rd 136 so 136/ 624 =
+    // 130
+    // 124
     // 4
-    
+
     grid-template-columns: 14% 23% 21.6% 20.8% 19.9% 2%;
     grid-auto-flow: dense;
     align-items: center;
@@ -57,12 +57,12 @@ const Card = styled.div`
 const IDNumber = styled.p`
   margin: 0;
   font-weight: bold;
-  color: ${({ theme }) => theme.textPlain};
+  color: var(--colors-text-plain);
 `;
 
 const DueDate = styled.p`
   margin: 0;
-  color: ${({ theme }) => theme.greyText};
+  color: var(--colors-grey-text);
 `;
 
 const DueDateAmountBox = styled.div`
@@ -81,12 +81,12 @@ const InvoiceAmount = styled.p`
   margin: 0;
   line-height: 24px;
   font-size: 16px;
-  color: ${({ theme }) => theme.textPlain};
+  color: var(--colors-text-plain);
 `;
 
 const CustomerName = styled.p`
   margin: 0;
-  color: ${({ theme }) => theme.textPlain};
+  color: var(--colors-text-plain);
   font-weight: 500;
   font-size: 12px;
   line-height: 15px;
@@ -123,24 +123,28 @@ const arrowRightSVG = (
 );
 
 export type InvoiceCardProps = {
-    invoice: Invoice
-}
+  invoice: Invoice;
+};
 
 function InvoiceCard({ invoice }: InvoiceCardProps) {
   const invoiceStatus = useMemo(() => {
     if (invoice.status === "paid") {
-      return <InvoiceStatus statusType="paid" text="Paid"/>;
-    } if (invoice.status === "pending") {
-      return <InvoiceStatus statusType="pending" text="Pending"/>;
-    } if (invoice.status === "draft") {
-      return <InvoiceStatus statusType="draft" text="Draft"/>;
+      return <InvoiceStatus statusType="paid" text="Paid" />;
+    }
+    if (invoice.status === "pending") {
+      return <InvoiceStatus statusType="pending" text="Pending" />;
+    }
+    if (invoice.status === "draft") {
+      return <InvoiceStatus statusType="draft" text="Draft" />;
     }
   }, [invoice]);
 
   const convertedDate = () => {
     if (invoice.paymentDue) {
       const date = invoice.paymentDue.split("-");
-      const dateObj = new Date(Date.UTC(Number(date[0]), Number(date[1]), Number(date[2])));
+      const dateObj = new Date(
+        Date.UTC(Number(date[0]), Number(date[1]), Number(date[2])),
+      );
       const utcDateArr = dateObj.toUTCString().split(" ");
       return `${utcDateArr[1]}  ${utcDateArr[2]} ${utcDateArr[3]}`;
     }

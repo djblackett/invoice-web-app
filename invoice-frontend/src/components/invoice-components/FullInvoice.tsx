@@ -1,20 +1,27 @@
 import ItemList from "./ItemList";
 import useWindowWidth from "../../hooks/useWindowWidth";
-import {FullInvoiceProps } from "../../types/types";
-import {convertedDate} from "../../utils/utilityFunctions";
+import { FullInvoiceProps } from "@/types/types";
+import { convertedDate } from "@/utils/utilityFunctions";
 import {
   Address,
-  AddressEntry, BottomEntry,
+  AddressEntry,
+  BottomEntry,
   Card,
-  Description, EmbeddedAddress, GenericInvoiceEntry,
+  Description,
+  EmbeddedAddress,
+  GenericInvoiceEntry,
   IdAndDescription,
-  IDNumber, InfoGrid, NamePlusAddress, TopEntry,
-  TopRow
-} from "../../styles/FullInvoiceStyles";
+  IDNumber,
+  InfoGrid,
+  NamePlusAddress,
+  TopEntry,
+  TopRow,
+} from "@/styles/FullInvoiceStyles";
 
 function FullInvoice({ invoice }: FullInvoiceProps) {
   const width = useWindowWidth();
-
+  console.log("invoice:",invoice)
+  console.log(invoice.id)
   return (
     <Card>
       <TopRow>
@@ -26,12 +33,10 @@ function FullInvoice({ invoice }: FullInvoiceProps) {
           <Description>{invoice.description}</Description>
         </IdAndDescription>
         <Address style={{ textAlign: width >= 768 ? "right" : "left" }}>
-
-          <AddressEntry >{invoice.senderAddress.street}</AddressEntry>
-          <AddressEntry >{invoice.senderAddress.city}</AddressEntry>
-          <AddressEntry >{invoice.senderAddress.postCode}</AddressEntry>
-          <AddressEntry >{invoice.senderAddress.country}</AddressEntry>
-
+          <AddressEntry>{invoice.senderAddress.street}</AddressEntry>
+          <AddressEntry>{invoice.senderAddress.city}</AddressEntry>
+          <AddressEntry>{invoice.senderAddress.postCode}</AddressEntry>
+          <AddressEntry>{invoice.senderAddress.country}</AddressEntry>
         </Address>
       </TopRow>
 
@@ -50,12 +55,10 @@ function FullInvoice({ invoice }: FullInvoiceProps) {
             <BottomEntry>{invoice.clientName}</BottomEntry>
           </GenericInvoiceEntry>
           <EmbeddedAddress>
-
-            <AddressEntry >{invoice.clientAddress.street}</AddressEntry>
-            <AddressEntry >{invoice.clientAddress.city}</AddressEntry>
-            <AddressEntry >{invoice.clientAddress.postCode}</AddressEntry>
-            <AddressEntry >{invoice.clientAddress.country}</AddressEntry>
-
+            <AddressEntry>{invoice.clientAddress.street}</AddressEntry>
+            <AddressEntry>{invoice.clientAddress.city}</AddressEntry>
+            <AddressEntry>{invoice.clientAddress.postCode}</AddressEntry>
+            <AddressEntry>{invoice.clientAddress.country}</AddressEntry>
           </EmbeddedAddress>
         </NamePlusAddress>
         <GenericInvoiceEntry>
@@ -67,6 +70,5 @@ function FullInvoice({ invoice }: FullInvoiceProps) {
     </Card>
   );
 }
-
 
 export default FullInvoice;

@@ -1,5 +1,5 @@
 import styled from "styled-components";
-import React, {CSSProperties} from "react";
+import React, { CSSProperties } from "react";
 
 export const FormEntryContainer = styled.div`
   display: flex;
@@ -13,14 +13,11 @@ export const FormEntryContainer = styled.div`
 type LongFormEntryProps = {
   children: React.ReactNode;
   className: string;
-  style?: CSSProperties | undefined
-}
+  style?: CSSProperties | undefined;
+};
 
 function LongFormEntry({ className, children, style }: LongFormEntryProps) {
-
-  const handleChange = () => {
-
-  };
+  const handleChange = () => {};
 
   return (
     <FormEntryContainer

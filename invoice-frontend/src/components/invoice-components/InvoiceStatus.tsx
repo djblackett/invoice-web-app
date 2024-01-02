@@ -10,11 +10,10 @@ const InvoiceStatusBox = styled.div`
   justify-content: center;
   align-items: center;
   justify-self: end;
-  
+
   @media (min-width: 600px) {
     justify-self: start;
   }
-
 `;
 
 const TextCircleBox = styled.div`
@@ -44,16 +43,16 @@ const Circle = styled.div`
 `;
 
 export type InvoiceStatusProps = {
-    statusType: string;
-    text: string;
-}
+  statusType: string;
+  text: string;
+};
 
-function InvoiceStatus({ text, statusType }: InvoiceStatusProps ) {
+function InvoiceStatus({ text, statusType }: InvoiceStatusProps) {
   return (
     <InvoiceStatusBox className={statusType}>
       <TextCircleBox>
-        <Circle className="circle"/>
-        <StatusText >{text}</StatusText>
+        <Circle className="circle" />
+        <StatusText>{text}</StatusText>
       </TextCircleBox>
     </InvoiceStatusBox>
   );
@@ -61,7 +60,6 @@ function InvoiceStatus({ text, statusType }: InvoiceStatusProps ) {
 
 InvoiceStatus.propTypes = {
   text: PropTypes.string.isRequired,
-  statusType: PropTypes.string.isRequired
-
+  statusType: PropTypes.string.isRequired,
 };
 export default InvoiceStatus;

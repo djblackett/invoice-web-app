@@ -4,13 +4,12 @@ import { useDispatch } from "react-redux";
 import InvoiceItem from "./InvoiceItem";
 import { addIdToExistingInvoices } from "../../features/invoices/invoicesSlice";
 import { getMoney } from "../../utils/utilityFunctions";
-import {Invoice} from "../../types/types";
+import { Invoice } from "../../types/types";
 
 const ListContainer = styled.div`
   display: grid;
   width: 100%;
   border-radius: 8px;
-  
 `;
 
 const AmountDue = styled.div`
@@ -18,7 +17,7 @@ const AmountDue = styled.div`
   align-items: center;
   justify-content: space-between;
   height: 80px;
-  background-color: ${({ theme }) => theme.amountDueBackground};
+  background-color: var("--colors-amount-due-background");
   padding: 2rem;
   border-radius: 0 0 8px 8px;
 `;
@@ -66,8 +65,8 @@ const ItemsHeader = styled.div`
   @media (min-width: 768px) {
     display: grid;
     grid-template: 1fr / 2fr 1fr 1fr 1fr;
-    color: ${({ theme }) => theme.greyText};
-    background-color: ${({ theme }) => theme.editButton};
+    color: var(--colors-grey-text);
+    background-color: var("colors-edit-button");
     margin-top: 3rem;
     padding: 2rem;
     border-radius: 8px 8px 0 0;
@@ -96,7 +95,7 @@ const ItemsContainer = styled.div`
   width: 100%;
   margin-top: 2.5rem;
   border-radius: 8px 8px 0 0;
-  background-color: ${({ theme }) => theme.editButton};
+  background-color: var("colors-edit-button");
 
   @media (min-width: 768px) {
     padding: 0;
@@ -108,11 +107,10 @@ const ItemsContainer = styled.div`
 let count = 0;
 
 type ItemListProps = {
-    invoice: Invoice
-}
+  invoice: Invoice;
+};
 
 function ItemList({ invoice }: ItemListProps) {
-
   const dispatch = useDispatch();
 
   useLayoutEffect(() => {
@@ -129,7 +127,7 @@ function ItemList({ invoice }: ItemListProps) {
       </ItemsHeader>
       <ItemsContainer>
         {invoice.items.map((item) => (
-          <InvoiceItem item={item} key={`itemList-${  item.id || ++count}`} />
+          <InvoiceItem item={item} key={`itemList-${item.id || ++count}`} />
         ))}
       </ItemsContainer>
       <AmountDue>

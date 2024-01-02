@@ -1,7 +1,6 @@
 build
 node_modules
 .eslintrc.js
-babel.config.js
 playwright.config.ts
 playwright.config.js
 tests-examples

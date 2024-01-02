@@ -4,7 +4,7 @@ import React, { useMemo } from "react";
 import useWindowWidth from "../../hooks/useWindowWidth";
 import ToolbarButtons from "../menus-toolbars/ToolbarButtons";
 import InvoiceStatus from "./InvoiceStatus";
-import {Invoice } from "../../types/types";
+import { Invoice } from "../../types/types";
 
 const Toolbar = styled.div`
   height: 88px;
@@ -19,12 +19,12 @@ const Toolbar = styled.div`
 
   @media (min-width: 600px) {
     display: flex;
-    
+
     flex-direction: row;
-    background-color: ${({ theme }) => theme.background};
+    background-color: var(--colors-background);
     border-radius: 8px;
   }
-  
+
   @media (min-width: 1200px) {
     max-width: 730px;
   }
@@ -39,7 +39,7 @@ const StatusContainer = styled.div`
   padding: 10px 20px;
   justify-content: space-between;
   align-items: center;
-  background-color: ${({ theme }) => theme.background};
+  background-color: var(--colors-background);
   border-radius: 8px;
 
   @media (min-width: 600px) {
@@ -50,16 +50,15 @@ const StatusContainer = styled.div`
 
 const StatusText = styled.p`
   margin-right: 1rem;
-  color: ${({ theme }) => theme.greyText};
+  color: var(--colors-grey-text);
 `;
 
 export type InvoiceToolBarProps = {
   invoice: Invoice;
   isEditOpen: boolean;
   setEdit: React.Dispatch<React.SetStateAction<boolean>>;
-  setIsModalOpen: React.Dispatch<React.SetStateAction<boolean>>
-}
-
+  setIsModalOpen: React.Dispatch<React.SetStateAction<boolean>>;
+};
 
 function InvoiceToolbar({
   invoice,
@@ -67,16 +66,17 @@ function InvoiceToolbar({
   setEdit,
   setIsModalOpen,
 }: InvoiceToolBarProps) {
-
   const openModal = () => setIsModalOpen(true);
 
   const invoiceStatus = useMemo(() => {
     if (invoice.status === "paid") {
-      return <InvoiceStatus statusType="paid" text="Paid"/>;
-    } if (invoice.status === "pending") {
-      return <InvoiceStatus statusType="pending" text="Pending"/>;
-    } if (invoice.status === "draft") {
-      return <InvoiceStatus statusType="draft" text="Draft"/>;
+      return <InvoiceStatus statusType="paid" text="Paid" />;
+    }
+    if (invoice.status === "pending") {
+      return <InvoiceStatus statusType="pending" text="Pending" />;
+    }
+    if (invoice.status === "draft") {
+      return <InvoiceStatus statusType="draft" text="Draft" />;
     }
   }, [invoice]);
 
@@ -86,7 +86,7 @@ function InvoiceToolbar({
     <Toolbar
       className="invoice-toolbar"
       style={{
-        display: width < 600 ? "contents" : "flex"
+        display: width < 600 ? "contents" : "flex",
       }}
     >
       <StatusContainer>

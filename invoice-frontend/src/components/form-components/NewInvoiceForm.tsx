@@ -1,6 +1,6 @@
-import { FormProvider, useForm} from "react-hook-form";
+import { FormProvider, useForm } from "react-hook-form";
 import PropTypes from "prop-types";
-import React, {useEffect, useState} from "react";
+import React, { useEffect, useState } from "react";
 import { useDispatch } from "react-redux";
 import { BillText, Input, Label } from "../../styles/editStyles";
 import LongFormEntry from "./LongFormEntry";
@@ -37,7 +37,6 @@ export default function NewInvoiceForm({
   setSelectedPaymentOption,
   selectedPaymentOption,
 }: NewInvoiceFormProps) {
-
   const methods = useForm<FormType>({
     mode: "onChange",
     defaultValues: {
@@ -85,7 +84,13 @@ export default function NewInvoiceForm({
       if (value) {
         // console.log("validation success");
         // todo - refactor so no undefined are necessary here
-        const newInvoice = createInvoiceObject(data, startDate, selectedPaymentOption, undefined, undefined);
+        const newInvoice = createInvoiceObject(
+          data,
+          startDate,
+          selectedPaymentOption,
+          undefined,
+          undefined,
+        );
         dispatch(addInvoice(newInvoice));
         setIsNewOpen(false);
         setSelectedPaymentOption(1);
@@ -146,7 +151,7 @@ export default function NewInvoiceForm({
           // setIsPaymentOpen={setIsPaymentOpen}
         />
 
-        <LongFormEntry className="project-description" >
+        <LongFormEntry className="project-description">
           <Label
             htmlFor="projectDescription"
             style={{ color: errors.projectDescription ? "#EC5757" : "" }}

@@ -1,10 +1,10 @@
-import React, {ReactElement, SyntheticEvent} from "react";
+import React, { ReactElement, SyntheticEvent } from "react";
 import styled from "styled-components";
 import { useDispatch } from "react-redux";
 import PropTypes from "prop-types";
 import CheckboxSelection from "./CheckboxSelection";
 import { changeFilter } from "../../features/invoices/filterSlice";
-import {StatusKey} from "../../types/types";
+import { StatusKey } from "../../types/types";
 
 const Main = styled("div")`
   align-self: center;
@@ -44,11 +44,8 @@ const DropDownHeader = styled.div.attrs({
   width: 12px;
   font-weight: 600;
   font-size: 1.2rem;
-  color: ${({ theme }) => theme.text};
+  color: var(--colors-text);
   border-radius: 6px;
-
- 
-  
 `;
 
 const DropDownListContainer = styled("div")`
@@ -56,11 +53,11 @@ const DropDownListContainer = styled("div")`
   width: 150px;
   left: -75px;
   top: 24px;
-  background-color: ${({ theme }) => theme.background};
+  background-color: var(--colors-background);
   border-radius: 8px;
   overflow: hidden;
-  box-shadow: ${({ theme }) => theme.filterShadow};
-  
+  box-shadow: var("--colors-filter-shadow");
+
   transition: height 250ms;
 
   @media (min-width: 768px) {
@@ -78,10 +75,10 @@ const DropDownList = styled("ul")`
   padding-top: 12px;
   padding-bottom: 12px;
   margin: 0;
-  background-color: ${({ theme }) => theme.background};
+  background-color: var(--colors-background);
   box-sizing: border-box;
   border-radius: 8px;
-  color: ${({ theme }) => theme.text};
+  color: var(--colors-text);
   font-size: 1.2rem;
   font-weight: 700;
 `;
@@ -96,11 +93,11 @@ const ListItem = styled.li.attrs({})`
   padding: 0.5rem;
  
   width: 100%;
-  background-color: ${({ theme }) => theme.background};
+  background-color: var(--colors-background);
 
    &:hover {
      .styledCheckbox {
-       border-color ${({ theme }) => theme.outline};
+       border-color var("--colors-outline");
   //box-shadow:0 0 1px 1px #102447;
   //     border-radius: 3px;
      }
@@ -112,13 +109,12 @@ const ItemButton = styled.button`
   align-items: center;
   height: 100%;
   width: 100%;
-  background-color: ${({ theme }) => theme.background};
+  background-color: var(--colors-background);
   border: none;
-  color: ${({ theme }) => theme.text};
+  color: var(--colors-text);
   box-sizing: border-box;
   cursor: pointer;
 `;
-
 
 // type Options = {
 //   options: string[];
@@ -127,30 +123,30 @@ const ItemButton = styled.button`
 type FilterDropDownProps = {
   icon: ReactElement;
   isOpen: boolean;
-  options: string[]
-}
+  options: string[];
+};
 
-
-
-export default function FilterDropDown({ icon, isOpen, options }: FilterDropDownProps) {
-
+export default function FilterDropDown({
+  icon,
+  isOpen,
+  options,
+}: FilterDropDownProps) {
   const dispatch = useDispatch();
 
-  const clickCallback =  (option: string) => (e: SyntheticEvent) => {
+  const clickCallback = (option: string) => (e: SyntheticEvent) => {
     e.stopPropagation();
     const lowerCaseOption = option.toLowerCase() as StatusKey;
     dispatch(changeFilter(lowerCaseOption));
   };
-
 
   return (
     <Main>
       <DropDownContainer data-testid="filterDropDown">
         <DropDownHeader>{icon}</DropDownHeader>
         <DropDownListContainer style={{ height: isOpen ? "130px" : 0 }}>
-          <DropDownList >
+          <DropDownList>
             {options.map((option: string) => (
-              <ListItem key={`${option  }-li`} onClick={clickCallback(option)}>
+              <ListItem key={`${option}-li`} onClick={clickCallback(option)}>
                 <ItemButton>
                   <CheckboxSelection option={option} />
                 </ItemButton>

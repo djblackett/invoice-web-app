@@ -3,10 +3,10 @@ import Proptypes from "prop-types";
 
 const Button = styled.button`
   display: inline;
-  background-color: ${({ theme }) => theme.editButton};
+  background-color: var("colors-edit-button");
   border-radius: 24px;
   padding: 16px 24px 17px 24px;
-  color: ${({ theme }) => theme.greyText};
+  color: var(--colors-grey-text);
   border: none;
   cursor: pointer;
   font-weight: 700;
@@ -15,22 +15,22 @@ const Button = styled.button`
   /* identical to box height, or 125% */
   letter-spacing: -0.25px;
   scale: 0.9;
-  
+
   @media (min-width: 325px) {
     scale: none;
     margin: 0.25rem;
   }
 
   &:hover {
-    background-color: ${({ theme }) => theme.editButtonHover};
+    background-color: var("colors-edit-button-hover");
   }
 `;
 
 type CancelButtonProps = {
-    handleClick: () => void;
-    justifySelf?: string,
-    text: string;
-}
+  handleClick: () => void;
+  justifySelf?: string;
+  text: string;
+};
 function CancelButton({ handleClick, text, justifySelf }: CancelButtonProps) {
   return (
     <Button
@@ -48,5 +48,5 @@ export default CancelButton;
 CancelButton.propTypes = {
   handleClick: Proptypes.func.isRequired,
   text: Proptypes.string.isRequired,
-  justifySelf: Proptypes.string
+  justifySelf: Proptypes.string,
 };

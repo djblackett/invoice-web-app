@@ -10,7 +10,7 @@ const Main = styled.div.attrs({
   z-index: 10;
   position: relative;
   box-sizing: border-box;
-  background-color: ${({ theme }) => theme.inputBackgroundColor};
+  background-color: var(--colors-input-background);
   cursor: pointer;
   margin-bottom: 30px;
   outline: none;
@@ -19,7 +19,7 @@ const Main = styled.div.attrs({
   height: 48px;
   border-radius: 4px;
 
-  border: 1px solid ${({ theme }) => theme.formFieldOutline};
+  border: 1px solid var("--color-form-field-outline");
 
   @media (min-width: 768px) {
     width: 240px;
@@ -28,7 +28,7 @@ const Main = styled.div.attrs({
 
   &:focus,
   &:hover {
-    border: 1px solid ${({ theme }) => theme.formFieldOutlineFocus};
+    border: 1px solid var("--colors-form-field-outline-focus");
   }
 `;
 
@@ -45,7 +45,7 @@ const DropDownHeader = styled.div`
   width: 100%;
   height: 48px;
   border-radius: 4px;
-  border-color: ${({ theme }) => theme.formFieldOutline};
+  border-color: var("--color-form-field-outline");
 
   h2 {
     writing-mode: horizontal-tb !important;
@@ -79,14 +79,14 @@ const DropDownList = styled.ul`
   padding: 0;
   margin: 0;
   overflow: hidden;
-  background-color: ${({ theme }) => theme.paymentTermsBackground};
+  background-color: var("--colors-payment-terms-background");
   box-sizing: border-box;
   height: fit-content;
   border-radius: 4px;
-  color: ${({ theme }) => theme.text};
+  color: var(--colors-text);
   font-size: 1.2rem;
   font-weight: 600;
-  box-shadow: ${({ theme }) => theme.filterShadow};
+  box-shadow: var("--colors-filter-shadow");
   transition: height 250ms ease-in-out;
 
   &:first-child {
@@ -107,9 +107,9 @@ const ListItem = styled.li`
   list-style: none;
   height: 48px;
   width: 100%;
-  border-color: ${({ theme }) => theme.formFieldOutline};
+  border-color: var("--color-form-field-outline");
   cursor: pointer;
-  border-bottom: 1px solid ${({ theme }) => theme.paymentOptionBorder};
+  border-bottom: 1px solid var("--colors-payment-option-border");
   //border-bottom: 1px solid #979797;
 `;
 
@@ -117,7 +117,7 @@ const ItemButton = styled.button`
   //position: absolute;
   height: 100%;
   width: 100%;
-  background-color: ${({ theme }) => theme.paymentTermsBackground};
+  background-color: var("--colors-payment-terms-background");
   border: none;
   cursor: pointer;
   outline: none;
@@ -126,9 +126,9 @@ const ItemButton = styled.button`
   line-height: 15px;
   /* identical to box height, or 125% */
   letter-spacing: -0.25px;
-  color: ${({ theme }) => theme.textPlain};
+  color: var(--colors-text-plain);
   padding: 0.5rem;
-  
+
   &:first-child {
     //padding-top: 0.8em;
   }
@@ -157,11 +157,11 @@ const arrowDown = (
 );
 
 export type FormDropDownProps = {
-    handleChangeSelectedOption: (option: number) => void;
-    handlePaymentClick: () => void;
-    isPaymentOpen: boolean;
-    selectedPaymentOption: number;
-}
+  handleChangeSelectedOption: (option: number) => void;
+  handlePaymentClick: () => void;
+  isPaymentOpen: boolean;
+  selectedPaymentOption: number;
+};
 
 function FormDropDown({
   selectedPaymentOption,
@@ -169,7 +169,6 @@ function FormDropDown({
   isPaymentOpen,
   handlePaymentClick,
 }: FormDropDownProps) {
-
   // const { id } = useParams();
   // const invoice = useSelector(state => selectInvoiceById(state, id));
   // const selectedPaymentOption = invoice?.paymentTerms || 1;
@@ -191,20 +190,24 @@ function FormDropDown({
     }
   }, [selectedPaymentOption]);
 
-
   return (
     <Main>
-      <DropDownHeader onClick={handlePaymentClick}
-        tabIndex={-1}
-      >
+      <DropDownHeader onClick={handlePaymentClick} tabIndex={-1}>
         <h2>{selected}</h2>
         <SVG>{arrowDown}</SVG>
       </DropDownHeader>
 
-      <DropDownList style={{ height: isPaymentOpen ? "192px" : 0 }} data-testid="dropDownList">
+      <DropDownList
+        style={{ height: isPaymentOpen ? "192px" : 0 }}
+        data-testid="dropDownList"
+      >
         {options.map((option) => (
-          <ListItem key={`${option}-li`} onClick={onOptionClicked(option)} data-testid={`${option}-testID`}>
-            <ItemButton key={`${option}-button`} type="button" >
+          <ListItem
+            key={`${option}-li`}
+            onClick={onOptionClicked(option)}
+            data-testid={`${option}-testID`}
+          >
+            <ItemButton key={`${option}-button`} type="button">
               {options.find((term) => term.includes(String(option)))}
             </ItemButton>
           </ListItem>

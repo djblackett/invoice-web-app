@@ -1,10 +1,9 @@
-import {render, screen} from "@testing-library/react";
-import {Provider} from "react-redux";
-import {HashRouter} from "react-router-dom";
+import { render, screen } from "@testing-library/react";
+import { Provider } from "react-redux";
+import { HashRouter } from "react-router-dom";
 import React from "react";
-import AllInvoices from "../pages/AllInvoices";
-import store from "../app/store";
-
+import AllInvoices from "../components/AllInvoices";
+import store from "../features/store";
 
 describe("AllInvoices", () => {
   it("renders without crashing", () => {
@@ -12,9 +11,9 @@ describe("AllInvoices", () => {
     render(
       <Provider store={store}>
         <HashRouter>
-          <AllInvoices  setScrollPosition={setScrollPosition}/>
+          <AllInvoices setScrollPosition={setScrollPosition} />
         </HashRouter>
-      </Provider>
+      </Provider>,
     );
 
     expect(screen.getByText("Invoices")).toBeInTheDocument();

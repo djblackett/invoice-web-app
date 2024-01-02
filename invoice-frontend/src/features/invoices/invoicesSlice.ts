@@ -1,8 +1,9 @@
-import {createSlice, PayloadAction} from "@reduxjs/toolkit";
+import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 import { v4 as uuidv4 } from "uuid";
-import {WritableDraft} from "immer/dist/types/types-external";
-import {Invoice, Item, ReduxInvoiceState} from "../../types/types";
-import data from "../../data.json";
+import { Invoice, Item, ReduxInvoiceState } from "@/types/types";
+import data from "../invoices";
+// @ts-ignore
+import {WritableDraft} from "immer/src/types/types-external";
 
 const initialState = { data: [...data] };
 
@@ -15,43 +16,45 @@ export const invoicesSlice = createSlice({
       state.data.push(action.payload);
     },
     removeInvoice: (state, action) => {
-
       state.data = state.data.filter(
-        (invoice) => invoice.id !== action.payload
+        (invoice) => invoice.id !== action.payload,
       );
     },
     updateInvoice: (state, action: PayloadAction<Invoice>) => {
       // console.log("entered updateInvoice");
       const oldInvoice: Invoice | undefined = state.data.find(
-        (invoice: Invoice) => invoice.id === action.payload.id
+        (invoice: Invoice) => invoice.id === action.payload.id,
       );
 
       if (oldInvoice) {
         const index = state.data.indexOf(oldInvoice);
         state.data.splice(index, 1, action.payload);
         // console.log("invoice updated");
-      }},
+      }
+    },
     markAsPaid: (state, action) => {
       const invoice1 = state.data.find(
-        (invoice) => invoice.id === action.payload
+        (invoice) => invoice.id === action.payload,
       );
       if (invoice1) {
         invoice1.status = "paid";
-      }},
+      }
+    },
     markAsPending: (state, action) => {
       const invoice1 = state.data.find(
-        (invoice) => invoice.id === action.payload
+        (invoice) => invoice.id === action.payload,
       );
       if (invoice1) {
         invoice1.status = "pending";
-      }},
+      }
+    },
     addItem: (state, action) => {
-
       const { id, newItem } = action.payload;
       const invoice = state.data.find((element) => element.id === id);
       if (invoice) {
         invoice.items.push(newItem);
-      }},
+      }
+    },
     addIdToExistingInvoices: (state) => {
       // eslint-disable-next-line no-restricted-syntax
       for (const i of state.data) {
@@ -81,7 +84,9 @@ export const {
 } = invoicesSlice.actions;
 
 export const selectInvoices = (state: ReduxInvoiceState) => state.invoices.data;
-export const selectInvoiceById = (state: ReduxInvoiceState, id: string | undefined) => state.invoices.data.find(item => id === item.id);
-
+export const selectInvoiceById = (
+  state: ReduxInvoiceState,
+  id: string | undefined,
+) => state.invoices.data.find((item) => id === item.id);
 
 export default invoicesSlice.reducer;

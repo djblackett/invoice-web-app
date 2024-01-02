@@ -40,7 +40,6 @@ const NewInvoiceButton = styled.input`
 
   &:hover {
     background-color: #9277ff;
-    
   }
 
   @media (min-width: 1200px) {
@@ -57,12 +56,16 @@ type EditBottomMenuProps = {
   onSubmit: () => void;
   saveText: string;
   setIsOpen: (b: boolean) => void;
+};
 
-}
-
-function EditBottomMenu({ setIsOpen, saveText, closeText, justifyCancel, onSubmit }: EditBottomMenuProps) {
-
-  const { reset} = useFormContext();
+function EditBottomMenu({
+  setIsOpen,
+  saveText,
+  closeText,
+  justifyCancel,
+  onSubmit,
+}: EditBottomMenuProps) {
+  const { reset } = useFormContext();
 
   const closeMenu = () => {
     setIsOpen(false);
@@ -81,7 +84,11 @@ function EditBottomMenu({ setIsOpen, saveText, closeText, justifyCancel, onSubmi
         text={closeText}
         justifySelf={justifyCancel}
       />
-      <NewInvoiceButton type="button" value={saveText} onClick={handleSubmitClick} />
+      <NewInvoiceButton
+        type="button"
+        value={saveText}
+        onClick={handleSubmitClick}
+      />
     </MenuContainer>
   );
 }
@@ -95,5 +102,5 @@ EditBottomMenu.propTypes = {
   // justifyCancel: PropTypes.string,
   // setItems: PropTypes.func,
   // invoice: PropTypes.object,
-  onSubmit: PropTypes.func.isRequired
+  onSubmit: PropTypes.func.isRequired,
 };
