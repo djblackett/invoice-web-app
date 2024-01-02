@@ -6,7 +6,7 @@ export const FormEntryContainer = styled.div`
   flex-direction: column;
   position: relative;
   align-items: flex-start;
-  font-style: ${({ theme }) => theme.font};
+  font-style: var(--theme-font);
   width: 45%;
 
   @media (min-width: 768px) {
@@ -71,10 +71,5 @@ function FormEntry({
     </FormEntryContainer>
   );
 }
-
-FormEntry.defaultProps = {
-  isLongOnMobile: false,
-  style: {},
-};
 
 export default FormEntry;

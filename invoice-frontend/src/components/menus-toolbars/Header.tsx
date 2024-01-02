@@ -127,15 +127,11 @@ const sun = (
   </svg>
 );
 
-type HeaderProps = {
-  // theme?: string;
-  themeToggler?: () => void;
-};
-
 function Header() {
 
     const [theme, setTheme] = React.useState('light')
-    const nextTheme = theme === 'light' ? 'dark' : 'light'
+    // const nextTheme = theme === 'light' ? 'dark' : 'light'
+
     React.useEffect(() => {
         document.body.dataset.theme = theme
     }, [theme])
@@ -147,7 +143,7 @@ function Header() {
         {logo}
       </Logo>
       <DarkModeProfileContainer>
-        <DarkLightBox onClick={() => setTheme(nextTheme)}>
+        <DarkLightBox onClick={() => setTheme(theme === 'light' ? 'dark' : 'light')}>
           {theme === "light" ? moon : sun}
         </DarkLightBox>
 
@@ -163,8 +159,4 @@ function Header() {
   );
 }
 
-Header.propTypes = {
-  themeToggler: PropTypes.func.isRequired,
-  theme: PropTypes.string.isRequired,
-};
 export default Header;

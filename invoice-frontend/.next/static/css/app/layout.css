@@ -1,6 +1,43 @@
+/*!******************************************************************************************************************************************************************************************************************************************************************!*\
+  !*** css ./node_modules/next/dist/build/webpack/loaders/css-loader/src/index.js??ruleSet[1].rules[11].oneOf[12].use[2]!./node_modules/next/dist/build/webpack/loaders/postcss-loader/src/index.js??ruleSet[1].rules[11].oneOf[12].use[3]!./src/styles/index.css ***!
+  \******************************************************************************************************************************************************************************************************************************************************************/
+@import url("https://fonts.googleapis.com/css2?family=League+Spartan:wght@500;700&display=swap");
+
+html {
+}
+
+/*:root {*/
+/*  !* Your default theme *!*/
+/*  --background: white;*/
+/*  --foreground: black;*/
+/*}*/
+
+/*[data-theme='dark'] {*/
+/*  --background: black;*/
+/*  --foreground: white;*/
+/*}*/
+
+
+body {
+  margin: 0;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  font-family: "League Spartan", sans-serif;
+  font-weight: 500;
+}
+
+code {
+  font-family: source-code-pro, Menlo, Monaco, Consolas, "Courier New",
+    monospace;
+}
+
 /*!*********************************************************************************************************************************************************************************************************************************************************************!*\
   !*** css ./node_modules/next/dist/build/webpack/loaders/css-loader/src/index.js??ruleSet[1].rules[11].oneOf[12].use[2]!./node_modules/next/dist/build/webpack/loaders/postcss-loader/src/index.js??ruleSet[1].rules[11].oneOf[12].use[3]!./src/styles/css-vars.css ***!
   \*********************************************************************************************************************************************************************************************************************************************************************/
+body {
+    --theme-font: "League Spartan";
+}
+
 body[data-theme='light'] {
     --colors-primary: deeppink;
     --colors-text: hsl(200, 15%, 8%);
@@ -11,9 +48,9 @@ body[data-theme='light'] {
     --colors-draft-text: #373B53;
     --colors-grey-text: #888EB0;
     --colors-header-background: rgb(55, 59, 83);
-    --colors-input-background: #373B53;
+    --colors-input-background: #FFFFFF;
     --colors-body: #F2F2F2;
-    --colors-form-field-outline: #9277FF;
+    --colors-form-field-outline: #DFE3FA;
     --colors-form-field-outline-focus: #9277FF;
     --colors-form-background: #FFFFFF;
     --colors-new-button: #7C5DFA;

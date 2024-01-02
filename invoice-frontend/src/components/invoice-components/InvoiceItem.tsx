@@ -10,7 +10,7 @@ const ItemContainer = styled.div`
   padding-top: 0;
   grid-template: auto auto / 1fr 1fr;
   grid-auto-flow: dense;
-  background-color: var("colors-edit-button");
+  background-color: var(colors-edit-button);
 
   :first-child {
     padding-top: 1.5rem;

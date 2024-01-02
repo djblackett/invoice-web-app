@@ -2,11 +2,9 @@
 import { Metadata } from "next";
 import React from "react";
 import styled, { ThemeProvider } from "styled-components";
-import StyledComponentsRegistry from "../../registry";
-import {Provider} from "react-redux";
 import Providers from "@/app/providers";
-import Header from "@/components/menus-toolbars/Header";
 import "../styles/css-vars.css"
+import "../styles/index.css"
 
 // export const metadata: Metadata = {
 //   title: {
@@ -26,7 +24,7 @@ const Main = styled.div`
   height: 100%;
   width: 100%;
   min-height: 100vh;
-  background-color: var("--colors-body");
+  background-color: var(--colors-body);
   transition: all 0.4s ease-in-out;
   z-index: 1;
 
@@ -38,11 +36,11 @@ const Main = styled.div`
 
   // applies the appropriate theme to each status type
   .draft {
-    background: var("--color-draft-background");
-    color: var("--color-draft-text");
+    background: var(--colors-draft-background);
+    color: var(--colors-draft-text);
 
     .circle {
-      background: var("--color-draft-text");
+      background: var(--colors-draft-text);
     }
   }
 

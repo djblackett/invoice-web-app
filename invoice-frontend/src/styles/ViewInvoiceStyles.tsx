@@ -41,7 +41,7 @@ export const GoBackButton = styled.div`
 `;
 
 export const Icon = styled.p`
-  color: var("--colors-outline");
+  color: var(--colors-outline);
   padding: 0;
   margin: 0;
   font-weight: 900;

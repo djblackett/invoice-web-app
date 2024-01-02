@@ -32,13 +32,13 @@ const Input = styled.input<InputProps>`
   width: 240px;
   height: 48px;
   border-radius: 4px;
-  border: 1px solid var("--color-form-field-outline");
+  border: 1px solid var(--colors-form-field-outline);
   //border-style: solid;
   //border-width: 1px;
   outline: none;
   padding: 17px 20px 16px 20px;
   margin-bottom: 1.5rem;
-  font-family: ${({ theme }) => theme.font};
+  font-family: var(--theme-font);
   font-style: normal;
   font-weight: 700;
   font-size: 12px;
@@ -51,7 +51,7 @@ const Input = styled.input<InputProps>`
 
   &:focus,
   &:hover {
-    border-color: var("--colors-form-field-outline-focus");
+    border-color: var(--colors-form-field-outline-focus);
   }
 
   .custom-input {

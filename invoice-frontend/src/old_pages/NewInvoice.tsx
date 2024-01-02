@@ -8,8 +8,8 @@ import {
   DarkenScreen,
   EditTitle,
   FormContainerDarkenModal,
-} from "../styles/editStyles";
-import { Item } from "../types/types";
+} from "@/styles/editStyles";
+import { Item } from "@/types/types";
 
 export type NewInvoiceProps = {
   isNewOpen: boolean;

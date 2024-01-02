@@ -23,7 +23,7 @@ const Card = styled.div`
   transition: background-color 0.4s ease-in-out;
 
   &:hover {
-    border: 1px solid var("--colors-outline");
+    border: 1px solid var(--colors-outline);
   }
 
   @media (min-width: 600px) {

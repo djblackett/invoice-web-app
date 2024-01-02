@@ -14,7 +14,7 @@ export const ItemsHeader = styled.div`
   @media (min-width: 600px) {
     display: grid;
     grid-template: 1fr / 220px 62px 116px 61px 49px;
-    color: var("--colors-new-item-text");
+    color: var(--colors-new-item-text);
     margin-top: 1rem;
     padding-left: 0;
     border-radius: 8px 8px 0 0;
@@ -23,7 +23,7 @@ export const ItemsHeader = styled.div`
 `;
 
 export const Col = styled.p`
-  color: var("--colors-new-item-text");
+  color: var(--colors-new-item-text);
   width: fit-content;
   margin: 0;
   padding: 0;

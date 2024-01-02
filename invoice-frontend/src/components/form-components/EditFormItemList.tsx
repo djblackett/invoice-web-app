@@ -6,8 +6,8 @@ import {
   ItemsHeader,
   ItemTitle,
   ListContainer,
-} from "../../styles/EditFormItemListStyles";
-import { Invoice } from "../../types/types";
+} from "@/styles/EditFormItemListStyles";
+import { Invoice } from "@/types/types";
 
 type EditFormItemListProps = {
   invoice?: Invoice;
@@ -39,9 +39,5 @@ function EditFormItemList({
     </ListContainer>
   );
 }
-EditFormItemList.defaultProps = {
-  isEditOpen: true,
-  invoice: null,
-};
 
 export default EditFormItemList;

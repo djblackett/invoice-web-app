@@ -17,7 +17,7 @@ const CustomDateBox = styled.div<DateBox>`
   width: 100%;
   height: 48px;
   border-radius: 4px;
-  border-color: var("--color-form-field-outline");
+  border-color: var(--colors-form-field-outline);
   border-style: solid;
   padding: 0 20px 0 16px;
   margin-bottom: 1.5rem;
@@ -32,7 +32,7 @@ const CustomDateBox = styled.div<DateBox>`
 
   &:focus,
   &:hover {
-    border-color: var("--colors-form-field-outline-focus");
+    border-color: var(--colors-form-field-outline-focus);
   }
 
   .custom-input {
@@ -52,8 +52,8 @@ interface DateInputProps {
 }
 
 const DateInput = styled.input<DateInputProps>`
-  color: var("--colors-date-text");
-  font-family: ${({ theme }) => theme.font};
+  color: var(--colors-date-text);
+  font-family: var(--theme-font),sans-serif;
   font-style: normal;
   font-weight: 700;
   font-size: 12px;
@@ -66,7 +66,7 @@ const DateInput = styled.input<DateInputProps>`
 
   &:focus,
   &:hover {
-    border-color: var("--colors-form-field-outline-focus");
+    border-color: var(--colors-form-field-outline-focus);
   }
 `;
 
@@ -108,6 +108,7 @@ function DateAndPayment({
   // todo - come back and figure out the unstable nested components warning
   // value and onCLick are not passed to component, so removed from forwardRef
   // eslint-disable-next-line react/display-name,react/no-unstable-nested-components
+
   const ExampleCustomInput = forwardRef(
     ({ value, onClick }: CustomInputProps, ref) => (
       <CustomDateBox
@@ -115,6 +116,7 @@ function DateAndPayment({
         onClick={onClick}
         style={{ cursor: "pointer" }}
       >
+        {/* @ts-ignore */}
         <DateInput ref={ref} defaultValue={value} readOnly />
         {dateIcon}
       </CustomDateBox>

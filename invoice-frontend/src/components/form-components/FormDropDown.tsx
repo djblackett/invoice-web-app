@@ -19,7 +19,7 @@ const Main = styled.div.attrs({
   height: 48px;
   border-radius: 4px;
 
-  border: 1px solid var("--color-form-field-outline");
+  border: 1px solid var(--colors-form-field-outline);
 
   @media (min-width: 768px) {
     width: 240px;
@@ -28,7 +28,7 @@ const Main = styled.div.attrs({
 
   &:focus,
   &:hover {
-    border: 1px solid var("--colors-form-field-outline-focus");
+    border: 1px solid var(--colors-form-field-outline-focus);
   }
 `;
 
@@ -45,7 +45,7 @@ const DropDownHeader = styled.div`
   width: 100%;
   height: 48px;
   border-radius: 4px;
-  border-color: var("--color-form-field-outline");
+  border-color: var(--colors-form-field-outline);
 
   h2 {
     writing-mode: horizontal-tb !important;
@@ -79,14 +79,14 @@ const DropDownList = styled.ul`
   padding: 0;
   margin: 0;
   overflow: hidden;
-  background-color: var("--colors-payment-terms-background");
+  background-color: var(--colors-payment-terms-background);
   box-sizing: border-box;
   height: fit-content;
   border-radius: 4px;
   color: var(--colors-text);
   font-size: 1.2rem;
   font-weight: 600;
-  box-shadow: var("--colors-filter-shadow");
+  box-shadow: var(--colors-filter-shadow);
   transition: height 250ms ease-in-out;
 
   &:first-child {
@@ -107,9 +107,9 @@ const ListItem = styled.li`
   list-style: none;
   height: 48px;
   width: 100%;
-  border-color: var("--color-form-field-outline");
+  border-color: var(--colors-form-field-outline);
   cursor: pointer;
-  border-bottom: 1px solid var("--colors-payment-option-border");
+  border-bottom: 1px solid var(--colors-payment-option-border);
   //border-bottom: 1px solid #979797;
 `;
 
@@ -117,7 +117,7 @@ const ItemButton = styled.button`
   //position: absolute;
   height: 100%;
   width: 100%;
-  background-color: var("--colors-payment-terms-background");
+  background-color: var(--colors-payment-terms-background);
   border: none;
   cursor: pointer;
   outline: none;

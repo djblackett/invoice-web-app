@@ -1,3 +1,7 @@
+body {
+    --theme-font: "League Spartan";
+}
+
 body[data-theme='light'] {
     --colors-primary: deeppink;
     --colors-text: hsl(200, 15%, 8%);
@@ -8,9 +12,9 @@ body[data-theme='light'] {
     --colors-draft-text: #373B53;
     --colors-grey-text: #888EB0;
     --colors-header-background: rgb(55, 59, 83);
-    --colors-input-background: #373B53;
+    --colors-input-background: #FFFFFF;
     --colors-body: #F2F2F2;
-    --colors-form-field-outline: #9277FF;
+    --colors-form-field-outline: #DFE3FA;
     --colors-form-field-outline-focus: #9277FF;
     --colors-form-background: #FFFFFF;
     --colors-new-button: #7C5DFA;

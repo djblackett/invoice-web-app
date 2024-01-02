@@ -14,11 +14,11 @@ import {
   SVG,
   Total,
   TotalBox,
-} from "../../styles/editFormItemStyles";
+} from "@/styles/editFormItemStyles";
 import NewItemButton from "../buttons/NewItemButton";
 import useWindowWidth from "../../hooks/useWindowWidth";
-import { Col, Col1 } from "../../styles/EditFormItemListStyles";
-import { Invoice } from "../../types/types";
+import { Col, Col1 } from "@/styles/EditFormItemListStyles";
+import { Invoice } from "@/types/types";
 
 type InputFormItemProps = {
   invoice?: Invoice;
@@ -244,10 +244,6 @@ export default function InputFormItem1({
   );
 }
 
-InputFormItem1.defaultProps = {
-  isEditOpen: false,
-  invoice: null,
-};
 
 InputFormItem1.propTypes = {
   isDraft: PropTypes.bool.isRequired,

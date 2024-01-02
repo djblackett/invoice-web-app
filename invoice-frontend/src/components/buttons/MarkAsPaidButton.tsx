@@ -8,7 +8,7 @@ import { Invoice } from "@/types/types";
 import {lightTheme, darkTheme } from "@/styles/Themes";
 
 const Button = styled.button`
-  background-color: var("--colors-new-button");
+  background-color: var(--colors-new-button);
   border-radius: 24px;
   padding: 16px 24px 17px 24px;
   color: white;
@@ -24,7 +24,7 @@ const Button = styled.button`
   white-space: nowrap;
 
   &:hover {
-    background-color: var("--colors-new-button-hover");
+    background-color: var(--colors-new-button-hover);
   }
 `;
 

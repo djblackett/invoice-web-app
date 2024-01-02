@@ -56,7 +56,7 @@ const DropDownListContainer = styled("div")`
   background-color: var(--colors-background);
   border-radius: 8px;
   overflow: hidden;
-  box-shadow: var("--colors-filter-shadow");
+  box-shadow: var(--colors-filter-shadow);
 
   transition: height 250ms;
 
@@ -97,7 +97,7 @@ const ListItem = styled.li.attrs({})`
 
    &:hover {
      .styledCheckbox {
-       border-color var("--colors-outline");
+       border-color var(--colors-outline);
   //box-shadow:0 0 1px 1px #102447;
   //     border-radius: 3px;
      }

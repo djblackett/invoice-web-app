@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { useFormContext } from "react-hook-form";
 import { useTheme } from "styled-components";
-import { Col, Col1 } from "../../styles/EditFormItemListStyles";
+import { Col, Col1 } from "@/styles/EditFormItemListStyles";
 import {
   Box,
   deleteIcon,
@@ -15,9 +15,9 @@ import {
   SmallBoxContainer,
   SVG,
   Total,
-} from "../../styles/editFormItemStyles";
+} from "@/styles/editFormItemStyles";
 import useWindowWidth from "../../hooks/useWindowWidth";
-import { Item } from "../../types/types";
+import { Item } from "@/types/types";
 
 type EditFormItemProps = {
   item: Item;
@@ -33,7 +33,7 @@ function EditFormItem({ item, items, setItems }: EditFormItemProps) {
   const [price, setPrice] = useState(String(item.price.toFixed(2)));
   const [total, setTotal] = useState(String(item.total));
   const [isTotalValid, setIsTotalValid] = useState(true);
-  const theme = useTheme();
+  // const theme = useTheme();
 
   // updates the items array in the EditForm page (possibly makes handleChange below redundant)
   const updateItem = () => {
@@ -92,7 +92,7 @@ function EditFormItem({ item, items, setItems }: EditFormItemProps) {
             border:
               submitCount > 0 && (name === "" || undefined)
                 ? "1px solid #EC5757"
-                : `1px solid ${theme.formFieldOutline}`,
+                : `1px solid var(--form-field-outline)`,
           }}
         />
       </Box>
@@ -108,6 +108,8 @@ function EditFormItem({ item, items, setItems }: EditFormItemProps) {
         </Box>
         <Box>
           <Col style={{ marginBottom: "0.625rem" }}>Price</Col>
+
+          {/* // @ts-ignore */}
           <Price
             name="price"
             onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
@@ -170,6 +172,8 @@ function EditFormItem({ item, items, setItems }: EditFormItemProps) {
                 submitCount > 0 && quantity.length === 0 ? "#EC5757" : "",
             }}
           />
+
+          {/* // @ts-ignore */}
           <Price
             name="price"
             type="text"

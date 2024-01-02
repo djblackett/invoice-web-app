@@ -1,4 +1,9 @@
 @charset "UTF-8";
+
+.react-datepicker__aria-live {
+  display: none;
+}
+
 .react-datepicker__year-read-view--down-arrow,
 .react-datepicker__month-read-view--down-arrow,
 .react-datepicker__month-year-read-view--down-arrow,
@@ -94,7 +99,7 @@
   z-index: 1000;
 
   /* padding: 17px 20px 16px 20px;
-  /* font-family: ${({ theme }) => theme.font}; 
+  /* font-family: var(--theme-font);
   font-style: normal;
   font-weight: 700;
   font-size: 12px;
@@ -109,7 +114,7 @@
 
 .react-datepicker {
   /* padding: 17px 20px 16px 20px;
-  /* font-family: ${({ theme }) => theme.font};
+  /* font-family: var(--theme-font);
   font-style: normal;
   font-weight: 700;
   font-size: 12px;

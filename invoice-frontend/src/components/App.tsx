@@ -1,11 +1,9 @@
 "use client"
 import React, { useEffect, useLayoutEffect, useState } from "react";
 import "../styles/App.css";
-import styled, { ThemeProvider } from "styled-components";
+import styled from "styled-components";
 import { loadDevMessages, loadErrorMessages } from "@apollo/client/dev";
 import Header from "./menus-toolbars/Header";
-import GlobalStyles from "../styles/GlobalStyles";
-import { lightTheme, darkTheme } from "@/styles/Themes";
 import AllInvoices from "./AllInvoices";
 
 export const Main = styled.div`
@@ -24,11 +22,11 @@ export const Main = styled.div`
 
   // applies the appropriate theme to each status type
   .draft {
-    background: var("--colors-draft-background");
-    color: var("--colors-draft-text");
+    background: var(--colors-draft-background);
+    color: var(--colors-draft-text);
 
     .circle {
-      background: var("--colors-draft-text");
+      background: var(--colors-draft-text);
     }
   }
 
@@ -49,7 +47,6 @@ export const Main = styled.div`
   }
 `;
 
-// todo - remove qotes from CSS variables
 
 loadDevMessages();
 loadErrorMessages();
@@ -57,25 +54,25 @@ loadErrorMessages();
 // todo - returning window scroll to proper position is currently non-functional
 // can use the useRef hook to dynamically get the position of a node to scroll to later
 function App() {
-  const [theme, setTheme] = useState("light");
+  // const [theme, setTheme] = useState("light");
   const [scrollPosition, setScrollPosition] = useState({ x: 0, y: 0 });
 
-  useLayoutEffect(() => {
-    if (localStorage.getItem("theme") !== null) {
-      const storedTheme = localStorage.getItem("theme") as string;
-      setTheme(storedTheme);
-    }
-  }, []);
+  // useLayoutEffect(() => {
+  //   if (localStorage.getItem("theme") !== null) {
+  //     const storedTheme = localStorage.getItem("theme") as string;
+  //     setTheme(storedTheme);
+  //   }
+  // }, []);
 
   useEffect(() => {
     window.scrollTo(scrollPosition.x, scrollPosition.y);
   }, []);
 
-  const themeToggler = () => {
-    // eslint-disable-next-line @typescript-eslint/no-unused-expressions
-    theme === "light" ? setTheme("dark") : setTheme("light");
-    localStorage.setItem("theme", theme === "light" ? "dark" : "light");
-  };
+  // const themeToggler = () => {
+  //   // eslint-disable-next-line @typescript-eslint/no-unused-expressions
+  //   theme === "light" ? setTheme("dark") : setTheme("light");
+  //   localStorage.setItem("theme", theme === "light" ? "dark" : "light");
+  // };
 
   // const routes = [
   //   {
@@ -99,10 +96,10 @@ function App() {
   return (
     // <ThemeProvider theme={theme === "light" ? lightTheme : darkTheme}>
     //   <GlobalStyles />
-      <Main id="container">
-        <Header themeToggler={themeToggler} theme={theme} />
-        <AllInvoices />
-      </Main>
+    <Main id="container">
+      <Header />
+      <AllInvoices />
+    </Main>
     // </ThemeProvider>
   );
 }

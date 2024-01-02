@@ -10,8 +10,8 @@ export const FormContainerDarkenModal = styled.div`
   top: 72px;
   bottom: 91px;
   left: 0;
-  width: 100%;
-  background-color: var(--colors-form-background);
+  //background-color: var(--colors-form-background);
+  background-color: pink;
   position: fixed;
   display: flex;
   flex-direction: column;
@@ -19,10 +19,11 @@ export const FormContainerDarkenModal = styled.div`
   transition-duration: 250ms;
   transition-timing-function: ease-in-out;
   overflow-x: hidden;
-  filter: drop-shadow(2px 2px 2px bottom);
+  filter: drop-shadow(2px 2px 2px);
   align-self: flex-start;
   z-index: 50;
   max-width: 100%;
+border: 3px solid red;
 
   @media (min-width: 768px) {
     padding-left: 5rem;
@@ -43,7 +44,7 @@ export const FormContainerDarkenModal = styled.div`
 `;
 
 export const BillText = styled.p`
-  color: var("--colors-outline");
+  color: var(--colors-outline);
   font-weight: bold;
   font-size: 0.75rem;
   margin-bottom: 1.5rem;
@@ -58,10 +59,10 @@ export const Input = styled.input<InputProps>`
   width: 100%;
   height: 48px;
   border-radius: 4px;
-  border: 1px solid var("--color-form-field-outline");
+  border: 1px solid var(--colors-form-field-outline);
   padding: 17px 20px 16px 20px;
   margin-bottom: 1.5rem;
-  font-family: ${({ theme }) => theme.font};
+  font-family: var(--theme-font);
   font-style: normal;
   font-weight: 700;
   font-size: 12px;
@@ -76,7 +77,7 @@ export const Input = styled.input<InputProps>`
 
   &:focus,
   &:hover {
-    border-color: var("--colors-form-field-outline-focus");
+    border-color: var(--colors-form-field-outline-focus);
   }
 
   .custom-input {
@@ -178,7 +179,7 @@ export const DateAndPaymentContainer = styled.div`
   // section targets the react-date-picker component to apply theming
   .react-datepicker__header {
     background-color: var(--colors-background);
-    color: var("--colors-date-text");
+    color: var(--colors-date-text);
     border: none;
     padding-top: 1.5rem;
     padding-bottom: 1.5rem;
@@ -188,7 +189,7 @@ export const DateAndPaymentContainer = styled.div`
   .react-datepicker__month-text,
   .react-datepicker__quarter-text,
   .react-datepicker__year-text {
-    color: var("--colors-date-text");
+    color: var(--colors-date-text);
   }
 
   .react-datepicker__day {
@@ -200,15 +201,15 @@ export const DateAndPaymentContainer = styled.div`
 
   .react-datepicker {
     background-color: var(--colors-background);
-    color: var("--colors-date-text");
+    color: var(--colors-date-text);
     border: none;
-    box-shadow: var("--colors-filter-shadow");
+    box-shadow: var(--colors-filter-shadow);
     transition: all 250ms ease-in-out;
   }
 
   .react-datepicker__month-year-dropdown {
     background-color: var(--colors-background);
-    color: var("--colors-date-text");
+    color: var(--colors-date-text);
     border: none;
   }
 
@@ -227,7 +228,7 @@ export const DateAndPaymentContainer = styled.div`
   }
 
   .react-datepicker__current-month {
-    color: var("--colors-date-text");
+    color: var(--colors-date-text);
     align-self: center;
     justify-self: center;
     font-family: "Spartan", sans-serif;
