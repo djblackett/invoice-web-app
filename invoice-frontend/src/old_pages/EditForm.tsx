@@ -22,7 +22,7 @@ import {
   convertStringToDate,
   createInvoiceObject,
 } from "@/utils/utilityFunctions";
-import { ReduxInvoiceState } from "@/types/types";
+import {Invoice, ReduxInvoiceState} from "@/types/types";
 import styles from "../styles/generalFormStyles.module.css";
 
 const formOptions = { resolver: yupResolver(validationSchema) };
@@ -33,6 +33,7 @@ type EditFormProps = {
   setIsEditOpen: React.Dispatch<React.SetStateAction<boolean>>;
   setPadding: React.Dispatch<React.SetStateAction<string>>;
   id: string;
+  invoice: Invoice;
 };
 
 function EditForm({
@@ -40,8 +41,10 @@ function EditForm({
   setIsEditOpen,
   padding,
   setPadding,
-    id
+    id, invoice
 }: EditFormProps) {
+
+
   const methods = useForm({
     ...formOptions,
     mode: "onChange",
@@ -60,12 +63,13 @@ function EditForm({
   } = methods;
 
   const width = useWindowWidth();
-  const dispatch = useDispatch();
+  // const dispatch = useDispatch();
   const watcher = watch();
 
-  const invoice = useSelector((state: ReduxInvoiceState) =>
-    selectInvoiceById(state, id),
-  );
+  // const invoice = useSelector((state: ReduxInvoiceState) =>
+  //   selectInvoiceById(state, id),
+  // );
+
   const [editPageWidth, setEditPageWidth] = useState(0);
   const [startDate, setStartDate] = useState(
     convertStringToDate(invoice?.createdAt),
@@ -109,7 +113,8 @@ function EditForm({
           invoice,
         );
 
-        dispatch(updateInvoice(newInvoice));
+        // todo replace redux with graphql call
+        // dispatch(updateInvoice(newInvoice));
 
         clearErrors();
         setIsEditOpen(false);
@@ -154,6 +159,8 @@ function EditForm({
   if (!invoice) {
     return null;
   }
+
+  console.log("Editform - is edit tab open?", isEditOpen);
 
   return (
     <div className={styles.darkenScreen} style={{ visibility: isEditOpen ? "visible" : "hidden" }}>

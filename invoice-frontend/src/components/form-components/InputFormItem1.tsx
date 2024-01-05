@@ -124,7 +124,7 @@ export default function InputFormItem1({
                   ? "1px solid #EC5757"
                   : "",
             }}
-            defaultValue={invoice ? invoice?.items?.[index]?.quantity : ""}
+            defaultValue={invoice ? invoice?.items?.[index]?.quantity : 0}
           />
         </Box>
         <Box>
@@ -136,7 +136,7 @@ export default function InputFormItem1({
             })}
             placeholder="0.00"
             type="text"
-            defaultValue={invoice ? invoice?.items?.[index]?.price : ""}
+            defaultValue={invoice ? invoice?.items?.[index]?.price : 0}
             style={{
               border:
                 Array.isArray(errors.items) && errors?.items?.[index]?.price
@@ -182,7 +182,7 @@ export default function InputFormItem1({
         <input className={styles.quantityInput}
           {...register(`items[${index}].quantity`, {
             required: !isDraft,
-            max: 100,
+            max: 5000,
           })}
           placeholder="0"
           type="text"
@@ -192,7 +192,7 @@ export default function InputFormItem1({
                 ? "1px solid #EC5757"
                 : "",
           }}
-          defaultValue={invoice ? invoice?.items?.[index]?.quantity : ""}
+          defaultValue={invoice ? invoice?.items?.[index]?.quantity : 0}
         />
 
         <input className={styles.priceInput}
@@ -202,7 +202,7 @@ export default function InputFormItem1({
           })}
           placeholder="0.00"
           type="text"
-          defaultValue={invoice ? invoice?.items?.[index]?.price : ""}
+          defaultValue={invoice ? invoice?.items?.[index]?.price : 0}
           style={{
             border:
               Array.isArray(errors.items) && errors?.items?.[index]?.price

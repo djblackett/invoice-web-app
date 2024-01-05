@@ -14,7 +14,7 @@ import {GraphQLError} from "graphql/error";
 import jwt from "jsonwebtoken";
 import bcrypt from "bcrypt";
 
-const { PubSub } = require("graphql-subscriptions");
+import {PubSub} from "graphql-subscriptions";
 const pubsub = new PubSub();
 
 interface PrismaContext {
@@ -134,8 +134,8 @@ const resolvers = {
               //ts-ignore
               create: args.items.map(item => ({
                 name: item.name,
-                price: item.price,
-                quantity: item.quantity,
+                price: Number(item.price),
+                quantity: Number(item.quantity),
                 total: item.total,
                 id: item.id || undefined
               }))
@@ -148,10 +148,11 @@ const resolvers = {
           }
         });
 
-        await pubsub.publish("INVOICE_ADDED", {invoiceAdded: invoiceData});
-
+        // await pubsub.publish("INVOICE_ADDED", {invoiceAdded: invoiceData});
+        console.log(invoiceData)
         return invoiceData;
       } catch (error) {
+        console.log(error);
         throw new GraphQLError("Creating the invoice failed. Make sure the id is unique", {
           extensions: {
             code: "BAD_INVOICE_INPUT",

@@ -1,3 +1,4 @@
+"use client"
 import styled from "styled-components";
 import React from "react";
 
@@ -127,7 +128,7 @@ const sun = (
 function Header() {
 
     // read theme from localhost or default to light if nothing is stored yet
-    const [theme, setTheme] = React.useState(localStorage.getItem("theme") || "light" );
+    const [theme, setTheme] = React.useState(global.localStorage?.getItem("theme") || "light" );
 
     React.useEffect(() => {
         document.body.dataset.theme = theme

@@ -50,7 +50,6 @@ function NewInvoice({
     setItems(newItems);
   }, []);
 
-  console.log("jan 2 - did I update?")
   return (
     // DarkenScreen appears when newInvoice tab is open
     <div

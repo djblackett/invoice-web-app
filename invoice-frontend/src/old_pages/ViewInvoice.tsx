@@ -50,6 +50,7 @@ function ViewInvoice({id}: {id: string}) {
                   padding={padding}
                   setPadding={setPadding}
                   id={id}
+                  invoice={invoice.data.getInvoiceById}
               />
               <div className={styles.goBackButton} onClick={goBack}>
                   <p className={styles.icon}>{arrowLeft}</p>
@@ -64,8 +65,8 @@ function ViewInvoice({id}: {id: string}) {
               <FullInvoice invoice={invoice.data.getInvoiceById}/>
               <DeleteModal
                   setIsModalOpen={setIsModalOpen}
-                  invoice={invoice.data}
                   isModalOpen={isModalOpen}
+                  id={id}
               />
           </div>
       );

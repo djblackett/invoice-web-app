@@ -60,9 +60,11 @@ export const createInvoiceObject = (
   data: FieldValues,
   startDate: Date,
   selectedPaymentOption: number,
-  id: string | undefined,
-  invoice: Invoice | undefined,
+  id?: string,
+  invoice?: Invoice,
 ) => {
+
+  console.log("creating invoice...")
   const newInvoice: Invoice = {
     id: id || "",
     clientName: data.clientName,
@@ -91,8 +93,11 @@ export const createInvoiceObject = (
   let invoiceTotal = 0;
 
   const { items } = newInvoice;
-
+  console.log("Hello");
   for (let i = 0; i < items.length; i++) {
+    console.log(typeof  items[i].quantity);
+    items[i].quantity = Number(items[i].quantity);
+    items[i].price = Number(items[i].price);
     items[i].total = items[i].quantity * items[i].price;
     invoiceTotal += Number(items[i].total);
     if (!items[i].id) {

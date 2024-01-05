@@ -28,10 +28,12 @@ type EditButtonProps = {
 
 function EditButton({ toggleEditTab, isEditOpen }: EditButtonProps) {
   const handleClick = () => {
+    console.log(!isEditOpen);
     toggleEditTab(!isEditOpen);
+    console.log(!isEditOpen);
   };
   return (
-    <Button onClick={handleClick} type="button">
+    <Button onClick={handleClick} >
       Edit
     </Button>
   );

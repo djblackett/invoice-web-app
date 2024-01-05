@@ -3,9 +3,11 @@ import { useDispatch } from "react-redux";
 import { useRouter } from "next/navigation";
 import React from "react";
 import DeleteButton from "./buttons/DeleteButton";
-import { removeInvoice } from "@/features/invoices/invoicesSlice";
 import CancelButton from "./buttons/CancelButton";
 import { Invoice } from "@/types/types";
+import {useMutation} from "@apollo/client";
+import {ALL_INVOICES, REMOVE_INVOICE} from "@/graphql/queries";
+import allInvoices from "@/components/AllInvoices";
 
 export const DarkenScreen = styled.div`
   display: flex;
@@ -63,22 +65,33 @@ const ButtonContainer = styled.div`
 `;
 
 export type DeleteModalProps = {
-  invoice: Invoice;
   isModalOpen: boolean;
   setIsModalOpen: React.Dispatch<React.SetStateAction<boolean>>;
+  id: string;
 };
 
 function DeleteModal({
   isModalOpen,
   setIsModalOpen,
-  invoice,
+    id
 }: DeleteModalProps) {
   const dispatch = useDispatch();
   const router = useRouter();
+  const [deleteInvoice, result] = useMutation(REMOVE_INVOICE, {
+    refetchQueries: [{query: ALL_INVOICES}],
+    onError: (error) => {
+      console.log(error.graphQLErrors[0].message);
+    },
+  });
 
-  const handleClick = () => {
+  const handleClick = async () => {
+    await deleteInvoice({
+      variables: {
+        removeInvoiceId: id
+      }
+    });
+
     router.push("/");
-    dispatch(removeInvoice(invoice.id));
   };
 
   const closeModal = () => setIsModalOpen(false);
