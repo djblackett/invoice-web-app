@@ -1,22 +1,26 @@
-// app/providers.jsx
-
 'use client'
 
-import {ThemeProvider} from 'next-themes'
-import React, {useState} from "react";
+import React, {useLayoutEffect, useState} from "react";
 import client from "@/graphql/apollo-client";
 import {Provider} from "react-redux";
 import store from "@/features/store";
-import App from "@/components/App";
 import {ApolloProvider} from "@apollo/client";
-import {ThemeProvider as StyleProvider} from "styled-components";
-import {darkTheme, lightTheme} from "@/styles/Themes";
 import StyledComponentsRegistry from "../../registry";
+
+// todo - Fix up the style providers after finalizing which style system to use
 
 function Providers({children}: {children: React.ReactNode}) {
     const [theme, setTheme] = useState("light");
-    return (
+    useLayoutEffect(() => {
+        if (localStorage.getItem("theme") !== null) {
+            document.body.dataset.theme = localStorage.getItem("theme") as string;
+        } else if (localStorage.getItem("theme")) {
+            document.body.dataset.theme = "light";
+            localStorage.setItem("theme", "light");
+        }
+    }, []);
 
+    return (
     <ApolloProvider client={client}>
         <React.StrictMode>
             <Provider store={store}>

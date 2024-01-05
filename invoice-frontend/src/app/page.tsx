@@ -1,7 +1,6 @@
 "use client"
-import React from "react";
 
-// import "../styles/index.css";
+import React from "react";
 
 import App from "../components/App";
 

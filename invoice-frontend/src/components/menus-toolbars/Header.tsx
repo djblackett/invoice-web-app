@@ -1,9 +1,6 @@
 import styled from "styled-components";
-import PropTypes from "prop-types";
-import { useTheme } from "next-themes";
 import React from "react";
 
-/* eslint-disable no-undef */
 const HeaderContainer = styled.div`
   width: 100%;
   max-width: 100vw;
@@ -16,7 +13,6 @@ const HeaderContainer = styled.div`
   z-index: 1000;
   position: fixed;
     top: 0;
-  //transition: background-color .2s ease-in;
 
   @media (min-width: 1200px) {
     flex-direction: column;
@@ -130,12 +126,15 @@ const sun = (
 
 function Header() {
 
-    const [theme, setTheme] = React.useState('light')
-    // const nextTheme = theme === 'light' ? 'dark' : 'light'
+    // read theme from localhost or default to light if nothing is stored yet
+    const [theme, setTheme] = React.useState(localStorage.getItem("theme") || "light" );
 
     React.useEffect(() => {
         document.body.dataset.theme = theme
-    }, [theme])
+        localStorage.setItem("theme", theme);
+    }, [theme]);
+
+
 
     return (
     <HeaderContainer>
@@ -151,7 +150,7 @@ function Header() {
         <AvatarBox>
           <img
             src={`/assets/image-avatar.jpg`}
-            alt=""
+            alt="user avatar"
             style={{ borderRadius: "50%", height: "32px", width: "32px" }}
           />
         </AvatarBox>

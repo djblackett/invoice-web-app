@@ -1,6 +1,6 @@
 import { FieldValues } from "react-hook-form";
 import { v4 as uuidv4 } from "uuid";
-import { Invoice } from "../types/types";
+import { Invoice } from "@/types/types";
 
 export const generateId = () => {
   const list = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
@@ -103,8 +103,7 @@ export const createInvoiceObject = (
   newInvoice.total = invoiceTotal;
   newInvoice.id = newInvoice.id ? newInvoice.id : generateId();
   newInvoice.paymentTerms = selectedPaymentOption;
-  // newInvoice.status = isDraft ?  "draft" : "pending";
-  // newInvoice.status = data.status;
+
   const date = new Date(
     startDate.getTime() + 86400000 * newInvoice.paymentTerms,
   );

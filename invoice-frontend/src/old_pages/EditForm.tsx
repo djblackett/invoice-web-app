@@ -108,15 +108,15 @@ function EditForm({
           id,
           invoice,
         );
-        // console.log(data.items);
+
         dispatch(updateInvoice(newInvoice));
 
         clearErrors();
         setIsEditOpen(false);
         setSelectedPaymentOption(1); // todo check this
-        // console.log(newInvoice);
+
         reset();
-        // console.log("Form reset");
+
       }
     });
   };
@@ -233,7 +233,6 @@ function EditForm({
               setIsOpen={setIsEditOpen}
               saveText="Save Changes"
               closeText="Cancel"
-              // invoice={invoice}
               onSubmit={onSubmit}
               justifyCancel=""
             />

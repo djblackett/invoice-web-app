@@ -4,11 +4,6 @@ import { v4 as uuidv4 } from "uuid";
 import NewInvoiceForm from "../components/form-components/NewInvoiceForm";
 import "../styles/react-datepicker.css";
 import useWindowWidth from "../hooks/useWindowWidth";
-import {
-  DarkenScreen,
-  EditTitle,
-  FormContainerDarkenModal,
-} from "@/styles/editStyles";
 import { Item } from "@/types/types";
 import styles from "../styles/generalFormStyles.module.css";
 

@@ -58,12 +58,7 @@ function App() {
   // const [theme, setTheme] = useState("light");
   const [scrollPosition, setScrollPosition] = useState({ x: 0, y: 0 });
 
-  // useLayoutEffect(() => {
-  //   if (localStorage.getItem("theme") !== null) {
-  //     const storedTheme = localStorage.getItem("theme") as string;
-  //     setTheme(storedTheme);
-  //   }
-  // }, []);
+
 
   useEffect(() => {
     window.scrollTo(scrollPosition.x, scrollPosition.y);

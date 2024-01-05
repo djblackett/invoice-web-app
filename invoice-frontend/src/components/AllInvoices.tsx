@@ -33,10 +33,26 @@ const AllInvoicesContainer = styled.div`
   }
 `;
 
+const linkStyleMobile = {
+    width: "100%",
+    textDecoration: "none",
+    display: "flex",
+    justifyContent: "center",
+    alignItems: "center",
+};
+
+const linkStyleDesktop = {
+    width: "50%",
+    minWidth: "730px",
+    textDecoration: "none",
+    display: "flex",
+    justifyContent: "center",
+    alignItems: "center",
+};
+
 function AllInvoices({ setScrollPosition }: AllInvoicesProps) {
   const filter = useSelector(selectFilter);
   const dispatch = useDispatch();
-  // const data = useSelector(selectInvoices);
   const invoiceResults = useQuery(ALL_INVOICES);
   const [invoiceList, setInvoiceList] = useState([]);
   const width = useWindowWidth();
@@ -44,22 +60,7 @@ function AllInvoices({ setScrollPosition }: AllInvoicesProps) {
   const [isNewOpen, setIsNewOpen] = useState(false);
   const [padding, setPadding] = useState("");
 
-  const linkStyleMobile = {
-    width: "100%",
-    textDecoration: "none",
-    display: "flex",
-    justifyContent: "center",
-    alignItems: "center",
-  };
 
-  const linkStyleDesktop = {
-    width: "50%",
-    minWidth: "730px",
-    textDecoration: "none",
-    display: "flex",
-    justifyContent: "center",
-    alignItems: "center",
-  };
 
   const scrollToTop = () => {
       if (setScrollPosition) {
@@ -150,7 +151,7 @@ function AllInvoices({ setScrollPosition }: AllInvoicesProps) {
 
       {invoiceList.length === 0 && <EmptyList />}
 
-      {/* Clear button is for debugging the empty invoices page */}
+      {/* Clear button below is for debugging the empty invoices page - removes them from redux only*/}
       {/* <button onClick={() => dispatch(clearInvoices())}>Clear Invoices</button> */}
     </AllInvoicesContainer>
   );

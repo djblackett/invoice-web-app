@@ -3,9 +3,9 @@ import { useDispatch } from "react-redux";
 import { useRouter } from "next/navigation";
 import React from "react";
 import DeleteButton from "./buttons/DeleteButton";
-import { removeInvoice } from "../features/invoices/invoicesSlice";
+import { removeInvoice } from "@/features/invoices/invoicesSlice";
 import CancelButton from "./buttons/CancelButton";
-import { Invoice } from "../types/types";
+import { Invoice } from "@/types/types";
 
 export const DarkenScreen = styled.div`
   display: flex;

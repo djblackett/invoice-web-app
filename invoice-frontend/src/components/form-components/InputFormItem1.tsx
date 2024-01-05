@@ -1,5 +1,4 @@
 import { useFieldArray, useFormContext } from "react-hook-form";
-// import { v4 as uuidv4 } from "uuid";
 import React, { useEffect, useRef } from "react";
 import PropTypes from "prop-types";
 import {
@@ -8,12 +7,9 @@ import {
   ItemContainer,
   ItemName,
   MobileHelperContainer,
-  Price,
-  Quantity,
   SmallBoxContainer,
   SVG,
   Total,
-  TotalBox,
 } from "@/styles/editFormItemStyles";
 import NewItemButton from "../buttons/NewItemButton";
 import useWindowWidth from "../../hooks/useWindowWidth";

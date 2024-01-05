@@ -1,4 +1,3 @@
-
 import React, { useState } from "react";
 import {useApolloClient, useQuery} from "@apollo/client";
 import { useRouter } from "next/navigation";
@@ -9,38 +8,25 @@ import DeleteModal from "../components/DeleteModal";
 import {
   arrowLeft,
 } from "@/styles/ViewInvoiceStyles";
-import {ReduxInvoiceState, ScrollPosition} from "@/types/types";
 import { GET_INVOICE_BY_ID } from "@/graphql/queries";
-import {useSelector} from "react-redux";
-import {selectInvoiceById} from "@/features/invoices/invoicesSlice";
 import styles from "../styles/viewInvoice.module.css";
 
-export type ViewInvoiceProps = {
-  scrollPosition?: ScrollPosition;
-};
-
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
 function ViewInvoice({id}: {id: string}) {
 
-  // eslint-disable-next-line @typescript-eslint/no-unsafe-call,@typescript-eslint/no-unsafe-return
   // const invoice = useSelector( (state: ReduxInvoiceState) => selectInvoiceById(state, id)) as Invoice;
   const router = useRouter();
   const apolloClient = useApolloClient();
   const [isEditOpen, setIsEditOpen] = useState(false);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [padding, setPadding] = useState("");
-    // const [theme, setTheme] = useState("light");
-
 
   const invoice = useQuery(GET_INVOICE_BY_ID, {
       client: apolloClient,
       variables: {id: id}
   });
 
-    // console.log("id:", id);
-    // console.log("invoice:", invoice);
-
-  const selectInvoice = useSelector((state: ReduxInvoiceState) => selectInvoiceById(state, id))
+  // todo - remove following line after fully replacing redux with graphql
+  // const selectInvoice = useSelector((state: ReduxInvoiceState) => selectInvoiceById(state, id))
 
   const toggleEditTab = () => {
     setIsEditOpen(!isEditOpen);
@@ -55,7 +41,6 @@ function ViewInvoice({id}: {id: string}) {
     return <h2>Loading</h2>;
   }
 
-  // todo implement loading state when backend is implemented
   if (invoice.data) {
       return (
           <div className={styles.viewContainer}>
