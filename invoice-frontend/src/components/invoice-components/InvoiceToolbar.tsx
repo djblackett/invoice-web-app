@@ -21,7 +21,7 @@ const Toolbar = styled.div`
     display: flex;
 
     flex-direction: row;
-    background-color: var(--colors-background);
+    background-color: var(--colors-object-background);
     border-radius: 8px;
   }
 
@@ -39,7 +39,7 @@ const StatusContainer = styled.div`
   padding: 10px 20px;
   justify-content: space-between;
   align-items: center;
-  background-color: var(--colors-background);
+  //background-color: var(--colors-background);
   border-radius: 8px;
 
   @media (min-width: 600px) {
@@ -66,8 +66,10 @@ function InvoiceToolbar({
   setEdit,
   setIsModalOpen,
 }: InvoiceToolBarProps) {
+
   const openModal = () => setIsModalOpen(true);
 
+  console.log(invoice.status)
   const invoiceStatus = useMemo(() => {
     if (invoice.status === "paid") {
       return <InvoiceStatus statusType="paid" text="Paid" />;

@@ -1,10 +1,11 @@
 "use client"
 import { Metadata } from "next";
 import React from "react";
-import styled, { ThemeProvider } from "styled-components";
+import styled from "styled-components";
 import Providers from "@/app/providers";
 import "../styles/css-vars.css"
 import "../styles/index.css"
+
 
 // export const metadata: Metadata = {
 //   title: {
@@ -70,7 +71,8 @@ export default function RootLayout({
 }) {
 
     return (
-    <html lang="en" suppressHydrationWarning>
+    <html lang="en">
+
       <body>
       {/*<Main>*/}
       {/*    /!*  @ts-ignore *!/*/}

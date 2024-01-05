@@ -62,7 +62,7 @@ export const Input = styled.input<InputProps>`
   border: 1px solid var(--colors-form-field-outline);
   padding: 17px 20px 16px 20px;
   margin-bottom: 1.5rem;
-  font-family: var(--theme-font);
+  font-family: var(--theme-font),sans-serif;
   font-style: normal;
   font-weight: 700;
   font-size: 12px;

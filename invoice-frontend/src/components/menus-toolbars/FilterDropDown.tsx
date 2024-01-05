@@ -3,8 +3,8 @@ import styled from "styled-components";
 import { useDispatch } from "react-redux";
 import PropTypes from "prop-types";
 import CheckboxSelection from "./CheckboxSelection";
-import { changeFilter } from "../../features/invoices/filterSlice";
-import { StatusKey } from "../../types/types";
+import { changeFilter } from "@/features/invoices/filterSlice";
+import { StatusKey } from "@/types/types";
 
 const Main = styled("div")`
   align-self: center;
@@ -97,7 +97,7 @@ const ListItem = styled.li.attrs({})`
 
    &:hover {
      .styledCheckbox {
-       border-color var(--colors-outline);
+       border-color: var(--colors-outline);
   //box-shadow:0 0 1px 1px #102447;
   //     border-radius: 3px;
      }
@@ -115,10 +115,6 @@ const ItemButton = styled.button`
   box-sizing: border-box;
   cursor: pointer;
 `;
-
-// type Options = {
-//   options: string[];
-// }
 
 type FilterDropDownProps = {
   icon: ReactElement;

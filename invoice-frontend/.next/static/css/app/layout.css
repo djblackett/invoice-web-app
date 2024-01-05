@@ -24,6 +24,7 @@ body {
   -moz-osx-font-smoothing: grayscale;
   font-family: "League Spartan", sans-serif;
   font-weight: 500;
+  background-color: var(--colors-background);
 }
 
 code {
@@ -65,6 +66,7 @@ body[data-theme='light'] {
     --colors-item-list-form-background: white;
     --colors-payment-terms-background: white;
     --colors-payment-option-border: #DFE3FA;
+    --colors-checkbox-background: rgb(223, 227, 250);
 
 }
 
@@ -95,6 +97,7 @@ body[data-theme='dark'] {
     --colors-item-list-form-background: #141625;
     --colors-payment-terms-background: #252945;
     --colors-payment-option-border: #1E2139;
+    --colors-checkbox-background: #FFFFFF;
 }
 
 /*export const lightTheme*/

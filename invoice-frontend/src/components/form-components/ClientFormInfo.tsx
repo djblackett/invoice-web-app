@@ -2,23 +2,11 @@ import React from "react";
 import PropTypes from "prop-types";
 import { useFormContext } from "react-hook-form";
 import FormEntry from "./FormEntry";
-import {
-  AddressDetailInput,
-  CountryInput,
-  ErrorTextInline,
-  Label,
-  StreetAddressInput,
-  Input,
-} from "../../styles/editStyles";
 import AddressBox from "./AddressBox";
 import LongFormEntry from "./LongFormEntry";
 import useWindowWidth from "../../hooks/useWindowWidth";
-import { Invoice } from "../../types/types";
-
-// const emailRegex = "/(?:[a-z0-9!#$%&'*+\\/=?^_`{|}~-]+(?:\\.[a-z0-9!#$%&'*+\\/=?^_`{|}~-]+)*|\"(?:[\x01-\x08\x0b\x0c\x0e-\x1f\x21\x23-\x5b\x5d-\x7f]|\n" +
-//     "\\\\[\x01-\x09\x0b\x0c\x0e-\x7f])*\")@(?:(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?|\n" +
-//     "\\[(?:(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\\.){3}(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?|[a-z0-9-]*[a-z0-9]:\n" +
-//     "(?:[\x01-\x08\x0b\x0c\x0e-\x1f\x21-\x5a\x53-\x7f]|\\\\[\x01-\x09\x0b\x0c\x0e-\x7f])+)\\])/";
+import { Invoice } from "@/types/types";
+import styles from "../../styles/generalFormStyles.module.css";
 
 type ClientFormInfoProps = {
   editPageWidth: number;
@@ -42,14 +30,14 @@ export default function ClientFormInfo({
       style={{ width: width < 768 ? "100%" : "" }}
       className="client-country"
     >
-      <Label
+      <label className={styles.label}
         htmlFor="clientCountry"
         style={{ color: errors.clientCountry ? "#EC5757" : "" }}
       >
         Country
-      </Label>
-      <CountryInput
-        $long={false}
+      </label>
+      <input className={styles.countryInput}
+        // $long={false}
         style={{
           border: errors?.clientCountry ? "1px solid #EC5757" : "",
           width: width < 768 ? "100%" : "",
@@ -68,17 +56,18 @@ export default function ClientFormInfo({
   return (
     <>
       <LongFormEntry className="client-name">
-        <Label
+        <label className={styles.label}
           htmlFor="clientName"
           style={{ color: errors.clientName ? "#EC5757" : "" }}
         >
           Client&apos;s Name
-        </Label>
+        </label>
         {errors.clientName?.type === "required" && (
-          <ErrorTextInline>can&apos;t be empty</ErrorTextInline>
+          <p className={styles.errorTextInline}>can&apos;t be empty</p>
         )}
-        <Input
-          $long
+        <input
+            className={styles.input}
+          // $long
           style={{ border: errors.clientName ? "1px solid #EC5757" : "" }}
           type="text"
           defaultValue={invoice ? invoice.clientName : ""}
@@ -86,19 +75,19 @@ export default function ClientFormInfo({
         />
       </LongFormEntry>
       <LongFormEntry className="client-email">
-        <Label
+        <label className={styles.label}
           htmlFor="clientEmail"
           style={{ color: errors.clientEmail ? "#EC5757" : "" }}
         >
           Client&apos;s Email
-        </Label>
+        </label>
         {errors.clientEmail?.type === "pattern" && (
-          <ErrorTextInline style={{ position: "absolute", top: "-8px" }}>
+          <p className={styles.errorTextInline} style={{ position: "absolute", top: "-8px" }}>
             Invalid email
-          </ErrorTextInline>
+          </p>
         )}
-        <Input
-          $long
+        <input className={styles.input}
+          // $long
           style={{ border: errors.clientEmail ? "1px solid #EC5757" : "" }}
           type="text"
           defaultValue={invoice ? invoice.clientEmail : ""}
@@ -111,13 +100,13 @@ export default function ClientFormInfo({
       </LongFormEntry>
 
       <LongFormEntry className="client-street-address">
-        <Label
+        <label className={styles.label}
           htmlFor="clientStreetAddress"
           style={{ color: errors.clientStreetAddress ? "#EC5757" : "" }}
         >
           Street Address
-        </Label>
-        <StreetAddressInput
+        </label>
+        <input className={styles.streetAddressInput}
           style={{
             border: errors.clientStreetAddress ? "1px solid #EC5757" : "",
           }}
@@ -128,13 +117,13 @@ export default function ClientFormInfo({
 
       <AddressBox>
         <FormEntry className="client-city">
-          <Label
+          <label className={styles.label}
             htmlFor="clientCity"
             style={{ color: errors.clientCity ? "#EC5757" : "" }}
           >
             City
-          </Label>
-          <AddressDetailInput
+          </label>
+          <input className={styles.addressDetailInput}
             style={{
               border: errors.clientCity ? "1px solid #EC5757" : "",
             }}
@@ -149,13 +138,13 @@ export default function ClientFormInfo({
         </FormEntry>
 
         <FormEntry className="client-postal-code">
-          <Label
+          <label className={styles.label}
             htmlFor="clientPostalCode"
             style={{ color: errors.clientPostalCode ? "#EC5757" : "" }}
           >
             Post Code
-          </Label>
-          <AddressDetailInput
+          </label>
+          <input className={styles.addressDetailInput}
             style={{
               border: errors.clientPostalCode ? "1px solid #EC5757" : "",
             }}

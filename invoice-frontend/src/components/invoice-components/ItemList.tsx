@@ -66,7 +66,7 @@ const ItemsHeader = styled.div`
     display: grid;
     grid-template: 1fr / 2fr 1fr 1fr 1fr;
     color: var(--colors-grey-text);
-    background-color: var(colors-edit-button);
+    background-color: var(--colors-edit-button);
     margin-top: 3rem;
     padding: 2rem;
     border-radius: 8px 8px 0 0;
@@ -95,7 +95,7 @@ const ItemsContainer = styled.div`
   width: 100%;
   margin-top: 2.5rem;
   border-radius: 8px 8px 0 0;
-  background-color: var(colors-edit-button);
+  background-color: var(--colors-edit-button);
 
   @media (min-width: 768px) {
     padding: 0;

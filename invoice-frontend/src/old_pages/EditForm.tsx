@@ -11,14 +11,6 @@ import {
 import "../styles/react-datepicker.css";
 import useWindowWidth from "../hooks/useWindowWidth";
 import EditBottomMenu from "../components/menus-toolbars/EditBottomMenu";
-import {
-  BillText,
-  DarkenScreen,
-  EditTitle,
-  FormContainerDarkenModal,
-  Input,
-  Label,
-} from "@/styles/editStyles";
 import { CompanyFormInfo } from "@/components/form-components/CompanyFormInfo";
 import ClientFormInfo from "../components/form-components/ClientFormInfo";
 import DateAndPayment from "../components/form-components/DateAndPayment";
@@ -31,6 +23,7 @@ import {
   createInvoiceObject,
 } from "@/utils/utilityFunctions";
 import { ReduxInvoiceState } from "@/types/types";
+import styles from "../styles/generalFormStyles.module.css";
 
 const formOptions = { resolver: yupResolver(validationSchema) };
 
@@ -163,17 +156,18 @@ function EditForm({
   }
 
   return (
-    <DarkenScreen style={{ visibility: isEditOpen ? "visible" : "hidden" }}>
-      <FormContainerDarkenModal
+    <div className={styles.darkenScreen} style={{ visibility: isEditOpen ? "visible" : "hidden" }}>
+      <div className={styles.invoiceEditorContainer}
         style={{
           width: isEditOpen ? `${editPageWidth}px` : 0,
           padding: isEditOpen ? padding : 0,
         }}
       >
-        <EditTitle>
+        {/* todo - theme not switching here*/}
+        <h1 className={styles.editTitle}>
           Edit <span style={{ color: "#7E88C3" }}>#</span>
           {invoice && invoice.id.substring(0, 6)}
-        </EditTitle>
+        </h1>
 
         {/* "handleSubmit" will validate your inputs before invoking "onSubmit" */}
         {/* eslint-disable-next-line react/jsx-props-no-spreading */}
@@ -185,7 +179,7 @@ function EditForm({
             {/* register your input into the hook by invoking the "register" function */}
 
             {/* Company Details */}
-            <BillText>Bill From</BillText>
+            <p className={styles.billText}>Bill From</p>
             <CompanyFormInfo
               invoice={invoice}
               editPageWidth={editPageWidth}
@@ -193,7 +187,7 @@ function EditForm({
             />
 
             {/* //  Client details */}
-            <BillText>Bill To</BillText>
+            <p className={styles.billText}>Bill To</p>
             <ClientFormInfo
               editPageWidth={editPageWidth}
               invoice={invoice}
@@ -210,13 +204,13 @@ function EditForm({
             />
 
             <LongFormEntry className="project-description">
-              <Label
+              <label className={styles.label}
                 htmlFor="projectDescription"
                 style={{ color: errors.projectDescription ? "#EC5757" : "" }}
               >
                 Project Description
-              </Label>
-              <Input
+              </label>
+              <input className={styles.input}
                 // long
                 type="text"
                 defaultValue={invoice?.description}
@@ -245,8 +239,8 @@ function EditForm({
             />
           </form>
         </FormProvider>
-      </FormContainerDarkenModal>
-    </DarkenScreen>
+      </div>
+    </div>
   );
 }
 

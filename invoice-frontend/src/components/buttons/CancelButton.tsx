@@ -3,7 +3,7 @@ import Proptypes from "prop-types";
 
 const Button = styled.button`
   display: inline;
-  background-color: var(colors-edit-button);
+  background-color: var(--colors-edit-button);
   border-radius: 24px;
   padding: 16px 24px 17px 24px;
   color: var(--colors-grey-text);
@@ -22,7 +22,7 @@ const Button = styled.button`
   }
 
   &:hover {
-    background-color: var(colors-edit-button-hover);
+    background-color: var(--colors-edit-button-hover);
   }
 `;
 

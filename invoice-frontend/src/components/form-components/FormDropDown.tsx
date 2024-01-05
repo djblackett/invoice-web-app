@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import styled from "styled-components";
 import PropTypes from "prop-types";
 import { SVG } from "../buttons/NewItemButton";
+import styles from "../../styles/generalFormStyles.module.css";
 
 const Main = styled.div.attrs({
   tabIndex: 0,
@@ -191,9 +192,9 @@ function FormDropDown({
   }, [selectedPaymentOption]);
 
   return (
-    <Main>
+    <div className={styles.dropDownMain} tabIndex={0}>
       <DropDownHeader onClick={handlePaymentClick} tabIndex={-1}>
-        <h2>{selected}</h2>
+        <h2 className={styles.dropDownSelected}>{selected}</h2>
         <SVG>{arrowDown}</SVG>
       </DropDownHeader>
 
@@ -213,7 +214,7 @@ function FormDropDown({
           </ListItem>
         ))}
       </DropDownList>
-    </Main>
+    </div>
   );
 }
 

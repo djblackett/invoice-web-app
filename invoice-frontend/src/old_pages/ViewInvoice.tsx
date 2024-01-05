@@ -8,17 +8,12 @@ import EditForm from "@/old_pages/EditForm";
 import DeleteModal from "../components/DeleteModal";
 import {
   arrowLeft,
-  GoBack,
-  GoBackButton,
-  Icon,
-  ViewContainer,
 } from "@/styles/ViewInvoiceStyles";
 import {ReduxInvoiceState, ScrollPosition} from "@/types/types";
 import { GET_INVOICE_BY_ID } from "@/graphql/queries";
 import {useSelector} from "react-redux";
 import {selectInvoiceById} from "@/features/invoices/invoicesSlice";
-import { ThemeProvider } from "styled-components";
-import {darkTheme, lightTheme} from "@/styles/Themes";
+import styles from "../styles/viewInvoice.module.css";
 
 export type ViewInvoiceProps = {
   scrollPosition?: ScrollPosition;
@@ -42,8 +37,8 @@ function ViewInvoice({id}: {id: string}) {
       variables: {id: id}
   });
 
-    console.log("id:", id);
-    console.log("invoice:", invoice);
+    // console.log("id:", id);
+    // console.log("invoice:", invoice);
 
   const selectInvoice = useSelector((state: ReduxInvoiceState) => selectInvoiceById(state, id))
 
@@ -63,10 +58,7 @@ function ViewInvoice({id}: {id: string}) {
   // todo implement loading state when backend is implemented
   if (invoice.data) {
       return (
-          //  {!invoice && <h1>Loading</h1>}
-          // <ThemeProvider theme={theme === "light" ? lightTheme : darkTheme}>
-
-          <ViewContainer>
+          <div className={styles.viewContainer}>
               <EditForm
                   isEditOpen={isEditOpen}
                   setIsEditOpen={setIsEditOpen}
@@ -74,12 +66,12 @@ function ViewInvoice({id}: {id: string}) {
                   setPadding={setPadding}
                   id={id}
               />
-              <GoBackButton onClick={goBack}>
-                  <Icon>{arrowLeft}</Icon>
-                  <GoBack>Go back</GoBack>
-              </GoBackButton>
+              <div className={styles.goBackButton} onClick={goBack}>
+                  <p className={styles.icon}>{arrowLeft}</p>
+                  <p className={styles.goBack}>Go back</p>
+              </div>
               <InvoiceToolbar
-                  invoice={invoice.data}
+                  invoice={invoice.data.getInvoiceById}
                   setEdit={toggleEditTab}
                   setIsModalOpen={setIsModalOpen}
                   isEditOpen={isEditOpen}
@@ -90,8 +82,7 @@ function ViewInvoice({id}: {id: string}) {
                   invoice={invoice.data}
                   isModalOpen={isModalOpen}
               />
-          </ViewContainer>
-          // </ThemeProvider>
+          </div>
       );
   }
 

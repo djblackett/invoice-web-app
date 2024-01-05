@@ -3,7 +3,7 @@ import styled from "styled-components";
 const Card = styled.div`
   width: 100%;
   max-width: 100%;
-  background-color: var(--colors-background);
+  background-color: var(--colors-object-background);
   display: flex;
   flex-direction: column;
   padding: 24px;
@@ -45,7 +45,7 @@ const IDNumber = styled.p`
   font-size: 16px;
   line-height: 24px;
   /* identical to box height, or 150% */
-
+  color: var(--colors-text);
   letter-spacing: -0.8px;
 `;
 
@@ -89,7 +89,7 @@ const BottomEntry = styled.p`
   font-size: 15px;
   line-height: 20px;
   /* identical to box height, or 133% */
-
+  color: var(--colors-text);
   letter-spacing: -0.3125px;
 `;
 

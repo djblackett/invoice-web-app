@@ -19,11 +19,12 @@ import NewItemButton from "../buttons/NewItemButton";
 import useWindowWidth from "../../hooks/useWindowWidth";
 import { Col, Col1 } from "@/styles/EditFormItemListStyles";
 import { Invoice } from "@/types/types";
+import styles from "../../styles/editFormItemStyles.module.css";
 
 type InputFormItemProps = {
   invoice?: Invoice;
   isDraft: boolean;
-  isEditOpen: boolean;
+  isEditOpen?: boolean;
 };
 
 export default function InputFormItem1({
@@ -114,7 +115,7 @@ export default function InputFormItem1({
       <SmallBoxContainer>
         <Box>
           <Col style={{ marginBottom: "0.625rem" }}>Qty.</Col>
-          <Quantity
+          <input className={styles.quantityInput}
             {...register(`items[${index}].quantity`, {
               required: !isDraft,
               max: 100,
@@ -132,7 +133,7 @@ export default function InputFormItem1({
         </Box>
         <Box>
           <Col style={{ marginBottom: "0.625rem" }}>Price</Col>
-          <Price
+          <input className={styles.priceInput}
             {...register(`items[${index}].price`, {
               required: !isDraft,
               max: 100000,
@@ -148,7 +149,7 @@ export default function InputFormItem1({
             }}
           />
         </Box>
-        <TotalBox style={{ width: "fit-content" }}>
+        <div className={styles.total} style={{ width: "fit-content" }}>
           <Col style={{ marginBottom: "0.625rem" }}>Total</Col>
           <Total>
             {(
@@ -156,7 +157,7 @@ export default function InputFormItem1({
               Number(watchItems?.[index]?.price)
             ).toFixed(2)}
           </Total>
-        </TotalBox>
+        </div>
       </SmallBoxContainer>
       <Box>
         <Col style={{ marginBottom: "0.625rem" }}>{"  "}</Col>
@@ -182,7 +183,7 @@ export default function InputFormItem1({
                 : "",
           }}
         />
-        <Quantity
+        <input className={styles.quantityInput}
           {...register(`items[${index}].quantity`, {
             required: !isDraft,
             max: 100,
@@ -198,7 +199,7 @@ export default function InputFormItem1({
           defaultValue={invoice ? invoice?.items?.[index]?.quantity : ""}
         />
 
-        <Price
+        <input className={styles.priceInput}
           {...register(`items[${index}].price`, {
             required: !isDraft,
             max: 100000,
@@ -214,12 +215,12 @@ export default function InputFormItem1({
           }}
         />
 
-        <Total>
+        <p className={styles.total}>
           {(
             Number(watchItems?.[index]?.quantity) *
             Number(watchItems?.[index]?.price)
           ).toFixed(2)}
-        </Total>
+        </p>
         <SVG name="removeButton" onClick={() => remove(index)}>
           {deleteIcon}
         </SVG>

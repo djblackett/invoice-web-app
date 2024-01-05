@@ -1,8 +1,9 @@
 import styled from "styled-components";
 import { useMemo } from "react";
 import InvoiceStatus from "./InvoiceStatus";
-import { getMoney } from "../../utils/utilityFunctions";
-import { Invoice } from "../../types/types";
+import { getMoney } from "@/utils/utilityFunctions";
+import { Invoice } from "@/types/types";
+import styles from "../../styles/main.module.css"
 
 const Card = styled.div`
   height: 134px;

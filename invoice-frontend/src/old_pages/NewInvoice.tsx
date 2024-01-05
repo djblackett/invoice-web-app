@@ -10,6 +10,7 @@ import {
   FormContainerDarkenModal,
 } from "@/styles/editStyles";
 import { Item } from "@/types/types";
+import styles from "../styles/generalFormStyles.module.css";
 
 export type NewInvoiceProps = {
   isNewOpen: boolean;
@@ -54,17 +55,22 @@ function NewInvoice({
     setItems(newItems);
   }, []);
 
+  console.log("jan 2 - did I update?")
   return (
     // DarkenScreen appears when newInvoice tab is open
-    <DarkenScreen style={{ visibility: isNewOpen ? "visible" : "hidden" }}>
-      <FormContainerDarkenModal
+    <div
+        className={styles.darkenScreen}
+        style={{ visibility: isNewOpen ? "visible" : "hidden" }}>
+
+      <div
+          className={styles.invoiceEditorContainer}
         style={{
           width: isNewOpen ? `${editPageWidth}px` : "0px",
           padding,
         }}
         data-testid="newInvoicePage"
       >
-        <EditTitle>New Invoice</EditTitle>
+        <h1 className={styles.editTitle}>New Invoice</h1>
 
         <NewInvoiceForm
           startDate={startDate}
@@ -77,8 +83,8 @@ function NewInvoice({
           selectedPaymentOption={selectedPaymentOption}
           setSelectedPaymentOption={setSelectedPaymentOption}
         />
-      </FormContainerDarkenModal>
-    </DarkenScreen>
+      </div>
+    </div>
   );
 }
 

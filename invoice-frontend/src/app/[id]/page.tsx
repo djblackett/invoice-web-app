@@ -8,9 +8,11 @@ import {useLayoutEffect} from "react";
 
 
 const Page = ({params}: { params: { id: string } }) => {
-    console.log("slug:", params.id)
-    console.log(typeof params.id)
+    // console.log("slug:", params.id)
+    // console.log(typeof params.id)
     // const theme =
+
+    // todo - read theme from local storage or default to light
     useLayoutEffect(() => {
 
     })

@@ -4,6 +4,7 @@ import styled, { css } from "styled-components";
 import FormDropDown from "./FormDropDown";
 import FormEntry from "./FormEntry";
 import { DateAndPaymentContainer, Label } from "@/styles/editStyles";
+import styles from "../../styles/generalFormStyles.module.css";
 
 interface DateBox {
   className?: string;
@@ -112,12 +113,12 @@ function DateAndPayment({
   const ExampleCustomInput = forwardRef(
     ({ value, onClick }: CustomInputProps, ref) => (
       <CustomDateBox
-        className="custom-input"
+        className={`custom-input ${styles.customDateBox}`}
         onClick={onClick}
         style={{ cursor: "pointer" }}
       >
         {/* @ts-ignore */}
-        <DateInput ref={ref} defaultValue={value} readOnly />
+        <input className={styles.dateInput} ref={ref} defaultValue={value} readOnly />
         {dateIcon}
       </CustomDateBox>
     ),
@@ -126,7 +127,7 @@ function DateAndPayment({
   return (
     <DateAndPaymentContainer>
       <FormEntry isLongOnMobile className="invoice-date">
-        <Label htmlFor="invoiceDate">Invoice Date</Label>
+        <label className={styles.label} htmlFor="invoiceDate">Invoice Date</label>
         <DatePicker
           customInput={<ExampleCustomInput />}
           selected={selected}
@@ -139,7 +140,7 @@ function DateAndPayment({
       </FormEntry>
 
       <FormEntry isLongOnMobile className="payment-terms">
-        <Label htmlFor="paymentTerms">Payment Terms</Label>
+        <label className={styles.label} htmlFor="paymentTerms">Payment Terms</label>
 
         <FormDropDown
           isPaymentOpen={paymentOpen}

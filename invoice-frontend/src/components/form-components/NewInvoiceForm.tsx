@@ -13,6 +13,7 @@ import { createInvoiceObject } from "../../utils/utilityFunctions";
 import FormErrorList from "./FormErrorList";
 import ClientFormInfo from "./ClientFormInfo";
 import { FormType } from "../../types/types";
+import styles from "../../styles/generalFormStyles.module.css";
 
 type NewInvoiceFormProps = {
   editPageWidth: number;
@@ -133,11 +134,11 @@ export default function NewInvoiceForm({
       <form>
         {/* register your input into the hook by invoking the "register" function , {required: !isDraft */}
 
-        <BillText>Bill From</BillText>
+        <p className={styles.billText}>Bill From</p>
         <CompanyFormInfo isDraft={isDraft} editPageWidth={editPageWidth} />
 
         {/*   client details */}
-        <BillText>Bill To</BillText>
+        <p className={styles.billText}>Bill To</p>
         <ClientFormInfo isDraft={isDraft} editPageWidth={editPageWidth} />
 
         <DateAndPayment
@@ -152,14 +153,14 @@ export default function NewInvoiceForm({
         />
 
         <LongFormEntry className="project-description">
-          <Label
+          <label className={styles.label}
             htmlFor="projectDescription"
             style={{ color: errors.projectDescription ? "#EC5757" : "" }}
           >
             Project Description
-          </Label>
-          <Input
-            $long
+          </label>
+          <input className={styles.input}
+            // $long
             type="text"
             {...register("projectDescription", { required: !isDraft })}
             style={{

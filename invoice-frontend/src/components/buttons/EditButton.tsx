@@ -3,7 +3,7 @@ import Proptypes from "prop-types";
 import React from "react";
 
 const Button = styled.button`
-  background-color: var(colors-edit-button);
+  background-color: var(--colors-edit-button);
   border-radius: 24px;
   padding: 16px 24px 17px 24px;
   color: var(--colors-grey-text);
@@ -17,7 +17,7 @@ const Button = styled.button`
   letter-spacing: -0.25px;
 
   &:hover {
-    background-color: var(colors-edit-button-hover);
+    background-color: var(--colors-edit-button-hover);
   }
 `;
 

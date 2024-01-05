@@ -5,6 +5,7 @@ import styled from "styled-components";
 import { loadDevMessages, loadErrorMessages } from "@apollo/client/dev";
 import Header from "./menus-toolbars/Header";
 import AllInvoices from "./AllInvoices";
+import styles from "../styles/main.module.css"
 
 export const Main = styled.div`
   height: 100%;
@@ -68,39 +69,13 @@ function App() {
     window.scrollTo(scrollPosition.x, scrollPosition.y);
   }, []);
 
-  // const themeToggler = () => {
-  //   // eslint-disable-next-line @typescript-eslint/no-unused-expressions
-  //   theme === "light" ? setTheme("dark") : setTheme("light");
-  //   localStorage.setItem("theme", theme === "light" ? "dark" : "light");
-  // };
-
-  // const routes = [
-  //   {
-  //     path: "/",
-  //     element: <Layout />,
-  //     children: [
-  //       {
-  //         index: true,
-  //         element: <AllInvoices setScrollPosition={setScrollPosition} />,
-  //       },
-  //       {
-  //         path: ":id",
-  //         element: <ViewInvoice scrollPosition={scrollPosition} />,
-  //       },
-  //     ],
-  //   },
-  // ];
-
-  // const element = useRoutes(routes);
-
   return (
-    // <ThemeProvider theme={theme === "light" ? lightTheme : darkTheme}>
-    //   <GlobalStyles />
-    <Main id="container">
+    <div
+        className={styles.main}
+        id="container">
       <Header />
       <AllInvoices />
-    </Main>
-    // </ThemeProvider>
+    </div>
   );
 }
 

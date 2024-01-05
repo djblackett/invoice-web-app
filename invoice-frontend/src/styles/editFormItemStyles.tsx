@@ -116,6 +116,7 @@ export const Price = styled(Quantity).attrs({ pattern: "[0-9.]*" })`
 export const Total = styled.p`
   min-width: 40px;
   align-self: center;
+  justify-self: center;
   height: fit-content;
   font-weight: 700;
   font-size: 12px;

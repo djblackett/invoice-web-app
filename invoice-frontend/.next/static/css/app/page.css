@@ -41,6 +41,561 @@ html {
   font-size: 2rem;
 }
 
+/*!**********************************************************************************************************************************************************************************************************************************************************************!*\
+  !*** css ./node_modules/next/dist/build/webpack/loaders/css-loader/src/index.js??ruleSet[1].rules[11].oneOf[7].use[2]!./node_modules/next/dist/build/webpack/loaders/postcss-loader/src/index.js??ruleSet[1].rules[11].oneOf[7].use[3]!./src/styles/main.module.css ***!
+  \**********************************************************************************************************************************************************************************************************************************************************************/
+.main_main__f5WkS {
+    height: 100%;
+    width: 100%;
+    min-height: 100vh;
+    background-color: var(--colors-background);
+    transition: all 0.4s ease-in-out;
+    z-index: 1;
+
+    @media (min-width: 1200px) {
+        display: grid;
+        grid-template: repeat(3, auto) / 1fr;
+        justify-items: center;
+    }
+}
+
+.main_draft__KNgKo {
+    background: var(--colors-draft-background);
+    color: var(--colors-draft-text);
+
+    .main_circle__a423q {
+        background: var(--colors-draft-text);
+    }
+}
+
+.main_pending__KrTF3 {
+    background-color: rgba(255, 143, 0, 0.06);
+    color: rgb(255, 143, 0);
+
+    .main_circle__a423q {
+        background: rgb(255, 143, 0);
+    }
+}
+
+.main_paid__Pqzsj {
+    background-color: rgba(51, 214, 159, 0.06);
+    color: #33d69f;
+
+    .main_circle__a423q {
+        background: #33d69f;
+    }
+}
+/*!***********************************************************************************************************************************************************************************************************************************************************************************!*\
+  !*** css ./node_modules/next/dist/build/webpack/loaders/css-loader/src/index.js??ruleSet[1].rules[11].oneOf[7].use[2]!./node_modules/next/dist/build/webpack/loaders/postcss-loader/src/index.js??ruleSet[1].rules[11].oneOf[7].use[3]!./src/styles/generalFormStyles.module.css ***!
+  \***********************************************************************************************************************************************************************************************************************************************************************************/
+.generalFormStyles_invoiceEditorContainer__Ulkpv {
+    height: 100%;
+    top: 72px;
+    bottom: 91px;
+    left: 0;
+    background-color: var(--colors-form-background);
+    position: fixed;
+    display: flex;
+    flex-direction: column;
+    transition-property: all;
+    transition-duration: 250ms;
+    transition-timing-function: ease-in-out;
+    overflow-x: hidden;
+    filter: drop-shadow(2px 2px 2px);
+    align-self: flex-start;
+    z-index: 50;
+    max-width: 100%;
+
+    @media (min-width: 768px) {
+        padding-left: 5rem;
+        padding-right: 2rem;
+        padding-top: 1rem;
+        padding-bottom: 2rem;
+        max-width: 700px;
+        right: 616px;
+        max-height: calc(100vh - 72px);
+    }
+
+    @media (min-width: 1200px) {
+        left: 90px;
+        padding-left: 5rem;
+        top: 0;
+        max-height: initial;
+    }
+}
+
+.generalFormStyles_darkenScreen___jb_7 {
+    position: fixed;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    background-color: rgba(0, 0, 0, 0.5);
+    transition: all 250ms ease-in-out;
+    z-index: 100;
+}
+
+
+
+.generalFormStyles_editTitle__yewCA {
+    font-size: 1.5rem;
+    color: var(--colors-text);
+}
+
+.generalFormStyles_billText__tqi5X {
+    color: var(--colors-outline);
+    font-weight: bold;
+    font-size: 0.75rem;
+    margin-bottom: 1.5rem;
+}
+
+.generalFormStyles_input__jj6zi {
+    cursor: pointer;
+    width: 100%;
+    height: 48px;
+    border-radius: 4px;
+    border: 1px solid var(--colors-form-field-outline);
+    padding: 17px 20px 16px 20px;
+    margin-bottom: 1.5rem;
+    font-family: var(--theme-font), sans-serif;
+    font-style: normal;
+    font-weight: 700;
+    font-size: 12px;
+    line-height: 15px;
+    caret-color: #7c5dfa;
+    outline: none;
+
+    letter-spacing: -0.25px;
+
+    color: var(--colors-text-plain);
+    background-color: var(--colors-input-background);
+
+
+
+    .generalFormStyles_custom-input__40BEH {
+        padding: 0;
+    }
+
+}
+
+.generalFormStyles_input__jj6zi:focus,
+.generalFormStyles_input__jj6zi:hover {
+    border-color: var(--colors-form-field-outline-focus);
+}
+
+
+.generalFormStyles_cityPostContainer__nrQDT {
+    display: flex;
+    width: 100%;
+    justify-content: space-between;
+
+    @media (min-width: 600px) {
+        display: contents;
+    }
+}
+
+.generalFormStyles_streetAddress__1NvqI {
+    width: 100%;
+    @media (min-width: 768px) {
+        width: 100%;
+    }
+}
+
+.generalFormStyles_streetAddressInput__mi4_j {
+}
+
+.generalFormStyles_addressDetail__KTMdk {
+    width: 100%;
+
+    @media (min-width: 768px) {
+        max-width: 152px;
+    }
+}
+
+.generalFormStyles_addressDetailInput__BswTc {
+}
+
+.generalFormStyles_country__tPgqR {
+    width: max-content;
+
+    @media (min-width: 768px) {
+        width: 152px;
+        min-width: revert;
+    }
+}
+
+.generalFormStyles_countryInput__q74HE {
+}
+
+.generalFormStyles_label__YJZIy {
+    color: var(--colors-grey-text);
+    margin-bottom: 0.5rem;
+    font-size: 0.75rem;
+}
+
+.generalFormStyles_dateAndPaymentContainer__ehQgj {
+    display: flex;
+    justify-content: space-between;
+    max-width: 100%;
+    flex-wrap: wrap;
+    flex-direction: column;
+    z-index: 60;
+
+    @media (min-width: 768px) {
+        display: flex;
+        justify-content: space-between;
+        flex-direction: row;
+        width: 100%;
+        max-width: initial;
+        flex-wrap: nowrap;
+    }
+
+    /*section targets the react-date-picker component to apply theming */
+    .generalFormStyles_react-datepicker__header__OY4Eu {
+        background-color: var(--colors-background);
+        color: var(--colors-date-text);
+        border: none;
+        padding-top: 1.5rem;
+        padding-bottom: 1.5rem;
+    }
+
+    .generalFormStyles_react-datepicker__day__h99zZ,
+    .generalFormStyles_react-datepicker__month-text__bipsq,
+    .generalFormStyles_react-datepicker__quarter-text__Zfsej,
+    .generalFormStyles_react-datepicker__year-text__VnokL {
+        color: var(--colors-date-text);
+    }
+
+    .generalFormStyles_react-datepicker__day__h99zZ:hover {
+            background: #7c5dfa;
+            color: white;
+    }
+
+    .generalFormStyles_react-datepicker__bZ7oR {
+        background-color: var(--colors-background);
+        color: var(--colors-date-text);
+        border: none;
+        box-shadow: var(--colors-filter-shadow);
+        transition: all 250ms ease-in-out;
+    }
+
+    .generalFormStyles_react-datepicker__month-year-dropdown__Xyg5b {
+        background-color: var(--colors-background);
+        color: var(--colors-date-text);
+        border: none;
+    }
+
+    .generalFormStyles_react-datepicker__day--selected__sELIx {
+        color: #7c5dfa;
+        background-color: transparent;
+        font-weight: bold;
+    }
+
+    .generalFormStyles_react-datepicker__day-names__XdFkZ {
+        display: none;
+    }
+
+    .generalFormStyles_react-datepicker__triangle__hwavt {
+        display: none;
+    }
+
+    .generalFormStyles_react-datepicker__current-month__RAY2m {
+        color: var(--colors-date-text);
+        align-self: center;
+        justify-self: center;
+        font-family: "Spartan", sans-serif;
+        font-style: normal;
+        font-weight: 700;
+        font-size: 12px;
+        line-height: 15px;
+        /* identical to box height, or 125% */
+        letter-spacing: -0.25px;
+        text-align: center;
+    }
+
+    .generalFormStyles_react-datepicker__day--keyboard-selected__SzbMF {
+        background-color: rgba(124, 93, 250, 0.5);
+    }
+}
+
+.generalFormStyles_errorTextInline__bspY_ {
+    color: #ec5757;
+    margin: 0;
+    padding: 0;
+    position: absolute;
+    right: 1.5rem;
+}
+
+.generalFormStyles_errorText___JFjy {
+    color: #ec5757;
+    margin: 0;
+    padding: 0;
+}
+
+.generalFormStyles_customDateBox__MdWfh {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    width: 100%;
+    height: 48px;
+    border-radius: 4px;
+    border-color: var(--colors-form-field-outline);
+    border-style: solid;
+    padding: 0 20px 0 16px;
+    margin-bottom: 1.5rem;
+    caret-color: #7c5dfa;
+    outline: none;
+    border-width: 1px;
+
+    letter-spacing: -0.25px;
+
+    color: var(--colors-text-plain);
+    background-color: var(--colors-input-background);
+
+
+
+    .generalFormStyles_custom-input__40BEH {
+        padding: 0;
+    }
+}
+
+.generalFormStyles_customDateBox__MdWfh:focus,
+.generalFormStyles_customDateBox__MdWfh:hover {
+    border-color: var(--colors-form-field-outline-focus);
+}
+
+.generalFormStyles_dateInput__T3dQR {
+    color: var(--colors-date-text);
+    font-family: var(--theme-font), sans-serif;
+    font-style: normal;
+    font-weight: 700;
+    font-size: 12px;
+    line-height: 15px;
+    background-color: transparent;
+    outline: none;
+    border: none;
+    touch-action: none;
+    cursor: pointer;
+
+
+}
+
+.generalFormStyles_dateInput__T3dQR:focus,
+.generalFormStyles_dateInput__T3dQR:hover {
+    border-color: var(--colors-form-field-outline-focus);
+}
+
+.generalFormStyles_dropDownMain__U7Lrl {
+    display: inline;
+    z-index: 10;
+    position: relative;
+    box-sizing: border-box;
+    background-color: var(--colors-input-background);
+    cursor: pointer;
+    margin-bottom: 30px;
+    outline: none;
+
+    width: 100%;
+    height: 48px;
+    border-radius: 4px;
+
+    border: 1px solid var(--colors-form-field-outline);
+
+    @media (min-width: 768px) {
+        width: 240px;
+        max-width: 100%;
+    }
+}
+
+.generalFormStyles_dropDownMain__U7Lrl:focus,
+.generalFormStyles_dropDownMain__U7Lrl:hover {
+    border: 1px solid var(--colors-form-field-outline-focus);
+}
+
+.generalFormStyles_dropDownSelected__Ea5Iu {
+
+        writing-mode: horizontal-tb !important;
+        text-rendering: auto;
+        word-spacing: normal;
+        text-transform: none;
+        text-indent: 0;
+        text-shadow: none;
+        display: inline-block;
+        text-align: start;
+        -webkit-appearance: auto;
+           -moz-appearance: auto;
+                appearance: auto;
+        -webkit-rtl-ordering: logical;
+        cursor: text;
+        padding: 1px 2px;
+        font-family: "League Spartan", sans-serif;
+        font-style: normal;
+        font-weight: 700;
+        font-size: 12px;
+        line-height: 15px;
+        /* identical to box height, or 125% */
+        letter-spacing: -0.25px;
+        margin: 0;
+        transform: translateY(-2px);
+        color: var(--colors-text);
+}
+/*!************************************************************************************************************************************************************************************************************************************************************************************!*\
+  !*** css ./node_modules/next/dist/build/webpack/loaders/css-loader/src/index.js??ruleSet[1].rules[11].oneOf[7].use[2]!./node_modules/next/dist/build/webpack/loaders/postcss-loader/src/index.js??ruleSet[1].rules[11].oneOf[7].use[3]!./src/styles/editFormItemStyles.module.css ***!
+  \************************************************************************************************************************************************************************************************************************************************************************************/
+
+
+.editFormItemStyles_itemTitle__SUqrw {
+    font-weight: 700;
+    font-size: 18px;
+    line-height: 32px;
+    /* identical to box height, or 178% */
+    letter-spacing: -0.375px;
+    color: var(--colors-grey-text);
+    padding: 0;
+    margin-top: 1rem;
+    margin-bottom: 1rem;
+
+    @media (min-width: 768px) {
+        margin-top: 2rem;
+    }
+}
+
+.editFormItemStyles_itemName__HSHly {
+    white-space: nowrap;
+    justify-self: start;
+    width: 100%;
+    margin: 0;
+    padding-left: 1.25rem;
+    color: var(--colors-text);
+    font-style: normal;
+    font-weight: 700;
+    font-size: 12px;
+    line-height: 15px;
+    /* identical to box height, or 125% */
+    letter-spacing: -0.25px;
+
+    /*border: ${(props) => (props.invalid ? "1px solid red" : "")};*/
+
+    @media (min-width: 600px) {
+        width: 204px;
+    }
+}
+
+
+
+.editFormItemStyles_centered__bq1NJ {
+    justify-self: center;
+}
+
+.editFormItemStyles_flexStart__YC_uL {
+    justify-self: flex-start;
+}
+
+.editFormItemStyles_columnHeading__POs6A {
+    color: var(--colors-new-item-text);
+    width: -moz-fit-content;
+    width: fit-content;
+    margin: 0;
+    padding: 0;
+    font-family: var(--theme-font), sans-serif;
+    font-style: normal;
+    font-weight: 500;
+    font-size: 11px;
+    line-height: 18px;
+    /* identical to box height, or 164% */
+    letter-spacing: -0.229167px;
+}
+
+.editFormItemStyles_columnHeadingCentered__YEY0A {
+}
+
+.editFormItemStyles_columnHeadingFlexStart__Iq4Zs {
+}
+
+.editFormItemStyles_input__PTLHh {
+    cursor: pointer;
+    width: 100%;
+    height: 48px;
+    border-radius: 4px;
+    border: 1px solid var(--colors-form-field-outline);
+    padding: 17px 20px 16px 20px;
+    margin-bottom: 1.5rem;
+    font-family: var(--theme-font), sans-serif;
+    font-style: normal;
+    font-weight: 700;
+    font-size: 12px;
+    line-height: 15px;
+    caret-color: #7c5dfa;
+    outline: none;
+    letter-spacing: -0.25px;
+    color: var(--colors-text-plain);
+    background-color: var(--colors-input-background);
+}
+
+.editFormItemStyles_input__PTLHh:focus,
+.editFormItemStyles_input__PTLHh:hover {
+    border-color: var(--colors-form-field-outline-focus);
+}
+
+.editFormItemStyles_quantity__cThFO {
+    width: 64px;
+    margin: 0;
+    color: var(--colors-text-plain);
+    padding: 0;
+    padding-left: 1.25rem;
+    font-weight: 700;
+    font-size: 12px;
+    line-height: 15px;
+    /* identical to box height, or 125% */
+    text-align: left;
+    letter-spacing: -0.25px;
+
+    @media (min-width: 600px) {
+        text-align: center;
+        width: 46px;
+        display: inline;
+        padding: 0;
+    }
+}
+
+.editFormItemStyles_price__Mv4hy {
+    width: 80px;
+    padding-left: 1.25rem;
+    text-align: left;
+
+    @media (min-width: 325px) {
+        width: 100px;
+        padding-left: 1.25rem;
+        text-align: left;
+    }
+}
+
+.editFormItemStyles_quantityInput___YPc6 {
+}
+
+.editFormItemStyles_priceInput___bqrU {
+}
+
+.editFormItemStyles_total__c946Z {
+    min-width: 40px;
+    align-self: center;
+    /*justify-self: center;*/
+    height: -moz-fit-content;
+    height: fit-content;
+    font-weight: 700;
+    font-size: 12px;
+    line-height: 15px;
+    /* identical to box height, or 125% */
+    letter-spacing: -0.25px;
+    color: var(--colors-grey-text);
+
+    @media (min-width: 600px) {
+        grid-area: initial;
+        text-align: center;
+        min-width: 60px;
+    }
+
+}
 /*!*****************************************************************************************************************************************************************************************************************************************************************************!*\
   !*** css ./node_modules/next/dist/build/webpack/loaders/css-loader/src/index.js??ruleSet[1].rules[11].oneOf[12].use[2]!./node_modules/next/dist/build/webpack/loaders/postcss-loader/src/index.js??ruleSet[1].rules[11].oneOf[12].use[3]!./src/styles/react-datepicker.css ***!
   \*****************************************************************************************************************************************************************************************************************************************************************************/

@@ -27,7 +27,7 @@ function FullInvoice({ invoice }: FullInvoiceProps) {
       <TopRow>
         <IdAndDescription>
           <IDNumber>
-            <span style={{ color: "#7E88C3" }}>#</span>
+            <span style={{  color: "#7E88C3" }}>#</span>
             {invoice.id.substring(0, 6)}
           </IDNumber>
           <Description>{invoice.description}</Description>

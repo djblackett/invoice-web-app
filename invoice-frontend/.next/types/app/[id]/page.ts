@@ -1,4 +1,4 @@
-// File: /home/david/invoice-fullstack/invoice-web-app/invoice-frontend/src/app/[id]/page.tsx
+// File: /usr/src/app/src/app/[id]/page.tsx
 import * as entry from '../../../../src/app/[id]/page.js'
 import type { ResolvingMetadata, ResolvingViewport } from 'next/dist/lib/metadata/types/metadata-interface.js'
 

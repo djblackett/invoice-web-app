@@ -1,5 +1,7 @@
 import styled from "styled-components";
 import PropTypes from "prop-types";
+import styles from "../../styles/main.module.css"
+
 
 const InvoiceStatusBox = styled.div`
   padding: 13px 23px 12px 24px;
@@ -49,9 +51,9 @@ export type InvoiceStatusProps = {
 
 function InvoiceStatus({ text, statusType }: InvoiceStatusProps) {
   return (
-    <InvoiceStatusBox className={statusType}>
+    <InvoiceStatusBox className={styles[statusType]}>
       <TextCircleBox>
-        <Circle className="circle" />
+        <Circle className={styles.circle} />
         <StatusText>{text}</StatusText>
       </TextCircleBox>
     </InvoiceStatusBox>

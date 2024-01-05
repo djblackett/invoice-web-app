@@ -15,6 +15,7 @@ const HeaderContainer = styled.div`
   background: var(--colors-header-background);
   z-index: 1000;
   position: fixed;
+    top: 0;
   //transition: background-color .2s ease-in;
 
   @media (min-width: 1200px) {

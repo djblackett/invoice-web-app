@@ -177,6 +177,7 @@ const Filter = styled.p`
   margin: 0;
   cursor: pointer;
   white-space: nowrap;
+  color: var(--colors-text);
 
   .wideScreenText {
     display: none;

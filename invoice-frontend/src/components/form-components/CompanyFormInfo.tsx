@@ -3,16 +3,11 @@ import PropTypes from "prop-types";
 import styled from "styled-components";
 import { useFormContext } from "react-hook-form";
 import FormEntry from "./FormEntry";
-import {
-  AddressDetailInput,
-  CountryInput,
-  Label,
-  StreetAddressInput,
-} from "../../styles/editStyles";
 import AddressBox from "./AddressBox";
 import LongFormEntry from "./LongFormEntry";
 import useWindowWidth from "../../hooks/useWindowWidth";
-import { Invoice } from "../../types/types";
+import { Invoice } from "@/types/types";
+import styles from "../../styles/generalFormStyles.module.css";
 
 export const CityPostContainer = styled.div`
   display: flex;
@@ -42,13 +37,13 @@ export function CompanyFormInfo({ isDraft, invoice }: CompanyFormInfoProps) {
       style={{ width: width < 768 ? "100%" : "" }}
       className="company-country"
     >
-      <Label
+      <label className={styles.label}
         htmlFor="country"
         style={{ color: errors?.country ? "#EC5757" : "" }}
       >
         Country
-      </Label>
-      <CountryInput
+      </label>
+      <input className={styles.countryInput}
         type="text"
         style={{
           border: errors?.country ? "1px solid #EC5757" : "",
@@ -67,13 +62,14 @@ export function CompanyFormInfo({ isDraft, invoice }: CompanyFormInfoProps) {
   return (
     <>
       <LongFormEntry className="company-street-address">
-        <Label
+        <label
+            className={styles.label}
           htmlFor="streetAddress"
           style={{ color: errors?.streetAddress ? "#EC5757" : "" }}
         >
           Street Address
-        </Label>
-        <StreetAddressInput
+        </label>
+        <input className={styles.streetAddressInput}
           style={{ border: errors?.streetAddress ? "1px solid #EC5757" : "" }}
           defaultValue={invoice ? invoice.senderAddress.street : ""}
           {...register("streetAddress", {
@@ -84,15 +80,16 @@ export function CompanyFormInfo({ isDraft, invoice }: CompanyFormInfoProps) {
         />
       </LongFormEntry>
       <AddressBox>
-        <CityPostContainer>
+        <div className={styles.cityPostContainer}>
           <FormEntry className="company-city">
-            <Label
+            <label
+                className={styles.label}
               htmlFor="city"
               style={{ color: errors?.city ? "#EC5757" : "" }}
             >
               City
-            </Label>
-            <AddressDetailInput
+            </label>
+            <input className={styles.addressDetailInput}
               style={{ border: errors?.city ? "1px solid #EC5757" : "" }}
               defaultValue={invoice ? invoice.senderAddress.city : ""}
               type="text"
@@ -108,13 +105,15 @@ export function CompanyFormInfo({ isDraft, invoice }: CompanyFormInfoProps) {
             style={{ justifySelf: "flex-end" }}
             className="company-postal-code"
           >
-            <Label
+            <label
+                className={styles.label}
               htmlFor="postalCode"
               style={{ color: errors?.postalCode ? "#EC5757" : "" }}
             >
               Post Code
-            </Label>
-            <AddressDetailInput
+            </label>
+            <input
+                className={styles.addressDetailInput}
               style={{ border: errors?.postalCode ? "1px solid #EC5757" : "" }}
               type="text"
               defaultValue={invoice ? invoice.senderAddress.postCode : ""}
@@ -126,7 +125,7 @@ export function CompanyFormInfo({ isDraft, invoice }: CompanyFormInfoProps) {
               })}
             />
           </FormEntry>
-        </CityPostContainer>
+        </div>
         {width < 768 && (
           <LongFormEntry className="company-country-container">
             {countryChildren}

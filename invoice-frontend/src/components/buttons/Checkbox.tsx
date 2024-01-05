@@ -7,7 +7,7 @@ const checkedStyles = css`
 `;
 
 const uncheckedStyles = css`
-  background-color: var(colors-edit-button-hover);
+  background-color: var(--colors-edit-button-hover);
 `;
 
 interface CheckedProps {

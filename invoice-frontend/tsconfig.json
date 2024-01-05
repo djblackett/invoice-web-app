@@ -15,6 +15,9 @@
     "incremental": true,
     "plugins": [
       {
+        "transform": "@compiled/ts-transform-css-in-js"
+      },
+      {
         "name": "next"
       }
     ],
