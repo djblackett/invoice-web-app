@@ -1,11 +1,11 @@
-import styled, { useTheme } from "styled-components";
-import { useDispatch } from "react-redux";
+import styled from "styled-components";
+
 import { ToastContainer, toast, Theme } from "react-toastify";
-import { markAsPaid } from "@/features/invoices/invoicesSlice";
 import "react-toastify/dist/ReactToastify.css";
 import useWindowWidth from "../../hooks/useWindowWidth";
 import { Invoice } from "@/types/types";
-import {lightTheme, darkTheme } from "@/styles/Themes";
+import { MARK_AS_PAID } from "@/graphql/queries";
+import {useMutation} from "@apollo/client";
 
 const Button = styled.button`
   background-color: var(--colors-new-button);
@@ -35,24 +35,37 @@ type MarkPaidProps = {
 function MarkAsPaidButton({ invoice }: MarkPaidProps) {
   const colorMode = localStorage.getItem("theme");
   const width = useWindowWidth();
-  // const theme = useTheme();
-  const dispatch = useDispatch();
 
-  const handleClick = () => {
+  const [markAsPaid, result] = useMutation(MARK_AS_PAID, {
+      // todo - is this necessary?
+        // refetchQueries: [{query: GET_INVOICE_BY_ID}],
+        onError: (error) => {
+            console.log(error.graphQLErrors[0].message);
+        }
+    });
+
+  const handleClick = async () => {
     if (invoice.status === "pending") {
-      dispatch(markAsPaid(invoice.id));
-      toast.success("💸 Invoice paid!", {
-        position: "top-center",
-        autoClose: 5000,
-        hideProgressBar: false,
-        closeOnClick: true,
-        pauseOnHover: true,
-        draggable: true,
-        progress: undefined,
-        theme: (colorMode as Theme) || undefined,
-      });
+        const response = await markAsPaid({
+            variables: {
+                markAsPaidId: invoice.id
+            }
+        });
+        if (response.data) {
+            toast.success("💸 Invoice paid!", {
+                position: "top-center",
+                autoClose: 5000,
+                hideProgressBar: false,
+                closeOnClick: true,
+                pauseOnHover: true,
+                draggable: true,
+                progress: undefined,
+                theme: (colorMode as Theme) || undefined,
+            });
+        }
     }
   };
+
   return (
     <>
       <Button onClick={handleClick} type="button">

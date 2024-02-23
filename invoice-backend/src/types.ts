@@ -172,3 +172,7 @@ export interface InvoiceCreateArgs {
         id?: string | undefined
     }>;
 }
+
+export type MarkAsPaidArgs = GetInvoiceByIdArgs;
+
+

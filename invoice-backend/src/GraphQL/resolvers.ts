@@ -6,7 +6,7 @@ import {
   GetInvoiceByIdArgs,
   Invoice,
   InvoiceCreateArgs,
-  LoginArgs,
+  LoginArgs, MarkAsPaidArgs,
   ReturnedUser,
   User
 } from "../types";
@@ -184,10 +184,10 @@ const resolvers = {
       });
 
       // Deleting the items before updating to ensure that new copies are made. Prisma makes updating items and
-      // adding new ones at he same time really difficult
+      // adding new ones at the same time really difficult.
 
       try {
-        if (update.items && update.items.length >= 1) {
+        if (update.items && update?.items?.length >= 1) {
           await prisma.invoice.update({
             where: {
               id: args.id
@@ -222,9 +222,12 @@ const resolvers = {
           }
         });
 
+        console.log(updatedInvoice)
+
         return updatedInvoice as unknown as Invoice;
 
       } catch (error) {
+        console.log(error)
         throw new GraphQLError("Invoice could not be updated", {
           extensions: {
             code: "BAD_INVOICE_INPUT",
@@ -318,6 +321,18 @@ const resolvers = {
       } catch (e) {
         throw e;
       }
+    },
+    markAsPaid: async (_root: any, args: MarkAsPaidArgs) => {
+
+      const result = await prisma.invoice.update({
+        where : {
+          id: args.id
+        }, data: {
+          status: "paid"
+        }
+      });
+
+      return result;
     }
   },
 

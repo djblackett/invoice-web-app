@@ -113,6 +113,9 @@ type Query {
   removeInvoice(
   id: String!
   ) : String
+  
+  markAsPaid(
+  id: String!): Invoice
 
   createUser(
     name: String

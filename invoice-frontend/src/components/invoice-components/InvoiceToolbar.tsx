@@ -4,7 +4,7 @@ import React, { useMemo } from "react";
 import useWindowWidth from "../../hooks/useWindowWidth";
 import ToolbarButtons from "../menus-toolbars/ToolbarButtons";
 import InvoiceStatus from "./InvoiceStatus";
-import { Invoice } from "../../types/types";
+import { Invoice } from "@/types/types";
 
 const Toolbar = styled.div`
   height: 88px;
@@ -69,7 +69,7 @@ function InvoiceToolbar({
 
   const openModal = () => setIsModalOpen(true);
 
-  console.log(invoice.status)
+  // console.log(invoice.status)
   const invoiceStatus = useMemo(() => {
     if (invoice.status === "paid") {
       return <InvoiceStatus statusType="paid" text="Paid" />;

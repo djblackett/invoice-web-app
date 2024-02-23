@@ -43,7 +43,7 @@ export default function ClientFormInfo({
           width: width < 768 ? "100%" : "",
         }}
         type="text"
-        defaultValue={invoice ? invoice.clientAddress.country : ""}
+        defaultValue={invoice ? invoice?.clientAddress?.country : ""}
         {...register("clientCountry", {
           required: !isDraft,
           pattern: /^[A-Za-z0-9 ]+$/i,
@@ -70,7 +70,7 @@ export default function ClientFormInfo({
           // $long
           style={{ border: errors.clientName ? "1px solid #EC5757" : "" }}
           type="text"
-          defaultValue={invoice ? invoice.clientName : ""}
+          defaultValue={invoice ? invoice?.clientName : ""}
           {...register("clientName", { required: !isDraft })}
         />
       </LongFormEntry>
@@ -90,7 +90,7 @@ export default function ClientFormInfo({
           // $long
           style={{ border: errors.clientEmail ? "1px solid #EC5757" : "" }}
           type="text"
-          defaultValue={invoice ? invoice.clientEmail : ""}
+          defaultValue={invoice ? invoice?.clientEmail : ""}
           {...register("clientEmail", {
             required: !isDraft,
             pattern:
@@ -102,15 +102,15 @@ export default function ClientFormInfo({
       <LongFormEntry className="client-street-address">
         <label className={styles.label}
           htmlFor="clientStreetAddress"
-          style={{ color: errors.clientStreetAddress ? "#EC5757" : "" }}
+          style={{ color: errors?.clientStreetAddress ? "#EC5757" : "" }}
         >
           Street Address
         </label>
         <input className={styles.streetAddressInput}
           style={{
-            border: errors.clientStreetAddress ? "1px solid #EC5757" : "",
+            border: errors?.clientStreetAddress ? "1px solid #EC5757" : "",
           }}
-          defaultValue={invoice ? invoice.clientAddress.street : ""}
+          defaultValue={invoice ? invoice?.clientAddress?.street : ""}
           {...register("clientStreetAddress", { required: !isDraft })}
         />
       </LongFormEntry>
@@ -119,16 +119,16 @@ export default function ClientFormInfo({
         <FormEntry className="client-city">
           <label className={styles.label}
             htmlFor="clientCity"
-            style={{ color: errors.clientCity ? "#EC5757" : "" }}
+            style={{ color: errors?.clientCity ? "#EC5757" : "" }}
           >
             City
           </label>
           <input className={styles.addressDetailInput}
             style={{
-              border: errors.clientCity ? "1px solid #EC5757" : "",
+              border: errors?.clientCity ? "1px solid #EC5757" : "",
             }}
             type="text"
-            defaultValue={invoice ? invoice.clientAddress.city : ""}
+            defaultValue={invoice ? invoice?.clientAddress?.city : ""}
             {...register("clientCity", {
               required: !isDraft,
               pattern: /^\w+$/i,
@@ -140,16 +140,16 @@ export default function ClientFormInfo({
         <FormEntry className="client-postal-code">
           <label className={styles.label}
             htmlFor="clientPostalCode"
-            style={{ color: errors.clientPostalCode ? "#EC5757" : "" }}
+            style={{ color: errors?.clientPostalCode ? "#EC5757" : "" }}
           >
             Post Code
           </label>
           <input className={styles.addressDetailInput}
             style={{
-              border: errors.clientPostalCode ? "1px solid #EC5757" : "",
+              border: errors?.clientPostalCode ? "1px solid #EC5757" : "",
             }}
             type="text"
-            defaultValue={invoice ? invoice.clientAddress.postCode : ""}
+            defaultValue={invoice ? invoice?.clientAddress?.postCode : ""}
             {...register("clientPostalCode", {
               required: !isDraft,
               pattern: /^\w+[\w ]+$/i,

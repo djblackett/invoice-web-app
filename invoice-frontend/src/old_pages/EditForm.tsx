@@ -24,6 +24,8 @@ import {
 } from "@/utils/utilityFunctions";
 import {Invoice, ReduxInvoiceState} from "@/types/types";
 import styles from "../styles/generalFormStyles.module.css";
+import {EDIT_INVOICE} from "@/graphql/queries";
+import {useMutation} from "@apollo/client";
 
 const formOptions = { resolver: yupResolver(validationSchema) };
 
@@ -79,6 +81,11 @@ function EditForm({
   );
   const [isPaymentOpen, setIsPaymentOpen] = useState(false);
 
+
+  const [editInvoice, result] = useMutation(EDIT_INVOICE, {
+
+  })
+
   // error notification if invoice has no items
   useEffect(() => {
     if (!watcher.items || watcher.items.length === 0) {
@@ -92,7 +99,7 @@ function EditForm({
     }
   }, [invoice]);
 
-  const onSubmit = () => {
+  const onSubmit = async () => {
     const data = getValues();
     // alternate check for items
     // returns without submitting invoice
@@ -102,7 +109,7 @@ function EditForm({
     }
 
     // trigger validation on fields
-    trigger().then((value) => {
+    trigger().then(async (value) => {
       if (value) {
         // console.log("validation success");
         const newInvoice = createInvoiceObject(
@@ -115,6 +122,16 @@ function EditForm({
 
         // todo replace redux with graphql call
         // dispatch(updateInvoice(newInvoice));
+
+        await editInvoice({
+          variables: {
+            ...newInvoice
+          }
+        });
+
+        console.log(result);
+
+
 
         clearErrors();
         setIsEditOpen(false);
@@ -159,8 +176,6 @@ function EditForm({
   if (!invoice) {
     return null;
   }
-
-  console.log("Editform - is edit tab open?", isEditOpen);
 
   return (
     <div className={styles.darkenScreen} style={{ visibility: isEditOpen ? "visible" : "hidden" }}>

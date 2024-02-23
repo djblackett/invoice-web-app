@@ -5,6 +5,10 @@
     background-color: var(--colors-background);
     transition: all 0.4s ease-in-out;
     z-index: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
 
     @media (min-width: 1200px) {
         display: grid;

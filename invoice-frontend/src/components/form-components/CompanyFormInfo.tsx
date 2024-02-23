@@ -49,7 +49,7 @@ export function CompanyFormInfo({ isDraft, invoice }: CompanyFormInfoProps) {
           border: errors?.country ? "1px solid #EC5757" : "",
           width: width < 768 ? "100%" : "",
         }}
-        defaultValue={invoice ? invoice.senderAddress.country : ""}
+        defaultValue={invoice ? invoice?.senderAddress?.country : ""}
         {...register("country", {
           required: !isDraft,
           pattern: /^[A-Za-z0-9 ]+$/i,
@@ -59,87 +59,93 @@ export function CompanyFormInfo({ isDraft, invoice }: CompanyFormInfoProps) {
     </LongFormEntry>
   );
 
-  return (
-    <>
-      <LongFormEntry className="company-street-address">
-        <label
-            className={styles.label}
-          htmlFor="streetAddress"
-          style={{ color: errors?.streetAddress ? "#EC5757" : "" }}
-        >
-          Street Address
-        </label>
-        <input className={styles.streetAddressInput}
-          style={{ border: errors?.streetAddress ? "1px solid #EC5757" : "" }}
-          defaultValue={invoice ? invoice.senderAddress.street : ""}
-          {...register("streetAddress", {
-            required: !isDraft,
-            pattern: /^[A-Za-z0-9 ]+$/i,
-            maxLength: 50,
-          })}
-        />
-      </LongFormEntry>
-      <AddressBox>
-        <div className={styles.cityPostContainer}>
-          <FormEntry className="company-city">
+  if (invoice) {
+    return (
+        <>
+          <LongFormEntry className="company-street-address">
             <label
                 className={styles.label}
-              htmlFor="city"
-              style={{ color: errors?.city ? "#EC5757" : "" }}
+                htmlFor="streetAddress"
+                style={{color: errors?.streetAddress ? "#EC5757" : ""}}
             >
-              City
+              Street Address
             </label>
-            <input className={styles.addressDetailInput}
-              style={{ border: errors?.city ? "1px solid #EC5757" : "" }}
-              defaultValue={invoice ? invoice.senderAddress.city : ""}
-              type="text"
-              {...register("city", {
-                required: !isDraft,
-                pattern: /^\w+$/i,
-                maxLength: 30,
-              })}
+            <input className={styles.streetAddressInput}
+                   style={{border: errors?.streetAddress ? "1px solid #EC5757" : ""}}
+                   defaultValue={invoice ? invoice?.senderAddress?.street : ""}
+                   {...register("streetAddress", {
+                     required: !isDraft,
+                     pattern: /^[A-Za-z0-9 ]+$/i,
+                     maxLength: 50,
+                   })}
             />
-          </FormEntry>
-
-          <FormEntry
-            style={{ justifySelf: "flex-end" }}
-            className="company-postal-code"
-          >
-            <label
-                className={styles.label}
-              htmlFor="postalCode"
-              style={{ color: errors?.postalCode ? "#EC5757" : "" }}
-            >
-              Post Code
-            </label>
-            <input
-                className={styles.addressDetailInput}
-              style={{ border: errors?.postalCode ? "1px solid #EC5757" : "" }}
-              type="text"
-              defaultValue={invoice ? invoice.senderAddress.postCode : ""}
-              {...register("postalCode", {
-                required: !isDraft,
-                pattern: /^\w+[\w ]+$/i,
-                maxLength: 10,
-                minLength: 5,
-              })}
-            />
-          </FormEntry>
-        </div>
-        {width < 768 && (
-          <LongFormEntry className="company-country-container">
-            {countryChildren}
           </LongFormEntry>
-        )}
+          <AddressBox>
+            <div className={styles.cityPostContainer}>
+              <FormEntry className="company-city">
+                <label
+                    className={styles.label}
+                    htmlFor="city"
+                    style={{color: errors?.city ? "#EC5757" : ""}}
+                >
+                  City
+                </label>
+                <input className={styles.addressDetailInput}
+                       style={{border: errors?.city ? "1px solid #EC5757" : ""}}
+                       defaultValue={invoice ? invoice?.senderAddress?.city : ""}
+                       type="text"
+                       {...register("city", {
+                         required: !isDraft,
+                         pattern: /^\w+$/i,
+                         maxLength: 30,
+                       })}
+                />
+              </FormEntry>
 
-        {width >= 768 && (
-          <FormEntry className="company-country-container">
-            {countryChildren}
-          </FormEntry>
-        )}
-      </AddressBox>
-    </>
-  );
+              <FormEntry
+                  style={{justifySelf: "flex-end"}}
+                  className="company-postal-code"
+              >
+                <label
+                    className={styles.label}
+                    htmlFor="postalCode"
+                    style={{color: errors?.postalCode ? "#EC5757" : ""}}
+                >
+                  Post Code
+                </label>
+                <input
+                    className={styles.addressDetailInput}
+                    style={{border: errors?.postalCode ? "1px solid #EC5757" : ""}}
+                    type="text"
+                    defaultValue={invoice ? invoice?.senderAddress?.postCode : ""}
+                    {...register("postalCode", {
+                      required: !isDraft,
+                      pattern: /^\w+[\w ]+$/i,
+                      maxLength: 10,
+                      minLength: 5,
+                    })}
+                />
+              </FormEntry>
+            </div>
+            {width < 768 && (
+                <LongFormEntry className="company-country-container">
+                  {countryChildren}
+                </LongFormEntry>
+            )}
+
+            {width >= 768 && (
+                <FormEntry className="company-country-container">
+                  {countryChildren}
+                </FormEntry>
+            )}
+          </AddressBox>
+        </>
+    );
+  }
+
+  else {
+    return null
+  }
 }
 
 CompanyFormInfo.propTypes = {

@@ -2,6 +2,10 @@ import data from "../data/invoices";
 import {Invoice} from "../types";
 import {validateInvoiceData} from "../utils";
 
+
+
+// Convert this to a service that sits between graphQL and Prisma
+
 const invoices: Invoice[] = data;
 
 const getInvoices = (): Invoice[] => {

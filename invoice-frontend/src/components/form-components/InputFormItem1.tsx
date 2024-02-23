@@ -94,9 +94,9 @@ export default function InputFormItem1({
   const mobileRender = (index: number) => (
     <ItemContainer>
       <Box style={{ width: "100%", marginBottom: "1.5rem" }}>
-        <Col1 style={{ marginBottom: "1rem" }}>Item Name</Col1>
+        <p className={styles.columnHeadingFlexStart}>Item Name</p>
         <ItemName
-          {...register(`items[${index}].name`, { required: !isDraft })}
+            {...register(`items[${index}].name`, { required: !isDraft })}
           placeholder="Item name"
           defaultValue={invoice ? invoice?.items?.[index]?.name : ""}
           type="text"
@@ -110,7 +110,7 @@ export default function InputFormItem1({
       </Box>
       <SmallBoxContainer>
         <Box>
-          <Col style={{ marginBottom: "0.625rem" }}>Qty.</Col>
+          <p className={styles.columnHeadingFlexStart}>Qty.</p>
           <input className={styles.quantityInput}
             {...register(`items[${index}].quantity`, {
               required: !isDraft,
@@ -128,7 +128,7 @@ export default function InputFormItem1({
           />
         </Box>
         <Box>
-          <Col style={{ marginBottom: "0.625rem" }}>Price</Col>
+          <p className={styles.columnHeadingFlexStart}>Price</p>
           <input className={styles.priceInput}
             {...register(`items[${index}].price`, {
               required: !isDraft,

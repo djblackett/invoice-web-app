@@ -256,6 +256,46 @@ export const REMOVE_INVOICE = gql`
   }
 `;
 
+export const MARK_AS_PAID = gql`
+
+mutation MarkAsPaid($markAsPaidId: String!)
+{
+  markAsPaid(id: $markAsPaidId)
+  {
+    clientAddress
+    {
+      city
+      country
+      postCode
+      street
+    }
+    clientEmail
+    clientName
+    createdAt
+    description
+    id
+    items
+    {
+      id
+      name
+      price
+      quantity
+      total
+    }
+    paymentDue
+    paymentTerms
+    senderAddress
+    {
+      city
+      country
+      postCode
+      street
+    }
+    status
+    total
+  }
+}`;
+
 export const INVOICE_ADDED = gql`
   subscription {
     invoiceAdded {

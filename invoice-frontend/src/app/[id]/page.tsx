@@ -4,6 +4,7 @@ import ViewInvoice from "@/old_pages/ViewInvoice";
 import {Main} from "@/components/App";
 import Header from "@/components/menus-toolbars/Header";
 import {useLayoutEffect} from "react";
+import styles from "../../styles/main.module.css"
 
 
 
@@ -15,10 +16,10 @@ const Page = ({params}: { params: { id: string } }) => {
     });
 
     return(
-<Main>
+<div className={styles.main}>
     <Header />
         <ViewInvoice id={params.id}/>
-</Main>
+</div>
 
     )
 
