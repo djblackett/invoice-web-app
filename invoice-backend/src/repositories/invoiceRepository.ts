@@ -5,9 +5,9 @@ interface InvoiceRepositoryInterface {
 
     findById(id: string): Promise<Invoice | null>;
 
-    create(invoice: CreateUserDto): Promise<Invoice>;
+    create(invoice: CreateInvoiceDto): Promise<Invoice>;
 
-    update(id: string, invoice: UpdateUserDto): Promise<Invoice>;
+    update(id: string, invoice: UpdateInvoiceDto): Promise<Invoice>;
 
     delete(id: string): Promise<void>;
 }
