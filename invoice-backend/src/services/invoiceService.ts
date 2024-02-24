@@ -1,15 +1,18 @@
 import data from "../data/invoices";
 import {Invoice} from "../types";
 import {validateInvoiceData} from "../utils";
-
+import {PrismaRepositoryImpl} from "../repositories/prismaRepositoryImpl";
+import {PrismaClient} from "@prisma/client";
 
 
 // Convert this to a service that sits between graphQL and Prisma
 
 const invoices: Invoice[] = data;
 
-const getInvoices = (): Invoice[] => {
-  return invoices;
+const repository = new PrismaRepositoryImpl(new PrismaClient());
+
+export const getInvoices = async (): Promise<Invoice[]> => {
+  return await repository.findAll();
 };
 
 export const getInvoiceById = (id: string) => {

@@ -6,10 +6,10 @@ import {validateInvoiceData} from "../utils";
 
 const router = express.Router();
 
-router.get("/api/invoices", (_req, res) => {
-    const data: Invoice[] = invoiceService.getInvoices();
-    res.json(data);
-});
+// router.get("/api/invoices", (_req, res) => {
+//     const data: Invoice[] = invoiceService.getInvoices();
+//     res.json(data);
+// });
 
 router.get("/api/invoices/:id", (req, res) => {
     const { id } = req.params;

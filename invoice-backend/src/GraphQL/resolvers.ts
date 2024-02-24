@@ -1,12 +1,12 @@
 import {prisma} from "../../index";
-import {Prisma } from "@prisma/client";
-import { PrismaClient} from "@prisma/client";
+import {Prisma, PrismaClient} from "@prisma/client";
 import {
   CreateUserArgs,
   GetInvoiceByIdArgs,
   Invoice,
   InvoiceCreateArgs,
-  LoginArgs, MarkAsPaidArgs,
+  LoginArgs,
+  MarkAsPaidArgs,
   ReturnedUser,
   User
 } from "../types";
@@ -15,6 +15,8 @@ import jwt from "jsonwebtoken";
 import bcrypt from "bcrypt";
 
 import {PubSub} from "graphql-subscriptions";
+import invoiceService from "./../services/invoiceService";
+
 const pubsub = new PubSub();
 
 interface PrismaContext {
@@ -26,19 +28,19 @@ const resolvers = {
   Query: {
     allInvoices: async (_parent: any, _args: any, context: PrismaContext) => {
       try {
-
-        console.log("context:", context);
+        return invoiceService.getInvoices();
+        // console.log("context:", context);
         // console.log("context.prisma:", context.prisma);
-        const response = await prisma.invoice.findMany({
-          include: {
-            items: true,
-            clientAddress: true,
-            senderAddress: true
-          }
-        });
-        console.log("response:", response);
-        // console.log(response[0].clientAddress);
-        return response;
+      //   const response = await prisma.invoice.findMany({
+      //     include: {
+      //       items: true,
+      //       clientAddress: true,
+      //       senderAddress: true
+      //     }
+      //   });
+      //   console.log("response:", response);
+      //   // console.log(response[0].clientAddress);
+      //   return response;
       } catch (error) {
         console.error(error);
         return error;
