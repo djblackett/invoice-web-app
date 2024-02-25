@@ -1,27 +1,20 @@
-import {InvoiceRepositoryInterface} from "./invoiceRepository";
+import {RepositoryInterface} from "./RepositoryInterface";
 import {Invoice} from "../types";
 import {CreateInvoiceDto} from "../dto/createInvoice.dto";
 import {UpdateInvoiceDto} from "../dto/updateInvoice.dto";
-import {PrismaClient} from "@prisma/client";
+import {Prisma, PrismaClient} from "@prisma/client";
+import {DefaultArgs, GetFindResult} from "@prisma/client/runtime/library";
+import {injectable} from 'inversify';
 
-export class PrismaRepositoryImpl implements InvoiceRepositoryInterface {
-    constructor(private prisma: PrismaClient) {}
-    async findAll(): Promise<Invoice[]> {
-        try {
-            const response = await this.prisma.invoice.findMany({
-                include: {
-                    items: true,
-                    clientAddress: true,
-                    senderAddress: true
-                }
-            });
-            console.log("response:", response);
-            return response;
-        } catch (error: any) {
-            console.error(error);
-            return error;
-        }
+@injectable()
+export class PrismaRepository<T> implements RepositoryInterface<T> {
+    protected prisma: PrismaClient;
+
+    constructor(prismaClient?: PrismaClient) {
+        this.prisma = prismaClient ?? new PrismaClient();
     }
+
+    async findAll<T>(): Promise<T[] | null>;
 
 
 //     findById(id: string): Promise<Invoice | null> {

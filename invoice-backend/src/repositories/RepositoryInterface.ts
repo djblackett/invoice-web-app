@@ -2,8 +2,11 @@ import {Invoice} from "../types";
 import {CreateInvoiceDto} from "../dto/createInvoice.dto";
 import {UpdateInvoiceDto} from "../dto/updateInvoice.dto";
 
-export interface InvoiceRepositoryInterface {
-    findAll(): Promise<Invoice[]>;
+
+export interface RepositoryInterface<T> {
+
+    findAll<T>(): Promise<T[] | null>;
+
 
     // findById(id: string): Promise<Invoice | null>;
     //

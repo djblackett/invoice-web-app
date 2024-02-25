@@ -9,24 +9,27 @@ import {PrismaClient} from "@prisma/client";
 
 const invoices: Invoice[] = data;
 
-const repository = new PrismaRepositoryImpl(new PrismaClient());
+export class InvoiceService {
 
-export const getInvoices = async (): Promise<Invoice[]> => {
-  return await repository.findAll();
+    constructor() {}
+
+    repository = new PrismaRepositoryImpl(new PrismaClient());
+
+    getInvoices = async (): Promise<Invoice[]> => {return await this.repository.findAll() as unknown as Invoice[];
 };
 
-export const getInvoiceById = (id: string) => {
+getInvoiceById = (id: string) => {
   const invoice = invoices.find(invoice => invoice.id === id);
   return validateInvoiceData(invoice);
 };
 
 
-const addInvoice = (invoice: Invoice) => {
+addInvoice = (invoice: Invoice) => {
   invoices.push(invoice);
 };
 
-export const updateInvoice = (id: string, invoiceUpdates: object) => {
-  const oldInvoice = getInvoiceById(id);
+updateInvoice = (id: string, invoiceUpdates: object) => {
+  const oldInvoice = this.getInvoiceById(id);
   const newInvoiceUnvalidated = {...oldInvoice, ...invoiceUpdates};
   const validatedInvoice = validateInvoiceData(newInvoiceUnvalidated);
   const index = invoices.indexOf(oldInvoice);
@@ -35,7 +38,7 @@ export const updateInvoice = (id: string, invoiceUpdates: object) => {
   return validatedInvoice;
 };
 
-const deleteInvoice = (id: string): boolean => {
+deleteInvoice = (id: string): boolean => {
     const invoice = invoices. find(item => item.id === id);
   if (invoice) {
     const index = invoices.indexOf(invoice);
@@ -45,12 +48,12 @@ const deleteInvoice = (id: string): boolean => {
 return false;
 };
 
+}
 
-
-export default {
-  getInvoices,
-  getInvoiceById,
-  addInvoice,
-  updateInvoice,
-  deleteInvoice
-};
+// export default {
+//   getInvoices,
+//   getInvoiceById,
+//   addInvoice,
+//   updateInvoice,
+//   deleteInvoice
+// };

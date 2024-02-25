@@ -28,8 +28,9 @@ const resolvers = {
   Query: {
     allInvoices: async (_parent: any, _args: any, context: PrismaContext) => {
       try {
+        console.log("context:", context);
         return invoiceService.getInvoices();
-        // console.log("context:", context);
+
         // console.log("context.prisma:", context.prisma);
       //   const response = await prisma.invoice.findMany({
       //     include: {

@@ -23,6 +23,8 @@ import {
 } from '@apollo/server/plugin/landingPage/default';
 
 import "dotenv/config";
+import 'reflect-metadata';
+
 
 process.env.NODE_ENV = "production";
 
