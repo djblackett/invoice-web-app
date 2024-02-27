@@ -3,15 +3,20 @@ import {Invoice} from "../types";
 import {DefaultArgs, GetFindResult} from "@prisma/client/runtime/library";
 import {Prisma, PrismaClient} from "@prisma/client";
 import {PrismaRepository} from "./prismaRepositoryImpl";
+import {injectable} from "inversify";
 
-export class InvoiceRepository implements RepositoryInterface<Invoice>{
+// create
+
+
+@injectable()
+export class InvoiceRepository {
     protected prisma: PrismaClient;
 
     constructor(prismaClient?: PrismaClient) {
         this.prisma = prismaClient ?? new PrismaClient();
     }
 
-    async findAll<>(): Promise<GetFindResult<Prisma.$InvoicePayload<DefaultArgs>, any>[]> {
+    async findAll(): Promise<GetFindResult<Prisma.$InvoicePayload<DefaultArgs>, any>[]> {
         try {
             const response = await this.prisma.invoice.findMany({
                 include: {
@@ -27,5 +32,4 @@ export class InvoiceRepository implements RepositoryInterface<Invoice>{
             return error;
         }
     }
-
 }

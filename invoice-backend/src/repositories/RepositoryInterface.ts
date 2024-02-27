@@ -3,9 +3,9 @@ import {CreateInvoiceDto} from "../dto/createInvoice.dto";
 import {UpdateInvoiceDto} from "../dto/updateInvoice.dto";
 
 
-export interface RepositoryInterface<T> {
+export interface RepositoryInterface {
 
-    findAll<T>(): Promise<T[] | null>;
+    findAll(): Promise<any[] | null>;
 
 
     // findById(id: string): Promise<Invoice | null>;

@@ -14,6 +14,5 @@ CREATE TABLE IF NOT EXISTS invoices_dev (
     client_street varchar,
     client_city varchar,
     client_postcode varchar,
-    client_country varchar,
-
+    client_country varchar
 )

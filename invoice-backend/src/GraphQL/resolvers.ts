@@ -13,10 +13,11 @@ import {
 import {GraphQLError} from "graphql/error";
 import jwt from "jsonwebtoken";
 import bcrypt from "bcrypt";
+import { myContainer } from "../../inversify.config";
 
 import {PubSub} from "graphql-subscriptions";
-import invoiceService from "./../services/invoiceService";
-
+// import { InvoiceService } from "./../services/invoiceService";
+import {InvoiceService} from "../services/invoiceService";
 const pubsub = new PubSub();
 
 interface PrismaContext {
@@ -27,6 +28,7 @@ interface PrismaContext {
 const resolvers = {
   Query: {
     allInvoices: async (_parent: any, _args: any, context: PrismaContext) => {
+      const invoiceService = myContainer.get<InvoiceService>(InvoiceService);
       try {
         console.log("context:", context);
         return invoiceService.getInvoices();

@@ -1,7 +1,7 @@
 
 import express, { Express } from "express";
 import { PrismaClient } from "@prisma/client";
-import invoicesRouter from "./src/routes/invoices";
+// import invoicesRouter from "./src/routes/invoices";
 import cors from "cors";
 import myErrorHandler from "./src/routes/helpers/helpers";
 import http from "http";
@@ -109,7 +109,7 @@ const start = async () => {
 
     const PORT = 8000;
 
-    app.use(invoicesRouter, myErrorHandler);
+    // app.use(invoicesRouter, myErrorHandler);
 
 
     app.get("/api/ping", (_req, res) => {
