@@ -1,6 +1,6 @@
 // import jwt from "jsonwebtoken";
-import {ContextArgs} from "../types";
-import {prisma} from "../../index";
+import {ContextArgs} from "../constants/types";
+import {prisma} from "../index";
 // const User = require("../Models/User");
 
 

@@ -1,24 +1,28 @@
 import data from "../data/invoices";
-import {Invoice} from "../types";
-import {validateInvoiceData} from "../utils";
-import {PrismaRepository} from "../repositories/prismaRepositoryImpl";
-import {PrismaClient} from "@prisma/client";
-import { inject, injectable } from "inversify";
 import {InvoiceRepository} from "../repositories/InvoiceRepository";
+import {Invoice} from "../constants/types";
+import {validateInvoiceData} from "../utils";
+import { inject, injectable } from "inversify";
+import TYPES from "../constants/identifiers";
 
 
-// Convert this to a service that sits between graphQL and Prisma
-
+console.log("Identifiers:", TYPES);
 const invoices: Invoice[] = data;
 
 @injectable()
 export class InvoiceService {
+     // invoiceRepo: InvoiceRepository;
+     constructor(@inject(InvoiceRepository) private readonly invoiceRepo: InvoiceRepository
+     ) {
+        // this.invoiceRepo = invoiceRepo;
+        //  console.log("In constructor:", TYPES)
+    }
 
-    constructor(@inject(InvoiceRepository) private readonly invoiceRepo: InvoiceRepository) {}
 
-    // invoiceRepo = new PrismaRepository();
 
-    getInvoices = async (): Promise<Invoice[]> => {return await this.invoiceRepo.findAll() as unknown as Invoice[];
+    getInvoices = async (): Promise<Invoice[] | null> => {
+         // @ts-ignore
+        return await this.invoiceRepo.findAll();
     };
 
     getInvoiceById = (id: string) => {
@@ -28,7 +32,9 @@ export class InvoiceService {
 
 
     addInvoice = (invoice: Invoice) => {
-      invoices.push(invoice);
+      // invoices.push(invoice);
+      const result = this.invoiceRepo.create(invoice);
+      return result;
     };
 
     updateInvoice = (id: string, invoiceUpdates: object) => {

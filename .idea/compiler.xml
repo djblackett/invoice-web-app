@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="TypeScriptCompiler">
+    <option name="nodeInterpreterTextField" value="wsl://Ubuntu-22.04@/home/dave/.nvm/versions/node/v20.11.1/bin/node" />
     <option name="recompileOnChanges" value="true" />
   </component>
 </project>

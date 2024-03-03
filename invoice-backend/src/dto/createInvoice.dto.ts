@@ -1,4 +1,4 @@
-import {ClientAddress, Invoice, InvoiceCreateArgs, Item, SenderAddress} from "../types";
+import {ClientAddress, Invoice, InvoiceCreateArgs, Item, SenderAddress} from "../constants/types";
 
 export class CreateInvoiceDto implements InvoiceCreateArgs {
     clientAddress: ClientAddress;

@@ -1,5 +1,11 @@
 const typeDefs = `
 
+schema {
+  query: Query
+    mutation: Mutation
+    subscription: Subscription
+}
+
  type User {
   username: String!
   id: ID!

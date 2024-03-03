@@ -1,4 +1,4 @@
-import {Invoice} from "../types";
+import {Invoice} from "../constants/types";
 import {CreateInvoiceDto} from "../dto/createInvoice.dto";
 import {UpdateInvoiceDto} from "../dto/updateInvoice.dto";
 

@@ -112,6 +112,7 @@ export interface ContextArgs {
 
 export interface MyContext extends BaseContext {
     token?: string;
+    applyMiddleware?: any;
 }
 
 export interface User {
