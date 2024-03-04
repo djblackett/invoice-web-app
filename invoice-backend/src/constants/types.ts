@@ -1,179 +1,177 @@
-import {z} from "zod";
+import { z } from "zod";
 import express from "express";
-import {BaseContext} from "@apollo/server/dist/cjs";
-import {Context as GraphQLWSContext} from 'graphql-ws';
+import { BaseContext } from "@apollo/server/dist/cjs";
+import { Context as GraphQLWSContext } from "graphql-ws";
 
 export interface Invoice {
-    clientAddress: ClientAddress,
-    clientEmail: string,
-    clientName: string,
-    createdAt: string,
-    description: string,
-    id: string,
-    items: Item[],
-    paymentDue: string,
-    paymentTerms: number,
-    senderAddress: SenderAddress,
-    status: string,
-    total: number
+  clientAddress: ClientAddress;
+  clientEmail: string;
+  clientName: string;
+  createdAt: string;
+  description: string;
+  id: string;
+  items: Item[];
+  paymentDue: string;
+  paymentTerms: number;
+  senderAddress: SenderAddress;
+  status: string;
+  total: number;
 }
 
 export interface InvoiceUpdateArgs {
-    clientAddress?: ClientAddress;
-    clientEmail?: string;
-    clientName?: string;
-    createdAt?: string;
-    description?: string;
-    id: string;
-    items?: Item[];
-    paymentDue?: string;
-    paymentTerms?: number;
-    senderAddress?: SenderAddress;
-    status?: string;
-    total?: number;
+  clientAddress?: ClientAddress;
+  clientEmail?: string;
+  clientName?: string;
+  createdAt?: string;
+  description?: string;
+  id: string;
+  items?: Item[];
+  paymentDue?: string;
+  paymentTerms?: number;
+  senderAddress?: SenderAddress;
+  status?: string;
+  total?: number;
 }
-
 
 // New interface for the update object
 export interface InvoiceUpdatePayload {
-    id: string | undefined;
-    clientAddress?: ClientAddress | undefined;
-    clientEmail?: string | undefined;
-    clientName?: string | undefined;
-    createdAt?: string | undefined;
-    description?: string | undefined;
-    items?: Item[] | undefined;
-    paymentDue?: string | undefined;
-    paymentTerms?: number | undefined;
-    senderAddress?: SenderAddress | undefined;
-    status?: string | undefined;
-    total?: number | undefined;
+  id: string | undefined;
+  clientAddress?: ClientAddress | undefined;
+  clientEmail?: string | undefined;
+  clientName?: string | undefined;
+  createdAt?: string | undefined;
+  description?: string | undefined;
+  items?: Item[] | undefined;
+  paymentDue?: string | undefined;
+  paymentTerms?: number | undefined;
+  senderAddress?: SenderAddress | undefined;
+  status?: string | undefined;
+  total?: number | undefined;
 }
 
-
-
 export interface SenderAddress {
-    city: string,
-    country: string,
-    postCode: string
-    street: string
+  city: string;
+  country: string;
+  postCode: string;
+  street: string;
 }
 
 export interface ClientAddress {
-    city: string,
-    country: string,
-    postCode: string
-    street: string
+  city: string;
+  country: string;
+  postCode: string;
+  street: string;
 }
 
 export interface Item {
-    id?: string,
-    name: string
-    price: number,
-    quantity: number,
-    total: number
+  id?: string;
+  name: string;
+  price: number;
+  quantity: number;
+  total: number;
 }
 
 export const itemsZod = z.object({
-        id: z.string().min(1).max(50).optional(),
-        name: z.string().min(1).max(50),
-        price: z.number(),
-        quantity: z.number(),
-        total: z.number()
-    }
-);
+  id: z.string().min(1).max(50).optional(),
+  name: z.string().min(1).max(50),
+  price: z.number(),
+  quantity: z.number(),
+  total: z.number(),
+});
 
 export const addressZod = z.object({
-    street: z.string().min(1).max(50),
-    city: z.string().min(1).max(50),
-    postCode: z.string().min(1).max(50),
-    country: z.string().min(1).max(50)
+  street: z.string().min(1).max(50),
+  city: z.string().min(1).max(50),
+  postCode: z.string().min(1).max(50),
+  country: z.string().min(1).max(50),
 });
 
 export const invoiceZod = z.object({
-    clientAddress: addressZod,
-    clientEmail: z.string().email(),
-    clientName: z.string().min(1).max(50),
-    createdAt: z.string().min(4).max(50),
-    description: z.string().min(1).max(50),
-    id: z.string().min(1).max(50),
-    items: z.array(itemsZod),
-    paymentDue: z.string().min(1).max(50),
-    paymentTerms: z.number().min(0).max(30),
-    senderAddress: addressZod,
-    status: z.string().min(1).max(10),
-    total: z.number().min(0)
+  clientAddress: addressZod,
+  clientEmail: z.string().email(),
+  clientName: z.string().min(1).max(50),
+  createdAt: z.string().min(4).max(50),
+  description: z.string().min(1).max(50),
+  id: z.string().min(1).max(50),
+  items: z.array(itemsZod),
+  paymentDue: z.string().min(1).max(50),
+  paymentTerms: z.number().min(0).max(30),
+  senderAddress: addressZod,
+  status: z.string().min(1).max(10),
+  total: z.number().min(0),
 });
 
 export interface ContextArgs {
-    req: express.Request,
-    connection?: GraphQLWSContext
+  req: express.Request;
+  connection?: GraphQLWSContext;
+}
+
+export interface QueryContext extends BaseContext {
+  currentUser: ReturnedUser;
 }
 
 export interface MyContext extends BaseContext {
-    token?: string;
-    applyMiddleware?: any;
+  token?: string;
+  applyMiddleware?: any;
 }
 
 export interface User {
-    id: number;
-    name: string;
-    username: string;
-    passwordHash: string;
+  id: number;
+  name: string;
+  username: string;
+  passwordHash: string;
 }
 
 export interface ReturnedUser {
-    id: number;
-    name: string;
-    username: string;
+  id: number;
+  name: string;
+  username: string;
 }
 
 export interface CreateUserArgs {
-    name: string;
-    username: string;
-    password: string;
+  name: string;
+  username: string;
+  password: string;
 }
 
 export interface LoginArgs {
-    username: string;
-    password: string
+  username: string;
+  password: string;
 }
 
 export interface GetInvoiceByIdArgs {
-    id: string;
+  id: string;
 }
 
 export interface InvoiceCreateArgs {
-    clientEmail: string;
-    clientName: string;
-    createdAt: string;
-    description: string;
-    id: string;
-    paymentDue: string;
-    paymentTerms: number;
-    status: string;
+  clientEmail: string;
+  clientName: string;
+  createdAt: string;
+  description: string;
+  id: string;
+  paymentDue: string;
+  paymentTerms: number;
+  status: string;
+  total: number;
+  clientAddress: {
+    city: string;
+    country: string;
+    postCode: string;
+    street: string;
+  };
+  senderAddress: {
+    city: string;
+    country: string;
+    postCode: string;
+    street: string;
+  };
+  items: Array<{
+    name: string;
+    price: number;
+    quantity: number;
     total: number;
-    clientAddress: {
-        city: string;
-        country: string;
-        postCode: string;
-        street: string;
-    };
-    senderAddress: {
-        city: string;
-        country: string;
-        postCode: string;
-        street: string;
-    };
-    items: Array<{
-        name: string;
-        price: number;
-        quantity: number;
-        total: number;
-        id?: string | undefined
-    }>;
+    id?: string | undefined;
+  }>;
 }
 
 export type MarkAsPaidArgs = GetInvoiceByIdArgs;
-
-

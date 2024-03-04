@@ -1,5 +1,3 @@
-import {Invoice} from "../constants/types";
+import { Invoice } from "../constants/types";
 
-export class UpdateInvoiceDto implements Partial<Invoice> {
-
-}
+export class UpdateInvoiceDto implements Partial<Invoice> {}

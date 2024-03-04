@@ -1,68 +1,63 @@
-import data from "../data/invoices";
-import {InvoiceRepository} from "../repositories/InvoiceRepository";
-import {Invoice} from "../constants/types";
-import {validateInvoiceData} from "../utils";
+import { InvoiceRepository } from "../repositories/InvoiceRepository";
+import { CreateUserArgs, Invoice } from "../constants/types";
+import { validateInvoiceData } from "../utils";
 import { inject, injectable } from "inversify";
-import TYPES from "../constants/identifiers";
-
-
-console.log("Identifiers:", TYPES);
-const invoices: Invoice[] = data;
+import bcrypt from "bcrypt";
 
 @injectable()
 export class InvoiceService {
-     // invoiceRepo: InvoiceRepository;
-     constructor(@inject(InvoiceRepository) private readonly invoiceRepo: InvoiceRepository
-     ) {
-        // this.invoiceRepo = invoiceRepo;
-        //  console.log("In constructor:", TYPES)
-    }
+  constructor(@inject(InvoiceRepository) private readonly invoiceRepo: InvoiceRepository) {}
 
+  getInvoices = async (): Promise<Invoice[] | null> => {
+    // @ts-ignore
+    return await this.invoiceRepo.findAll();
+  };
 
+  getInvoiceById = (id: string) => {
+    return this.invoiceRepo.findById(id);
+  };
 
-    getInvoices = async (): Promise<Invoice[] | null> => {
-         // @ts-ignore
-        return await this.invoiceRepo.findAll();
-    };
+  addInvoice = (invoice: Invoice) => {
+    return this.invoiceRepo.create(invoice);
+  };
 
-    getInvoiceById = (id: string) => {
-      const invoice = invoices.find(invoice => invoice.id === id);
-      return validateInvoiceData(invoice);
-    };
+  updateInvoice = (id: string, invoiceUpdates: object) => {
+    const oldInvoice = this.getInvoiceById(id);
+    const newInvoiceUnvalidated = { ...oldInvoice, ...invoiceUpdates };
+    const validatedInvoice = validateInvoiceData(newInvoiceUnvalidated);
+    return this.invoiceRepo.editInvoice(id, validatedInvoice);
+  };
 
+  markAsPaid = (id: string) => {
+    return this.invoiceRepo.markAsPaid(id);
+  };
 
-    addInvoice = (invoice: Invoice) => {
-      // invoices.push(invoice);
-      const result = this.invoiceRepo.create(invoice);
-      return result;
-    };
+  deleteInvoice = async (id: string) => {
+    return this.invoiceRepo.deleteInvoice(id);
+  };
 
-    updateInvoice = (id: string, invoiceUpdates: object) => {
-      const oldInvoice = this.getInvoiceById(id);
-      const newInvoiceUnvalidated = {...oldInvoice, ...invoiceUpdates};
-      const validatedInvoice = validateInvoiceData(newInvoiceUnvalidated);
-      const index = invoices.indexOf(oldInvoice);
+  getClientAddresses = async () => {
+    return await this.invoiceRepo.findAllClientAddresses();
+  };
 
-      invoices.splice(index, 1, validatedInvoice);
-      return validatedInvoice;
-    };
+  getSellerAddresses = async () => {
+    return await this.invoiceRepo.findAllSenderAddresses();
+  };
 
-    deleteInvoice = (id: string): boolean => {
-        const invoice = invoices. find(item => item.id === id);
-      if (invoice) {
-        const index = invoices.indexOf(invoice);
-        invoices.splice(index, 1);
-        return true;
-      }
-    return false;
-    };
+  createUser = async (args: CreateUserArgs) => {
+    const hashedPassword = await bcrypt.hash(args.password, 10);
+    return await this.invoiceRepo.createUser(args, hashedPassword);
+  };
 
+  getUsers = async () => {
+    return await this.invoiceRepo.findAllUsers();
+  };
+
+  login = async (email: string, password: string) => {
+    return await this.invoiceRepo.loginUser(email, password);
+  };
+
+  getUser = async (id: number) => {
+    return await this.invoiceRepo.findUserById(id);
+  };
 }
-
-// export default {
-//   getInvoices,
-//   getInvoiceById,
-//   addInvoice,
-//   updateInvoice,
-//   deleteInvoice
-// };

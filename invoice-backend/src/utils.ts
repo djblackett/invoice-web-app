@@ -1,5 +1,5 @@
-import {invoiceZod} from "./constants/types";
+import { invoiceZod } from "./constants/types";
 
 export const validateInvoiceData = (inputs: unknown) => {
-    return invoiceZod.parse(inputs);
+  return invoiceZod.parse(inputs);
 };

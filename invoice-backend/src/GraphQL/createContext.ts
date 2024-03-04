@@ -1,40 +1,52 @@
-// import jwt from "jsonwebtoken";
-import {ContextArgs} from "../constants/types";
-import {prisma} from "../index";
-// const User = require("../Models/User");
+import jwt from "jsonwebtoken";
+import { ContextArgs } from "../constants/types";
+import container from "../config/inversify.config";
+import { InvoiceService } from "../services/invoice.service";
+import { SECRET } from "../config/server.config";
 
-
-
-// eslint-disable-next-line @typescript-eslint/require-await
 export async function createContext({ req, connection }: ContextArgs) {
-  console.log("-----------------connection");
+  // console.log("-----------------connection");
   if (connection) {
     // This is a subscription request
-    // console.log("Subscription context: ", connection.context);
     console.log(connection);
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-return
-    // return connection.context;
     return connection;
-  } else {
-    // This is a regular request
-    console.log("regular request");
-    console.log("no connection");
+  }
 
-    const auth: string | undefined | null = req ? req.headers.authorization : null;
-    if (auth && auth.startsWith("Bearer ")) {
-      // const decodedToken = jwt.verify(
-      //   auth.substring(7),
-      //   process.env.JWT_SECRET
-      // );
-      // const currentUser = await User.findById(decodedToken.id);
-      const currentUser = {};
+  // This is a regular request
+  console.log("regular request");
+  console.log("no connection");
 
+  console.log("Regular request, checking authorization header...");
+  const auth = req?.headers.authorization;
+
+  if (!auth) {
+    console.log("No authorization header, returning early.");
+    return;
+  }
+
+  if ( !auth.startsWith("Bearer ")) {
+    console.log("Invalid authorization header, returning early.");
+    return;
+  }
+
+  if (!SECRET) {
+    throw new Error("No secret set");
+  }
+
+  try {
+    const authToken = auth.split(" ")[1];
+    const decodedToken = jwt.verify(authToken, SECRET);
+
+    if (typeof decodedToken === "string") {
+      console.log(decodedToken);
+      return;
     }
 
+    const invoiceService = container.get(InvoiceService);
+    return await invoiceService.getUser(decodedToken.id);
+  } catch (error) {
+    console.error("JWT verification failed", error);
   }
-  return { prisma };
 }
-
 console.log("After createContext");
 
-// module.exports = { createContext };

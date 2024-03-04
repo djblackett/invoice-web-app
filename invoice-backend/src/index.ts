@@ -1,39 +1,31 @@
 import "reflect-metadata";
-import "dotenv/config";
 import http from "http";
 import typeDefs from "./GraphQL/typeDefs";
-import {InvoiceController} from "./controllers/invoice.controller";
 import { WebSocketServer } from "ws";
 import { useServer } from "graphql-ws/lib/use/ws";
-import {ApolloServerPluginDrainHttpServer} from "@apollo/server/plugin/drainHttpServer";
-import {makeExecutableSchema} from "@graphql-tools/schema";
-import {ApolloServer} from "@apollo/server";
-import {MyContext} from "./constants/types";
+import { ApolloServerPluginDrainHttpServer } from "@apollo/server/plugin/drainHttpServer";
+import { makeExecutableSchema } from "@graphql-tools/schema";
+import { ApolloServer } from "@apollo/server";
+import { ContextArgs, MyContext } from "./constants/types";
 import {
   ApolloServerPluginLandingPageLocalDefault,
-  ApolloServerPluginLandingPageProductionDefault
-} from '@apollo/server/plugin/landingPage/default';
-import {InversifyExpressServer} from "inversify-express-utils";
-import TYPES from "./constants/identifiers";
-import {inversifySchema} from "inversify-graphql";
+  ApolloServerPluginLandingPageProductionDefault,
+} from "@apollo/server/plugin/landingPage/default";
+import { InversifyExpressServer } from "inversify-express-utils";
 import container from "./config/inversify.config";
-import {serverConfig, serverErrorConfig} from "./config/server.config";
+import { NODE_ENV, PORT, serverConfig, serverErrorConfig } from "./config/server.config";
 
+import { expressMiddleware } from "@apollo/server/express4";
+import { createContext } from "./GraphQL/createContext";
 import "./controllers/invoice.controller";
-import {expressMiddleware} from "@apollo/server/express4";
-
-process.env.NODE_ENV = "production";
-console.log(process.env.DATABASE_URL);
+import InvoiceController from "./controllers/invoice.controller";
+// process.env.NODE_ENV = "production";
 
 const start = async () => {
-await require("./controllers/invoice.controller");
-await require("./services/invoice.service");
-
   try {
-
     const inversifyServer = new InversifyExpressServer(container);
-    inversifyServer.setConfig(serverConfig)
-    inversifyServer.setErrorConfig(serverErrorConfig)
+    inversifyServer.setConfig(serverConfig);
+    inversifyServer.setErrorConfig(serverErrorConfig);
 
     const app = inversifyServer.build();
 
@@ -45,15 +37,14 @@ await require("./services/invoice.service");
 
     const controller = container.get(InvoiceController);
     const resolvers = controller.resolvers;
-    const schema = makeExecutableSchema({typeDefs, resolvers});
-    const serverCleanup = useServer({schema}, wsServer);
+    const schema = makeExecutableSchema({ typeDefs, resolvers });
+    const serverCleanup = useServer({ schema }, wsServer);
 
     const server = new ApolloServer<MyContext>({
-      // schema: inversifySchema(container, schema),
       schema,
       introspection: true,
       plugins: [
-        ApolloServerPluginDrainHttpServer({httpServer}),
+        ApolloServerPluginDrainHttpServer({ httpServer }),
         {
           async serverWillStart() {
             return {
@@ -63,55 +54,26 @@ await require("./services/invoice.service");
             };
           },
         },
+
         // Install a landing page plugin based on NODE_ENV
-
-        process.env.NODE_ENV === 'production'
-            ? ApolloServerPluginLandingPageProductionDefault({
-              graphRef: 'my-graph-id@my-graph-variant',
+        NODE_ENV === "production"
+          ? ApolloServerPluginLandingPageProductionDefault({
+              graphRef: "my-graph-id@my-graph-variant",
               footer: false,
-            }) : ApolloServerPluginLandingPageLocalDefault({footer: false}),],
+            })
+          : ApolloServerPluginLandingPageLocalDefault({ footer: false }),
+      ],
     });
-
-
 
     await server.start();
 
-    app.use(expressMiddleware(server))
-    const result = await server.executeOperation({query: `query allInvoices {
-    allInvoices {
-      clientAddress {
-        city
-        country
-        postCode
-        street
-      }
-      clientEmail
-      clientName
-      createdAt
-      description
-      id
-      items {
-        id
-        name
-        price
-        quantity
-        total
-      }
-      paymentDue
-      paymentTerms
-      senderAddress {
-        city
-        country
-        postCode
-        street
-      }
-      status
-      total
-    }
-  }`})
+    app.use(
+      expressMiddleware(server, {
+        context: async ({ req, connection }: ContextArgs) =>
+          await createContext({ req, connection }),
+      }),
+    );
 
-    console.log(result);
-    const PORT = 8000;
 
     app.get("/api/ping", (_req, res) => {
       console.log("someone pinged here");
@@ -119,30 +81,12 @@ await require("./services/invoice.service");
     });
 
     httpServer.listen(PORT, () => {
-
       console.log(`Server running on port ${PORT}`);
     });
-
   } catch (error) {
     console.log(error);
     console.log("Server error:");
-
   }
 };
 
 start();
-
-// {
-//     http: {
-//       status: undefined,
-//     headers: HeaderMap(1) [Map] {
-//         'cache-control' => 'no-store',
-//         __identity: Symbol(HeaderMap)
-//       }
-//     },
-//     body: {
-//       kind: 'single',
-//       singleResult: { data: [Object: null prototype], errors: undefined }
-//     }
-//   }
-
