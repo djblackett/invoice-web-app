@@ -1,4 +1,4 @@
-import { InvoiceRepository } from "../repositories/InvoiceRepository";
+import { PrismaInvoiceRepository } from "../repositories/implementations/prismaInvoiceRepository";
 import { CreateUserArgs, Invoice } from "../constants/types";
 import { validateInvoiceData } from "../utils";
 import { inject, injectable } from "inversify";
@@ -6,7 +6,7 @@ import bcrypt from "bcrypt";
 
 @injectable()
 export class InvoiceService {
-  constructor(@inject(InvoiceRepository) private readonly invoiceRepo: InvoiceRepository) {}
+  constructor(@inject(PrismaInvoiceRepository) private readonly invoiceRepo: PrismaInvoiceRepository) {}
 
   getInvoices = async (): Promise<Invoice[] | null> => {
     // @ts-ignore

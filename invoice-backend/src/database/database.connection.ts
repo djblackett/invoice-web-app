@@ -1,27 +1,14 @@
-import { Logger } from "../config/logger.config";
-import { inject, injectable } from "inversify";
 import { PrismaClient } from "@prisma/client";
 
-@injectable()
-export class DatabaseConnection {
-  static prisma = new PrismaClient({
-    errorFormat: "pretty",
-  });
+type Mock = {
 
-  constructor(@inject(Logger) private readonly logger: Logger) {}
-
-  public getPrisma() {
-    return DatabaseConnection.prisma;
-  }
-
-  public async initConnection(): Promise<void> {
-    try {
-      await DatabaseConnection.prisma.$connect();
-      console.log("Connected to Prisma");
-    } catch (e) {
-      console.error(e);
-      await DatabaseConnection.prisma.$disconnect();
-      process.exit(1);
-    }
-  }
 }
+
+// todo - make this actually generic. This is a temporary hack to keep TS happy.
+
+export interface IDatabaseConnection {
+  initConnection: () => void;
+  getDatabase: () => PrismaClient | Mock;
+}
+
+

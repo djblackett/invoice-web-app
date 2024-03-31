@@ -1,64 +1,52 @@
-import {
-  DefaultArgs,
-  GetFindResult,
-  GetResult,
-} from "@prisma/client/runtime/library";
+import { DefaultArgs, GetFindResult, GetResult } from "@prisma/client/runtime/library";
 import { Prisma } from "@prisma/client";
 import { inject, injectable } from "inversify";
-import { ClientAddress, CreateUserArgs, Invoice } from "../constants/types";
-import { DatabaseConnection } from "../database/database.connection";
+import { ClientAddress, Invoice } from "../../constants/types";
+import { DatabaseConnection } from "../../database/prisma.database.connection";
 import { GraphQLError } from "graphql/error";
 import { Temporal } from "temporal-polyfill";
+import { IInvoiceRepo } from "../InvoiceRepo";
+import { validateInvoiceData, validateInvoiceList } from "../../utils";
+
+// const fullInvoice = Prisma.validator<Prisma.InvoiceDefaultArgs>()({
+//   include: { clientAddress: true, senderAddress: true, items: true },
+// })
+
+// type FullInvoice = Prisma.InvoiceGetPayload<typeof fullInvoice>;
 
 @injectable()
-export class InvoiceRepository {
+export class PrismaInvoiceRepository implements IInvoiceRepo {
   protected prisma;
 
   constructor(
     @inject(DatabaseConnection)
     private readonly databaseConnection: DatabaseConnection,
   ) {
-    this.prisma = databaseConnection.getPrisma();
+    this.prisma = databaseConnection.getDatabase();
   }
 
-  async findAll(): Promise<
-    GetFindResult<
-      Prisma.$InvoicePayload<DefaultArgs>,
-      {
-        include: {
-          senderAddress: boolean;
-          items: boolean;
-          clientAddress: boolean;
-        };
-      }
-    >[]
-  > {
+  async findAll(): Promise<Invoice[]>
+  {
     try {
-      return await this.prisma.invoice.findMany({
+      const result: GetFindResult<Prisma.$InvoicePayload<DefaultArgs>, {
+        include: { senderAddress: boolean; items: boolean; clientAddress: boolean }
+      }>[] = await this.prisma.invoice.findMany({
         include: {
           items: true,
           clientAddress: true,
           senderAddress: true,
         },
       });
+      return validateInvoiceList(result);
     } catch (error: any) {
       console.error(error);
       return error;
     }
   }
 
-  async findById(id: string): Promise<GetResult<
-    Prisma.$InvoicePayload<DefaultArgs>,
-    {
-      include: {
-        senderAddress: boolean;
-        items: boolean;
-        clientAddress: boolean;
-      };
-    }
-  > | null> {
+  async findById(id: string): Promise<Invoice> {
     try {
-      return await this.prisma.invoice.findUnique({
+      const result = await this.prisma.invoice.findUnique({
         where: {
           id,
         },
@@ -68,6 +56,9 @@ export class InvoiceRepository {
           senderAddress: true,
         },
       });
+
+      return validateInvoiceData(result);
+
     } catch (error: any) {
       console.error(error);
       return error;
@@ -92,27 +83,7 @@ export class InvoiceRepository {
     }
   }
 
-  async findAllUsers() {
-    try {
-      return await this.prisma.user.findMany();
-    } catch (error: any) {
-      console.error(error);
-      return error;
-    }
-  }
 
-  async findUserById(id: number) {
-    try {
-      return await this.prisma.user.findUnique({
-        where: {
-          id,
-        },
-      });
-    } catch (error: any) {
-      console.error(error);
-      return error;
-    }
-  }
 
   async markAsPaid(id: string) {
     try {
@@ -129,6 +100,7 @@ export class InvoiceRepository {
       return error;
     }
   }
+
   async editInvoice(id: string, invoiceUpdates: Partial<Invoice>) {
     try {
       // Deleting the items before updating to ensure that new copies are made. Prisma makes updating items and
@@ -180,61 +152,10 @@ export class InvoiceRepository {
     }
   }
 
-  async create(invoice: Invoice): Promise<
-    Prisma.Prisma__InvoiceClient<
-      GetResult<
-        Prisma.$InvoicePayload<DefaultArgs>,
-        {
-          include: {
-            senderAddress: boolean;
-            clientAddress: boolean;
-            items: boolean;
-          };
-          data: {
-            createdAt: string;
-            total: number;
-            senderAddress: {
-              create: {
-                country: string;
-                city: string;
-                street: string;
-                postCode: string;
-              };
-            };
-            clientEmail: string;
-            clientName: string;
-            description: string;
-            id: string;
-            paymentDue: string;
-            clientAddress: {
-              create: {
-                country: string;
-                city: string;
-                street: string;
-                postCode: string;
-              };
-            };
-            items: {
-              create: {
-                total: number;
-                quantity: number;
-                price: number;
-                name: string;
-                id: string | undefined;
-              }[];
-            };
-            paymentTerms: number;
-            status: string;
-          };
-        },
-        "create"
-      >,
-      never,
-      DefaultArgs
-    >
-  > {
+  async create(invoice: Invoice): Promise<Invoice>
+    {
     try {
-      return await this.prisma.invoice.create({
+      const result =  await this.prisma.invoice.create({
         data: {
           clientEmail: invoice.clientEmail || "",
           clientName: invoice.clientName || "",
@@ -278,6 +199,8 @@ export class InvoiceRepository {
           items: true,
         },
       });
+
+      return validateInvoiceData(result);
     } catch (error) {
       console.log(error);
       throw new GraphQLError(
@@ -293,26 +216,6 @@ export class InvoiceRepository {
     }
   }
 
-  async createUser(userArgs: CreateUserArgs, hashedPassword: string) {
-    return this.prisma.user
-      .create({
-        data: {
-          name: userArgs.name,
-          username: userArgs.username,
-          passwordHash: hashedPassword,
-        },
-      })
-      .catch((error: unknown) => {
-        throw new GraphQLError("Creating the user failed", {
-          extensions: {
-            code: "BAD_USER_INPUT",
-            invalidArgs: userArgs.username,
-            error,
-          },
-        });
-      });
-  }
-
   async deleteInvoice(id: string) {
     try {
       return await this.prisma.invoice.delete({
@@ -326,14 +229,6 @@ export class InvoiceRepository {
     }
   }
 
-  // distinguish between logging in for first time, and fetching correct user from auth header
-  loginUser = async (username: string, password: string) => {
-    return this.prisma.user.findUnique({
-      where: {
-        username,
-      },
-    });
-  };
 
 
 }

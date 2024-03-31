@@ -101,6 +101,8 @@ export const invoiceZod = z.object({
   total: z.number().min(0),
 });
 
+export const invoiceListZod = z.array(invoiceZod);
+
 export interface ContextArgs {
   req: express.Request;
   connection?: GraphQLWSContext;
