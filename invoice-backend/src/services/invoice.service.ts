@@ -9,7 +9,6 @@ export class InvoiceService {
   constructor(@inject(PrismaInvoiceRepository) private readonly invoiceRepo: PrismaInvoiceRepository) {}
 
   getInvoices = async (): Promise<Invoice[] | null> => {
-    // @ts-ignore
     return await this.invoiceRepo.findAll();
   };
 
@@ -43,6 +42,4 @@ export class InvoiceService {
   getSellerAddresses = async () => {
     return await this.invoiceRepo.findAllSenderAddresses();
   };
-
-
 }

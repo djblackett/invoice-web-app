@@ -1,7 +1,6 @@
 import jwt from "jsonwebtoken";
 import { ContextArgs } from "../constants/types";
 import container from "../config/inversify.config";
-import { InvoiceService } from "../services/invoice.service";
 import { SECRET } from "../config/server.config";
 import { UserService } from "../services/user.service";
 

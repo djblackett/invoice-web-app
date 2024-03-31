@@ -8,12 +8,6 @@ import { Temporal } from "temporal-polyfill";
 import { IInvoiceRepo } from "../InvoiceRepo";
 import { validateInvoiceData, validateInvoiceList } from "../../utils";
 
-// const fullInvoice = Prisma.validator<Prisma.InvoiceDefaultArgs>()({
-//   include: { clientAddress: true, senderAddress: true, items: true },
-// })
-
-// type FullInvoice = Prisma.InvoiceGetPayload<typeof fullInvoice>;
-
 @injectable()
 export class PrismaInvoiceRepository implements IInvoiceRepo {
   protected prisma;
@@ -228,7 +222,5 @@ export class PrismaInvoiceRepository implements IInvoiceRepo {
       return error;
     }
   }
-
-
 
 }
