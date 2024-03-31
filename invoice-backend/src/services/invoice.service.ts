@@ -44,20 +44,5 @@ export class InvoiceService {
     return await this.invoiceRepo.findAllSenderAddresses();
   };
 
-  createUser = async (args: CreateUserArgs) => {
-    const hashedPassword = await bcrypt.hash(args.password, 10);
-    return await this.invoiceRepo.createUser(args, hashedPassword);
-  };
 
-  getUsers = async () => {
-    return await this.invoiceRepo.findAllUsers();
-  };
-
-  login = async (email: string, password: string) => {
-    return await this.invoiceRepo.loginUser(email, password);
-  };
-
-  getUser = async (id: number) => {
-    return await this.invoiceRepo.findUserById(id);
-  };
 }

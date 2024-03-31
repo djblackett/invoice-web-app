@@ -63,17 +63,17 @@ export function getResolvers(invoiceService: InvoiceService) {
           });
         }
       },
-      allUsers: async () => {
-        try {
-          return invoiceService.getUsers();
-        } catch (error) {
-          throw new GraphQLError("Couldn't fetch users", {
-            extensions: {
-              error: error,
-            },
-          });
-        }
-      },
+      // allUsers: async () => {
+      //   try {
+      //     return invoiceService.getUsers();
+      //   } catch (error) {
+      //     throw new GraphQLError("Couldn't fetch users", {
+      //       extensions: {
+      //         error: error,
+      //       },
+      //     });
+      //   }
+      // },
     },
     Mutation: {
       addInvoice: async (_root: any, args: InvoiceCreateArgs) => {
@@ -152,53 +152,53 @@ export function getResolvers(invoiceService: InvoiceService) {
           );
         }
       },
-      createUser: async (_root: any, args: CreateUserArgs) => {
-        const user = await invoiceService.createUser(args);
-        const userNoPassword: ReturnedUser = {
-          id: user.id,
-          name: user.name,
-          username: user.username,
-        };
-        return userNoPassword;
-      },
+      // createUser: async (_root: any, args: CreateUserArgs) => {
+      //   const user = await invoiceService.createUser(args);
+      //   const userNoPassword: ReturnedUser = {
+      //     id: user.id,
+      //     name: user.name,
+      //     username: user.username,
+      //   };
+      //   return userNoPassword;
+      // },
       //
-      login: async (_root: any, args: LoginArgs) => {
-        const user = await invoiceService.login(args.username, args.password);
-
-        if (!user) {
-          throw new GraphQLError("User does not exist", {
-            extensions: {
-              code: "BAD_USER_INPUT",
-            },
-          });
-        }
-
-        console.log(user);
-
-        if (!SECRET) {
-          console.log("Server env secret not set");
-          return;
-        }
-
-
-          console.log("before match");
-          const match = await bcrypt.compare(args.password, user.passwordHash);
-
-          console.log("match:", match);
-          if (match) {
-            // let jwt;
-            return {
-              value: jwt.sign(JSON.stringify(user), SECRET),
-            };
-          } else {
-            throw new GraphQLError("wrong credentials", {
-              extensions: {
-                code: "BAD_USER_INPUT",
-              },
-            });
-          }
-        }
-      ,
+      // login: async (_root: any, args: LoginArgs) => {
+      //   const user = await invoiceService.login(args.username, args.password);
+      //
+      //   if (!user) {
+      //     throw new GraphQLError("User does not exist", {
+      //       extensions: {
+      //         code: "BAD_USER_INPUT",
+      //       },
+      //     });
+      //   }
+      //
+      //   console.log(user);
+      //
+      //   if (!SECRET) {
+      //     console.log("Server env secret not set");
+      //     return;
+      //   }
+      //
+      //
+      //     console.log("before match");
+      //     const match = await bcrypt.compare(args.password, user.passwordHash);
+      //
+      //     console.log("match:", match);
+      //     if (match) {
+      //       // let jwt;
+      //       return {
+      //         value: jwt.sign(JSON.stringify(user), SECRET),
+      //       };
+      //     } else {
+      //       throw new GraphQLError("wrong credentials", {
+      //         extensions: {
+      //           code: "BAD_USER_INPUT",
+      //         },
+      //       });
+      //     }
+      //   }
+      // ,
       markAsPaid: async (_root: any, args: MarkAsPaidArgs) => {
         try {
           return invoiceService.markAsPaid(args.id);

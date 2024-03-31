@@ -1,6 +1,6 @@
 import { inject, injectable } from "inversify";
 import { IUserRepo } from "../userRepo";
-import { DatabaseConnection } from "../../database/database.connection";
+import { DatabaseConnection } from "../../database/prisma.database.connection";
 import { CreateUserArgs } from "../../constants/types";
 import { GraphQLError } from "graphql/error";
 

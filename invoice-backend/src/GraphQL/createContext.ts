@@ -3,6 +3,7 @@ import { ContextArgs } from "../constants/types";
 import container from "../config/inversify.config";
 import { InvoiceService } from "../services/invoice.service";
 import { SECRET } from "../config/server.config";
+import { UserService } from "../services/user.service";
 
 export async function createContext({ req, connection }: ContextArgs) {
   // console.log("-----------------connection");
@@ -42,8 +43,8 @@ export async function createContext({ req, connection }: ContextArgs) {
       return;
     }
 
-    const invoiceService = container.get(InvoiceService);
-    return await invoiceService.getUser(decodedToken.id);
+    const userService = container.get(UserService);
+    return await userService.getUser(decodedToken.id);
   } catch (error) {
     console.error("JWT verification failed", error);
   }

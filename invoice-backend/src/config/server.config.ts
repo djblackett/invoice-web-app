@@ -3,7 +3,7 @@ import { json, urlencoded } from "body-parser";
 import express, { Application, NextFunction, Request, Response } from "express";
 // import { BaseException, InternalServerException } from './exception.config';
 // import passport from 'passport';
-import { DatabaseConnection } from "../database/database.connection";
+import { DatabaseConnection } from "../database/prisma.database.connection";
 // import { AccessTokenStrategy, RefreshTokenStrategy } from '../auth/strategy';
 import container from "./inversify.config";
 import cors from "cors";
