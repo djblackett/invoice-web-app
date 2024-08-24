@@ -4,3 +4,4 @@ node_modules
 playwright.config.ts
 playwright.config.js
 tests-examples
+**/*.jsx

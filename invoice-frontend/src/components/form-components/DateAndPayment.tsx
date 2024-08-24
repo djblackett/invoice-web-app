@@ -124,6 +124,8 @@ function DateAndPayment({
     ),
   );
 
+  ExampleCustomInput.displayName = "ExampleCustomInput";
+
   return (
     <DateAndPaymentContainer>
       <FormEntry isLongOnMobile className="invoice-date">
@@ -132,10 +134,10 @@ function DateAndPayment({
           customInput={<ExampleCustomInput />}
           selected={selected}
           onChange={onChange}
-          // todo - make sure this CSS is applied in some other way
-          // style={{
-          //   width: "100%",
-          // }}
+        // todo - make sure this CSS is applied in some other way
+        // style={{
+        //   width: "100%",
+        // }}
         />
       </FormEntry>
 
