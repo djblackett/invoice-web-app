@@ -180,8 +180,6 @@ export function getResolvers(invoiceService: InvoiceService, userService: UserSe
           console.log("Server env secret not set");
           return;
         }
-
-
           console.log("before match");
           const match = await bcrypt.compare(args.password, user.passwordHash);
 

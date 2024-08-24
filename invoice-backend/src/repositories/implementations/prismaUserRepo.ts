@@ -58,9 +58,9 @@ export class PrismaUserRepo implements IUserRepo {
       });
   }
 
-  // Move login logic to its own repo
+  // Move login logic to its own files
 
-  // distinguish between logging in for first time, and fetching correct user from auth header
+  // todo distinguish between logging in for first time, and fetching correct user from auth header
   loginUser = async (username: string, password: string) => {
     return this.prisma.user.findUnique({
       where: {

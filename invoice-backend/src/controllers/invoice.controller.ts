@@ -4,6 +4,7 @@ import { getResolvers } from "../GraphQL/resolvers";
 import { controller, httpPost, requestBody } from "inversify-express-utils";
 import { Invoice } from "../constants/types";
 import { validateInvoiceData } from "../utils";
+import { UserService } from "../services/user.service";
 
 @controller("/api")
 class InvoiceController {
@@ -11,10 +12,12 @@ class InvoiceController {
 
   constructor(
     @inject(InvoiceService) private readonly invoiceService: InvoiceService,
+    @inject(UserService) private readonly userService: UserService
   ) {
-    this.resolvers = getResolvers(this.invoiceService);
+    this.resolvers = getResolvers(this.invoiceService, this.userService);
   }
 
+  // I'm not sure why this is here
   @httpPost("/invoices")
   async newInvoice(@requestBody() unvalidatedInvoice: unknown) {
     try {

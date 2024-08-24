@@ -19,6 +19,7 @@ import { expressMiddleware } from "@apollo/server/express4";
 import { createContext } from "./GraphQL/createContext";
 import "./controllers/invoice.controller";
 import InvoiceController from "./controllers/invoice.controller";
+import { Request, Response } from 'express';
 // process.env.NODE_ENV = "production";
 
 const start = async () => {
@@ -75,7 +76,7 @@ const start = async () => {
     );
 
 
-    app.get("/api/ping", (_req, res) => {
+    app.get("/api/ping", (_req: Request, res: Response) => {
       console.log("someone pinged here");
       res.send("pong");
     });

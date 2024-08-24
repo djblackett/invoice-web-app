@@ -4,28 +4,29 @@ import container from "../config/inversify.config";
 import { SECRET } from "../config/server.config";
 import { UserService } from "../services/user.service";
 
+const DEBUG = false;
+
 export async function createContext({ req, connection }: ContextArgs) {
-  // console.log("-----------------connection");
   if (connection) {
     // This is a subscription request
-    console.log(connection);
+    DEBUG && console.log(connection);
     return connection;
   }
 
   // This is a regular request
-  console.log("regular request");
-  console.log("no connection");
+  DEBUG && console.log("regular request");
+  DEBUG && console.log("no connection");
 
-  console.log("Regular request, checking authorization header...");
+  DEBUG && console.log("Regular request, checking authorization header...");
   const auth = req?.headers.authorization;
 
   if (!auth) {
-    console.log("No authorization header, returning early.");
+    DEBUG && console.log("No authorization header, returning early.");
     return;
   }
 
   if ( !auth.startsWith("Bearer ")) {
-    console.log("Invalid authorization header, returning early.");
+    DEBUG && console.log("Invalid authorization header, returning early.");
     return;
   }
 
@@ -38,15 +39,14 @@ export async function createContext({ req, connection }: ContextArgs) {
     const decodedToken = jwt.verify(authToken, SECRET);
 
     if (typeof decodedToken === "string") {
-      console.log(decodedToken);
+      DEBUG && console.log(decodedToken);
       return;
     }
 
     const userService = container.get(UserService);
     return await userService.getUser(decodedToken.id);
   } catch (error) {
-    console.error("JWT verification failed", error);
+    DEBUG && console.error("JWT verification failed", error);
   }
 }
 console.log("After createContext");
-
