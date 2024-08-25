@@ -85,4 +85,5 @@ EditBottomMenu.propTypes = {
   justifyCancel: PropTypes.string,
   setItems: PropTypes.func,
   invoice: PropTypes.object,
+  onSubmit: PropTypes.func.isRequired
 };

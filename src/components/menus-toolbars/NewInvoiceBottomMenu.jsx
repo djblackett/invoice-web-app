@@ -13,10 +13,18 @@ const MenuContainer = styled.div`
   display: flex;
   flex-direction: row;
   align-items: center;
-  justify-content: space-between;
+  justify-content: center;
+  padding: 0;
   margin-top: 2.6rem;
   margin-bottom: 4rem;
-
+  align-self: center;
+  transform: scale(.90);
+  
+  @media (min-width: 325px) {
+    justify-content: space-between;
+    transform: scale(1);
+  }
+  
   @media (min-width: 768px) {
     margin-bottom: 0;
   }
@@ -29,6 +37,7 @@ const NewInvoiceButton = styled.input`
   height: 44px;
   width: 90px;
   display: flex;
+  flex-shrink: 1;
   align-items: center;
   justify-content: center;
   text-align: center;

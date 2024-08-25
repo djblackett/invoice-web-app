@@ -79,29 +79,41 @@ export const ItemName = styled(Input)`
 export const Quantity = styled(Input).attrs(
   { pattern: "\\d+" }
 )`
-  width: 46px;
+  width: 64px;
   margin: 0;
   color: ${({ theme }) => theme.textPlain};
   padding: 0;
+  padding-left: 1.25rem;
   font-weight: 700;
   font-size: 12px;
   line-height: 15px;
   /* identical to box height, or 125% */
-  text-align: center;
+  text-align: left;
   letter-spacing: -0.25px;
 
   @media (min-width: 600px) {
+    text-align: center;
+    width: 46px;
     display: inline;
+    padding: 0;
   }
 `;
 
 export const Price = styled(Quantity).attrs(
   { pattern: "[0-9.]*" }
 )`
-  width: 100px;
+  width: 80px;
   padding-left: 1.25rem;
   text-align: left;
+
+  @media (min-width: 325px) {
+    width: 100px;
+    padding-left: 1.25rem;
+    text-align: left;
+  }
 `;
+
+
 export const Total = styled.p`
   min-width: 40px;
   align-self: center;
@@ -114,12 +126,13 @@ export const Total = styled.p`
   color: ${({ theme }) => theme.greyText};
   
   @media (min-width: 325px) {
-    min-width: 60px;
+    
   }
   
   @media (min-width: 600px) {
     grid-area: initial;
-    text-align: left;
+    text-align: center;
+    min-width: 60px;
   }
 `;
 
@@ -149,18 +162,21 @@ export const MobileQuantityPrice = styled.p`
 `;
 
 export const MobileHelperContainer = styled.div`
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
+  //display: flex;
+  //flex-direction: column;
+  //justify-content: center;
+  display: grid;
+  grid-template: 1fr / 220px 62px 116px 61px 49px;;
 
-  @media (min-width: 600px) {
-    display: contents;
-  }
+  //@media (min-width: 600px) {
+    //display: contents;
+  //}
 `;
 export const SVG = styled.svg`
   width: 13px;
   height: 16px;
   justify-self: end;
+  align-self: center;
   cursor: pointer;
   outline: none;
 
@@ -184,12 +200,29 @@ export const Box = styled.div`
   width: fit-content;
 `;
 
+export const TotalBox = styled(Box)`
+text-align: right;
+  align-items: flex-end;
+  @media (min-width: 325px) {
+    align-items: flex-start;
+    text-align: initial;
+  }
+`;
+
 export const SmallBoxContainer = styled.div`
   display: flex;
   flex-direction: row;
   justify-content: space-between;
   width: 80%;
   align-items: center;
+
+  @media (min-width: 325px) {
+    width: 90%;
+  }
+  
+  @media (min-width: 600px) {
+    width: 80%;
+  }
 `;
 
 export const deleteIcon = (

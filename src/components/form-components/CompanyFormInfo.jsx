@@ -24,7 +24,7 @@ export function CompanyFormInfo({ isDraft, editPageWidth, invoice }) {
   const { register, formState: { errors } } = useFormContext();
 
   const countryChildren = (
-    <FormEntry>
+    <LongFormEntry style={{ width: width < 768 ? "100%" : "" }}>
       <Label
         htmlFor="country"
         style={{ color: errors?.country ? "#EC5757" : "" }}
@@ -33,11 +33,13 @@ export function CompanyFormInfo({ isDraft, editPageWidth, invoice }) {
       </Label>
       <CountryInput
         type="text"
-        style={{ border: errors?.country ? "1px solid #EC5757" : "" }}
+        style={{ border: errors?.country ? "1px solid #EC5757" : "",
+          width: width < 768 ? "100%" : ""
+        }}
         defaultValue={invoice? invoice.senderAddress.country : ""}
         { ...register("country", { required: !isDraft, pattern: /^[A-Za-z0-9 ]+$/i, maxLength: 30  }) }
       />
-    </FormEntry>
+    </LongFormEntry>
   );
 
   return <>

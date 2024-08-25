@@ -54,6 +54,7 @@ export default function NewInvoiceForm({
   editPageWidth,
   startDate,
   setStartDate,
+  isNewOpen,
   setIsNewOpen,
   isDraft,
   setIsDraft,
@@ -145,14 +146,14 @@ export default function NewInvoiceForm({
     const [month, day, year] = [date.getMonth(), date.getDate(), date.getFullYear()];
     newInvoice.paymentDue = [year, month, day].join("-");
 
-    console.log("end of newInvoice function", newInvoice);
+    // console.log("end of newInvoice function", newInvoice);
     return newInvoice;
   };
 
 
   const onSubmit = (e) => {
     const watcher = watch();
-    console.log(errors);
+    // console.log(errors);
 
     const data = getValues();
 
@@ -209,7 +210,7 @@ export default function NewInvoiceForm({
   }, [watcher.items]);
 
 
-  console.log("isDraft", isDraft);
+  // console.log("isDraft", isDraft);
 
 
   return (
@@ -255,7 +256,7 @@ export default function NewInvoiceForm({
           register={register}
           errorStyle={errorStyle}/>
 
-        <FormErrorList />
+        <FormErrorList isEditOpen={isNewOpen}/>
         <NewInvoiceBottomMenu setIsDraft={setIsDraft} setIsOpen={setIsNewOpen}
           saveText={"Save & Send"} closeText={"Discard"}
           justifyCancel={"flex-start"} reset={reset}
@@ -276,4 +277,5 @@ NewInvoiceForm.propTypes = {
   setIsDraft: PropTypes.func.isRequired,
   setSelectedPaymentOption: PropTypes.func.isRequired,
   selectedPaymentOption: PropTypes.number.isRequired,
+  isNewOpen: PropTypes.bool.isRequired
 };

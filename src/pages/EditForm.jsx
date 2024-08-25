@@ -63,6 +63,7 @@ function EditForm({
     trigger,
     reset,
     setError,
+    clearErrors
   } = methods;
 
   const width = useWindowWidth();
@@ -74,11 +75,7 @@ function EditForm({
   const [selectedPaymentOption, setSelectedPaymentOption] = useState(
     invoice?.paymentTerms || 1
   );
-
-
-
   const watcher = watch();
-
   const [isPaymentOpen, setIsPaymentOpen] = useState(false);
 
 
@@ -126,7 +123,7 @@ function EditForm({
     const [month, day, year] = [date.getMonth(), date.getDate(), date.getFullYear()];
     newInvoice.paymentDue = [year, month, day].join("-");
 
-    console.log("end of newVoice function", newInvoice);
+    // console.log("end of newVoice function", newInvoice);
     return newInvoice;
   };
 
@@ -144,8 +141,8 @@ function EditForm({
 
   const onSubmit = (e) => {
     const watcher = watch();
-    // console.log(watcher);
-    console.log(errors);
+    // // console.log(watcher);
+    // console.log(errors);
     const data = getValues();
 
     if (!data.items || data.items.length === 0) {
@@ -154,17 +151,19 @@ function EditForm({
       return;
     }
 
-    console.log("errors", errors);
+    // console.log("errors", errors);
     //trigger validation on fields
     trigger()
       .then(value => {
         if (value){
-          console.log("validation success");
+          // console.log("validation success");
           const newInvoice = createInvoiceObject(data);
           dispatch(updateInvoice(newInvoice));
+
+          clearErrors();
           setIsEditOpen(false);
           setSelectedPaymentOption(1); // todo check this
-          // console.log(newInvoice);
+          // // console.log(newInvoice);
           reset();
         }
       });
@@ -308,7 +307,7 @@ function EditForm({
             <EditFormItemList invoice={invoice} isEditOpen={ isEditOpen } isDraft={ false } errorStyle={errorStyle}/>
 
 
-            <FormErrorList />
+            <FormErrorList isEditOpen={isEditOpen}/>
 
             <EditBottomMenu
               setIsOpen={setIsEditOpen}

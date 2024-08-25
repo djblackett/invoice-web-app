@@ -2,6 +2,9 @@ import styled from "styled-components";
 import { useDispatch } from "react-redux";
 import { markAsPaid } from "../../features/invoices/invoicesSlice";
 import PropTypes from "prop-types";
+import { ToastContainer, toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
+import { useWindowWidth } from "../../hooks/useWindowWidth";
 
 const Button = styled.button`
   background-color: ${({ theme }) => theme.newButton};
@@ -24,14 +27,35 @@ const Button = styled.button`
   }
 `;
 function MarkAsPaidButton({ invoice }) {
+
+  const colorMode = localStorage.getItem("theme");
+  const width = useWindowWidth();
+  console.log(width);
+
   const dispatch = useDispatch();
+
   const handleClick = () => {
     if (invoice.status === "pending") {
       dispatch(markAsPaid(invoice.id));
+      // notify();
+      toast.success("💸 Invoice paid!", {
+        position: "top-center",
+        autoClose: 5000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+        progress: undefined,
+        theme: colorMode
+      });
     }
   };
-
-  return <Button onClick={handleClick} type="button">Mark as Paid</Button>;
+  return (
+    <>
+      <Button onClick={handleClick} type="button">Mark as Paid</Button>
+      <ToastContainer style={{ marginTop: width > 1200 ? 0 : "72px" }}/>
+    </>
+  );
 }
 
 export default MarkAsPaidButton;

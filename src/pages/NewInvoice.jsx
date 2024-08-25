@@ -68,7 +68,7 @@ function NewInvoice({
         </EditTitle>
 
         <NewInvoiceForm
-          startDate={startDate} setStartDate={setStartDate} setIsNewOpen={setIsNewOpen} setItems={setItems} editPageWidth={editPageWidth} items={items} isDraft={isDraft} setIsDraft={setIsDraft}  selectedPaymentOption={selectedPaymentOption} setSelectedPaymentOption={setSelectedPaymentOption}/>
+          startDate={startDate} setStartDate={setStartDate} isNewOpen={isNewOpen} setIsNewOpen={setIsNewOpen} setItems={setItems} editPageWidth={editPageWidth} items={items} isDraft={isDraft} setIsDraft={setIsDraft}  selectedPaymentOption={selectedPaymentOption} setSelectedPaymentOption={setSelectedPaymentOption}/>
 
       </FormContainerDarkenModal>
     </DarkenScreen>
