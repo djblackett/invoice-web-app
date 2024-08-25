@@ -2,12 +2,14 @@ import React, { useEffect, useLayoutEffect, useState } from "react";
 import "../styles/App.css";
 import styled, { ThemeProvider } from "styled-components";
 import { useRoutes } from "react-router-dom";
+import {loadDevMessages, loadErrorMessages} from "@apollo/client/dev";
 import Header from "../components/menus-toolbars/Header";
 import GlobalStyles from "../styles/GlobalStyles";
 import { lightTheme, darkTheme } from "../styles/Themes";
 import ViewInvoice from "../pages/ViewInvoice";
 import Layout from "../components/Layout";
 import AllInvoices from "../pages/AllInvoices";
+
 
 const Main = styled.div`
   height: 100%;
@@ -50,9 +52,11 @@ const Main = styled.div`
   }
 `;
 
-
+loadDevMessages();
+loadErrorMessages();
 
 // todo - returning window scroll to proper position is currently non-functional
+// can use the useRef hook to dynamically get the position of a node to scroll to later
 function App() {
   const [theme, setTheme] = useState("light");
   const [scrollPosition, setScrollPosition] = useState({ x: 0, y: 0 });
@@ -74,28 +78,6 @@ function App() {
     localStorage.setItem("theme", theme === "light" ? "dark" : "light");
   };
 
-  // // for testing firebase DB functionality (Not fully implemented yet)
-  // async function testDBFunction() {
-  //   const docRef = doc(firestoreDb, "cities", "SF");
-  //   const docSnap = await getDoc(docRef);
-  //
-  //   if (docSnap.exists()) {
-  //     console.log("Document data:", docSnap.data());
-  //   } else {
-  //     // doc.data() will be undefined in this case
-  //     console.log("No such document!");
-  //   }
-  //
-  //   const querySnapshot = await getDocs(collection(firestoreDb, "invoices"));
-  //   querySnapshot.forEach((doc) => {
-  //     console.log(`${doc.id} => ${doc.data()}`);
-  //   });
-  // }
-
-  // todo must fix credentials for db connection
-  // useEffect(() => {
-  //   testDBFunction();
-  // }, []);
 
   const routes = [
     {

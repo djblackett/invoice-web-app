@@ -1,13 +1,27 @@
 module.exports = {
+    "parser": "@typescript-eslint/parser",
+    "parserOptions": {
+        ecmaVersion: "latest",
+        sourceType: "module",
+        tsconfigRootDir: __dirname,
+        project: ["./tsconfig.json"], // could be tsconfig.json too
+    },
+    "plugins": [
+        "@typescript-eslint",
+        "react",
+        "prettier",
+        "cypress",
+        "jest"
+    ],
     "env": {
         "browser": true,
         "es2021": true
     },
     "extends": [
-        "eslint:recommended",
-        "plugin:import/recommended",
-        "airbnb",
-        "airbnb-typescript",
+        // "eslint:recommended",
+        // "plugin:import/recommended",
+        // "airbnb",
+        // "airbnb-typescript",
         "plugin:react/jsx-runtime",
         "plugin:react-hooks/recommended",
         "plugin:jsx-a11y/recommended",
@@ -21,32 +35,11 @@ module.exports = {
     ],
     "overrides": [
         {
-            "env": {
-                "node": true
-            },
-            "files": [
-                ".eslintrc.{js,cjs}",
-                // "babel.config.js"
+            extends: [
+                'plugin:@typescript-eslint/recommended-requiring-type-checking',
             ],
-            "parserOptions": {
-                "sourceType": "script",
-                "project": true
-            }
-        }
-    ],
-    "parser": "@typescript-eslint/parser",
-    "parserOptions": {
-        "ecmaVersion": "latest",
-        sourceType: "module",
-        tsconfigRootDir: __dirname,
-        project: ["./tsconfig.json"], // could be tsconfig.json too
-    },
-    "plugins": [
-        "@typescript-eslint",
-        "react",
-        "prettier",
-        "cypress",
-        "jest"
+            files: ['./**/*.{ts,tsx}'],
+        },
     ],
     "rules": {
         "indent": [
@@ -55,7 +48,7 @@ module.exports = {
         ],
         "linebreak-style": [
             "warn",
-            "windows"
+            "unix"
         ],
         "quotes": [
             "warn",
@@ -87,6 +80,12 @@ module.exports = {
             0
         ],
         "react/require-default-props": [
+            0
+        ],
+        "react-hooks/exhaustive-deps": [
+            0
+        ],
+        "@typescript-eslint/no-unused-vars": [
             0
         ]
     }

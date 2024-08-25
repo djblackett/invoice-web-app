@@ -52,14 +52,14 @@ input ClientInfo {
     postCode: String
     street: String
     }
-    
+
   input SenderInfo {
      city: String,
     country: String,
     postCode: String
     street: String
     }
-    
+
     input ItemInput {
         id: String,
         name: String
@@ -90,7 +90,7 @@ type Query {
         items: [ItemInput],
         paymentDue: String,
         paymentTerms: Float,
-        senderAddress: SenderInfo, 
+        senderAddress: SenderInfo,
         status: String,
         total: Float
   ): Invoice
@@ -113,7 +113,7 @@ type Query {
   removeInvoice(
   id: String!
   ) : String
-  
+
   markAsPaid(
   id: String!): Invoice
 
@@ -122,7 +122,7 @@ type Query {
     username: String!
     password: String!
   ): User
-  
+
   login(
     username: String!
     password: String!

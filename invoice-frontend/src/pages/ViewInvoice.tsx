@@ -1,13 +1,13 @@
 import React, { useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
-import { useSelector } from "react-redux";
+import {useQuery} from "@apollo/client";
 import InvoiceToolbar from "../components/invoice-components/InvoiceToolbar";
 import FullInvoice from "../components/invoice-components/FullInvoice";
 import EditForm from "./EditForm";
-import {  selectInvoiceById } from "../features/invoices/invoicesSlice";
 import DeleteModal from "../components/DeleteModal";
 import { arrowLeft, GoBack, GoBackButton, Icon, ViewContainer } from "../styles/ViewInvoiceStyles";
-import {Invoice, ReduxInvoiceState, ScrollPosition} from "../types/types";
+import { ScrollPosition} from "../types/types";
+import {GET_INVOICE_BY_ID} from "../graphql/queries";
 
 export type ViewInvoiceProps = {
     scrollPosition: ScrollPosition
@@ -16,20 +16,29 @@ export type ViewInvoiceProps = {
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 function ViewInvoice({ scrollPosition }: ViewInvoiceProps) {
   const { id } = useParams();
-  const invoice = useSelector( (state: ReduxInvoiceState) => selectInvoiceById(state, id)) as Invoice;
+  // eslint-disable-next-line @typescript-eslint/no-unsafe-call,@typescript-eslint/no-unsafe-return
+  // const invoice = useSelector( (state: ReduxInvoiceState) => selectInvoiceById(state, id)) as Invoice;
   const navigate = useNavigate();
   const [isEditOpen, setIsEditOpen] = useState(false);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [padding, setPadding] = useState("");
+
+  // eslint-disable-next-line @typescript-eslint/no-unsafe-call
+  const invoice = useQuery(GET_INVOICE_BY_ID);
 
   const toggleEditTab = () => {
     setIsEditOpen(!isEditOpen);
   };
 
   const goBack = () => {
-    navigate(-1);
+    navigate("/");
     // window.scrollTo(scrollPosition.x, scrollPosition.y);
   };
+
+
+  if (invoice.loading) {
+    return <h2>Loading</h2>;
+  }
 
   // todo implement loading state when backend is implemented
   return (
@@ -47,15 +56,15 @@ function ViewInvoice({ scrollPosition }: ViewInvoiceProps) {
         <GoBack>Go back</GoBack>
       </GoBackButton>
       <InvoiceToolbar
-        invoice={invoice}
+        invoice={invoice?.data}
         setEdit={toggleEditTab}
         setIsModalOpen={setIsModalOpen}
         isEditOpen={isEditOpen}
       />
-      <FullInvoice invoice={invoice} />
+      <FullInvoice invoice={invoice.data} />
       <DeleteModal
         setIsModalOpen={setIsModalOpen}
-        invoice={invoice}
+        invoice={invoice.data}
         isModalOpen={isModalOpen}
       />
     </ViewContainer>
