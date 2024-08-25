@@ -1,4 +1,7 @@
 import {z} from "zod";
+import express from "express";
+import {BaseContext} from "@apollo/server/dist/cjs";
+import {Context as GraphQLWSContext} from 'graphql-ws';
 
 export interface Invoice {
     clientAddress: ClientAddress,
@@ -14,6 +17,40 @@ export interface Invoice {
     status: string,
     total: number
 }
+
+export interface InvoiceUpdateArgs {
+    clientAddress?: ClientAddress;
+    clientEmail?: string;
+    clientName?: string;
+    createdAt?: string;
+    description?: string;
+    id: string;
+    items?: Item[];
+    paymentDue?: string;
+    paymentTerms?: number;
+    senderAddress?: SenderAddress;
+    status?: string;
+    total?: number;
+}
+
+
+// New interface for the update object
+export interface InvoiceUpdatePayload {
+    id: string | undefined;
+    clientAddress?: ClientAddress | undefined;
+    clientEmail?: string | undefined;
+    clientName?: string | undefined;
+    createdAt?: string | undefined;
+    description?: string | undefined;
+    items?: Item[] | undefined;
+    paymentDue?: string | undefined;
+    paymentTerms?: number | undefined;
+    senderAddress?: SenderAddress | undefined;
+    status?: string | undefined;
+    total?: number | undefined;
+}
+
+
 
 export interface SenderAddress {
     city: string,
@@ -67,4 +104,75 @@ export const invoiceZod = z.object({
     status: z.string().min(1).max(10),
     total: z.number().min(0)
 });
+
+export interface ContextArgs {
+    req: express.Request,
+    connection?: GraphQLWSContext
+}
+
+export interface MyContext extends BaseContext {
+    token?: string;
+}
+
+export interface User {
+    id: number;
+    name: string;
+    username: string;
+    passwordHash: string;
+}
+
+export interface ReturnedUser {
+    id: number;
+    name: string;
+    username: string;
+}
+
+export interface CreateUserArgs {
+    name: string;
+    username: string;
+    password: string;
+}
+
+export interface LoginArgs {
+    username: string;
+    password: string
+}
+
+export interface GetInvoiceByIdArgs {
+    id: string;
+}
+
+export interface InvoiceCreateArgs {
+    clientEmail: string;
+    clientName: string;
+    createdAt: string;
+    description: string;
+    id: string;
+    paymentDue: string;
+    paymentTerms: number;
+    status: string;
+    total: number;
+    clientAddress: {
+        city: string;
+        country: string;
+        postCode: string;
+        street: string;
+    };
+    senderAddress: {
+        city: string;
+        country: string;
+        postCode: string;
+        street: string;
+    };
+    items: Array<{
+        name: string;
+        price: number;
+        quantity: number;
+        total: number;
+        id?: string | undefined
+    }>;
+}
+
+export type MarkAsPaidArgs = GetInvoiceByIdArgs;
+
 

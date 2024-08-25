@@ -11,7 +11,7 @@ datasource db {
 }
 
 model Invoice {
-  id              String         @id
+  id              String @id @default(uuid())
   createdAt       String
   paymentDue      String
   description     String
@@ -20,21 +20,21 @@ model Invoice {
   clientEmail     String
   status          String
   total           Decimal
-  clientAddress   ClientAddress  @relation(fields: [clientAddressId], references: [id])
   items           Item[]
-  clientAddressId Int
+  clientAddress   ClientAddress?  @relation(fields: [clientAddressId], references: [id])
   senderAddress   SenderAddress? @relation(fields: [senderAddressId], references: [id])
-  senderAddressId Int?
+  senderAddressId Int? @unique
+  clientAddressId Int? @unique
 }
 
 model Item {
-  id        String   @id
+  id        String   @id @default(uuid())
   name      String
   quantity  Int
   price     Decimal
   total     Decimal
-  Invoice   Invoice? @relation(fields: [invoiceId], references: [id])
-  invoiceId String?
+  Invoice   Invoice @relation(fields: [invoiceId], references: [id], onDelete: Cascade)
+  invoiceId String
 }
 
 model ClientAddress {
@@ -43,7 +43,7 @@ model ClientAddress {
   city     String
   postCode String
   country  String
-  Invoice  Invoice[]
+  Invoice  Invoice?
 }
 
 model SenderAddress {
@@ -52,5 +52,13 @@ model SenderAddress {
   city     String
   postCode String
   country  String
-  Invoice  Invoice[]
+  Invoice  Invoice?
 }
+
+model User {
+  id Int @id @default(autoincrement())
+  name String
+  username String @unique
+  passwordHash String
+}
+

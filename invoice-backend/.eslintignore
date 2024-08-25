@@ -1,2 +1,6 @@
 build
 node_modules
+prisma
+.env
+*.json
+*.yml
