@@ -39,7 +39,7 @@
   },
   "parser": "@typescript-eslint/parser",
   "parserOptions": {
-    "project": "./tsconfig.json",
+    "project": "./invoice-web-app/invoice-backend/tsconfig.json",
     "include": ["**/*.ts", "**/*.tsx"]
   }
 }

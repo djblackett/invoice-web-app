@@ -6,4 +6,4 @@ export const validateInvoiceData = (inputs: unknown) => {
 
 export const validateInvoiceList = (inputs: unknown) => {
   return invoiceListZod.parse(inputs);
-}
+};

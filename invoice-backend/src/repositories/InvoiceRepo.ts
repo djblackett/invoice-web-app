@@ -1,7 +1,7 @@
 import { Invoice } from "../constants/types";
 
 export interface IInvoiceRepo {
-  findAll: () => Promise<Invoice[]> | Invoice[];
+  findAll: () => Promise<Partial<Invoice>[]> | Partial<Invoice>[];
   findById: (id: string) => Promise<Invoice> | Invoice;
   deleteInvoice: (id: string) => Promise<any>;
   markAsPaid: (id: string) => void;

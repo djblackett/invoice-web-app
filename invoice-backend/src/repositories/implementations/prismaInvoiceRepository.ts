@@ -1,4 +1,4 @@
-import { DefaultArgs, GetFindResult, GetResult } from "@prisma/client/runtime/library";
+import { DefaultArgs, GetFindResult} from "@prisma/client/runtime/library";
 import { Prisma } from "@prisma/client";
 import { inject, injectable } from "inversify";
 import { ClientAddress, Invoice } from "../../constants/types";
@@ -19,7 +19,7 @@ export class PrismaInvoiceRepository implements IInvoiceRepo {
     this.prisma = databaseConnection.getDatabase();
   }
 
-  async findAll(): Promise<Invoice[]>
+  async findAll(): Promise<Partial<Invoice>[]>
   {
     try {
       const result: GetFindResult<Prisma.$InvoicePayload<DefaultArgs>, {
@@ -31,7 +31,8 @@ export class PrismaInvoiceRepository implements IInvoiceRepo {
           senderAddress: true,
         },
       });
-      return validateInvoiceList(result);
+      // return validateInvoiceList(result);
+      return result as unknown as Partial<Invoice>[];
     } catch (error: any) {
       console.error(error);
       return error;

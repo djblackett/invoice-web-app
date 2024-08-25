@@ -114,7 +114,7 @@ export interface QueryContext extends BaseContext {
 
 export interface MyContext extends BaseContext {
   token?: string;
-  applyMiddleware?: any;
+  applyMiddleware?: unknown;
 }
 
 export interface User {

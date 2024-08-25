@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 import { inject } from "inversify";
 import { InvoiceService } from "../services/invoice.service";
 import { getResolvers } from "../GraphQL/resolvers";
@@ -18,19 +19,19 @@ class InvoiceController {
   }
 
   // I'm not sure why this is here
-  @httpPost("/invoices")
-  async newInvoice(@requestBody() unvalidatedInvoice: unknown) {
-    try {
-      const validatedInvoice = validateInvoiceData(unvalidatedInvoice);
-      return await this.invoiceService.addInvoice(
-        unvalidatedInvoice as Invoice,
-      );
-    } catch (error: any) {
-      console.log(error);
-      // res.status(400).send(error.message);
-      return error;
-    }
-  }
+  // @httpPost("/invoices")
+  // async newInvoice(@requestBody() unvalidatedInvoice: unknown) {
+  //   try {
+  //     const validatedInvoice = validateInvoiceData(unvalidatedInvoice);
+  //     return await this.invoiceService.addInvoice(
+  //       unvalidatedInvoice as Invoice,
+  //     );
+  //   } catch (error: any) {
+  //     console.log(error);
+  //     // res.status(400).send(error.message);
+  //     return error;
+  //   }
+  // }
 }
 
 export default InvoiceController;

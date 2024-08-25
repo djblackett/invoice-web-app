@@ -25,7 +25,7 @@ interface PrismaContext {
 export function getResolvers(invoiceService: InvoiceService, userService: UserService) {
   return {
     Query: {
-      allInvoices: async (_parent: any, _args: any, context: PrismaContext) => {
+      allInvoices: async (_parent: unknown, _args: never, _context: PrismaContext) => {
         console.log("entered allInvoices resolver");
         try {
           return invoiceService.getInvoices();
@@ -34,7 +34,7 @@ export function getResolvers(invoiceService: InvoiceService, userService: UserSe
           return error;
         }
       },
-      getInvoiceById: async (_root: any, args: GetInvoiceByIdArgs) => {
+      getInvoiceById: async (_root: never, args: GetInvoiceByIdArgs) => {
         const invoice = await invoiceService.getInvoiceById(args.id);
         if (invoice) {
           return invoice;
@@ -77,7 +77,7 @@ export function getResolvers(invoiceService: InvoiceService, userService: UserSe
       },
     },
     Mutation: {
-      addInvoice: async (_root: any, args: InvoiceCreateArgs) => {
+      addInvoice: async (_root: never, args: InvoiceCreateArgs) => {
         try {
           const newInvoice = await invoiceService.addInvoice(args);
           await pubsub.publish("INVOICE_ADDED", { invoiceAdded: newInvoice });
@@ -96,7 +96,7 @@ export function getResolvers(invoiceService: InvoiceService, userService: UserSe
         }
       },
       editInvoice: async (
-        _parent: any,
+        _parent: unknown,
         args: Partial<Invoice>,
       ): Promise<Invoice> => {
         // args contain all the potential fields for the invoice update
@@ -136,7 +136,7 @@ export function getResolvers(invoiceService: InvoiceService, userService: UserSe
         return {} as unknown as Invoice;
       },
       //
-      removeInvoice: async (_root: any, args: GetInvoiceByIdArgs, context: QueryContext) => {
+      removeInvoice: async (_root: unknown, args: GetInvoiceByIdArgs, _context: QueryContext) => {
 
         try {
           return invoiceService.deleteInvoice(args.id);
@@ -153,7 +153,7 @@ export function getResolvers(invoiceService: InvoiceService, userService: UserSe
           );
         }
       },
-      createUser: async (_root: any, args: CreateUserArgs) => {
+      createUser: async (_root: unknown, args: CreateUserArgs) => {
         const user = await userService.createUser(args);
         const userNoPassword: ReturnedUser = {
           id: user.id,
@@ -163,7 +163,7 @@ export function getResolvers(invoiceService: InvoiceService, userService: UserSe
         return userNoPassword;
       },
 
-      login: async (_root: any, args: LoginArgs) => {
+      login: async (_root: unknown, args: LoginArgs) => {
         const user = await userService.login(args.username, args.password);
 
         if (!user) {
@@ -198,7 +198,7 @@ export function getResolvers(invoiceService: InvoiceService, userService: UserSe
           }
         }
       ,
-      markAsPaid: async (_root: any, args: MarkAsPaidArgs) => {
+      markAsPaid: async (_root: unknown, args: MarkAsPaidArgs) => {
         try {
           return invoiceService.markAsPaid(args.id);
         } catch (error) {

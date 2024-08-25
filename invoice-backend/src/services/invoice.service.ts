@@ -1,8 +1,7 @@
 import { PrismaInvoiceRepository } from "../repositories/implementations/prismaInvoiceRepository";
-import { CreateUserArgs, Invoice } from "../constants/types";
+import { Invoice } from "../constants/types";
 import { validateInvoiceData } from "../utils";
 import { inject, injectable } from "inversify";
-import bcrypt from "bcrypt";
 
 @injectable()
 export class InvoiceService {
@@ -20,8 +19,11 @@ export class InvoiceService {
     return this.invoiceRepo.create(invoice);
   };
 
-  updateInvoice = (id: string, invoiceUpdates: object) => {
-    const oldInvoice = this.getInvoiceById(id);
+  updateInvoice = async (id: string, invoiceUpdates: object) => {
+    const oldInvoice = await this.getInvoiceById(id);
+    if (!oldInvoice) {
+      throw new Error("Invoice not found");
+    }
     const newInvoiceUnvalidated = { ...oldInvoice, ...invoiceUpdates };
     const validatedInvoice = validateInvoiceData(newInvoiceUnvalidated);
     return this.invoiceRepo.editInvoice(id, validatedInvoice);

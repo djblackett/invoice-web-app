@@ -20,6 +20,7 @@ import { createContext } from "./GraphQL/createContext";
 import "./controllers/invoice.controller";
 import InvoiceController from "./controllers/invoice.controller";
 import { Request, Response } from 'express';
+import { DatabaseConnection } from "./database/prisma.database.connection";
 // process.env.NODE_ENV = "production";
 
 const start = async () => {
@@ -27,6 +28,9 @@ const start = async () => {
     const inversifyServer = new InversifyExpressServer(container);
     inversifyServer.setConfig(serverConfig);
     inversifyServer.setErrorConfig(serverErrorConfig);
+
+    const database = container.get(DatabaseConnection);
+    await database.initConnection();
 
     const app = inversifyServer.build();
 
