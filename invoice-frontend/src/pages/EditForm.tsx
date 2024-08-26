@@ -1,12 +1,7 @@
 import React, { useEffect, useLayoutEffect, useState } from "react";
 import { FormProvider, useForm } from "react-hook-form";
 import PropTypes from "prop-types";
-import { useDispatch, useSelector } from "react-redux";
 import { yupResolver } from "@hookform/resolvers/yup";
-import {
-  selectInvoiceById,
-  updateInvoice,
-} from "../features/invoices/invoicesSlice";
 import "../styles/react-datepicker.css";
 import useWindowWidth from "../hooks/useWindowWidth";
 import EditBottomMenu from "../components/menus-toolbars/EditBottomMenu";
