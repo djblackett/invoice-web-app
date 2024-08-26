@@ -1,5 +1,4 @@
 import styled from "styled-components";
-import React from "react";
 
 const HeaderContainer = styled.div`
   width: 100%;
@@ -12,7 +11,7 @@ const HeaderContainer = styled.div`
   background: ${({ theme }) => theme.headerBackground};
   z-index: 1000;
   position: fixed;
-    top: 0;
+
 
   @media (min-width: 1200px) {
     flex-direction: column;
@@ -125,8 +124,8 @@ const sun = (
 );
 
 type HeaderProps = {
-    theme: string;
-    themeToggler: () => void;
+  theme: string;
+  themeToggler: () => void;
 }
 
 function Header({ themeToggler, theme }: HeaderProps) {
@@ -143,7 +142,7 @@ function Header({ themeToggler, theme }: HeaderProps) {
 
         <AvatarBox>
           <img
-              src={`${process.env.PUBLIC_URL  }/assets/image-avatar.jpg`}
+            src={`/assets/image-avatar.jpg`}
             alt="user avatar"
             style={{ borderRadius: "50%", height: "32px", width: "32px" }}
           />

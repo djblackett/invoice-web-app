@@ -12,4 +12,3 @@ EXPOSE 4000
 ENV REACT_APP_BACKEND_URL=http://proxy:5000
 
 CMD ["serve", "-l", "4000", "build"]
-

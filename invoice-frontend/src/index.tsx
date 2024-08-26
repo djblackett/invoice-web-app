@@ -1,7 +1,7 @@
 import React from "react";
 import { createRoot } from "react-dom/client";
 import { Provider } from "react-redux";
-import {HashRouter} from "react-router-dom";
+import { HashRouter } from "react-router-dom";
 import "./styles/index.css";
 import {
   ApolloProvider,
@@ -40,7 +40,7 @@ const splitLink = split(
     const definition = getMainDefinition(query);
     return (
       definition.kind === "OperationDefinition" &&
-            definition.operation === "subscription"
+      definition.operation === "subscription"
     );
   },
   wsLink,
@@ -64,7 +64,7 @@ if (container) {
       <React.StrictMode>
         <Provider store={store}>
           <HashRouter>
-            <App/>
+            <App />
           </HashRouter>
         </Provider>
       </React.StrictMode>
