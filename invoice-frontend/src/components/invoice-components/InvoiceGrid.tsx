@@ -15,17 +15,17 @@ const FlexContainer = styled.div`
   @media (min-width: 768px) {
     padding: 0 48px;
   }
-  
+
   @media (min-width: 1200px) {
     padding: 0;
   }
 `;
 
 export type InvoiceGridProps = {
-  children: React.ReactNode
-}
+  children: React.ReactNode;
+};
 
-function InvoiceGrid({ children } :InvoiceGridProps) {
+function InvoiceGrid({ children }: InvoiceGridProps) {
   return <FlexContainer>{children}</FlexContainer>;
 }
 

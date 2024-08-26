@@ -57,9 +57,8 @@ export type InvoiceToolBarProps = {
   invoice: Invoice;
   isEditOpen: boolean;
   setEdit: React.Dispatch<React.SetStateAction<boolean>>;
-  setIsModalOpen: React.Dispatch<React.SetStateAction<boolean>>
-}
-
+  setIsModalOpen: React.Dispatch<React.SetStateAction<boolean>>;
+};
 
 function InvoiceToolbar({
   invoice,
@@ -72,11 +71,13 @@ function InvoiceToolbar({
 
   const invoiceStatus = useMemo(() => {
     if (invoice.status === "paid") {
-      return <InvoiceStatus statusType="paid" text="Paid"/>;
-    } if (invoice.status === "pending") {
-      return <InvoiceStatus statusType="pending" text="Pending"/>;
-    } if (invoice.status === "draft") {
-      return <InvoiceStatus statusType="draft" text="Draft"/>;
+      return <InvoiceStatus statusType="paid" text="Paid" />;
+    }
+    if (invoice.status === "pending") {
+      return <InvoiceStatus statusType="pending" text="Pending" />;
+    }
+    if (invoice.status === "draft") {
+      return <InvoiceStatus statusType="draft" text="Draft" />;
     }
   }, [invoice]);
 
@@ -86,7 +87,7 @@ function InvoiceToolbar({
     <Toolbar
       className="invoice-toolbar"
       style={{
-        display: width < 600 ? "contents" : "flex"
+        display: width < 600 ? "contents" : "flex",
       }}
     >
       <StatusContainer>

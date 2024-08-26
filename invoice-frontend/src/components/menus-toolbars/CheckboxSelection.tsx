@@ -3,11 +3,9 @@ import styled from "styled-components";
 import { useSelector } from "react-redux";
 import Checkbox from "../buttons/Checkbox";
 import { selectFilter } from "../../features/invoices/filterSlice";
-import {FilterOptions, StatusKey} from "../../types/types";
+import { FilterOptions, StatusKey } from "../../types/types";
 
-const CheckboxContainer = styled.div`
-
-`;
+const CheckboxContainer = styled.div``;
 
 const Label = styled.div`
   cursor: pointer;
@@ -22,18 +20,26 @@ const Label = styled.div`
 `;
 
 type CheckboxSelectionProps = {
-  option: string
-}
+  option: string;
+};
 
 function CheckboxSelection({ option }: CheckboxSelectionProps) {
   const filter: FilterOptions = useSelector(selectFilter);
   const loweredOption = option.toLowerCase() as StatusKey;
   const isSelected = filter[loweredOption];
   return (
-    <CheckboxContainer >
+    <CheckboxContainer>
       <Label>
         <Checkbox checked={isSelected} />
-        <span style={{ marginLeft: "13px", fontFamily: "League Spartan", fontWeight: 700 }}>{option}</span>
+        <span
+          style={{
+            marginLeft: "13px",
+            fontFamily: "League Spartan",
+            fontWeight: 700,
+          }}
+        >
+          {option}
+        </span>
       </Label>
     </CheckboxContainer>
   );

@@ -3,13 +3,16 @@ import {Col, Col1, ItemsContainer, ItemsHeader, ItemTitle, ListContainer} from "
 import {Invoice} from "../../types/types";
 
 type EditFormItemListProps = {
-    invoice?: Invoice;
-    isDraft: boolean;
-    isEditOpen?: boolean;
-}
+  invoice?: Invoice;
+  isDraft: boolean;
+  isEditOpen?: boolean;
+};
 
-function EditFormItemList({ isDraft, invoice, isEditOpen }: EditFormItemListProps) {
-
+function EditFormItemList({
+  isDraft,
+  invoice,
+  isEditOpen,
+}: EditFormItemListProps) {
   return (
     <ListContainer>
       <ItemTitle>Item List</ItemTitle>
@@ -20,14 +23,14 @@ function EditFormItemList({ isDraft, invoice, isEditOpen }: EditFormItemListProp
         <Col>Total</Col>
       </ItemsHeader>
       <ItemsContainer>
-        <InputFormItem1 isDraft={isDraft} invoice={invoice} isEditOpen={isEditOpen}/>
+        <InputFormItem1
+          isDraft={isDraft}
+          invoice={invoice}
+          isEditOpen={isEditOpen}
+        />
       </ItemsContainer>
     </ListContainer>
   );
 }
-EditFormItemList.defaultProps = {
-  isEditOpen: true,
-  invoice: null
-};
 
 export default EditFormItemList;

@@ -149,7 +149,7 @@ const resolvers = {
         });
 
         // await pubsub.publish("INVOICE_ADDED", {invoiceAdded: invoiceData});
-        console.log(invoiceData)
+        console.log(invoiceData);
         return invoiceData;
       } catch (error) {
         console.log(error);
@@ -222,12 +222,12 @@ const resolvers = {
           }
         });
 
-        console.log(updatedInvoice)
+        console.log(updatedInvoice);
 
         return updatedInvoice as unknown as Invoice;
 
       } catch (error) {
-        console.log(error)
+        console.log(error);
         throw new GraphQLError("Invoice could not be updated", {
           extensions: {
             code: "BAD_INVOICE_INPUT",
@@ -319,7 +319,8 @@ const resolvers = {
           });
         }
       } catch (e) {
-        throw e;
+        console.error(e);
+        return;
       }
     },
     markAsPaid: async (_root: any, args: MarkAsPaidArgs) => {
@@ -339,12 +340,12 @@ const resolvers = {
 
   Subscription: {
     invoiceAdded: {
-      subscribe: async () => {
+      subscribe: () => {
         console.log("inside subscribe resolver");
-        return pubsub.asyncIterator("INVOICE_ADDED")
+        return pubsub.asyncIterator("INVOICE_ADDED");
       }
       },
   }
-}
+};
 
 export default resolvers;

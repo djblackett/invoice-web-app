@@ -44,7 +44,8 @@ yarn-error.log*
 /blob-report/
 /playwright/.cache/
 
-
 /.vscode
 /invoice-backend/node_modules
 /invoice-frontend/node_modules
+
+cleanup.sh

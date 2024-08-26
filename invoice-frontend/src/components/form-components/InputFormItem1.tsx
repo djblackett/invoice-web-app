@@ -32,15 +32,12 @@ export default function InputFormItem1({ isDraft, invoice, isEditOpen }: InputFo
 
   const { errors, isSubmitting} = formState;
 
-
   const watchItems = watch("items", []);
   const watcher = watch();
   const width = useWindowWidth();
   const isInitialRender = useRef(true);
   // eslint-disable-next-line no-console
   // console.log(errors);
-
-
 
   useEffect(() => {
     if (!fields.length && !isInitialRender.current) {
@@ -55,8 +52,6 @@ export default function InputFormItem1({ isDraft, invoice, isEditOpen }: InputFo
       isInitialRender.current = false;
     }
   }, [fields, isSubmitting]);
-
-
 
   useEffect(() => {
     if (invoice && isEditOpen) {
@@ -73,12 +68,9 @@ export default function InputFormItem1({ isDraft, invoice, isEditOpen }: InputFo
       setTimeout(() => {
         resetField("items");
       }, 200);
-
     }
     // console.log("items added to form");
-  }
-  , [invoice, isEditOpen]);
-
+  }, [invoice, isEditOpen]);
 
   // validation check for at least one item
   useEffect(() => {
@@ -140,16 +132,24 @@ export default function InputFormItem1({ isDraft, invoice, isEditOpen }: InputFo
           placeholder="Item name"
           defaultValue={invoice? invoice?.items?.[index]?.name : "" }
           type="text"
-          style={{ border: Array.isArray(errors.items) && errors?.items?.[index]?.name ? "1px solid #EC5757" : "" }}
+          style={{
+            border:
+              Array.isArray(errors.items) && errors?.items?.[index]?.name
+                ? "1px solid #EC5757"
+                : "",
+          }}
         />
         <Quantity {...register(`items[${index}].quantity`, { required: !isDraft, max: 100 } )} placeholder="0" type="text"
           style={{ border: Array.isArray(errors.items) && errors?.items?.[index]?.quantity ? "1px solid #EC5757" : "" }}
-          defaultValue={invoice? invoice?.items?.[index]?.quantity : "" }/>
-
-
-        <Price {...register(`items[${index}].price`, { required: !isDraft, max: 100000 } )} placeholder="0.00" type="text"
-          defaultValue={invoice? invoice?.items?.[index]?.price : "" }
-          style={{ border: Array.isArray(errors.items) && errors?.items?.[index]?.price ? "1px solid #EC5757" : "" }} />
+          defaultValue={invoice? invoice?.items?.[index]?.quantity : 0}/>
+        <Price {...register(`items[${index}].price`, {
+          required: !isDraft,
+          max: 100000 } )}
+               placeholder="0.00" type="text"
+          defaultValue={invoice? invoice?.items?.[index]?.price : 0 }
+          style={{
+            border:
+                Array.isArray(errors.items) && errors?.items?.[index]?.price ? "1px solid #EC5757" : "" }} />
 
         <Total>
           { (Number(watchItems?.[index]?.quantity) * Number(watchItems?.[index]?.price)).toFixed(2)}
@@ -174,19 +174,14 @@ export default function InputFormItem1({ isDraft, invoice, isEditOpen }: InputFo
           </li>
         ))}
       </ul>
-      <NewItemButton append={append} items={invoice ? invoice.items : []}/>
+      <NewItemButton append={append} items={invoice ? invoice.items : []} />
     </>
   );
 }
 
-InputFormItem1.defaultProps = {
-  isEditOpen: false,
-  invoice: null
-};
 
 InputFormItem1.propTypes = {
   isDraft: PropTypes.bool.isRequired,
   isEditOpen: PropTypes.bool,
   // invoice: PropTypes.instanceOf(Invoice)
 };
-

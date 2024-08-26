@@ -1,6 +1,6 @@
-import { FormProvider, useForm} from "react-hook-form";
+import {FormProvider, useFieldArray, useForm} from "react-hook-form";
 import PropTypes from "prop-types";
-import React, {useEffect, useState} from "react";
+import React, { useEffect, useState } from "react";
 import { useDispatch } from "react-redux";
 import { BillText, Input, Label } from "../../styles/editStyles";
 import LongFormEntry from "./LongFormEntry";
@@ -13,6 +13,11 @@ import { createInvoiceObject } from "../../utils/utilityFunctions";
 import FormErrorList from "./FormErrorList";
 import ClientFormInfo from "./ClientFormInfo";
 import { FormType } from "../../types/types";
+import {useMutation} from "@apollo/client";
+import {ADD_INVOICE, ALL_INVOICES} from "../../graphql/queries";
+import {v4 as uuidv4} from "uuid";
+import {yupResolver} from "@hookform/resolvers/yup";
+import {validationSchema} from "../../types/schemas";
 
 type NewInvoiceFormProps = {
   editPageWidth: number;
@@ -38,6 +43,7 @@ export default function NewInvoiceForm({
   selectedPaymentOption,
 }: NewInvoiceFormProps) {
 
+  // set form config, especially the default empty form
   const methods = useForm<FormType>({
     mode: "onChange",
     defaultValues: {
@@ -55,6 +61,7 @@ export default function NewInvoiceForm({
       projectDescription: "",
       items: [{ id: "", name: "", quantity: 0, price: 0, total: 0 }],
     },
+    // resolver: yupResolver(validationSchema)
   });
 
   const {
@@ -65,33 +72,94 @@ export default function NewInvoiceForm({
     trigger,
     watch,
     setError,
+      control
   } = methods;
 
-  const dispatch = useDispatch();
+  const {update, replace} = useFieldArray({control, name: "items"});
 
+  const dispatch = useDispatch();
   const watcher = watch();
 
-  const onSubmit = () => {
-    const data = getValues();
+  const [addInvoice, result] = useMutation(ADD_INVOICE, {
+  refetchQueries: [{query: ALL_INVOICES}],
+    onError: (error) => {
+      console.log(error);
+    },
+  });
 
-    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-    // @ts-expect-error
+  // console.log(isSubmitSuccessful)
+
+  const handleFormReset = () => {
+    setSelectedPaymentOption(1);
+    setIsDraft(true);
+    reset();
+    replace({id: uuidv4(), name: "", quantity: 0, price: 0, total: 0})
+    setIsNewOpen(false);
+    console.log("handling form reset. Shouuld also close form")
+  }
+  const onSubmit = async (status: "draft" | "pending") => {
+    const data = getValues();
+    console.table(data.items);
+
+    // @ts-ignore
     if (!data.items || data.items.length === 0) {
       setError("items", { type: "custom", message: "An item must be added" });
     }
 
     // trigger validation on fields
-    trigger().then((value) => {
+    trigger().then(async (value) => {
       if (value) {
         // console.log("validation success");
         // todo - refactor so no undefined are necessary here
-        const newInvoice = createInvoiceObject(data, startDate, selectedPaymentOption, undefined, undefined);
-        dispatch(addInvoice(newInvoice));
-        setIsNewOpen(false);
-        setSelectedPaymentOption(1);
-        setIsDraft(true);
+
+        const newInvoice = createInvoiceObject(
+          data,
+          startDate,
+          selectedPaymentOption,
+        );
+
+        // This makes sure quantity and price are numbers. react hook form seems to make each additional item wit
+        // strings instead
+        newInvoice.items = newInvoice.items.map(item => {
+          return {
+            id: item.id,
+            name: item.name,
+            quantity: Number(item.quantity),
+            price: Number(item.price),
+            total: item.total
+          }
+        });
+
+          newInvoice.status = status;
+
+        console.log("expect pending below");
+        console.log(newInvoice.status);
+        console.table(newInvoice.items);
+
+  try {
+       const addedInvoice =  await addInvoice({
+          variables: {
+            ...newInvoice
+          }
+        });
+
+    handleFormReset();
+
+    console.log("Results from graphql:")
+    console.log(addedInvoice);
+    // console.log("Invoice added? After the addInvoice call...")
+} catch (error) {
+    console.log(JSON.stringify(error));
+    console.log(error);
+  }
+        // redux being phased out
+        // dispatch(addInvoice(newInvoice));
+
+        // setIsNewOpen(false);
+        // setSelectedPaymentOption(1);
+
       } else {
-        setIsDraft(true);
+        // setIsDraft(true);
       }
     });
   };
@@ -99,7 +167,7 @@ export default function NewInvoiceForm({
   const [isPaymentOpen, setIsPaymentOpen] = useState(false);
 
   useEffect(() => {
-    reset();
+    setIsDraft(true);
   }, [isSubmitSuccessful]);
 
   const handlePaymentClick = () => {
@@ -109,14 +177,9 @@ export default function NewInvoiceForm({
     setSelectedPaymentOption(option);
   };
 
-  // const handlePaymentSelect = (e: SyntheticEvent) => {
-  //   e.preventDefault();
-  //   setIsPaymentOpen(false);
-  // };
 
   useEffect(() => {
-    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-    // @ts-expect-error
+    // @ts-ignore
     if (!watcher.items || watcher.items.length === 0) {
       setError("items", { type: "custom", message: "An item must be added" });
     }
@@ -138,12 +201,10 @@ export default function NewInvoiceForm({
         <DateAndPayment
           selected={startDate}
           onChange={(date) => setStartDate(date)}
-          // handlePaymentSelect={handlePaymentSelect}
           paymentOpen={isPaymentOpen}
           handlePaymentClick={handlePaymentClick}
           selectedPaymentOption={selectedPaymentOption}
           handleChangeSelectedOption={handleChangeSelectedOption}
-          // setIsPaymentOpen={setIsPaymentOpen}
         />
 
         <LongFormEntry className="project-description" >

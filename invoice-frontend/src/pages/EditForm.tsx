@@ -1,11 +1,12 @@
-/* eslint-disable react/display-name */
 import React, { useEffect, useLayoutEffect, useState } from "react";
-import { FormProvider, useForm} from "react-hook-form";
+import { FormProvider, useForm } from "react-hook-form";
 import PropTypes from "prop-types";
-import {useDispatch, useSelector} from "react-redux";
-import {yupResolver} from "@hookform/resolvers/yup";
-import {useParams} from "react-router-dom";
-import {selectInvoiceById, updateInvoice} from "../features/invoices/invoicesSlice";
+import { useDispatch, useSelector } from "react-redux";
+import { yupResolver } from "@hookform/resolvers/yup";
+import {
+  selectInvoiceById,
+  updateInvoice,
+} from "../features/invoices/invoicesSlice";
 import "../styles/react-datepicker.css";
 import useWindowWidth from "../hooks/useWindowWidth";
 import EditBottomMenu from "../components/menus-toolbars/EditBottomMenu";
@@ -16,62 +17,82 @@ import {
   FormContainerDarkenModal, Input,
   Label,
 } from "../styles/editStyles";
-import {CompanyFormInfo} from "../components/form-components/CompanyFormInfo";
+import { CompanyFormInfo } from "../components/form-components/CompanyFormInfo";
 import ClientFormInfo from "../components/form-components/ClientFormInfo";
 import DateAndPayment from "../components/form-components/DateAndPayment";
 import LongFormEntry from "../components/form-components/LongFormEntry";
-import {validationSchema} from "../types/schemas";
+import { validationSchema } from "../types/schemas";
 import FormErrorList from "../components/form-components/FormErrorList";
 import EditFormItemList from "../components/form-components/EditFormItemList";
-import { convertStringToDate, createInvoiceObject} from "../utils/utilityFunctions";
-import { ReduxInvoiceState } from "../types/types";
+import {
+  convertStringToDate,
+  createInvoiceObject,
+} from "../utils/utilityFunctions";
 
 
-const formOptions = {resolver: yupResolver(validationSchema)};
+
+import { EDIT_INVOICE } from "../graphql/queries";
+import { useMutation } from "@apollo/client";
+import { Invoice } from "../types/types";
+
+const formOptions = { resolver: yupResolver(validationSchema) };
 
 type EditFormProps = {
   isEditOpen: boolean;
   padding: string;
   setIsEditOpen: React.Dispatch<React.SetStateAction<boolean>>;
   setPadding: React.Dispatch<React.SetStateAction<string>>;
-}
+  id: string;
+  invoice: Invoice;
+};
 
 function EditForm({
   isEditOpen,
   setIsEditOpen,
   padding,
   setPadding,
+  id, invoice
 }: EditFormProps) {
 
-  const methods = useForm(
-    {
-      ...formOptions,
-      mode: "onChange"
-    },
-  );
+
+  const methods = useForm({
+    ...formOptions,
+    mode: "onChange",
+  });
 
   const {
     register,
     handleSubmit,
-    formState: {errors},
+    formState: { errors },
     getValues,
     watch,
     trigger,
     reset,
     setError,
-    clearErrors
+    clearErrors,
   } = methods;
 
   const width = useWindowWidth();
-  const { id } = useParams();
-  const dispatch = useDispatch();
+  // const dispatch = useDispatch();
   const watcher = watch();
 
-  const invoice = useSelector((state: ReduxInvoiceState) => selectInvoiceById(state, id));
+  // const invoice = useSelector((state: ReduxInvoiceState) =>
+  //   selectInvoiceById(state, id),
+  // );
+
   const [editPageWidth, setEditPageWidth] = useState(0);
-  const [startDate, setStartDate] = useState(convertStringToDate(invoice?.createdAt));
-  const [selectedPaymentOption, setSelectedPaymentOption] = useState(invoice?.paymentTerms || 1);
+  const [startDate, setStartDate] = useState(
+    convertStringToDate(invoice?.createdAt),
+  );
+  const [selectedPaymentOption, setSelectedPaymentOption] = useState(
+    invoice?.paymentTerms || 1,
+  );
   const [isPaymentOpen, setIsPaymentOpen] = useState(false);
+
+
+  const [editInvoice, result] = useMutation(EDIT_INVOICE, {
+
+  })
 
   // error notification if invoice has no items
   useEffect(() => {
@@ -86,8 +107,7 @@ function EditForm({
     }
   }, [invoice]);
 
-
-  const onSubmit = () => {
+  const onSubmit = async () => {
     const data = getValues();
     // alternate check for items
     // returns without submitting invoice
@@ -97,22 +117,38 @@ function EditForm({
     }
 
     // trigger validation on fields
-    trigger()
-      .then(value => {
-        if (value){
-          // console.log("validation success");
-          const newInvoice = createInvoiceObject(data, startDate, selectedPaymentOption, id, invoice);
-          // console.log(data.items);
-          dispatch(updateInvoice(newInvoice));
+    trigger().then(async (value) => {
+      if (value) {
+        // console.log("validation success");
+        const newInvoice = createInvoiceObject(
+          data,
+          startDate,
+          selectedPaymentOption,
+          id,
+          invoice,
+        );
 
-          clearErrors();
-          setIsEditOpen(false);
-          setSelectedPaymentOption(1); // todo check this
-          // console.log(newInvoice);
-          reset();
-          // console.log("Form reset");
-        }
-      });
+        // todo replace redux with graphql call
+        // dispatch(updateInvoice(newInvoice));
+
+        await editInvoice({
+          variables: {
+            ...newInvoice
+          }
+        });
+
+        console.log(result);
+
+
+
+        clearErrors();
+        setIsEditOpen(false);
+        setSelectedPaymentOption(1); // todo check this
+
+        reset();
+
+      }
+    });
   };
 
   // calculates width and padding of editForm depending on window width and whether the edit tab is open
@@ -136,7 +172,7 @@ function EditForm({
 
 
   // sets the payment option after change
-  const handleChangeSelectedOption = (option : number) => {
+  const handleChangeSelectedOption = (option: number) => {
     setSelectedPaymentOption(option);
   };
 
@@ -181,19 +217,26 @@ function EditForm({
             {/* //  Client details */}
             <BillText>Bill To</BillText>
             <ClientFormInfo
-              editPageWidth={editPageWidth} invoice={invoice} isDraft={false}/>
+              editPageWidth={editPageWidth}
+              invoice={invoice}
+              isDraft={false}
+            />
 
-            <DateAndPayment selected={startDate} onChange={(date) => setStartDate(date)}
+            <DateAndPayment
+              selected={startDate}
+              onChange={(date) => setStartDate(date)}
               paymentOpen={isPaymentOpen}
-              handlePaymentClick={handlePaymentClick} selectedPaymentOption={selectedPaymentOption}
-              handleChangeSelectedOption={handleChangeSelectedOption}/>
+              handlePaymentClick={handlePaymentClick}
+              selectedPaymentOption={selectedPaymentOption}
+              handleChangeSelectedOption={handleChangeSelectedOption}
+            />
 
             <LongFormEntry className="project-description">
               <Label
                 htmlFor="projectDescription"
                 style={{ color: errors.projectDescription ? "#EC5757" : "" }}
               >
-              Project Description
+                Project Description
               </Label>
               <Input
                 // long
@@ -206,18 +249,21 @@ function EditForm({
               />
             </LongFormEntry>
 
-            <EditFormItemList invoice={invoice} isEditOpen={ isEditOpen } isDraft={ false } />
+            <EditFormItemList
+              invoice={invoice}
+              isEditOpen={isEditOpen}
+              isDraft={false}
+            />
 
-
-            <FormErrorList isEditOpen={isEditOpen}/>
+            <FormErrorList isEditOpen={isEditOpen} />
 
             <EditBottomMenu
               setIsOpen={setIsEditOpen}
               saveText="Save Changes"
               closeText="Cancel"
-              // invoice={invoice}
               onSubmit={onSubmit}
-              justifyCancel=""/>
+              justifyCancel=""
+            />
           </form>
         </FormProvider>
       </FormContainerDarkenModal>

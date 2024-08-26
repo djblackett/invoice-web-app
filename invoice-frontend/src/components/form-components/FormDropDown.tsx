@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unsafe-return */
 import React, { useState, useEffect } from "react";
 import styled from "styled-components";
 import PropTypes from "prop-types";
@@ -128,7 +129,7 @@ const ItemButton = styled.button`
   letter-spacing: -0.25px;
   color: ${({ theme }) => theme.textPlain};
   padding: 0.5rem;
-  
+
   &:first-child {
     //padding-top: 0.8em;
   }
@@ -157,11 +158,11 @@ const arrowDown = (
 );
 
 export type FormDropDownProps = {
-    handleChangeSelectedOption: (option: number) => void;
-    handlePaymentClick: () => void;
-    isPaymentOpen: boolean;
-    selectedPaymentOption: number;
-}
+  handleChangeSelectedOption: (option: number) => void;
+  handlePaymentClick: () => void;
+  isPaymentOpen: boolean;
+  selectedPaymentOption: number;
+};
 
 function FormDropDown({
   selectedPaymentOption,
@@ -201,10 +202,17 @@ function FormDropDown({
         <SVG>{arrowDown}</SVG>
       </DropDownHeader>
 
-      <DropDownList style={{ height: isPaymentOpen ? "192px" : 0 }} data-testid="dropDownList">
+      <DropDownList
+        style={{ height: isPaymentOpen ? "192px" : 0 }}
+        data-testid="dropDownList"
+      >
         {options.map((option) => (
-          <ListItem key={`${option}-li`} onClick={onOptionClicked(option)} data-testid={`${option}-testID`}>
-            <ItemButton key={`${option}-button`} type="button" >
+          <ListItem
+            key={`${option}-li`}
+            onClick={onOptionClicked(option)}
+            data-testid={`${option}-testID`}
+          >
+            <ItemButton key={`${option}-button`} type="button">
               {options.find((term) => term.includes(String(option)))}
             </ItemButton>
           </ListItem>

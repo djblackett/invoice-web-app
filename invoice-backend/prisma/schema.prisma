@@ -2,7 +2,8 @@
 // learn more about it in the docs: https://pris.ly/d/prisma-schema
 
 generator client {
-  provider = "prisma-client-js"
+  provider      = "prisma-client-js"
+  binaryTargets = ["native", "debian-openssl-3.0.x"]
 }
 
 datasource db {
@@ -11,7 +12,7 @@ datasource db {
 }
 
 model Invoice {
-  id              String @id @default(uuid())
+  id              String         @id @default(uuid())
   createdAt       String
   paymentDue      String
   description     String
@@ -21,14 +22,14 @@ model Invoice {
   status          String
   total           Decimal
   items           Item[]
-  clientAddress   ClientAddress?  @relation(fields: [clientAddressId], references: [id])
+  clientAddress   ClientAddress? @relation(fields: [clientAddressId], references: [id])
   senderAddress   SenderAddress? @relation(fields: [senderAddressId], references: [id])
-  senderAddressId Int? @unique
-  clientAddressId Int? @unique
+  senderAddressId Int?           @unique
+  clientAddressId Int?           @unique
 }
 
 model Item {
-  id        String   @id @default(uuid())
+  id        String  @id @default(uuid())
   name      String
   quantity  Int
   price     Decimal
@@ -38,7 +39,7 @@ model Item {
 }
 
 model ClientAddress {
-  id       Int       @id @default(autoincrement())
+  id       Int      @id @default(autoincrement())
   street   String
   city     String
   postCode String
@@ -47,7 +48,7 @@ model ClientAddress {
 }
 
 model SenderAddress {
-  id       Int       @id @default(autoincrement())
+  id       Int      @id @default(autoincrement())
   street   String
   city     String
   postCode String
@@ -56,9 +57,8 @@ model SenderAddress {
 }
 
 model User {
-  id Int @id @default(autoincrement())
-  name String
-  username String @unique
+  id           Int    @id @default(autoincrement())
+  name         String
+  username     String @unique
   passwordHash String
 }
-

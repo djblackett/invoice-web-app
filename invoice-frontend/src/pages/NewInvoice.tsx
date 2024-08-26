@@ -10,11 +10,11 @@ import {
 import {Item} from "../types/types";
 
 export type NewInvoiceProps = {
-  isNewOpen: boolean,
-  padding: string,
-  setIsNewOpen: React.Dispatch<React.SetStateAction<boolean>>,
-  setPadding: React.Dispatch<React.SetStateAction<string>>
-}
+  isNewOpen: boolean;
+  padding: string;
+  setIsNewOpen: React.Dispatch<React.SetStateAction<boolean>>;
+  setPadding: React.Dispatch<React.SetStateAction<string>>;
+};
 
 function NewInvoice({
   isNewOpen,
@@ -22,7 +22,6 @@ function NewInvoice({
   padding,
   setPadding,
 }: NewInvoiceProps) {
-
   const width = useWindowWidth();
 
   // initial state and default values for form
@@ -53,9 +52,7 @@ function NewInvoice({
     setItems(newItems);
   }, []);
 
-
   return (
-
     // DarkenScreen appears when newInvoice tab is open
     <DarkenScreen style={{ visibility: isNewOpen ? "visible" : "hidden" }}>
       <FormContainerDarkenModal
@@ -75,9 +72,11 @@ function NewInvoice({
           isNewOpen={isNewOpen}
           setIsNewOpen={setIsNewOpen}
           editPageWidth={editPageWidth}
-          isDraft={isDraft} setIsDraft={setIsDraft}
+          isDraft={isDraft}
+          setIsDraft={setIsDraft}
           selectedPaymentOption={selectedPaymentOption}
-          setSelectedPaymentOption={setSelectedPaymentOption}/>
+          setSelectedPaymentOption={setSelectedPaymentOption}
+        />
 
       </FormContainerDarkenModal>
     </DarkenScreen>
@@ -88,7 +87,7 @@ NewInvoice.propTypes = {
   isNewOpen: PropTypes.bool.isRequired,
   setIsNewOpen: PropTypes.func.isRequired,
   setPadding: PropTypes.func.isRequired,
-  padding: PropTypes.string.isRequired
+  padding: PropTypes.string.isRequired,
 };
 
 export default NewInvoice;

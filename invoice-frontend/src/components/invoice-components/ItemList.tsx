@@ -108,39 +108,44 @@ const ItemsContainer = styled.div`
 let count = 0;
 
 type ItemListProps = {
-    invoice: Invoice
-}
+  invoice: Invoice;
+};
 
 function ItemList({ invoice }: ItemListProps) {
 
-  const dispatch = useDispatch();
+ // todo - remove once graphql implementation is complete
+  // const dispatch = useDispatch();
+  //
+  // useLayoutEffect(() => {
+  //   dispatch(addIdToExistingInvoices());
+  // }, []);
 
-  useLayoutEffect(() => {
-    dispatch(addIdToExistingInvoices());
-  }, []);
-
-  return (
-    <ListContainer>
-      <ItemsHeader>
-        <Col1>Item Name</Col1>
-        <Col>QTY.</Col>
-        <Col>Price</Col>
-        <Col>Total</Col>
-      </ItemsHeader>
-      <ItemsContainer>
-        {invoice.items.map((item) => (
-          <InvoiceItem item={item} key={`itemList-${  item.id || ++count}`} />
-        ))}
-      </ItemsContainer>
-      <AmountDue>
-        <AmountDueTitle>
-          <span className="amount-due">Amount Due</span>
-          <span className="grand-total">Grand Total</span>
-        </AmountDueTitle>
-        <AmountDueTotal>£ {getMoney(invoice.total)}</AmountDueTotal>
-      </AmountDue>
-    </ListContainer>
-  );
+    if (invoice) {
+        return (
+            <ListContainer>
+                <ItemsHeader>
+                    <Col1>Item Name</Col1>
+                    <Col>QTY.</Col>
+                    <Col>Price</Col>
+                    <Col>Total</Col>
+                </ItemsHeader>
+                <ItemsContainer>
+                    {invoice && invoice?.items?.map((item) => (
+                        <InvoiceItem item={item} key={`itemList-${item?.id || ++count}`}/>
+                    ))}
+                </ItemsContainer>
+                <AmountDue>
+                    <AmountDueTitle>
+                        <span className="amount-due">Amount Due</span>
+                        <span className="grand-total">Grand Total</span>
+                    </AmountDueTitle>
+                    <AmountDueTotal>£ {getMoney(invoice?.total)}</AmountDueTotal>
+                </AmountDue>
+            </ListContainer>
+        );
+    } else {
+        return null;
+    }
 }
 
 export default ItemList;

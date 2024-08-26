@@ -71,6 +71,11 @@ services:
     image: nginx:1.25.2
     hostname: proxy-dev
     container_name: proxy-dev
+    depends_on:
+      backend-dev:
+        condition: service_started
+      frontend-dev:
+        condition: service_started
     tty: true
     stdin_open: true
     volumes:

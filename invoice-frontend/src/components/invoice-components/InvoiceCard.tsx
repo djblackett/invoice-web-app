@@ -123,24 +123,28 @@ const arrowRightSVG = (
 );
 
 export type InvoiceCardProps = {
-    invoice: Invoice
-}
+  invoice: Invoice;
+};
 
 function InvoiceCard({ invoice }: InvoiceCardProps) {
   const invoiceStatus = useMemo(() => {
     if (invoice.status === "paid") {
-      return <InvoiceStatus statusType="paid" text="Paid"/>;
-    } if (invoice.status === "pending") {
-      return <InvoiceStatus statusType="pending" text="Pending"/>;
-    } if (invoice.status === "draft") {
-      return <InvoiceStatus statusType="draft" text="Draft"/>;
+      return <InvoiceStatus statusType="paid" text="Paid" />;
+    }
+    if (invoice.status === "pending") {
+      return <InvoiceStatus statusType="pending" text="Pending" />;
+    }
+    if (invoice.status === "draft") {
+      return <InvoiceStatus statusType="draft" text="Draft" />;
     }
   }, [invoice]);
 
   const convertedDate = () => {
     if (invoice.paymentDue) {
       const date = invoice.paymentDue.split("-");
-      const dateObj = new Date(Date.UTC(Number(date[0]), Number(date[1]), Number(date[2])));
+      const dateObj = new Date(
+        Date.UTC(Number(date[0]), Number(date[1]), Number(date[2])),
+      );
       const utcDateArr = dateObj.toUTCString().split(" ");
       return `${utcDateArr[1]}  ${utcDateArr[2]} ${utcDateArr[3]}`;
     }

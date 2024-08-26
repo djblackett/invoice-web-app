@@ -21,19 +21,26 @@ import {Invoice} from "../../types/types";
 //     "(?:[\x01-\x08\x0b\x0c\x0e-\x1f\x21-\x5a\x53-\x7f]|\\\\[\x01-\x09\x0b\x0c\x0e-\x7f])+)\\])/";
 
 type ClientFormInfoProps = {
-    editPageWidth: number,
-    invoice?: Invoice;
-    isDraft: boolean;
-}
+  editPageWidth: number;
+  invoice?: Invoice;
+  isDraft: boolean;
+};
 
-export default function ClientFormInfo({ invoice, isDraft }: ClientFormInfoProps) {
-
+export default function ClientFormInfo({
+  invoice,
+  isDraft,
+}: ClientFormInfoProps) {
   // console.log("ClientForm - isDraft:", isDraft);
   const width = useWindowWidth();
-  const { formState: { errors }, register} = useFormContext();
+  const {
+    formState: { errors },
+    register,
+  } = useFormContext();
 
   const clientCountry = (
-    <LongFormEntry style={{ width: width < 768 ? "100%" : "" }} className="client-country">
+    <LongFormEntry
+        style={{ width: width < 768 ? "100%" : "" }}
+        className="client-country">
       <Label
         htmlFor="clientCountry"
         style={{ color: errors.clientCountry ? "#EC5757" : "" }}
@@ -44,16 +51,21 @@ export default function ClientFormInfo({ invoice, isDraft }: ClientFormInfoProps
         $long={false}
         style={{
           border: errors?.clientCountry ? "1px solid #EC5757" : "",
-          width: width < 768 ? "100%" : ""
+          width: width < 768 ? "100%" : "",
         }}
         type="text"
-        defaultValue={invoice ? invoice.clientAddress.country : ""}
-        {...register("clientCountry", { required: !isDraft, pattern: /^[A-Za-z0-9 ]+$/i, maxLength: 30 })}
+        defaultValue={invoice ? invoice?.clientAddress?.country : ""}
+        {...register("clientCountry", {
+          required: !isDraft,
+          pattern: /^[A-Za-z0-9 ]+$/i,
+          maxLength: 30,
+        })}
       />
     </LongFormEntry>
   );
 
-  return <>
+  return (
+      <>
     <LongFormEntry className="client-name">
       <Label
         htmlFor="clientName"
@@ -142,23 +154,24 @@ export default function ClientFormInfo({ invoice, isDraft }: ClientFormInfoProps
         />
       </FormEntry>
 
+        {width < 768 && (
+          <LongFormEntry className="client-country">
+            {clientCountry}
+          </LongFormEntry>
+        )}
 
-      { width < 768 && <LongFormEntry className="client-country">
-        {clientCountry}
-      </LongFormEntry>}
+        {width >= 768 && (
+          <FormEntry className="client-country">{clientCountry}</FormEntry>
+        )}
 
-      {width >= 768 && <FormEntry className="client-country">
-        {clientCountry}
-      </FormEntry>}
-
-      {/* // todo figure out the layout for mobile - hook-form doesn't like the way I set this up */}
-
-    </AddressBox>
-  </>;
+        {/* // todo figure out the layout for mobile - hook-form doesn't like the way I set this up */}
+      </AddressBox>
+    </>
+  );
 }
 
 ClientFormInfo.propTypes = {
   editPageWidth: PropTypes.number.isRequired,
   // invoice: PropTypes.object.isRequired,
-  isDraft: PropTypes.bool.isRequired
+  isDraft: PropTypes.bool.isRequired,
 };

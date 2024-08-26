@@ -1,8 +1,9 @@
+/* eslint-disable @typescript-eslint/no-unsafe-return */
 import React, { useEffect, useLayoutEffect, useState } from "react";
 import "../styles/App.css";
 import styled, { ThemeProvider } from "styled-components";
 import { useRoutes } from "react-router-dom";
-import {loadDevMessages, loadErrorMessages} from "@apollo/client/dev";
+import { loadDevMessages, loadErrorMessages } from "@apollo/client/dev";
 import Header from "../components/menus-toolbars/Header";
 import GlobalStyles from "../styles/GlobalStyles";
 import { lightTheme, darkTheme } from "../styles/Themes";
@@ -24,7 +25,7 @@ const Main = styled.div`
     grid-template: repeat(3, auto) / 1fr;
     justify-items: center;
   }
-  
+
   // applies the appropriate theme to each status type
   .draft {
     background: ${({ theme }) => theme.draftBackgroundColor};
@@ -34,7 +35,7 @@ const Main = styled.div`
       background: ${({ theme }) => theme.draftColor};
     }
   }
-  
+
   .pending {
     background-color: rgba(255, 143, 0, 0.06);
     color: rgb(255, 143, 0);
@@ -42,7 +43,7 @@ const Main = styled.div`
       background: rgb(255, 143, 0);
     }
   }
-  
+
   .paid {
     background-color: rgba(51, 214, 159, 0.06);
     color: #33D69F;
@@ -63,7 +64,7 @@ function App() {
 
   useLayoutEffect(() => {
     if (localStorage.getItem("theme") !== null) {
-      const storedTheme = localStorage.getItem("theme") as string;
+      const storedTheme = localStorage.getItem("theme");
       setTheme(storedTheme);
     }
   }, []);
@@ -86,7 +87,7 @@ function App() {
       children: [
         {
           index: true,
-          element: <AllInvoices setScrollPosition={setScrollPosition}/>,
+          element: <AllInvoices setScrollPosition={setScrollPosition} />,
         },
         {
           path: ":id",

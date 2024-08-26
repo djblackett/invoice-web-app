@@ -1,11 +1,14 @@
+/* eslint-disable @typescript-eslint/no-misused-promises */
+/* eslint-disable @typescript-eslint/no-unused-vars */
+/* eslint-disable @typescript-eslint/no-unsafe-return */
 import styled from "styled-components";
-import { useDispatch } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import React from "react";
 import DeleteButton from "./buttons/DeleteButton";
-import { removeInvoice } from "../features/invoices/invoicesSlice";
 import CancelButton from "./buttons/CancelButton";
-import {Invoice} from "../types/types";
+import { Invoice } from "../types/types";
+import { useMutation } from "@apollo/client";
+import { REMOVE_INVOICE, ALL_INVOICES } from "../graphql/queries";
 
 export const DarkenScreen = styled.div`
   display: flex;
@@ -63,19 +66,31 @@ const ButtonContainer = styled.div`
 `;
 
 export type DeleteModalProps = {
-  invoice: Invoice,
+  id: string;
   isModalOpen: boolean;
   setIsModalOpen: React.Dispatch<React.SetStateAction<boolean>>;
 }
 
-function DeleteModal({ isModalOpen, setIsModalOpen, invoice }: DeleteModalProps) {
-  const dispatch = useDispatch();
+function DeleteModal({ isModalOpen, setIsModalOpen, id }: DeleteModalProps) {
+  // const dispatch = useDispatch();
   const navigate = useNavigate();
 
-  const handleClick = () => {
-    navigate("/");
-    dispatch(removeInvoice(invoice.id));
+  const [deleteInvoice, result] = useMutation(REMOVE_INVOICE, {
+    refetchQueries: [{ query: ALL_INVOICES }],
+    onError: (error) => {
+      console.log(error.graphQLErrors[0].message);
+    },
+  });
 
+  const handleClick = async () => {
+    await deleteInvoice({
+      variables: {
+        removeInvoiceId: id
+      }
+    });
+
+    navigate("/");
+    return;
   };
 
   const closeModal = () => setIsModalOpen(false);

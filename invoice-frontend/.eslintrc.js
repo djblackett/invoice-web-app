@@ -1,4 +1,4 @@
-module.exports = {
+export default {
     "parser": "@typescript-eslint/parser",
     "parserOptions": {
         ecmaVersion: "latest",
@@ -87,6 +87,18 @@ module.exports = {
         ],
         "@typescript-eslint/no-unused-vars": [
             0
-        ]
+        ],
+        // "@typescript-eslint/no-misused-promises": [
+        //     0
+        // ],
+        // "@typescript-eslint/no-unsafe-assignment": [
+        //     0
+        // ],
+        "no-unsafe-return": [
+            0
+        ],
+        // "@typescript-eslint/no-unsafe-member-access": [
+        //     0
+        // ]
     }
 }

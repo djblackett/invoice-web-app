@@ -1,5 +1,5 @@
 import styled from "styled-components";
-import React, {CSSProperties} from "react";
+import React, { CSSProperties } from "react";
 
 export const FormEntryContainer = styled.div`
   display: flex;
@@ -28,19 +28,16 @@ type FormEntryProps = {
   children: React.ReactNode;
   className: string;
   isLongOnMobile?: boolean;
-  style?: CSSProperties
-}
+  style?: CSSProperties;
+};
 
 // todo double check the mobile layout here
 function FormEntry({
   className,
   isLongOnMobile,
   children,
-  style
-}: FormEntryProps
-) {
-
-
+  style,
+}: FormEntryProps) {
   // const [isDirty, setIsDirty] = useState(false);
   // const handleChange = () => {
   //   setIsDirty(true);
@@ -50,7 +47,6 @@ function FormEntry({
   //   isDirty,
   // }));
 
-
   // mobile view gets a longer component, hence the awkward naming scheme here
   if (isLongOnMobile) {
     return (
@@ -58,13 +54,12 @@ function FormEntry({
         // onChange={handleChange}
         // isDirty={isDirty}
         className={className}
-        style={{...style}}
+        style={{ ...style }}
       >
         {children}
       </OppositeWidthContainer>
     );
   }
-
 
   return (
     <FormEntryContainer
@@ -75,13 +70,6 @@ function FormEntry({
       {children}
     </FormEntryContainer>
   );
-
 }
 
-FormEntry.defaultProps = {
-  isLongOnMobile: false,
-  style: {}
-};
-
 export default FormEntry;
-

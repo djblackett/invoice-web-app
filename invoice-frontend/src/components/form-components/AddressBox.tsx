@@ -17,14 +17,14 @@ const AddressDetails = styled.div`
 `;
 
 export type AddressBoxProps = {
-    children: React.ReactNode
-}
+  children: React.ReactNode;
+};
 
 function AddressBox({ children }: AddressBoxProps) {
   return <AddressDetails className="address-box">{children}</AddressDetails>;
 }
 
 AddressBox.propTypes = {
-  children: PropTypes.node.isRequired
+  children: PropTypes.node.isRequired,
 };
 export default AddressBox;

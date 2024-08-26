@@ -1,4 +1,4 @@
-import React, {ReactElement, SyntheticEvent} from "react";
+import React, { ReactElement, SyntheticEvent } from "react";
 import styled from "styled-components";
 import { useDispatch } from "react-redux";
 import PropTypes from "prop-types";
@@ -46,9 +46,6 @@ const DropDownHeader = styled.div.attrs({
   font-size: 1.2rem;
   color: ${({ theme }) => theme.text};
   border-radius: 6px;
-
- 
-  
 `;
 
 const DropDownListContainer = styled("div")`
@@ -119,38 +116,33 @@ const ItemButton = styled.button`
   cursor: pointer;
 `;
 
-
-// type Options = {
-//   options: string[];
-// }
-
 type FilterDropDownProps = {
   icon: ReactElement;
   isOpen: boolean;
-  options: string[]
-}
+  options: string[];
+};
 
-
-
-export default function FilterDropDown({ icon, isOpen, options }: FilterDropDownProps) {
-
+export default function FilterDropDown({
+  icon,
+  isOpen,
+  options,
+}: FilterDropDownProps) {
   const dispatch = useDispatch();
 
-  const clickCallback =  (option: string) => (e: SyntheticEvent) => {
+  const clickCallback = (option: string) => (e: SyntheticEvent) => {
     e.stopPropagation();
     const lowerCaseOption = option.toLowerCase() as StatusKey;
     dispatch(changeFilter(lowerCaseOption));
   };
-
 
   return (
     <Main>
       <DropDownContainer data-testid="filterDropDown">
         <DropDownHeader>{icon}</DropDownHeader>
         <DropDownListContainer style={{ height: isOpen ? "130px" : 0 }}>
-          <DropDownList >
+          <DropDownList>
             {options.map((option: string) => (
-              <ListItem key={`${option  }-li`} onClick={clickCallback(option)}>
+              <ListItem key={`${option}-li`} onClick={clickCallback(option)}>
                 <ItemButton>
                   <CheckboxSelection option={option} />
                 </ItemButton>

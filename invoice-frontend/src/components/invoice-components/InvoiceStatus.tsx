@@ -44,11 +44,11 @@ const Circle = styled.div`
 `;
 
 export type InvoiceStatusProps = {
-    statusType: string;
-    text: string;
-}
+  statusType: string;
+  text: string;
+};
 
-function InvoiceStatus({ text, statusType }: InvoiceStatusProps ) {
+function InvoiceStatus({ text, statusType }: InvoiceStatusProps) {
   return (
     <InvoiceStatusBox className={statusType}>
       <TextCircleBox>
@@ -61,7 +61,6 @@ function InvoiceStatus({ text, statusType }: InvoiceStatusProps ) {
 
 InvoiceStatus.propTypes = {
   text: PropTypes.string.isRequired,
-  statusType: PropTypes.string.isRequired
-
+  statusType: PropTypes.string.isRequired,
 };
 export default InvoiceStatus;

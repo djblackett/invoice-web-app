@@ -122,8 +122,8 @@ const MobileHelperContainer = styled.div`
 `;
 
 export type ItemProps = {
-    item: Item;
-}
+  item: Item;
+};
 
 function InvoiceItem({ item }: ItemProps) {
 
@@ -136,7 +136,7 @@ function InvoiceItem({ item }: ItemProps) {
           <Price>£ {getMoney(Number(item.price))}</Price>
         </QuantityPriceContainer>
         <MobileQuantityPrice>
-          {`${item.quantity  } x £ ${  Number(item.price).toFixed(2)}`}{" "}
+          {`${item.quantity} x £ ${Number(item.price).toFixed(2)}`}{" "}
         </MobileQuantityPrice>
       </MobileHelperContainer>
       <Total>£ {getMoney(Number(item.total))}</Total>

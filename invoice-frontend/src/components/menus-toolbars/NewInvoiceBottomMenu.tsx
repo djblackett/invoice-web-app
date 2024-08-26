@@ -79,11 +79,11 @@ const SaveAndDraftContainer = styled.div`
 type NewInvoiceBoottemMenuProps = {
   closeText: string;
   justifyCancel: string;
-  onSubmit: () => void;
+  onSubmit: (status: "draft" | "pending") => void;
   saveText: string;
   setIsDraft: (b: boolean) => void;
   setIsOpen: (b: boolean) => void;
-}
+};
 
 function NewInvoiceBottomMenu({
   setIsDraft,
@@ -91,7 +91,7 @@ function NewInvoiceBottomMenu({
   saveText,
   closeText,
   justifyCancel,
-  onSubmit
+  onSubmit,
 }: NewInvoiceBoottemMenuProps) {
 
   const { clearErrors, setValue, reset } = useFormContext();
@@ -102,25 +102,26 @@ function NewInvoiceBottomMenu({
     reset();
   };
 
-  const setToDraft = () => {
+  // These flush syncs should not cause performance problems because a single boolean value is being changed
+  // React's built in batching for state changes made it difficult to dynamically tell react hook form
+  // whether to require all fields or not
 
+  const setToDraft = () => {
     flushSync(() => {
       setIsDraft(true);
       setValue("status", "draft");
     });
 
-    onSubmit();
+    onSubmit("draft");
   };
 
   const setToPending = () => {
-
     flushSync(() => {
       setIsDraft(false);
       setValue("status", "pending");
     });
-    onSubmit();
+      onSubmit("pending");
   };
-
 
   return (
     <MenuContainer>
@@ -149,5 +150,5 @@ NewInvoiceBottomMenu.propTypes = {
   saveText: PropTypes.string.isRequired,
   closeText: PropTypes.string.isRequired,
   justifyCancel: PropTypes.string.isRequired,
-  onSubmit: PropTypes.func.isRequired
+  onSubmit: PropTypes.func.isRequired,
 };

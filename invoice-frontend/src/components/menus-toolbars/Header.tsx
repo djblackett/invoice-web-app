@@ -1,6 +1,6 @@
 import styled from "styled-components";
-import PropTypes from "prop-types";
-/* eslint-disable no-undef */
+import React from "react";
+
 const HeaderContainer = styled.div`
   width: 100%;
   max-width: 100vw;
@@ -12,8 +12,8 @@ const HeaderContainer = styled.div`
   background: ${({ theme }) => theme.headerBackground};
   z-index: 1000;
   position: fixed;
-  //transition: background-color .2s ease-in;
-  
+    top: 0;
+
   @media (min-width: 1200px) {
     flex-direction: column;
     display: flex;
@@ -143,12 +143,9 @@ function Header({ themeToggler, theme }: HeaderProps) {
 
         <AvatarBox>
           <img
-
-            src={`${process.env.PUBLIC_URL  }/assets/image-avatar.jpg`}
-            alt=""
-
-            style={{ borderRadius: "50%", height:"32px",
-              width: "32px" }}
+              src={`${process.env.PUBLIC_URL  }/assets/image-avatar.jpg`}
+            alt="user avatar"
+            style={{ borderRadius: "50%", height: "32px", width: "32px" }}
           />
         </AvatarBox>
       </DarkModeProfileContainer>
@@ -156,8 +153,4 @@ function Header({ themeToggler, theme }: HeaderProps) {
   );
 }
 
-Header.propTypes = {
-  themeToggler: PropTypes.func.isRequired,
-  theme: PropTypes.string.isRequired,
-};
 export default Header;

@@ -1,8 +1,7 @@
-FROM node:16.20.2
+FROM node:20.17.0
 
 WORKDIR /usr/src/app/
 
-#COPY . .
 COPY --chown=node:node . .
 RUN npm ci
 ENV DEBUG=playground:*
