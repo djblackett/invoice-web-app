@@ -1,6 +1,12 @@
 import styled from "styled-components";
-import {FieldArray, FieldArrayMethodProps, FieldValues, useForm, useFormContext} from "react-hook-form";
-import {Item} from "../../types/types";
+import {
+  FieldArray,
+  FieldArrayMethodProps,
+  FieldValues,
+  useForm,
+  useFormContext,
+} from "react-hook-form";
+import { Item } from "../../types/types";
 
 const Button = styled.button`
   display: flex;
@@ -15,7 +21,7 @@ const Button = styled.button`
   &:hover {
     background-color: #dfe3fa;
   }
-  
+
   &:focus {
     background-color: #dfe3fa;
   }
@@ -47,24 +53,35 @@ const ButtonText = styled.p`
 // );
 
 export type NewItemButtonProps = {
-  append: (value: (FieldArray<FieldValues, string> | FieldArray<FieldValues, string>[]), options?: FieldArrayMethodProps) => void,
-  items: Item[]
-}
-
+  append: (
+    value: FieldArray<FieldValues, string> | FieldArray<FieldValues, string>[],
+    options?: FieldArrayMethodProps,
+  ) => void;
+  items: Item[];
+};
 
 function NewItemButton({ items, append }: NewItemButtonProps) {
-
   const { clearErrors } = useFormContext();
-  const { formState: { submitCount } } = useForm();
+  const {
+    formState: { submitCount },
+  } = useForm();
 
   const handleClick = () => {
     append({ id: "", name: "", quantity: "", price: "", total: "" });
     clearErrors("itemsError");
   };
 
-
   return (
-    <Button onClick={handleClick } type="button" style={{ border: (submitCount > 0 && items.length === 0) ? "1px solid red" : "1px solid transparent" }}>
+    <Button
+      onClick={handleClick}
+      type="button"
+      style={{
+        border:
+          submitCount > 0 && items.length === 0
+            ? "1px solid red"
+            : "1px solid transparent",
+      }}
+    >
       {/* <SVG>{plusIcon}</SVG> */}
       <ButtonText>+ Add New Item</ButtonText>
     </Button>

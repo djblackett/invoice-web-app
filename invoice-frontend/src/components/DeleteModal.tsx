@@ -6,7 +6,6 @@ import { useNavigate } from "react-router-dom";
 import React from "react";
 import DeleteButton from "./buttons/DeleteButton";
 import CancelButton from "./buttons/CancelButton";
-import { Invoice } from "../types/types";
 import { useMutation } from "@apollo/client";
 import { REMOVE_INVOICE, ALL_INVOICES } from "../graphql/queries";
 

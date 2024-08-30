@@ -22,16 +22,20 @@ const Button = styled.button`
 `;
 
 type EditButtonProps = {
-    isEditOpen: boolean;
-    toggleEditTab: React.Dispatch<React.SetStateAction<boolean>>;
-}
+  isEditOpen: boolean;
+  toggleEditTab: React.Dispatch<React.SetStateAction<boolean>>;
+};
 
 function EditButton({ toggleEditTab, isEditOpen }: EditButtonProps) {
 
   const handleClick = () => {
     toggleEditTab(!isEditOpen);
   };
-  return <Button onClick={handleClick} type="button">Edit</Button>;
+  return (
+    <Button onClick={handleClick} >
+      Edit
+    </Button>
+  );
 }
 
 export default EditButton;

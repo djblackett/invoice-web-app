@@ -1,53 +1,53 @@
-import {gql} from "@apollo/client";
+import { gql } from "@apollo/client";
 
 export const CLIENT_INFO = gql`
-    fragment ClientInfo on ClientAddress {
-        city,
-        country,
-        postCode
-        street
-    }
+  fragment ClientInfo on ClientAddress {
+    city
+    country
+    postCode
+    street
+  }
 `;
 
 export const SENDER_INFO = gql`
-    fragment SenderInfo on SenderAddress {
-        city,
-        country,
-        postCode
-        street
-    }
+  fragment SenderInfo on SenderAddress {
+    city
+    country
+    postCode
+    street
+  }
 `;
 
 export const INVOICE_DETAILS = gql`
   fragment InvoiceDetails on Invoice {
-      clientAddress {
-          city
-          country
-          postCode
-          street
-      }
-      clientEmail
-      clientName
-      createdAt
-      description
+    clientAddress {
+      city
+      country
+      postCode
+      street
+    }
+    clientEmail
+    clientName
+    createdAt
+    description
+    id
+    items {
       id
-      items {
-          id
-          name
-          price
-          quantity
-          total
-      }
-      paymentDue
-      paymentTerms
-      senderAddress {
-          city
-          country
-          postCode
-          street
-      }
-      status
+      name
+      price
+      quantity
       total
+    }
+    paymentDue
+    paymentTerms
+    senderAddress {
+      city
+      country
+      postCode
+      street
+    }
+    status
+    total
   }
 `;
 
@@ -119,12 +119,12 @@ export const EDIT_INVOICE = gql`
 `;
 
 export const CREATE_USER = gql`
-    mutation CreateUser($username: String!, $password: String!, $name: String) {
-        createUser(username: $username, password: $password, name: $name) {
-            username
-            id
-        }
+  mutation CreateUser($username: String!, $password: String!, $name: String) {
+    createUser(username: $username, password: $password, name: $name) {
+      username
+      id
     }
+  }
 `;
 
 // export const ALL_INVOICES = gql`
@@ -152,39 +152,39 @@ export const CREATE_USER = gql`
 // `;
 
 export const ALL_INVOICES = gql`
-
-    query allInvoices {
-        allInvoices {
-            clientAddress {
-                city
-                country
-                postCode
-                street
-            }
-            clientEmail
-            clientName
-            createdAt
-            description
-            id
-            items {
-                id
-                name
-                price
-                quantity
-                total
-            }
-            paymentDue
-            paymentTerms
-            senderAddress {
-                city
-                country
-                postCode
-                street
-            }
-            status
-            total
-        }
-    }`;
+  query allInvoices {
+    allInvoices {
+      clientAddress {
+        city
+        country
+        postCode
+        street
+      }
+      clientEmail
+      clientName
+      createdAt
+      description
+      id
+      items {
+        id
+        name
+        price
+        quantity
+        total
+      }
+      paymentDue
+      paymentTerms
+      senderAddress {
+        city
+        country
+        postCode
+        street
+      }
+      status
+      total
+    }
+  }
+`;
 
 export const GET_INVOICE_BY_ID = gql`
     query GetInvoiceById($getInvoiceByIdId: String!) {
@@ -224,24 +224,64 @@ export const GET_INVOICE_BY_ID = gql`
 
 
 export const REMOVE_INVOICE = gql`
-    mutation RemoveInvoice($removeInvoiceId: String!) {
-        removeInvoice(id: $removeInvoiceId)
-    }
+  mutation RemoveInvoice($removeInvoiceId: String!) {
+    removeInvoice(id: $removeInvoiceId)
+  }
 `;
 
-export const INVOICE_ADDED = gql`
-    subscription {
-        invoiceAdded {
-            ...InvoiceDetails
-        }
+export const MARK_AS_PAID = gql`
+
+mutation MarkAsPaid($markAsPaidId: String!)
+{
+  markAsPaid(id: $markAsPaidId)
+  {
+    clientAddress
+    {
+      city
+      country
+      postCode
+      street
     }
-    ${INVOICE_DETAILS}
+    clientEmail
+    clientName
+    createdAt
+    description
+    id
+    items
+    {
+      id
+      name
+      price
+      quantity
+      total
+    }
+    paymentDue
+    paymentTerms
+    senderAddress
+    {
+      city
+      country
+      postCode
+      street
+    }
+    status
+    total
+  }
+}`;
+
+export const INVOICE_ADDED = gql`
+  subscription {
+    invoiceAdded {
+      ...InvoiceDetails
+    }
+  }
+  ${INVOICE_DETAILS}
 `;
 
 export const ME = gql`
-    query {
-        me {
-            username
-        }
+  query {
+    me {
+      username
     }
+  }
 `;

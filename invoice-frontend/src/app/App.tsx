@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-unsafe-return */
-import React, { useEffect, useLayoutEffect, useState } from "react";
+import { useEffect, useLayoutEffect, useState } from "react";
 import "../styles/App.css";
 import styled, { ThemeProvider } from "styled-components";
 import { useRoutes } from "react-router-dom";
@@ -65,7 +65,7 @@ function App() {
   useLayoutEffect(() => {
     if (localStorage.getItem("theme") !== null) {
       const storedTheme = localStorage.getItem("theme");
-      setTheme(storedTheme);
+      setTheme(storedTheme as string);
     }
   }, []);
 

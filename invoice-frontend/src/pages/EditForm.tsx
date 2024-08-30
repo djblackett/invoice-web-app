@@ -46,7 +46,8 @@ function EditForm({
   setIsEditOpen,
   padding,
   setPadding,
-  id, invoice
+  id,
+  invoice
 }: EditFormProps) {
 
 
@@ -68,12 +69,7 @@ function EditForm({
   } = methods;
 
   const width = useWindowWidth();
-  // const dispatch = useDispatch();
   const watcher = watch();
-
-  // const invoice = useSelector((state: ReduxInvoiceState) =>
-  //   selectInvoiceById(state, id),
-  // );
 
   const [editPageWidth, setEditPageWidth] = useState(0);
   const [startDate, setStartDate] = useState(
@@ -114,7 +110,6 @@ function EditForm({
     // trigger validation on fields
     trigger().then(async (value) => {
       if (value) {
-        // console.log("validation success");
         const newInvoice = createInvoiceObject(
           data,
           startDate,
@@ -123,9 +118,6 @@ function EditForm({
           invoice,
         );
 
-        // todo replace redux with graphql call
-        // dispatch(updateInvoice(newInvoice));
-
         await editInvoice({
           variables: {
             ...newInvoice
@@ -133,8 +125,6 @@ function EditForm({
         });
 
         console.log(result);
-
-
 
         clearErrors();
         setIsEditOpen(false);
