@@ -1,4 +1,4 @@
-
+/* eslint-disable @typescript-eslint/require-await */
 import express, { Express } from "express";
 import { PrismaClient } from "@prisma/client";
 import invoicesRouter from "./src/routes/invoices";
@@ -7,16 +7,13 @@ import myErrorHandler from "./src/routes/helpers/helpers";
 import http from "http";
 import typeDefs from "./src/GraphQL/typeDefs";
 import resolvers from "./src/GraphQL/resolvers";
-
 import { WebSocketServer } from "ws";
 import { useServer } from "graphql-ws/lib/use/ws";
-import { createContext } from "./src/GraphQL/createContext";
 import {ApolloServerPluginDrainHttpServer} from "@apollo/server/plugin/drainHttpServer";
 import {makeExecutableSchema} from "@graphql-tools/schema";
 import {ApolloServer} from "@apollo/server";
-
 import { expressMiddleware} from "@apollo/server/express4";
-import {ContextArgs, MyContext} from "./src/types";
+import { MyContext} from "./src/types";
 import {
   ApolloServerPluginLandingPageLocalDefault,
   ApolloServerPluginLandingPageProductionDefault
@@ -90,17 +87,11 @@ const start = async () => {
 
     await server.start();
 
-
-
-
-
-    // @ts-ignore
     app.use(
         "/",
         cors(),
         express.json(),
         expressMiddleware(server, {
-          // @ts-ignore
           // context: async ({req, connection }: ContextArgs) => await createContext({req, connection})
         })
     );
@@ -125,7 +116,6 @@ const start = async () => {
   }
 };
 
-start();
+void start();
 
 export { prisma };
-
