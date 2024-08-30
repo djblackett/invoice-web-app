@@ -3,8 +3,8 @@ import styled from "styled-components";
 import { useDispatch } from "react-redux";
 import PropTypes from "prop-types";
 import CheckboxSelection from "./CheckboxSelection";
-import { changeFilter } from "@/features/invoices/filterSlice";
-import { StatusKey } from "@/types/types";
+import { changeFilter } from "../../features/invoices/filterSlice";
+import {StatusKey} from "../../types/types";
 
 const Main = styled("div")`
   align-self: center;
@@ -44,7 +44,7 @@ const DropDownHeader = styled.div.attrs({
   width: 12px;
   font-weight: 600;
   font-size: 1.2rem;
-  color: var(--colors-text);
+  color: ${({ theme }) => theme.text};
   border-radius: 6px;
 `;
 
@@ -53,11 +53,11 @@ const DropDownListContainer = styled("div")`
   width: 150px;
   left: -75px;
   top: 24px;
-  background-color: var(--colors-background);
+  background-color: ${({ theme }) => theme.background};
   border-radius: 8px;
   overflow: hidden;
-  box-shadow: var(--colors-filter-shadow);
-
+  box-shadow: ${({ theme }) => theme.filterShadow};
+  
   transition: height 250ms;
 
   @media (min-width: 768px) {
@@ -75,10 +75,10 @@ const DropDownList = styled("ul")`
   padding-top: 12px;
   padding-bottom: 12px;
   margin: 0;
-  background-color: var(--colors-background);
+  background-color: ${({ theme }) => theme.background};
   box-sizing: border-box;
   border-radius: 8px;
-  color: var(--colors-text);
+  color: ${({ theme }) => theme.text};
   font-size: 1.2rem;
   font-weight: 700;
 `;
@@ -93,11 +93,11 @@ const ListItem = styled.li.attrs({})`
   padding: 0.5rem;
  
   width: 100%;
-  background-color: var(--colors-background);
+  background-color: ${({ theme }) => theme.background};
 
    &:hover {
      .styledCheckbox {
-       border-color: var(--colors-outline);
+       border-color ${({ theme }) => theme.outline};
   //box-shadow:0 0 1px 1px #102447;
   //     border-radius: 3px;
      }
@@ -109,9 +109,9 @@ const ItemButton = styled.button`
   align-items: center;
   height: 100%;
   width: 100%;
-  background-color: var(--colors-background);
+  background-color: ${({ theme }) => theme.background};
   border: none;
-  color: var(--colors-text);
+  color: ${({ theme }) => theme.text};
   box-sizing: border-box;
   cursor: pointer;
 `;

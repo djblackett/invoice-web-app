@@ -2,12 +2,12 @@ import PropTypes from "prop-types";
 import styled, { css } from "styled-components";
 
 const checkedStyles = css`
-  background-color: var(--colors-new-button);
+  background-color: ${({theme}) => theme.newButton};
   border-color: transparent;
 `;
 
 const uncheckedStyles = css`
-  background-color: var(--colors-edit-button-hover);
+  background-color: ${({theme}) => theme.editButtonHover};
 `;
 
 interface CheckedProps {

@@ -4,12 +4,13 @@ import { useDispatch } from "react-redux";
 import InvoiceItem from "./InvoiceItem";
 import { addIdToExistingInvoices } from "../../features/invoices/invoicesSlice";
 import { getMoney } from "../../utils/utilityFunctions";
-import { Invoice } from "../../types/types";
+import {Invoice} from "../../types/types";
 
 const ListContainer = styled.div`
   display: grid;
   width: 100%;
   border-radius: 8px;
+  
 `;
 
 const AmountDue = styled.div`
@@ -17,7 +18,7 @@ const AmountDue = styled.div`
   align-items: center;
   justify-content: space-between;
   height: 80px;
-  background-color: var(--colors-amount-due-background);
+  background-color: ${({ theme }) => theme.amountDueBackground};
   padding: 2rem;
   border-radius: 0 0 8px 8px;
 `;
@@ -65,8 +66,8 @@ const ItemsHeader = styled.div`
   @media (min-width: 768px) {
     display: grid;
     grid-template: 1fr / 2fr 1fr 1fr 1fr;
-    color: var(--colors-grey-text);
-    background-color: var(--colors-edit-button);
+    color: ${({ theme }) => theme.greyText};
+    background-color: ${({ theme }) => theme.editButton};
     margin-top: 3rem;
     padding: 2rem;
     border-radius: 8px 8px 0 0;
@@ -95,7 +96,7 @@ const ItemsContainer = styled.div`
   width: 100%;
   margin-top: 2.5rem;
   border-radius: 8px 8px 0 0;
-  background-color: var(--colors-edit-button);
+  background-color: ${({ theme }) => theme.editButton};
 
   @media (min-width: 768px) {
     padding: 0;

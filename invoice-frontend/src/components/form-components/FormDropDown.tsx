@@ -1,8 +1,8 @@
+/* eslint-disable @typescript-eslint/no-unsafe-return */
 import React, { useState, useEffect } from "react";
 import styled from "styled-components";
 import PropTypes from "prop-types";
 import { SVG } from "../buttons/NewItemButton";
-import styles from "../../styles/generalFormStyles.module.css";
 
 const Main = styled.div.attrs({
   tabIndex: 0,
@@ -11,7 +11,7 @@ const Main = styled.div.attrs({
   z-index: 10;
   position: relative;
   box-sizing: border-box;
-  background-color: var(--colors-input-background);
+  background-color: ${({ theme }) => theme.inputBackgroundColor};
   cursor: pointer;
   margin-bottom: 30px;
   outline: none;
@@ -20,7 +20,7 @@ const Main = styled.div.attrs({
   height: 48px;
   border-radius: 4px;
 
-  border: 1px solid var(--colors-form-field-outline);
+  border: 1px solid ${({ theme }) => theme.formFieldOutline};
 
   @media (min-width: 768px) {
     width: 240px;
@@ -29,7 +29,7 @@ const Main = styled.div.attrs({
 
   &:focus,
   &:hover {
-    border: 1px solid var(--colors-form-field-outline-focus);
+    border: 1px solid ${({ theme }) => theme.formFieldOutlineFocus};
   }
 `;
 
@@ -46,7 +46,7 @@ const DropDownHeader = styled.div`
   width: 100%;
   height: 48px;
   border-radius: 4px;
-  border-color: var(--colors-form-field-outline);
+  border-color: ${({ theme }) => theme.formFieldOutline};
 
   h2 {
     writing-mode: horizontal-tb !important;
@@ -80,14 +80,14 @@ const DropDownList = styled.ul`
   padding: 0;
   margin: 0;
   overflow: hidden;
-  background-color: var(--colors-payment-terms-background);
+  background-color: ${({ theme }) => theme.paymentTermsBackground};
   box-sizing: border-box;
   height: fit-content;
   border-radius: 4px;
-  color: var(--colors-text);
+  color: ${({ theme }) => theme.text};
   font-size: 1.2rem;
   font-weight: 600;
-  box-shadow: var(--colors-filter-shadow);
+  box-shadow: ${({ theme }) => theme.filterShadow};
   transition: height 250ms ease-in-out;
 
   &:first-child {
@@ -108,9 +108,9 @@ const ListItem = styled.li`
   list-style: none;
   height: 48px;
   width: 100%;
-  border-color: var(--colors-form-field-outline);
+  border-color: ${({ theme }) => theme.formFieldOutline};
   cursor: pointer;
-  border-bottom: 1px solid var(--colors-payment-option-border);
+  border-bottom: 1px solid ${({ theme }) => theme.paymentOptionBorder};
   //border-bottom: 1px solid #979797;
 `;
 
@@ -118,7 +118,7 @@ const ItemButton = styled.button`
   //position: absolute;
   height: 100%;
   width: 100%;
-  background-color: var(--colors-payment-terms-background);
+  background-color: ${({ theme }) => theme.paymentTermsBackground};
   border: none;
   cursor: pointer;
   outline: none;
@@ -127,7 +127,7 @@ const ItemButton = styled.button`
   line-height: 15px;
   /* identical to box height, or 125% */
   letter-spacing: -0.25px;
-  color: var(--colors-text-plain);
+  color: ${({ theme }) => theme.textPlain};
   padding: 0.5rem;
 
   &:first-child {
@@ -170,6 +170,7 @@ function FormDropDown({
   isPaymentOpen,
   handlePaymentClick,
 }: FormDropDownProps) {
+
   // const { id } = useParams();
   // const invoice = useSelector(state => selectInvoiceById(state, id));
   // const selectedPaymentOption = invoice?.paymentTerms || 1;
@@ -191,10 +192,13 @@ function FormDropDown({
     }
   }, [selectedPaymentOption]);
 
+
   return (
-    <div className={styles.dropDownMain} tabIndex={0}>
-      <DropDownHeader onClick={handlePaymentClick} tabIndex={-1}>
-        <h2 className={styles.dropDownSelected}>{selected}</h2>
+    <Main>
+      <DropDownHeader onClick={handlePaymentClick}
+        tabIndex={-1}
+      >
+        <h2>{selected}</h2>
         <SVG>{arrowDown}</SVG>
       </DropDownHeader>
 
@@ -214,7 +218,7 @@ function FormDropDown({
           </ListItem>
         ))}
       </DropDownList>
-    </div>
+    </Main>
   );
 }
 

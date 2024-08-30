@@ -1,5 +1,7 @@
-import { createSlice, PayloadAction } from "@reduxjs/toolkit";
-import { Filter, StatusKey } from "../../types/types";
+import {createSlice, PayloadAction} from "@reduxjs/toolkit";
+import {Filter, StatusKey} from "../../types/types";
+
+
 
 const initialState: Filter = {
   filter: { draft: false, paid: false, pending: false },
@@ -11,7 +13,7 @@ export const filterSlice = createSlice({
   reducers: {
     changeFilter: (state, action: PayloadAction<StatusKey>) => {
       const status = action.payload;
-      state.filter[status] = !state.filter[status];
+      state.filter[status] = !state.filter[status] ;
     },
   },
 });

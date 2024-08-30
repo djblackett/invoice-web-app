@@ -1,14 +1,6 @@
-import InputFormItem1 from "./InputFormItem1";
-import {
-  Col,
-  Col1,
-  ItemsContainer,
-  ItemsHeader,
-  ItemTitle,
-  ListContainer,
-} from "@/styles/EditFormItemListStyles";
-import { Invoice } from "@/types/types";
-import styles from "../../styles/editFormItemStyles.module.css";
+import InputFormItem1  from "./InputFormItem1";
+import {Col, Col1, ItemsContainer, ItemsHeader, ItemTitle, ListContainer} from "../../styles/EditFormItemListStyles";
+import {Invoice} from "../../types/types";
 
 type EditFormItemListProps = {
   invoice?: Invoice;
@@ -23,12 +15,12 @@ function EditFormItemList({
 }: EditFormItemListProps) {
   return (
     <ListContainer>
-      <h1 className={styles.itemTitle}>Item List</h1>
+      <ItemTitle>Item List</ItemTitle>
       <ItemsHeader>
-        <p className={styles.columnHeadingFlexStart}>Item Name</p>
-        <p className={styles.columnHeadingFlexStart}>Qty.</p>
-        <p className={styles.columnHeadingFlexStart}>Price</p>
-        <p className={styles.columnHeadingCentered}>Total</p>
+        <Col1>Item Name</Col1>
+        <Col1>Qty.</Col1>
+        <Col1>Price</Col1>
+        <Col>Total</Col>
       </ItemsHeader>
       <ItemsContainer>
         <InputFormItem1

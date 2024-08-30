@@ -3,7 +3,7 @@ import Proptypes from "prop-types";
 import React from "react";
 
 const PrimaryButton = styled.button`
-  //background-color:var(--colors-button-background);
+  background-color: ${({ theme }) => theme.buttonBackground};
   border-radius: 24px;
   cursor: pointer;
   width: fit-content;

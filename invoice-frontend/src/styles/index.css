@@ -3,28 +3,16 @@
 html {
 }
 
-/*:root {*/
-/*  !* Your default theme *!*/
-/*  --background: white;*/
-/*  --foreground: black;*/
-/*}*/
-
-/*[data-theme='dark'] {*/
-/*  --background: black;*/
-/*  --foreground: white;*/
-/*}*/
-
-
 body {
   margin: 0;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   font-family: "League Spartan", sans-serif;
   font-weight: 500;
-  background-color: var(--colors-background);
 }
 
+
 code {
-  font-family: source-code-pro, Menlo, Monaco, Consolas, "Courier New",
+  font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
     monospace;
 }

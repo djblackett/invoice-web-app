@@ -28,7 +28,7 @@ const NothingHere = styled.h1`
   line-height: 22px;
   letter-spacing: -0.625px;
 
-  color: var(--colors-text);
+  color: ${({ theme }) => theme.text};
 `;
 
 const Description = styled.p`
@@ -41,7 +41,7 @@ const Description = styled.p`
   text-align: center;
   letter-spacing: -0.25px;
 
-  color: var(--colors-grey-text);
+  color: ${({ theme }) => theme.greyText};
 
   .newInvoice {
     font-weight: 700;

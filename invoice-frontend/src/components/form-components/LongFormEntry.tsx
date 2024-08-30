@@ -6,7 +6,7 @@ export const FormEntryContainer = styled.div`
   flex-direction: column;
   position: relative;
   align-items: flex-start;
-  font-style: var(--theme-font);
+  font-style: ${({ theme }) => theme.font};
   width: 100%;
 `;
 

@@ -16,7 +16,7 @@ const Label = styled.div`
   line-height: 15px;
   /* identical to box height, or 125% */
   letter-spacing: -0.25px;
-  color: var(--colors-text-plain);
+  color: ${({ theme }) => theme.textPlain};
 `;
 
 type CheckboxSelectionProps = {

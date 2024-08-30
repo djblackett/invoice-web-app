@@ -3,7 +3,7 @@ import styled from "styled-components";
 const Card = styled.div`
   width: 100%;
   max-width: 100%;
-  background-color: var(--colors-object-background);
+  background-color: ${({theme}) => theme.background};
   display: flex;
   flex-direction: column;
   padding: 24px;
@@ -20,7 +20,7 @@ const Card = styled.div`
   transition: width 0.5s ease-in-out;
 
   &:hover {
-    border: 1px solid var(--colors-outline);
+    border: 1px solid ${({theme}) => theme.outline};
   }
 
   @media (min-width: 768px) {
@@ -39,13 +39,13 @@ const Card = styled.div`
 
 const IDNumber = styled.p`
   margin: 0;
-  font-family: "Spartan", sans-serif;
+  font-family: "Spartan",sans-serif;
   font-style: normal;
   font-weight: 700;
   font-size: 16px;
   line-height: 24px;
   /* identical to box height, or 150% */
-  color: var(--colors-text);
+
   letter-spacing: -0.8px;
 `;
 
@@ -62,7 +62,7 @@ const TopRow = styled.div`
 
 const TopEntry = styled.p`
   margin: 0;
-  color: var(--colors-grey-text);
+  color: ${({theme}) => theme.greyText};
   font-weight: 500;
   font-size: 12px;
   line-height: 15px;
@@ -73,6 +73,7 @@ const TopEntry = styled.p`
 const GenericInvoiceEntry = styled.div`
   display: flex;
   flex-direction: column;
+  
 `;
 
 const NamePlusAddress = styled.div`
@@ -89,14 +90,14 @@ const BottomEntry = styled.p`
   font-size: 15px;
   line-height: 20px;
   /* identical to box height, or 133% */
-  color: var(--colors-text);
+
   letter-spacing: -0.3125px;
 `;
 
 const Description = styled.p`
   margin: 0;
   padding: 0;
-  color: var(--colors-grey-text);
+  color: ${({theme}) => theme.greyText};
   font-weight: 500;
   font-size: 12px;
   line-height: 15px;
@@ -119,7 +120,7 @@ const EmbeddedAddress = styled(Address)`
 `;
 
 const AddressEntry = styled.p`
-  color: var(--colors-grey-text);
+  color: ${({theme}) => theme.greyText};
   margin: 0;
 
   padding: 0;
@@ -152,17 +153,5 @@ const InfoGrid = styled.div`
 `;
 
 export {
-  Card,
-  Address,
-  AddressEntry,
-  BottomEntry,
-  EmbeddedAddress,
-  GenericInvoiceEntry,
-  NamePlusAddress,
-  TopEntry,
-  TopRow,
-  IdAndDescription,
-  Description,
-  InfoGrid,
-  IDNumber,
+  Card, Address, AddressEntry, BottomEntry, EmbeddedAddress, GenericInvoiceEntry, NamePlusAddress, TopEntry, TopRow, IdAndDescription, Description, InfoGrid, IDNumber
 };

@@ -1,6 +1,4 @@
-"use client"
 import styled from "styled-components";
-import React from "react";
 
 const HeaderContainer = styled.div`
   width: 100%;
@@ -10,10 +8,10 @@ const HeaderContainer = styled.div`
   flex-direction: row;
   justify-content: space-between;
   align-items: center;
-  background: var(--colors-header-background);
+  background: ${({ theme }) => theme.headerBackground};
   z-index: 1000;
   position: fixed;
-    top: 0;
+
 
   @media (min-width: 1200px) {
     flex-direction: column;
@@ -125,26 +123,20 @@ const sun = (
   </svg>
 );
 
-function Header() {
+type HeaderProps = {
+  theme: string;
+  themeToggler: () => void;
+}
 
-    // read theme from localhost or default to light if nothing is stored yet
-    const [theme, setTheme] = React.useState(global.localStorage?.getItem("theme") || "light" );
-
-    React.useEffect(() => {
-        document.body.dataset.theme = theme
-        localStorage.setItem("theme", theme);
-    }, [theme]);
-
-
-
-    return (
+function Header({ themeToggler, theme }: HeaderProps) {
+  return (
     <HeaderContainer>
       <Logo>
         <BottomColorBoxForLogo />
         {logo}
       </Logo>
       <DarkModeProfileContainer>
-        <DarkLightBox onClick={() => setTheme(theme === 'light' ? 'dark' : 'light')}>
+        <DarkLightBox onClick={themeToggler}>
           {theme === "light" ? moon : sun}
         </DarkLightBox>
 

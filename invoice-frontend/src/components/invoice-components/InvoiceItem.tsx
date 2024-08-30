@@ -10,7 +10,7 @@ const ItemContainer = styled.div`
   padding-top: 0;
   grid-template: auto auto / 1fr 1fr;
   grid-auto-flow: dense;
-  background-color: var(colors-edit-button);
+  background-color: ${({ theme }) => theme.editButton};
 
   :first-child {
     padding-top: 1.5rem;
@@ -34,13 +34,14 @@ const ItemContainer = styled.div`
   }
 `;
 
+
 const ItemName = styled.p`
   white-space: nowrap;
   justify-self: start;
   width: fit-content;
   margin: 0;
   padding: 0;
-  color: var(--colors-text);
+  color: ${({ theme }) => theme.text};
   font-weight: 700;
   font-size: 12px;
   line-height: 15px;
@@ -54,7 +55,7 @@ const Quantity = styled.p`
   justify-self: end;
   width: fit-content;
   margin: 0;
-  color: var(--colors-grey-text);
+  color: ${({ theme }) => theme.greyText};
   padding: 0;
   font-weight: 700;
   font-size: 12px;
@@ -103,8 +104,8 @@ const MobileQuantityPrice = styled.p`
   margin-top: 0.5rem;
   /* identical to box height, or 125% */
   letter-spacing: -0.25px;
-  color: var(--colors-grey-text);
-
+  color: ${({ theme }) => theme.greyText};
+  
   @media (min-width: 768px) {
     display: none;
   }
@@ -125,6 +126,7 @@ export type ItemProps = {
 };
 
 function InvoiceItem({ item }: ItemProps) {
+
   return (
     <ItemContainer>
       <MobileHelperContainer>

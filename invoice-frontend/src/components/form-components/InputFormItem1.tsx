@@ -1,4 +1,5 @@
-import { useFieldArray, useFormContext } from "react-hook-form";
+import { useFieldArray, useFormContext} from "react-hook-form";
+// import { v4 as uuidv4 } from "uuid";
 import React, { useEffect, useRef } from "react";
 import PropTypes from "prop-types";
 import {
@@ -6,37 +7,30 @@ import {
   deleteIcon,
   ItemContainer,
   ItemName,
-  MobileHelperContainer,
-  SmallBoxContainer,
-  SVG,
-  Total,
-} from "@/styles/editFormItemStyles";
+  MobileHelperContainer, Price,
+  Quantity,
+  SmallBoxContainer, SVG, Total, TotalBox
+} from "../../styles/editFormItemStyles";
 import NewItemButton from "../buttons/NewItemButton";
 import useWindowWidth from "../../hooks/useWindowWidth";
-import { Col, Col1 } from "@/styles/EditFormItemListStyles";
-import { Invoice } from "@/types/types";
-import styles from "../../styles/editFormItemStyles.module.css";
+import {Col, Col1} from "../../styles/EditFormItemListStyles";
+import { Invoice} from "../../types/types";
 
 type InputFormItemProps = {
   invoice?: Invoice;
   isDraft: boolean;
-  isEditOpen?: boolean;
-};
+  isEditOpen: boolean;
+}
 
-export default function InputFormItem1({
-  isDraft,
-  invoice,
-  isEditOpen,
-}: InputFormItemProps) {
-  const { formState, register, watch, clearErrors, setError, resetField } =
-    useFormContext();
+export default function InputFormItem1({ isDraft, invoice, isEditOpen }: InputFormItemProps) {
+
+  const { formState, register, watch, clearErrors, setError, resetField } = useFormContext();
 
   const { fields, remove, append } = useFieldArray({
-    name: "items",
-    rules: { required: true, minLength: 1 },
+    name: "items", rules: { required: true, minLength: 1 }
   });
 
-  const { errors, isSubmitting } = formState;
+  const { errors, isSubmitting} = formState;
 
   const watchItems = watch("items", []);
   const watcher = watch();
@@ -63,15 +57,9 @@ export default function InputFormItem1({
     if (invoice && isEditOpen) {
       // const {items} = getValues();
       // console.log(items);
-      invoice.items.forEach((i) => {
+      invoice.items.forEach(i => {
         // if (!items.includes(i)) {
-        append({
-          id: i.id,
-          name: i.name,
-          quantity: i.quantity,
-          price: i.price,
-          total: i.total,
-        });
+        append({id: i.id, name: i.name, quantity: i.quantity, price: i.price, total: i.total});
         // }
       });
     }
@@ -91,78 +79,50 @@ export default function InputFormItem1({
     }
   }, [watcher.items]);
 
+
   const mobileRender = (index: number) => (
     <ItemContainer>
       <Box style={{ width: "100%", marginBottom: "1.5rem" }}>
-        <p className={styles.columnHeadingFlexStart}>Item Name</p>
+        <Col1 style={{ marginBottom: "1rem" }}>Item Name</Col1>
         <ItemName
-            {...register(`items[${index}].name`, { required: !isDraft })}
+          {...register(`items[${index}].name`, { required: !isDraft })}
           placeholder="Item name"
-          defaultValue={invoice ? invoice?.items?.[index]?.name : ""}
+          defaultValue={invoice? invoice?.items?.[index]?.name : "" }
           type="text"
-          style={{
-            border:
-              Array.isArray(errors.items) && errors?.items?.[index]?.name
-                ? "1px solid #EC5757"
-                : "",
-          }}
+          style={{ border: Array.isArray(errors.items) && errors?.items?.[index]?.name ? "1px solid #EC5757" : "" }}
         />
       </Box>
       <SmallBoxContainer>
         <Box>
-          <p className={styles.columnHeadingFlexStart}>Qty.</p>
-          <input className={styles.quantityInput}
-            {...register(`items[${index}].quantity`, {
-              required: !isDraft,
-              max: 100,
-            })}
-            placeholder="0"
-            type="text"
-            style={{
-              border:
-                Array.isArray(errors.items) && errors?.items?.[index]?.quantity
-                  ? "1px solid #EC5757"
-                  : "",
-            }}
-            defaultValue={invoice ? invoice?.items?.[index]?.quantity : 0}
-          />
+          <Col style={{ marginBottom: "0.625rem" }}>Qty.</Col>
+          <Quantity {...register(`items[${index}].quantity`, { required: !isDraft, max: 100 } )} placeholder="0" type="text"
+            style={{ border: Array.isArray(errors.items) && errors?.items?.[index]?.quantity ? "1px solid #EC5757" : "" }}
+            defaultValue={invoice? invoice?.items?.[index]?.quantity : "" }/>
         </Box>
         <Box>
-          <p className={styles.columnHeadingFlexStart}>Price</p>
-          <input className={styles.priceInput}
-            {...register(`items[${index}].price`, {
-              required: !isDraft,
-              max: 100000,
-            })}
-            placeholder="0.00"
-            type="text"
-            defaultValue={invoice ? invoice?.items?.[index]?.price : 0}
-            style={{
-              border:
-                Array.isArray(errors.items) && errors?.items?.[index]?.price
-                  ? "1px solid #EC5757"
-                  : "",
-            }}
-          />
+          <Col style={{ marginBottom: "0.625rem" }}>Price</Col>
+          <Price {...register(`items[${index}].price`, { required: !isDraft, max: 100000 } )} placeholder="0.00" type="text"
+            defaultValue={invoice? invoice?.items?.[index]?.price : "" }
+            style={{ border: Array.isArray(errors.items) && errors?.items?.[index]?.price ? "1px solid #EC5757" : "" }} />
+
         </Box>
-        <div className={styles.total} style={{ width: "fit-content" }}>
+        <TotalBox style={{ width: "fit-content" }}>
           <Col style={{ marginBottom: "0.625rem" }}>Total</Col>
           <Total>
-            {(
-              Number(watchItems?.[index]?.quantity) *
-              Number(watchItems?.[index]?.price)
-            ).toFixed(2)}
+            { (Number(watchItems?.[index]?.quantity) * Number(watchItems?.[index]?.price)).toFixed(2)}
           </Total>
-        </div>
+        </TotalBox>
       </SmallBoxContainer>
       <Box>
         <Col style={{ marginBottom: "0.625rem" }}>{"  "}</Col>
-        <SVG name="removeButton" onClick={() => remove(index)}>
+        <SVG
+          name="removeButton" onClick={() => remove(index)}>
           {deleteIcon}
         </SVG>
       </Box>
     </ItemContainer>
   );
+
 
   const tabletAndDesktopRender = (index: number) => (
     <ItemContainer>
@@ -170,7 +130,7 @@ export default function InputFormItem1({
         <ItemName
           {...register(`items[${index}].name`, { required: !isDraft })}
           placeholder="Item name"
-          defaultValue={invoice ? invoice?.items?.[index]?.name : ""}
+          defaultValue={invoice? invoice?.items?.[index]?.name : "" }
           type="text"
           style={{
             border:
@@ -179,45 +139,23 @@ export default function InputFormItem1({
                 : "",
           }}
         />
-        <input className={styles.quantityInput}
-          {...register(`items[${index}].quantity`, {
-            required: !isDraft,
-            max: 5000,
-          })}
-          placeholder="0"
-          type="text"
+        <Quantity {...register(`items[${index}].quantity`, { required: !isDraft, max: 100 } )} placeholder="0" type="text"
+          style={{ border: Array.isArray(errors.items) && errors?.items?.[index]?.quantity ? "1px solid #EC5757" : "" }}
+          defaultValue={invoice? invoice?.items?.[index]?.quantity : 0}/>
+        <Price {...register(`items[${index}].price`, {
+          required: !isDraft,
+          max: 100000 } )}
+               placeholder="0.00" type="text"
+          defaultValue={invoice? invoice?.items?.[index]?.price : 0 }
           style={{
             border:
-              Array.isArray(errors.items) && errors?.items?.[index]?.quantity
-                ? "1px solid #EC5757"
-                : "",
-          }}
-          defaultValue={invoice ? invoice?.items?.[index]?.quantity : 0}
-        />
+                Array.isArray(errors.items) && errors?.items?.[index]?.price ? "1px solid #EC5757" : "" }} />
 
-        <input className={styles.priceInput}
-          {...register(`items[${index}].price`, {
-            required: !isDraft,
-            max: 100000,
-          })}
-          placeholder="0.00"
-          type="text"
-          defaultValue={invoice ? invoice?.items?.[index]?.price : 0}
-          style={{
-            border:
-              Array.isArray(errors.items) && errors?.items?.[index]?.price
-                ? "1px solid #EC5757"
-                : "",
-          }}
-        />
-
-        <p className={styles.total}>
-          {(
-            Number(watchItems?.[index]?.quantity) *
-            Number(watchItems?.[index]?.price)
-          ).toFixed(2)}
-        </p>
-        <SVG name="removeButton" onClick={() => remove(index)}>
+        <Total>
+          { (Number(watchItems?.[index]?.quantity) * Number(watchItems?.[index]?.price)).toFixed(2)}
+        </Total>
+        <SVG
+          name="removeButton" onClick={() => remove(index)}>
           {deleteIcon}
         </SVG>
       </MobileHelperContainer>

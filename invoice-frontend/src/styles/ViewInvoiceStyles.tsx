@@ -12,7 +12,7 @@ export const ViewContainer = styled.div`
   margin-top: 104px;
   padding-left: 0.5rem;
   padding-right: 0.5rem;
-
+  
   @media (min-width: 325px) {
     padding-left: 1.5rem;
     padding-right: 1.5rem;
@@ -41,7 +41,7 @@ export const GoBackButton = styled.div`
 `;
 
 export const Icon = styled.p`
-  color: var(--colors-outline);
+  color: ${({ theme }) => theme.outline};
   padding: 0;
   margin: 0;
   font-weight: 900;
@@ -52,9 +52,9 @@ export const GoBack = styled.p`
   padding: 0;
   margin: 0;
   margin-left: 1rem;
-
+  
   &:hover {
-    color: #7e88c3;
+    color: #7E88C3;
   }
 `;
 

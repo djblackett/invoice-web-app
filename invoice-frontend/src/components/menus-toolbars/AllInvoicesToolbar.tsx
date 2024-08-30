@@ -61,13 +61,13 @@ const TitleBox = styled.div`
 const Title = styled.h1`
   margin: 0;
   font-size: 2rem;
-  color: var(--colors-text);
+  color: ${({ theme }) => theme.text};
 `;
 
 const InvoicesLeft = styled.p`
   margin: 0;
 
-  color: var(--colors-grey-text);
+  color: ${({ theme }) => theme.greyText};
 
   .wideScreenText {
     display: none;
@@ -78,7 +78,6 @@ const InvoicesLeft = styled.p`
 
     .wideScreenText {
       display: inline;
-      
     }
   }
 `;
@@ -177,7 +176,7 @@ const Filter = styled.p`
   margin: 0;
   cursor: pointer;
   white-space: nowrap;
-  color: var(--colors-text);
+  color: ${({ theme }) => theme.text};
 
   .wideScreenText {
     display: none;

@@ -9,14 +9,14 @@ export const ItemContainer = styled.div`
   padding-top: 0;
   grid-template: auto auto / 1fr 1fr;
   grid-auto-flow: dense;
-  background-color: var(--colors-form-background);
+  background-color: ${({ theme }) => theme.formBackground };
   margin-bottom: 3rem;
-
+  
   @media (min-width: 600px) {
     height: 72px;
     width: 100%;
     display: grid;
-
+    
     // Setting the px of the grid column keeps the form fields lined up.
     grid-template: 1fr / 220px 62px 116px 61px 45px;
     justify-items: start;
@@ -26,32 +26,31 @@ export const ItemContainer = styled.div`
 
 type InputProps = {
   invalid?: boolean;
-};
+}
 
 const Input = styled.input<InputProps>`
   width: 240px;
   height: 48px;
   border-radius: 4px;
-  border: 1px solid var(--colors-form-field-outline);
+  border: 1px solid ${({ theme }) => theme.formFieldOutline};
   //border-style: solid;
   //border-width: 1px;
   outline: none;
   padding: 17px 20px 16px 20px;
   margin-bottom: 1.5rem;
-  font-family: var(--theme-font);
+  font-family: ${({ theme }) => theme.font};
   font-style: normal;
   font-weight: 700;
   font-size: 12px;
   line-height: 15px;
   /* identical to box height, or 125% */
   letter-spacing: -0.25px;
-  color: var(--colors-text-plain);
-  background-color: var(--colors-input-background);
+  color: ${({ theme }) => theme.textPlain};
+  background-color: ${({ theme }) => theme.inputBackgroundColor};
   cursor: pointer;
 
-  &:focus,
-  &:hover {
-    border-color: var(--colors-form-field-outline-focus);
+  &:focus, &:hover {
+    border-color: ${({ theme }) => theme.formFieldOutlineFocus};
   }
 
   .custom-input {
@@ -59,31 +58,37 @@ const Input = styled.input<InputProps>`
   }
 `;
 
+
+
 export const ItemName = styled(Input)`
   white-space: nowrap;
   justify-self: start;
   width: 100%;
   margin: 0;
   padding-left: 1.25rem;
-  color: var(--colors-text);
+  color: ${({ theme }) => theme.text};
   font-style: normal;
   font-weight: 700;
   font-size: 12px;
   line-height: 15px;
   /* identical to box height, or 125% */
   letter-spacing: -0.25px;
-
-  border: ${(props) => (props.invalid ? "1px solid red" : "")};
+  
+  border: ${props => props.invalid? "1px solid red" : ""};
+  
 
   @media (min-width: 600px) {
     width: 204px;
   }
 `;
 
-export const Quantity = styled(Input).attrs({ pattern: "\\d+" })`
+
+export const Quantity = styled(Input).attrs(
+  { pattern: "\\d+" }
+)`
   width: 64px;
   margin: 0;
-  color: var(--colors-text-plain);
+  color: ${({ theme }) => theme.textPlain};
   padding: 0;
   padding-left: 1.25rem;
   font-weight: 700;
@@ -101,7 +106,9 @@ export const Quantity = styled(Input).attrs({ pattern: "\\d+" })`
   }
 `;
 
-export const Price = styled(Quantity).attrs({ pattern: "[0-9.]*" })`
+export const Price = styled(Quantity).attrs(
+  { pattern: "[0-9.]*" }
+)`
   width: 80px;
   padding-left: 1.25rem;
   text-align: left;
@@ -113,27 +120,29 @@ export const Price = styled(Quantity).attrs({ pattern: "[0-9.]*" })`
   }
 `;
 
+
 export const Total = styled.p`
   min-width: 40px;
   align-self: center;
-  justify-self: center;
   height: fit-content;
   font-weight: 700;
   font-size: 12px;
   line-height: 15px;
   /* identical to box height, or 125% */
   letter-spacing: -0.25px;
-  color: var(--colors-grey-text);
-
+  color: ${({ theme }) => theme.greyText};
+  
   @media (min-width: 325px) {
+    
   }
-
+  
   @media (min-width: 600px) {
     grid-area: initial;
     text-align: center;
     min-width: 60px;
   }
 `;
+
 
 export const QuantityPriceContainer = styled.div`
   display: none;
@@ -152,8 +161,8 @@ export const MobileQuantityPrice = styled.p`
   margin-top: 0.5rem;
   /* identical to box height, or 125% */
   letter-spacing: -0.25px;
-  color: var(--colors-grey-text);
-
+  color: ${({ theme }) => theme.greyText};
+  
   @media (min-width: 600px) {
     display: none;
   }
@@ -164,10 +173,10 @@ export const MobileHelperContainer = styled.div`
   //flex-direction: column;
   //justify-content: center;
   display: grid;
-  grid-template: 1fr / 220px 62px 116px 61px 49px;
+  grid-template: 1fr / 220px 62px 116px 61px 49px;;
 
   //@media (min-width: 600px) {
-  //display: contents;
+    //display: contents;
   //}
 `;
 export const SVG = styled.svg`
@@ -184,7 +193,7 @@ export const SVG = styled.svg`
     &:hover {
       fill: red;
     }
-
+    
     &:focus {
       fill: red;
     }
@@ -199,7 +208,7 @@ export const Box = styled.div`
 `;
 
 export const TotalBox = styled(Box)`
-  text-align: right;
+text-align: right;
   align-items: flex-end;
   @media (min-width: 325px) {
     align-items: flex-start;
@@ -217,7 +226,7 @@ export const SmallBoxContainer = styled.div`
   @media (min-width: 325px) {
     width: 90%;
   }
-
+  
   @media (min-width: 600px) {
     width: 80%;
   }

@@ -1,7 +1,5 @@
 import styled from "styled-components";
 import PropTypes from "prop-types";
-import styles from "../../styles/main.module.css"
-
 
 const InvoiceStatusBox = styled.div`
   padding: 13px 23px 12px 24px;
@@ -12,10 +10,11 @@ const InvoiceStatusBox = styled.div`
   justify-content: center;
   align-items: center;
   justify-self: end;
-
+  
   @media (min-width: 600px) {
     justify-self: start;
   }
+
 `;
 
 const TextCircleBox = styled.div`
@@ -51,10 +50,10 @@ export type InvoiceStatusProps = {
 
 function InvoiceStatus({ text, statusType }: InvoiceStatusProps) {
   return (
-    <InvoiceStatusBox className={styles[statusType]}>
+    <InvoiceStatusBox className={statusType}>
       <TextCircleBox>
-        <Circle className={styles.circle} />
-        <StatusText>{text}</StatusText>
+        <Circle className="circle"/>
+        <StatusText >{text}</StatusText>
       </TextCircleBox>
     </InvoiceStatusBox>
   );

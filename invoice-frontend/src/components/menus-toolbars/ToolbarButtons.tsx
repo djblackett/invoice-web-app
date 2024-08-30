@@ -17,10 +17,10 @@ const ButtonsContainer = styled.div`
   bottom: 0;
   left: 0;
   right: 0;
-  background-color: var(--colors-background);
+  background-color: ${({ theme }) => theme.background};
   margin-top: 3.5rem;
   order: 2;
-
+  
   @media (min-width: 325px) {
     width: 100%;
     padding: 1.4rem 1.5rem;

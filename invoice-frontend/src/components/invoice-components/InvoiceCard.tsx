@@ -1,14 +1,13 @@
 import styled from "styled-components";
 import { useMemo } from "react";
 import InvoiceStatus from "./InvoiceStatus";
-import { getMoney } from "@/utils/utilityFunctions";
-import { Invoice } from "@/types/types";
-import styles from "../../styles/main.module.css"
+import { getMoney } from "../../utils/utilityFunctions";
+import {Invoice} from "../../types/types";
 
 const Card = styled.div`
   height: 134px;
   width: 100%;
-  background-color: var(--colors-object-background);
+  background-color: ${({ theme }) => theme.background};
   display: grid;
   grid-template-columns: 1fr 1fr;
   grid-template-rows: 43px 43px;
@@ -24,21 +23,21 @@ const Card = styled.div`
   transition: background-color 0.4s ease-in-out;
 
   &:hover {
-    border: 1px solid var(--colors-outline);
+    border: 1px solid ${({ theme }) => theme.outline};
   }
 
   @media (min-width: 600px) {
     grid-template-rows: 1fr;
-
+    
     // calculations for the grid-template-columns based on design spec
     // container = 672px  or 624px without padding
     // 1st box = 87  so 87/624 = 14%
     //2nd box = 143px so 143/624 = 23%
-    // 3rd 136 so 136/ 624 =
-    // 130
-    // 124
+    // 3rd 136 so 136/ 624 = 
+    // 130 
+    // 124 
     // 4
-
+    
     grid-template-columns: 14% 23% 21.6% 20.8% 19.9% 2%;
     grid-auto-flow: dense;
     align-items: center;
@@ -58,12 +57,12 @@ const Card = styled.div`
 const IDNumber = styled.p`
   margin: 0;
   font-weight: bold;
-  color: var(--colors-text-plain);
+  color: ${({ theme }) => theme.textPlain};
 `;
 
 const DueDate = styled.p`
   margin: 0;
-  color: var(--colors-grey-text);
+  color: ${({ theme }) => theme.greyText};
 `;
 
 const DueDateAmountBox = styled.div`
@@ -82,12 +81,12 @@ const InvoiceAmount = styled.p`
   margin: 0;
   line-height: 24px;
   font-size: 16px;
-  color: var(--colors-text-plain);
+  color: ${({ theme }) => theme.textPlain};
 `;
 
 const CustomerName = styled.p`
   margin: 0;
-  color: var(--colors-text-plain);
+  color: ${({ theme }) => theme.textPlain};
   font-weight: 500;
   font-size: 12px;
   line-height: 15px;

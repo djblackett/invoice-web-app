@@ -1,13 +1,13 @@
+/* eslint-disable @typescript-eslint/no-misused-promises */
+/* eslint-disable @typescript-eslint/no-unused-vars */
+/* eslint-disable @typescript-eslint/no-unsafe-return */
 import styled from "styled-components";
-import { useDispatch } from "react-redux";
-import { useRouter } from "next/navigation";
+import { useNavigate } from "react-router-dom";
 import React from "react";
 import DeleteButton from "./buttons/DeleteButton";
 import CancelButton from "./buttons/CancelButton";
-import { Invoice } from "@/types/types";
-import {useMutation} from "@apollo/client";
-import {ALL_INVOICES, REMOVE_INVOICE} from "@/graphql/queries";
-import allInvoices from "@/components/AllInvoices";
+import { useMutation } from "@apollo/client";
+import { REMOVE_INVOICE, ALL_INVOICES } from "../graphql/queries";
 
 export const DarkenScreen = styled.div`
   display: flex;
@@ -30,7 +30,7 @@ const ModalContainer = styled.div`
   justify-content: center;
   flex-direction: column;
   padding: 3rem;
-  background-color: var(--colors-background);
+  background-color: ${({ theme }) => theme.background};
   max-width: 480px;
   border-radius: 8px;
   box-shadow: 0px 10px 10px -10px rgba(72, 84, 159, 0.100397);
@@ -43,7 +43,7 @@ const Confirm = styled.h1`
   line-height: 32px;
   /* identical to box height, or 133% */
   letter-spacing: -0.5px;
-  color: var(--colors-text);
+  color: ${({ theme }) => theme.text};
   margin: 0;
   margin-bottom: 13px;
 `;
@@ -55,7 +55,7 @@ const Description = styled.p`
   /* or 183% */
 
   letter-spacing: 0.25px;
-  color: var(--colors-grey-text);
+  color: ${({ theme }) => theme.greyText};
 `;
 
 const ButtonContainer = styled.div`
@@ -65,20 +65,17 @@ const ButtonContainer = styled.div`
 `;
 
 export type DeleteModalProps = {
+  id: string;
   isModalOpen: boolean;
   setIsModalOpen: React.Dispatch<React.SetStateAction<boolean>>;
-  id: string;
-};
+}
 
-function DeleteModal({
-  isModalOpen,
-  setIsModalOpen,
-    id
-}: DeleteModalProps) {
-  const dispatch = useDispatch();
-  const router = useRouter();
+function DeleteModal({ isModalOpen, setIsModalOpen, id }: DeleteModalProps) {
+  // const dispatch = useDispatch();
+  const navigate = useNavigate();
+
   const [deleteInvoice, result] = useMutation(REMOVE_INVOICE, {
-    refetchQueries: [{query: ALL_INVOICES}],
+    refetchQueries: [{ query: ALL_INVOICES }],
     onError: (error) => {
       console.log(error.graphQLErrors[0].message);
     },
@@ -91,7 +88,8 @@ function DeleteModal({
       }
     });
 
-    router.push("/");
+    navigate("/");
+    return;
   };
 
   const closeModal = () => setIsModalOpen(false);

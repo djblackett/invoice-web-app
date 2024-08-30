@@ -1,23 +1,20 @@
-import {FormProvider, useFieldArray, useForm} from "react-hook-form";
+import { FormProvider, useFieldArray, useForm } from "react-hook-form";
 import PropTypes from "prop-types";
 import React, { useEffect, useState } from "react";
 import { useDispatch } from "react-redux";
+import { BillText, Input, Label } from "../../styles/editStyles";
 import LongFormEntry from "./LongFormEntry";
 import { CompanyFormInfo } from "./CompanyFormInfo";
 import DateAndPayment from "./DateAndPayment";
 import EditFormItemList from "./EditFormItemList";
 import NewInvoiceBottomMenu from "../menus-toolbars/NewInvoiceBottomMenu";
-import { addInvoice } from "@/features/invoices/invoicesSlice";
-import { createInvoiceObject } from "@/utils/utilityFunctions";
+import { createInvoiceObject } from "../../utils/utilityFunctions";
 import FormErrorList from "./FormErrorList";
 import ClientFormInfo from "./ClientFormInfo";
-import { FormType } from "@/types/types";
-import styles from "../../styles/generalFormStyles.module.css";
-import {useMutation} from "@apollo/client";
-import {ADD_INVOICE, ALL_INVOICES} from "@/graphql/queries";
-import {v4 as uuidv4} from "uuid";
-import {yupResolver} from "@hookform/resolvers/yup";
-import {validationSchema} from "@/types/schemas";
+import { FormType } from "../../types/types";
+import { useMutation } from "@apollo/client";
+import { ADD_INVOICE, ALL_INVOICES } from "../../graphql/queries";
+import { v4 as uuidv4 } from "uuid";
 
 type NewInvoiceFormProps = {
   editPageWidth: number;
@@ -66,25 +63,22 @@ export default function NewInvoiceForm({
 
   const {
     register,
-    formState: { errors, isSubmitSuccessful, isSubmitted },
-      control,
+    formState: { errors, isSubmitSuccessful },
     reset,
-      resetField,
     getValues,
     trigger,
     watch,
     setError,
-      setValue,
-
+    control
   } = methods;
 
-  const {update, replace} = useFieldArray({control, name: "items"});
+  const { update, replace } = useFieldArray({ control, name: "items" });
 
   const dispatch = useDispatch();
   const watcher = watch();
 
   const [addInvoice, result] = useMutation(ADD_INVOICE, {
-  refetchQueries: [{query: ALL_INVOICES}],
+    refetchQueries: [{ query: ALL_INVOICES }],
     onError: (error) => {
       console.log(error);
     },
@@ -96,7 +90,7 @@ export default function NewInvoiceForm({
     setSelectedPaymentOption(1);
     setIsDraft(true);
     reset();
-    replace({id: uuidv4(), name: "", quantity: 0, price: 0, total: 0})
+    replace({ id: uuidv4(), name: "", quantity: 0, price: 0, total: 0 })
     setIsNewOpen(false);
     console.log("handling form reset. Shouuld also close form")
   }
@@ -133,28 +127,28 @@ export default function NewInvoiceForm({
           }
         });
 
-          newInvoice.status = status;
+        newInvoice.status = status;
 
         console.log("expect pending below");
         console.log(newInvoice.status);
         console.table(newInvoice.items);
 
-  try {
-       const addedInvoice =  await addInvoice({
-          variables: {
-            ...newInvoice
-          }
-        });
+        try {
+          const addedInvoice = await addInvoice({
+            variables: {
+              ...newInvoice
+            }
+          });
 
-    handleFormReset();
+          handleFormReset();
 
-    console.log("Results from graphql:")
-    console.log(addedInvoice);
-    // console.log("Invoice added? After the addInvoice call...")
-} catch (error) {
-    console.log(JSON.stringify(error));
-    console.log(error);
-  }
+          console.log("Results from graphql:")
+          console.log(addedInvoice);
+          // console.log("Invoice added? After the addInvoice call...")
+        } catch (error) {
+          console.log(JSON.stringify(error));
+          console.log(error);
+        }
         // redux being phased out
         // dispatch(addInvoice(newInvoice));
 
@@ -169,15 +163,9 @@ export default function NewInvoiceForm({
 
   const [isPaymentOpen, setIsPaymentOpen] = useState(false);
 
-
   useEffect(() => {
     setIsDraft(true);
   }, [isSubmitSuccessful]);
-
-  // useEffect(() => {
-  //   setIsNewOpen(false);
-  //   console.log("I am supposed to be closing the form now")
-  // }, [isSubmitSuccessful]);
 
   const handlePaymentClick = () => {
     setIsPaymentOpen(!isPaymentOpen);
@@ -200,12 +188,11 @@ export default function NewInvoiceForm({
       <form>
         {/* register your input into the hook by invoking the "register" function , {required: !isDraft */}
 
-        {/* seller details */}
-        <p className={styles.billText}>Bill From</p>
+        <BillText>Bill From</BillText>
         <CompanyFormInfo isDraft={isDraft} editPageWidth={editPageWidth} />
 
-        {/* client details */}
-        <p className={styles.billText}>Bill To</p>
+        {/*   client details */}
+        <BillText>Bill To</BillText>
         <ClientFormInfo isDraft={isDraft} editPageWidth={editPageWidth} />
 
         <DateAndPayment
@@ -217,15 +204,15 @@ export default function NewInvoiceForm({
           handleChangeSelectedOption={handleChangeSelectedOption}
         />
 
-        <LongFormEntry className="project-description">
-          <label className={styles.label}
+        <LongFormEntry className="project-description" >
+          <Label
             htmlFor="projectDescription"
             style={{ color: errors.projectDescription ? "#EC5757" : "" }}
           >
             Project Description
-          </label>
-          <input className={styles.input}
-            // $long
+          </Label>
+          <Input
+            $long
             type="text"
             {...register("projectDescription", { required: !isDraft })}
             style={{
@@ -237,8 +224,8 @@ export default function NewInvoiceForm({
         <EditFormItemList
           isDraft={isDraft}
           invoice={undefined}
-          // register={register}
-          // todo - these unused props are messy. Must retweak type definitions to be more flexible
+        // register={register}
+        // todo - these unused props are messy. Must retweak type definitions to be more flexible
         />
 
         <FormErrorList isEditOpen={isNewOpen} />

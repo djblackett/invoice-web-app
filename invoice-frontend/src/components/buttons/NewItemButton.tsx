@@ -15,7 +15,7 @@ const Button = styled.button`
   width: 100%;
   height: 48px;
   border-radius: 10px;
-  background-color: var(--colors-edit-button);
+  background-color: ${({ theme }) => theme.editButton};
   cursor: pointer;
 
   &:hover {
@@ -33,7 +33,7 @@ export const SVG = styled.svg`
 `;
 
 const ButtonText = styled.p`
-  color: var(--colors-new-item-text);
+  color: ${({ theme }) => theme.newItemText};
   font-weight: 700;
   font-size: 12px;
   line-height: 15px;

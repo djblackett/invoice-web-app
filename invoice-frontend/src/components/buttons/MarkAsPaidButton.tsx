@@ -1,14 +1,13 @@
-import styled from "styled-components";
-
-import { ToastContainer, toast, Theme } from "react-toastify";
+import styled, {useTheme} from "styled-components";
+import {ToastContainer, toast, Theme} from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import useWindowWidth from "../../hooks/useWindowWidth";
-import { Invoice } from "@/types/types";
-import { MARK_AS_PAID } from "@/graphql/queries";
+import {Invoice} from "../../types/types";
 import {useMutation} from "@apollo/client";
+import { MARK_AS_PAID } from "../../graphql/queries";
 
 const Button = styled.button`
-  background-color: var(--colors-new-button);
+  background-color: ${({ theme }) => theme.newButton};
   border-radius: 24px;
   padding: 16px 24px 17px 24px;
   color: white;
@@ -24,7 +23,7 @@ const Button = styled.button`
   white-space: nowrap;
 
   &:hover {
-    background-color: var(--colors-new-button-hover);
+    background-color: ${({ theme }) => theme.newButtonHover};
   }
 `;
 
@@ -35,6 +34,7 @@ type MarkPaidProps = {
 function MarkAsPaidButton({ invoice }: MarkPaidProps) {
   const colorMode = localStorage.getItem("theme");
   const width = useWindowWidth();
+  const theme = useTheme();
 
   const [markAsPaid, result] = useMutation(MARK_AS_PAID, {
       // todo - is this necessary?
@@ -65,18 +65,10 @@ function MarkAsPaidButton({ invoice }: MarkPaidProps) {
         }
     }
   };
-
   return (
     <>
-      <Button onClick={handleClick} type="button">
-        Mark as Paid
-      </Button>
-      <ToastContainer
-        style={{
-          marginTop: width > 1200 ? 0 : "72px",
-          backgroundColor: "var(--colors-object-background)",
-        }}
-      />
+      <Button onClick={handleClick} type="button">Mark as Paid</Button>
+      <ToastContainer style={{ marginTop: width > 1200 ? 0 : "72px", backgroundColor:  theme.background}}/>
     </>
   );
 }

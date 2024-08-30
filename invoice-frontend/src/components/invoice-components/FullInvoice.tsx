@@ -1,22 +1,16 @@
 import ItemList from "./ItemList";
 import useWindowWidth from "../../hooks/useWindowWidth";
-import { FullInvoiceProps } from "@/types/types";
-import { convertedDate } from "@/utils/utilityFunctions";
+import {FullInvoiceProps } from "../../types/types";
+import {convertedDate} from "../../utils/utilityFunctions";
 import {
   Address,
-  AddressEntry,
-  BottomEntry,
+  AddressEntry, BottomEntry,
   Card,
-  Description,
-  EmbeddedAddress,
-  GenericInvoiceEntry,
+  Description, EmbeddedAddress, GenericInvoiceEntry,
   IdAndDescription,
-  IDNumber,
-  InfoGrid,
-  NamePlusAddress,
-  TopEntry,
-  TopRow,
-} from "@/styles/FullInvoiceStyles";
+  IDNumber, InfoGrid, NamePlusAddress, TopEntry,
+  TopRow
+} from "../../styles/FullInvoiceStyles";
 
 function FullInvoice({ invoice }: FullInvoiceProps) {
   const width = useWindowWidth();

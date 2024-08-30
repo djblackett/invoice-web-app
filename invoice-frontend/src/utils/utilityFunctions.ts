@@ -1,6 +1,6 @@
 import { FieldValues } from "react-hook-form";
 import { v4 as uuidv4 } from "uuid";
-import { Invoice } from "@/types/types";
+import { Invoice } from "../types/types";
 
 export const generateId = () => {
   const list = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";

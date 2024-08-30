@@ -2,7 +2,7 @@
 // import renderer from "react-test-renderer";
 import { test, expect } from "@playwright/test";
 import { BASE_URL } from "../src/utils/config";
-// import NewInvoice from "../src/old_pages/NewInvoice";
+// import NewInvoice from "../src/pages/NewInvoice";
 
 test("New invoice page is rendered", async ({ page }) => {
   await page.goto(BASE_URL);
@@ -35,6 +35,9 @@ test("New invoice page is rendered", async ({ page }) => {
   await expect(newInvoicePage).toContainText(/Save as draft/i);
   await expect(newInvoicePage).toContainText("Save & Send");
 });
+
+
+
 
 // it("New invoice form renders correctly", () => {
 

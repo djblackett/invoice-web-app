@@ -15,13 +15,13 @@ const MenuContainer = styled.div`
   margin-top: 2.6rem;
   margin-bottom: 4rem;
   align-self: center;
-  transform: scale(0.9);
-
+  transform: scale(.90);
+  
   @media (min-width: 325px) {
     justify-content: space-between;
     transform: scale(1);
   }
-
+  
   @media (min-width: 768px) {
     margin-bottom: 0;
   }

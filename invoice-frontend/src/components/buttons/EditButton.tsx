@@ -3,10 +3,10 @@ import Proptypes from "prop-types";
 import React from "react";
 
 const Button = styled.button`
-  background-color: var(--colors-edit-button);
+  background-color: ${({ theme }) => theme.editButton};
   border-radius: 24px;
   padding: 16px 24px 17px 24px;
-  color: var(--colors-grey-text);
+  color: ${({ theme }) => theme.greyText};
   border: none;
   cursor: pointer;
   font-weight: 700;
@@ -17,7 +17,7 @@ const Button = styled.button`
   letter-spacing: -0.25px;
 
   &:hover {
-    background-color: var(--colors-edit-button-hover);
+    background-color: ${({ theme }) => theme.editButtonHover};
   }
 `;
 
@@ -27,10 +27,9 @@ type EditButtonProps = {
 };
 
 function EditButton({ toggleEditTab, isEditOpen }: EditButtonProps) {
+
   const handleClick = () => {
-    console.log(!isEditOpen);
     toggleEditTab(!isEditOpen);
-    console.log(!isEditOpen);
   };
   return (
     <Button onClick={handleClick} >

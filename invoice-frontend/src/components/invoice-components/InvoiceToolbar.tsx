@@ -4,7 +4,7 @@ import React, { useMemo } from "react";
 import useWindowWidth from "../../hooks/useWindowWidth";
 import ToolbarButtons from "../menus-toolbars/ToolbarButtons";
 import InvoiceStatus from "./InvoiceStatus";
-import { Invoice } from "@/types/types";
+import {Invoice } from "../../types/types";
 
 const Toolbar = styled.div`
   height: 88px;
@@ -19,12 +19,12 @@ const Toolbar = styled.div`
 
   @media (min-width: 600px) {
     display: flex;
-
+    
     flex-direction: row;
-    background-color: var(--colors-object-background);
+    background-color: ${({ theme }) => theme.background};
     border-radius: 8px;
   }
-
+  
   @media (min-width: 1200px) {
     max-width: 730px;
   }
@@ -39,7 +39,7 @@ const StatusContainer = styled.div`
   padding: 10px 20px;
   justify-content: space-between;
   align-items: center;
-  //background-color: var(--colors-background);
+  background-color: ${({ theme }) => theme.background};
   border-radius: 8px;
 
   @media (min-width: 600px) {
@@ -50,7 +50,7 @@ const StatusContainer = styled.div`
 
 const StatusText = styled.p`
   margin-right: 1rem;
-  color: var(--colors-grey-text);
+  color: ${({ theme }) => theme.greyText};
 `;
 
 export type InvoiceToolBarProps = {
@@ -69,7 +69,6 @@ function InvoiceToolbar({
 
   const openModal = () => setIsModalOpen(true);
 
-  // console.log(invoice.status)
   const invoiceStatus = useMemo(() => {
     if (invoice.status === "paid") {
       return <InvoiceStatus statusType="paid" text="Paid" />;
