@@ -8,7 +8,7 @@ services:
       - REACT_APP_BACKEND_URL=http://localhost/api
       - REACT_APP_ENV=development
     ports:
-      - "3000:3000"
+      - "5173:5173"
     networks:
       - my_network_dev
     volumes:
@@ -25,12 +25,13 @@ services:
 #    restart: unless-stopped
     ports:
       - "8000:8000"
+      - "4000:4000"
     environment:
       - NODE_ENV=development
       - PORT=8000
       - REQUEST_ORIGIN=http://proxy
       - SECRET=theSecretStuff
-      - DATABASE_URL=postgres://postgres:example@db-dev:5432/postgres?schema=public&connect_timout=300
+      - DATABASE_URL=postgres://postgres:example@db-dev:5432/db-dev?schema=public&connect_timout=300
     networks:
       - my_network_dev
     volumes:
@@ -51,7 +52,7 @@ services:
       - my_network_dev
     volumes:
       - pgdata-dev:/var/lib/postgresql/data
-      - ./init.sql:/docker-entrypoint-initdb.d/init.sql
+#      - ./init.sql:/docker-entrypoint-initdb.d/init.sql
     healthcheck:
       test: [ "CMD-SHELL", "pg_isready -U postgres" ]
       interval: 5s
@@ -63,7 +64,7 @@ services:
     image: adminer:4.8.1
     restart: always
     ports:
-      - "8080:8080"
+      - 8080:8080
     networks:
       - my_network_dev
 
@@ -71,6 +72,11 @@ services:
     image: nginx:1.25.2
     hostname: proxy-dev
     container_name: proxy-dev
+    depends_on:
+      backend-dev:
+        condition: service_started
+      frontend-dev:
+        condition: service_started
     tty: true
     stdin_open: true
     volumes:
@@ -84,5 +90,6 @@ services:
 networks:
   my_network_dev:
     driver: bridge
+
 volumes:
   pgdata-dev:
