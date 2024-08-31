@@ -28,7 +28,9 @@ export function getResolvers(invoiceService: InvoiceService, userService: UserSe
       allInvoices: async (_parent: unknown, _args: never, _context: PrismaContext) => {
         console.log("entered allInvoices resolver");
         try {
-          return invoiceService.getInvoices();
+          const result = await invoiceService.getInvoices();
+          console.log(result);
+          return result;
         } catch (error) {
           console.error(error);
           return error;

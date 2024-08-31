@@ -3,8 +3,6 @@ import { inject } from "inversify";
 import { InvoiceService } from "../services/invoice.service";
 import { getResolvers } from "../GraphQL/resolvers";
 import { controller, httpPost, requestBody } from "inversify-express-utils";
-import { Invoice } from "../constants/types";
-import { validateInvoiceData } from "../utils";
 import { UserService } from "../services/user.service";
 
 @controller("/api")

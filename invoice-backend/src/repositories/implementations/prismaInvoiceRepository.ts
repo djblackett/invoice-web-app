@@ -6,7 +6,7 @@ import { DatabaseConnection } from "../../database/prisma.database.connection";
 import { GraphQLError } from "graphql/error";
 import { Temporal } from "temporal-polyfill";
 import { IInvoiceRepo } from "../InvoiceRepo";
-import { validateInvoiceData, validateInvoiceList } from "../../utils";
+import { validateInvoiceData } from "../../utils";
 
 @injectable()
 export class PrismaInvoiceRepository implements IInvoiceRepo {
@@ -19,8 +19,7 @@ export class PrismaInvoiceRepository implements IInvoiceRepo {
     this.prisma = databaseConnection.getDatabase();
   }
 
-  async findAll(): Promise<Partial<Invoice>[]>
-  {
+  async findAll(): Promise<unknown> {
     try {
       const result: GetFindResult<Prisma.$InvoicePayload<DefaultArgs>, {
         include: { senderAddress: boolean; items: boolean; clientAddress: boolean }
@@ -32,10 +31,10 @@ export class PrismaInvoiceRepository implements IInvoiceRepo {
         },
       });
       // return validateInvoiceList(result);
-      return result as unknown as Partial<Invoice>[];
-    } catch (error: any) {
+      return result;
+    } catch (error) {
       console.error(error);
-      return error;
+      throw new Error("ServerError");
     }
   }
 
@@ -54,27 +53,27 @@ export class PrismaInvoiceRepository implements IInvoiceRepo {
 
       return validateInvoiceData(result);
 
-    } catch (error: any) {
+    } catch (error) {
       console.error(error);
-      return error;
+      throw new Error("ServerError");
     }
   }
 
   async findAllClientAddresses(): Promise<ClientAddress[] | null> {
     try {
       return await this.prisma.clientAddress.findMany();
-    } catch (error: any) {
+    } catch (error) {
       console.error(error);
-      return error;
+      throw new Error("ServerError");
     }
   }
 
   async findAllSenderAddresses(): Promise<ClientAddress[] | null> {
     try {
       return await this.prisma.senderAddress.findMany();
-    } catch (error: any) {
+    } catch (error) {
       console.error(error);
-      return error;
+      throw new Error("ServerError");
     }
   }
 
@@ -90,9 +89,9 @@ export class PrismaInvoiceRepository implements IInvoiceRepo {
           status: "paid",
         },
       });
-    } catch (error: any) {
+    } catch (error) {
       console.error(error);
-      return error;
+      throw new Error("ServerError");
     }
   }
 
@@ -140,8 +139,8 @@ export class PrismaInvoiceRepository implements IInvoiceRepo {
         },
       });
       console.log(updatedInvoice);
-      return updatedInvoice as unknown as Invoice;
-    } catch (error: any) {
+      return updatedInvoice;
+    } catch (error) {
       console.error(error);
       return error;
     }
@@ -180,10 +179,10 @@ export class PrismaInvoiceRepository implements IInvoiceRepo {
           items: {
             //ts-ignore
             create: invoice?.items?.map((item) => ({
-              name: item.name,
-              price: Number(item.price),
-              quantity: Number(item.quantity),
-              total: item.total,
+              name: item.name || "",
+              price: Number(item.price) || 0,
+              quantity: Number(item.quantity) || 0,
+              total: Number(item.total) || 0,
               id: item.id || undefined,
             })) || [],
           },
@@ -218,7 +217,7 @@ export class PrismaInvoiceRepository implements IInvoiceRepo {
           id,
         },
       });
-    } catch (error: any) {
+    } catch (error) {
       console.error(error);
       return error;
     }
