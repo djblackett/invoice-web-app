@@ -18,25 +18,33 @@ export class InvoiceService {
   };
 
   addInvoice = (invoice: Invoice) => {
+    console.log("Inside service:", invoice);
+    // return validateInvoiceData(invoice);
     return this.invoiceRepo.create(invoice);
   };
 
-  updateInvoice = async (id: string, invoiceUpdates: object): Promise<Invoice> => {
+  updateInvoice = async (id: string, invoiceUpdates: object) => {
     const oldInvoice = await this.getInvoiceById(id);
     if (!oldInvoice) {
       throw new Error("Invoice not found");
     }
     const newInvoiceUnvalidated = { ...oldInvoice, ...invoiceUpdates };
     const validatedInvoice = validateInvoiceData(newInvoiceUnvalidated);
-    return validateInvoiceData(this.invoiceRepo.editInvoice(id, validatedInvoice));
+
+    const result = await this.invoiceRepo.editInvoice(id, validatedInvoice);
+    console.log("Validated invoice after update:", result);
+
+    return validateInvoiceData(result);
   };
 
-  markAsPaid = (id: string) => {
-    return validateInvoiceData(this.invoiceRepo.markAsPaid(id));
+  markAsPaid = async (id: string) => {
+    const result = await this.invoiceRepo.markAsPaid(id);
+    console.log("Validated invoice after markAsPaid:", result);
+    return validateInvoiceData(result);
   };
 
   deleteInvoice = async (id: string) => {
-    return validateInvoiceData(this.invoiceRepo.deleteInvoice(id));
+    return await this.invoiceRepo.deleteInvoice(id);
   };
 
   getClientAddresses = async () => {

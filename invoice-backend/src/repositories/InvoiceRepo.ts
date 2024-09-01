@@ -6,5 +6,5 @@ export interface IInvoiceRepo {
   deleteInvoice: (id: string) => Promise<unknown>;
   markAsPaid: (id: string) => void;
   editInvoice: (id: string, invoiceUpdates: Partial<Invoice>) => Promise<unknown>;
-  create: (invoice: Invoice) => Promise<Invoice> | Invoice;
+  create: (invoice: Invoice) => Promise<unknown>
 }

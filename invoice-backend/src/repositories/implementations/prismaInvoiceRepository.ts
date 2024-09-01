@@ -1,9 +1,7 @@
-import { DefaultArgs, GetFindResult} from "@prisma/client/runtime/library";
-import { Prisma } from "@prisma/client";
+import { Prisma,  } from "@prisma/client";
 import { inject, injectable } from "inversify";
-import { ClientAddress, Invoice } from "../../constants/types";
+import { ClientAddress, Invoice, Item } from "../../constants/types";
 import { DatabaseConnection } from "../../database/prisma.database.connection";
-import { GraphQLError } from "graphql/error";
 import { Temporal } from "temporal-polyfill";
 import { IInvoiceRepo } from "../InvoiceRepo";
 import { validateInvoiceData } from "../../utils";
@@ -21,9 +19,7 @@ export class PrismaInvoiceRepository implements IInvoiceRepo {
 
   async findAll(): Promise<unknown> {
     try {
-      const result: GetFindResult<Prisma.$InvoicePayload<DefaultArgs>, {
-        include: { senderAddress: boolean; items: boolean; clientAddress: boolean }
-      }>[] = await this.prisma.invoice.findMany({
+      const result = await this.prisma.invoice.findMany({
         include: {
           items: true,
           clientAddress: true,
@@ -81,12 +77,17 @@ export class PrismaInvoiceRepository implements IInvoiceRepo {
 
   async markAsPaid(id: string) {
     try {
-      return await this.prisma.invoice.update({
+      return this.prisma.invoice.update({
         where: {
           id,
         },
         data: {
           status: "paid",
+        },
+        include: {
+          items: true,
+          clientAddress: true,
+          senderAddress: true,
         },
       });
     } catch (error) {
@@ -118,20 +119,39 @@ export class PrismaInvoiceRepository implements IInvoiceRepo {
           id: id,
         },
         data: {
-          ...(invoiceUpdates as Prisma.Without<
-            Prisma.InvoiceUpdateInput,
-            Prisma.InvoiceUncheckedUpdateInput
-          > &
-            Prisma.InvoiceUncheckedUpdateInput),
+          ...invoiceUpdates,
+          clientAddress: invoiceUpdates.clientAddress
+          ? {
+              update: {
+                street: invoiceUpdates.clientAddress.street,
+                city: invoiceUpdates.clientAddress.city,
+                postCode: invoiceUpdates.clientAddress.postCode,
+                country: invoiceUpdates.clientAddress.country,
+              },
+            }
+          : undefined,
+        senderAddress: invoiceUpdates.senderAddress
+          ? {
+              update: {
+                street: invoiceUpdates.senderAddress.street,
+                city: invoiceUpdates.senderAddress.city,
+                postCode: invoiceUpdates.senderAddress.postCode,
+                country: invoiceUpdates.senderAddress.country,
+              },
+            }
+          : undefined,
           items: {
             createMany: {
-              data: invoiceUpdates.items as
-                | Prisma.ItemCreateManyInvoiceInput
-                | Prisma.ItemCreateManyInvoiceInput[],
+              data: (invoiceUpdates.items as Item[]).map(item => ({
+              name: item.name,
+              price: item.price,
+              quantity: item.quantity,
+              total: item.total,
+            })) as Prisma.ItemCreateManyInput[],
               skipDuplicates: true,
             },
           },
-        },
+        } as Prisma.InvoiceUpdateInput,
         include: {
           items: true,
           clientAddress: true,
@@ -146,7 +166,7 @@ export class PrismaInvoiceRepository implements IInvoiceRepo {
     }
   }
 
-  async create(invoice: Invoice): Promise<Invoice>
+  async create(invoice: Invoice): Promise<unknown>
     {
     try {
       const result =  await this.prisma.invoice.create({
@@ -194,29 +214,34 @@ export class PrismaInvoiceRepository implements IInvoiceRepo {
         },
       });
 
+      console.log("Result:", result);
       return validateInvoiceData(result);
+      //  return result;
     } catch (error) {
-      console.log(error);
-      throw new GraphQLError(
-        "Creating the invoice failed. Make sure the id is unique",
-        {
-          extensions: {
-            code: "BAD_INVOICE_INPUT",
-            invalidinvoice: invoice.id,
-            error,
-          },
-        },
-      );
+      console.error(error);
+      return error;
+      // throw new GraphQLError(
+      //   "Creating the invoice failed. Make sure the id is unique",
+      //   {
+      //     extensions: {
+      //       code: "BAD_INVOICE_INPUT",
+      //       invalidinvoice: invoice.id,
+      //       error,
+      //     },
+      //   },
+      // );
     }
   }
 
   async deleteInvoice(id: string) {
     try {
-      return await this.prisma.invoice.delete({
+      const result = await this.prisma.invoice.delete({
         where: {
           id,
         },
       });
+      console.log("delete invoice result:", result);
+      return "Invoice deleted successfully";
     } catch (error) {
       console.error(error);
       return error;

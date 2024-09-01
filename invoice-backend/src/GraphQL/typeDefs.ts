@@ -107,7 +107,7 @@ type Query {
         clientName: String,
         createdAt: String,
         description: String,
-        id: String,
+        id: String
         items: [ItemInput],
         paymentDue: String,
         paymentTerms: Float,

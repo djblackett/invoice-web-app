@@ -81,26 +81,30 @@ export function getResolvers(invoiceService: InvoiceService, userService: UserSe
     Mutation: {
       addInvoice: async (_root: never, args: InvoiceCreateArgs) => {
         try {
+          console.log("args:", args);
           const newInvoice = await invoiceService.addInvoice(args);
           await pubsub.publish("INVOICE_ADDED", { invoiceAdded: newInvoice });
           return newInvoice;
         } catch (error) {
-          throw new GraphQLError(
-            "Creating the invoice failed. Make sure the id is unique",
-            {
-              extensions: {
-                code: "BAD_INVOICE_INPUT",
-                invalidArgs: args.id,
-                error,
-              },
-            },
-          );
+          console.error(error);
+          return error;
+          // throw new GraphQLError(
+          //   // "Creating the invoice failed. Make sure the id is unique",
+          //   "GraphQL error",
+          //   {
+          //     extensions: {
+          //       code: "BAD_INVOICE_INPUT",
+          //       invalidArgs: args.id,
+          //       error,
+          //     },
+          //   },
+          // );
         }
       },
       editInvoice: async (
         _parent: unknown,
         args: Partial<Invoice>,
-      ): Promise<Invoice> => {
+      ) => {
         // args contain all the potential fields for the invoice update
         // Build an update object dynamically
         const update: Partial<Invoice> = {};
@@ -124,25 +128,29 @@ export function getResolvers(invoiceService: InvoiceService, userService: UserSe
           });
         }
         try {
-          await invoiceService.updateInvoice(args.id, update);
+          const result = await invoiceService.updateInvoice(args.id, update);
+          console.log("edit invoice - result from resolver", result);
+           return result;
         } catch (error) {
           console.log(error);
-          throw new GraphQLError("Invoice could not be updated", {
-            extensions: {
-              code: "BAD_INVOICE_INPUT",
-              invalidArgs: args,
-              error,
-            },
-          });
+          return error;
+          // throw new GraphQLError("Invoice could not be updated", {
+          //   extensions: {
+          //     code: "BAD_INVOICE_INPUT",
+          //     invalidArgs: args,
+          //     error,
+          //   },
+          // });
         }
-        return {} as unknown as Invoice;
       },
       //
-      removeInvoice: async (_root: unknown, args: GetInvoiceByIdArgs, _context: QueryContext) => {
 
+      removeInvoice: async (_root: unknown, args: GetInvoiceByIdArgs, _context: QueryContext) => {
         try {
           return invoiceService.deleteInvoice(args.id);
         } catch (error) {
+           console.error(error);
+          //  return error;
           throw new GraphQLError(
             "Invoice could not be removed. Invoice may not exist",
             {
@@ -204,14 +212,17 @@ export function getResolvers(invoiceService: InvoiceService, userService: UserSe
         try {
           return invoiceService.markAsPaid(args.id);
         } catch (error) {
-          throw new GraphQLError("Invoice could not be marked as paid", {
-            extensions: {
-              code: "BAD_INVOICE_INPUT",
-              invalidArgs: args.id,
-              error,
-            },
-          });
+          console.error(error);
+          return error;
         }
+        //   throw new GraphQLError("Invoice could not be marked as paid", {
+        //     extensions: {
+        //       code: "BAD_INVOICE_INPUT",
+        //       invalidArgs: args.id,
+        //       error,
+        //     },
+        //   });
+        // }
       },
     },
     Subscription: {

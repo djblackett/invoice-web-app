@@ -1,8 +1,10 @@
 import { invoiceListZod, invoiceZod } from "./constants/types";
 
 export const validateInvoiceData = (inputs: unknown) => {
+  console.log(Array.isArray(inputs) ? 'Data is an array' : 'Data is not an array');
+  console.log("Inputs:", inputs);
   const validationResult = invoiceZod.safeParse(inputs);
-
+  console.log(validationResult.success);
   if (validationResult.success) {
     return validationResult.data;
   } else {

@@ -72,33 +72,34 @@ export interface Item {
 }
 
 export const itemsZod = z.object({
-  id: z.string().max(50).optional(),
-  name: z.string().max(50),
-  price: z.number(),
-  quantity: z.number(),
-  total: z.number(),
+  id: z.string().optional(),
+  name: z.string(),
+  price: z.coerce.number(),
+  quantity: z.coerce.number(),
+  total: z.coerce.number(),
 });
 
 export const addressZod = z.object({
-  street: z.string().max(50),
-  city: z.string().max(50),
-  postCode: z.string().max(50),
-  country: z.string().max(50),
+  id: z.number().optional(), // Assuming id is optional
+  street: z.string(),
+  city: z.string(),
+  postCode: z.string(),
+  country: z.string(),
 });
 
 export const invoiceZod = z.object({
   clientAddress: addressZod,
   clientEmail: z.string(),
-  clientName: z.string().max(50),
-  createdAt: z.string().min(4).max(50),
-  description: z.string().max(50),
-  id: z.string().max(50),
+  clientName: z.string(),
+  createdAt: z.string(),
+  description: z.string(),
+  id: z.string(),
   items: z.array(itemsZod),
-  paymentDue: z.string().max(50),
-  paymentTerms: z.number().min(0).max(30),
+  paymentDue: z.string(),
+  paymentTerms: z.number(),
   senderAddress: addressZod,
-  status: z.string().max(10),
-  total: z.number().min(0),
+  status: z.string(),
+  total: z.coerce.number(),
 });
 
 export const invoiceListZod = z.array(invoiceZod);
