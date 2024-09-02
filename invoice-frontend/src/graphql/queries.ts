@@ -84,8 +84,30 @@ export const ADD_INVOICE = gql`
 `;
 
 export const EDIT_INVOICE = gql`
-  mutation editInvoice($clientAddress: ClientInfo, $clientEmail: String, $clientName: String, $createdAt: String, $description: String, $editInvoiceId: String, $items: [ItemInput], $paymentDue: String, $paymentTerms: Float, $senderAddress: SenderInfo, $status: String, $total: Float) {
-  editInvoice(clientAddress: $clientAddress, clientEmail: $clientEmail, clientName: $clientName, createdAt: $createdAt, description: $description, id: $editInvoiceId, items: $items, paymentDue: $paymentDue, paymentTerms: $paymentTerms, senderAddress: $senderAddress, status: $status, total: $total) {
+  mutation editInvoice($clientAddress: ClientInfo,
+  $clientEmail: String,
+  $clientName: String,
+  $createdAt: String,
+  $description: String,
+  $id: String,
+  $items: [ItemInput],
+  $paymentDue: String,
+  $paymentTerms: Float,
+  $senderAddress: SenderInfo,
+  $status: String,
+  $total: Float) {
+  editInvoice(clientAddress: $clientAddress,
+  clientEmail: $clientEmail,
+  clientName: $clientName,
+  createdAt: $createdAt,
+  description: $description,
+  id: $id,
+  items: $items,
+  paymentDue: $paymentDue,
+  paymentTerms: $paymentTerms,
+  senderAddress: $senderAddress,
+  status: $status,
+  total: $total) {
     clientAddress {
       city
       country
@@ -115,7 +137,7 @@ export const EDIT_INVOICE = gql`
     status
     total
   }
-}
+  }
 `;
 
 export const CREATE_USER = gql`

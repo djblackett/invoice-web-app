@@ -1,6 +1,6 @@
 // import {describe, expect} from "jest"
-import { InvoiceService } from "../../src/services/invoice.service";
-import { PrismaInvoiceRepository } from "../../src/repositories/implementations/prismaInvoiceRepository";
+import { InvoiceService } from "../../src/services/invoice.service.ts";
+import { PrismaInvoiceRepository } from "../../src/repositories/implementations/prismaInvoiceRepository.ts";
 
 
 // Mock the PrismaInvoiceRepository module
