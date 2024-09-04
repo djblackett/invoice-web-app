@@ -1,4 +1,3 @@
-import "reflect-metadata";
 import http from "http";
 import typeDefs from "./GraphQL/typeDefs";
 import { WebSocketServer } from "ws";
@@ -13,13 +12,18 @@ import {
 } from "@apollo/server/plugin/landingPage/default";
 import { InversifyExpressServer } from "inversify-express-utils";
 import container from "./config/inversify.config";
-import { NODE_ENV, PORT, serverConfig, serverErrorConfig } from "./config/server.config";
+import {
+  NODE_ENV,
+  PORT,
+  serverConfig,
+  serverErrorConfig,
+} from "./config/server.config";
 
 import { expressMiddleware } from "@apollo/server/express4";
 import { createContext } from "./GraphQL/createContext";
 import "./controllers/invoice.controller";
 import InvoiceController from "./controllers/invoice.controller";
-import { Request, Response } from 'express';
+import { Request, Response } from "express";
 import { DatabaseConnection } from "./database/prisma.database.connection";
 // process.env.NODE_ENV = "production";
 
@@ -78,7 +82,6 @@ const start = async () => {
           await createContext({ req, connection }),
       }),
     );
-
 
     app.get("/api/ping", (_req: Request, res: Response) => {
       console.log("someone pinged here");

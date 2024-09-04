@@ -1,6 +1,6 @@
-import { inject, injectable } from "inversify";
+import { injectable } from "inversify";
 import { PrismaClient } from "@prisma/client";
-import { Logger } from "../config/logger.config";
+// import { Logger } from "../config/logger.config";
 import { IDatabaseConnection } from "./database.connection";
 
 @injectable()
@@ -9,7 +9,7 @@ export class DatabaseConnection implements IDatabaseConnection {
     errorFormat: "pretty",
   });
 
-  constructor(@inject(Logger) private readonly logger: Logger) {}
+  constructor() {} //
 
   public getDatabase() {
     return DatabaseConnection.prisma;
