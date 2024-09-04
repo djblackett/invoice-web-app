@@ -8,6 +8,12 @@
     {
       "extends": ["plugin:@typescript-eslint/disable-type-checked"],
       "files": ["./**/*.js"]
+    },
+    {
+      "files": ["tests/**/*"],
+      "env": {
+        "jest": true
+      }
     }
   ],
   "plugins": ["@typescript-eslint", "jest"],
