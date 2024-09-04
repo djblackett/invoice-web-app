@@ -1,75 +1,246 @@
-import { prismaMock } from "./prismaMock.ts";
-import  request  from "graphql-request";
+import "reflect-metadata";
+import { describe, expect, test, vi } from "vitest";
+import prisma from "../libs/__mocks__/prisma";
+import { PrismaInvoiceRepository } from "../src/repositories/implementations/prismaInvoiceRepository";
+import { DatabaseConnectionMock } from "./database.connection.mock";
+import { IDatabaseConnection } from "../src/database/database.connection";
+import { Invoice } from "@prisma/client";
+import {
+  Decimal,
+  PrismaClientKnownRequestError,
+} from "@prisma/client/runtime/library";
 
+vi.mock("../libs/prisma");
 const mockInvoiceParams = {
-    
-}
+  id: "D64FUO",
+  createdAt: "2021-08-21",
+  paymentDue: "2021-09-20",
+  description: "Graphic Design",
+  paymentTerms: 30,
+  clientName: "Alex Grim",
+  clientEmail: "alexgrim@mail.com",
+  status: "pending",
+  senderAddress: {
+    street: "19 Union Terrace",
+    city: "London",
+    postCode: "E1 3EZ",
+    country: "United Kingdom",
+  },
+  clientAddress: {
+    street: "84 Church Way",
+    city: "Bradford",
+    postCode: "BD1 9PB",
+    country: "United Kingdom",
+  },
+  items: [
+    {
+      id: "gjhgjhgjhg",
+      name: "Banner Design",
+      quantity: 1,
+      price: 156,
+      total: 156,
+    },
+    {
+      name: "Email Design",
+      quantity: 2,
+      price: 200,
+      total: 400,
+      id: "hgfdyrdyi456t",
+    },
+  ],
+  total: 556.0,
+};
 
-describe("GraphQL Mutation: createUser", () => {
-  it("should return 201 when creating a new user", async () => {
-    prismaMock.user.create.mockResolvedValue(mockUserPrismaResponse);
+const mockInvoicePrismaResponse = {
+  id: "D64FUO",
+  createdAt: "2021-08-21",
+  paymentDue: "2021-09-20",
+  description: "Graphic Design",
+  paymentTerms: 30,
+  clientName: "Alex Grim",
+  clientEmail: "alexgrim@mail.com",
+  status: "pending",
+  senderAddress: {
+    street: "19 Union Terrace",
+    city: "London",
+    postCode: "E1 3EZ",
+    country: "United Kingdom",
+  },
+  clientAddress: {
+    street: "84 Church Way",
+    city: "Bradford",
+    postCode: "BD1 9PB",
+    country: "United Kingdom",
+  },
+  items: [
+    {
+      name: "Banner Design",
+      quantity: 1,
+      price: 156,
+      total: 156,
+    },
+    {
+      name: "Email Design",
+      quantity: 2,
+      price: 200,
+      total: 400,
+    },
+  ],
+  total: 100.5,
+};
 
-    const mutation = `
-      mutation CreateUser($input: CreateUserInput!) {
-        createUser(input: $input) {
-          success
-          error
-          data {
-            id
-            username
-            email
-            // Add other fields that are expected in the response
-          }
-        }
-      }
-    `;
+const mockResponseWithIds = {
+  ...mockInvoicePrismaResponse,
+  clientAddressId: 1,
+  senderAddressId: 4,
+  total: new Decimal(mockInvoicePrismaResponse.total),
+};
 
-    const variables = {
-      input: mockUserParams,
-    };
+const mockRepo = new PrismaInvoiceRepository(
+  new DatabaseConnectionMock() as IDatabaseConnection,
+);
 
-    const response = await request(app)
-      .post("/graphql")
-      .send({
-        query: mutation,
-        variables,
-      });
+describe("GraphQL Mutation: createInvoice", () => {
+  test("should return invoice object with matching properties", async () => {
+    prisma.invoice.create.mockResolvedValue(
+      mockInvoicePrismaResponse as unknown as Invoice,
+    );
 
-    expect(response.status).toBe(201);
-    expect(response.body.data.createUser).toEqual({
-      success: true,
-      error: null,
-      data: mockUserApiResponse,
-    });
+    const createdInvoice = await mockRepo.create(mockInvoiceParams);
+
+    expect(createdInvoice).toStrictEqual(mockInvoicePrismaResponse);
   });
 
-  it("should return 400 when creating a new user with missing fields", async () => {
-    const mutation = `
-      mutation CreateUser($input: CreateUserInput!) {
-        createUser(input: $input) {
-          success
-          error
-          data
-        }
-      }
-    `;
+  test("should throw error when invoice ID already exists", async () => {
+    // Mock the implementation to throw a unique ID error
+    prisma.invoice.create.mockRejectedValue(
+      new PrismaClientKnownRequestError(
+        "Unique constraint failed on the fields: (`id`)",
+        {
+          code: "P2002",
+          clientVersion: "4.7.1",
+        },
+      ),
+    );
 
-    const variables = {
-      input: { ...mockUserParams, email: undefined },
+    // Expect the create method to reject with the correct error
+    await expect(mockRepo.create(mockInvoiceParams)).rejects.toThrow();
+    await expect(mockRepo.create(mockInvoiceParams)).rejects.toThrowError(
+      /Unique constraint failed on the fields: \(`id`\)/,
+    );
+  });
+
+  test("should throw error: Failed to create invoice", async () => {
+    // Mock the implementation to throw a specific error once
+    prisma.invoice.create.mockImplementation(() => {
+      throw new Error("Failed to create invoice");
+    });
+
+    // Expect the create method to reject with the correct error
+    await expect(mockRepo.create(mockInvoiceParams)).rejects.toThrowError(
+      "Failed to create invoice",
+    );
+  });
+
+  // Cannot figure our proper types for this with Prisma's autogenerated types
+  test("should create an invoice with missing optional fields", async () => {
+    // Create incomplete invoice params by omitting `clientEmail`
+    // @ts-expect-error: should be missing clientEmail property
+    const incompleteInvoiceParams: Partial<Invoice> = {
+      ...mockInvoiceParams,
+      clientEmail: undefined,
     };
 
-    const response = await request(app)
-      .post("/graphql")
-      .send({
-        query: mutation,
-        variables,
-      });
+    // The expected response should match the default value set by the `create` method
+    const expectedResponse: Invoice = {
+      ...mockInvoicePrismaResponse,
+      clientEmail: "", // `create` method sets it to an empty string if undefined
+    };
 
-    expect(response.status).toBe(400);
-    expect(response.body.data.createUser).toEqual({
-      success: false,
-      error: "ValidationError",
-      data: null,
-    });
+    // Mock the `prisma.invoice.create` method to return the expected response
+    prisma.invoice.create.mockResolvedValue(
+      expectedResponse as unknown as Invoice,
+    );
+
+    // Call the `create` method of the repository
+    const createdInvoice = await mockRepo.create(incompleteInvoiceParams);
+
+    // Validate that the `clientEmail` was set to an empty string
+    expect((createdInvoice as Invoice).clientEmail).toBe("");
+    // Ensure the entire object matches the expected response
+    expect(createdInvoice).toStrictEqual(expectedResponse);
+  });
+});
+
+describe("GraphQL Query: findAll", () => {
+  test("should return an array of invoices", async () => {
+    const mockInvoices: Invoice[] = [
+      {
+        ...mockResponseWithIds,
+        id: "D64FUO",
+      },
+      {
+        ...mockResponseWithIds,
+        id: "D64FUP",
+      },
+    ];
+
+    prisma.invoice.findMany.mockResolvedValue(mockInvoices);
+
+    const invoices = await mockRepo.findAll();
+
+    expect(invoices).toStrictEqual(mockInvoices);
+  });
+
+  test("should return an empty array if no invoices are found", async () => {
+    prisma.invoice.findMany.mockResolvedValue([]);
+
+    const invoices = await mockRepo.findAll();
+
+    expect(invoices).toStrictEqual([]);
+  });
+
+  test("should throw an error if an error occurs", async () => {
+    prisma.invoice.findMany.mockRejectedValue(new Error("Database error"));
+
+    await expect(mockRepo.findAll()).rejects.toThrowError("Database error");
+  });
+});
+
+describe("GraphQL Query: findById", () => {
+  test("should return an invoice object if found", async () => {
+    const mockInvoice: Invoice = {
+      ...mockResponseWithIds,
+      id: "D64FUO",
+    };
+
+    prisma.invoice.findUniqueOrThrow.mockResolvedValue(mockInvoice);
+
+    const invoice = await mockRepo.findById("D64FUO");
+
+    expect(invoice).toStrictEqual(mockInvoice);
+  });
+
+  test("should throw error if no invoice is found", async () => {
+    prisma.invoice.findUniqueOrThrow.mockRejectedValue(
+      new PrismaClientKnownRequestError("Invoice not found", {
+        code: "P2025",
+        clientVersion: "4.7.1",
+      }),
+    );
+
+    await expect(mockRepo.findById("FG86SE")).rejects.toThrowError(
+      /Invoice not found/,
+    );
+  });
+
+  test("should throw an error if an error occurs", async () => {
+    prisma.invoice.findUniqueOrThrow.mockRejectedValue(
+      new Error("Database error"),
+    );
+
+    await expect(mockRepo.findById("D64FUO")).rejects.toThrowError(
+      "Database error",
+    );
   });
 });
