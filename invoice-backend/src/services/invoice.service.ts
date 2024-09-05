@@ -5,7 +5,10 @@ import { inject, injectable } from "inversify";
 
 @injectable()
 export class InvoiceService {
-  constructor(@inject(PrismaInvoiceRepository) private readonly invoiceRepo: PrismaInvoiceRepository) {}
+  constructor(
+    @inject(PrismaInvoiceRepository)
+    private readonly invoiceRepo: PrismaInvoiceRepository,
+  ) {}
 
   getInvoices = async (): Promise<Invoice[]> => {
     const result = await this.invoiceRepo.findAll();
@@ -31,7 +34,7 @@ export class InvoiceService {
     const newInvoiceUnvalidated = { ...oldInvoice, ...invoiceUpdates };
     const validatedInvoice = validateInvoiceData(newInvoiceUnvalidated);
 
-    const result = await this.invoiceRepo.editInvoice(id, validatedInvoice);
+    const result = await this.invoiceRepo.update(id, validatedInvoice);
     console.log("Validated invoice after update:", result);
 
     return validateInvoiceData(result);
@@ -44,7 +47,7 @@ export class InvoiceService {
   };
 
   deleteInvoice = async (id: string) => {
-    return await this.invoiceRepo.deleteInvoice(id);
+    return await this.invoiceRepo.delete(id);
   };
 
   getClientAddresses = async () => {
@@ -54,7 +57,6 @@ export class InvoiceService {
   getSellerAddresses = async () => {
     return await this.invoiceRepo.findAllSenderAddresses();
   };
-
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   private mapUserErrorToResponse(error: any) {

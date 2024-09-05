@@ -4,7 +4,7 @@ import { ClientAddress, Invoice, Item } from "../../constants/types";
 import { DatabaseConnection } from "../../database/prisma.database.connection";
 import { Temporal } from "temporal-polyfill";
 import { IInvoiceRepo } from "../InvoiceRepo";
-import { validateInvoiceData } from "../../utils";
+import { Decimal } from "@prisma/client/runtime/library";
 
 @injectable()
 export class PrismaInvoiceRepository implements IInvoiceRepo {
@@ -26,10 +26,9 @@ export class PrismaInvoiceRepository implements IInvoiceRepo {
           senderAddress: true,
         },
       });
-      // return validateInvoiceList(result);
       return result;
-    } catch (error) {
-      throw new Error("Database error");
+    } catch (e) {
+      throw new Error(`Database error: ${e.message}`);
     }
   }
 
@@ -49,14 +48,7 @@ export class PrismaInvoiceRepository implements IInvoiceRepo {
       return result;
     } catch (e) {
       console.error(e);
-      if (
-        e instanceof Prisma.PrismaClientKnownRequestError &&
-        e.code === "P2025"
-      ) {
-        throw new Error("Invoice not found");
-      } else {
-        throw new Error(`Database error: ${e.message}`);
-      }
+      return prismaErrorHandler(e);
     }
   }
 
@@ -93,83 +85,77 @@ export class PrismaInvoiceRepository implements IInvoiceRepo {
           senderAddress: true,
         },
       });
-    } catch (error) {
-      console.error(error);
-      throw new Error("ServerError");
+    } catch (e) {
+      console.error(e);
+      return prismaErrorHandler(e);
     }
   }
 
-  async editInvoice(id: string, invoiceUpdates: Partial<Invoice>) {
+  async update(id: string, invoiceUpdates: Partial<Invoice>) {
     try {
-      // Deleting the items before updating to ensure that new copies are made. Prisma makes updating items and
-      // adding new ones at the same time really difficult.
-      if (invoiceUpdates.items && invoiceUpdates?.items?.length >= 1) {
-        await this.prisma.invoice.update({
+      const updatedInvoice = await this.prisma.$transaction(async (prisma) => {
+        if (invoiceUpdates.items && invoiceUpdates?.items?.length >= 1) {
+          await prisma.item.deleteMany({
+            where: { invoiceId: id },
+          });
+        }
+
+        const inputUpdateResult = await prisma.invoice.update({
           where: {
             id: id,
           },
           data: {
+            ...invoiceUpdates,
+            clientAddress: invoiceUpdates.clientAddress
+              ? {
+                  update: {
+                    street: invoiceUpdates.clientAddress.street,
+                    city: invoiceUpdates.clientAddress.city,
+                    postCode: invoiceUpdates.clientAddress.postCode,
+                    country: invoiceUpdates.clientAddress.country,
+                  },
+                }
+              : undefined,
+            senderAddress: invoiceUpdates.senderAddress
+              ? {
+                  update: {
+                    street: invoiceUpdates.senderAddress.street,
+                    city: invoiceUpdates.senderAddress.city,
+                    postCode: invoiceUpdates.senderAddress.postCode,
+                    country: invoiceUpdates.senderAddress.country,
+                  },
+                }
+              : undefined,
             items: {
-              deleteMany: {},
+              createMany: {
+                data: (invoiceUpdates.items as Item[]).map((item) => ({
+                  name: item.name,
+                  price: item.price,
+                  quantity: item.quantity,
+                  total: item.total,
+                })) as Prisma.ItemCreateManyInput[],
+                skipDuplicates: true,
+              },
             },
+          } as Prisma.InvoiceUpdateInput,
+          include: {
+            items: true,
+            clientAddress: true,
+            senderAddress: true,
           },
         });
-        console.log("Original items deleted");
-      }
 
-      const updatedInvoice = await this.prisma.invoice.update({
-        where: {
-          id: id,
-        },
-        data: {
-          ...invoiceUpdates,
-          clientAddress: invoiceUpdates.clientAddress
-            ? {
-                update: {
-                  street: invoiceUpdates.clientAddress.street,
-                  city: invoiceUpdates.clientAddress.city,
-                  postCode: invoiceUpdates.clientAddress.postCode,
-                  country: invoiceUpdates.clientAddress.country,
-                },
-              }
-            : undefined,
-          senderAddress: invoiceUpdates.senderAddress
-            ? {
-                update: {
-                  street: invoiceUpdates.senderAddress.street,
-                  city: invoiceUpdates.senderAddress.city,
-                  postCode: invoiceUpdates.senderAddress.postCode,
-                  country: invoiceUpdates.senderAddress.country,
-                },
-              }
-            : undefined,
-          items: {
-            createMany: {
-              data: (invoiceUpdates.items as Item[]).map((item) => ({
-                name: item.name,
-                price: item.price,
-                quantity: item.quantity,
-                total: item.total,
-              })) as Prisma.ItemCreateManyInput[],
-              skipDuplicates: true,
-            },
-          },
-        } as Prisma.InvoiceUpdateInput,
-        include: {
-          items: true,
-          clientAddress: true,
-          senderAddress: true,
-        },
+        return inputUpdateResult;
       });
-      console.log(updatedInvoice);
+
       return updatedInvoice;
-    } catch (error) {
-      console.error(error);
-      return error;
+    } catch (e) {
+      console.error(e);
+      return prismaErrorHandler(e);
     }
   }
 
-  async create(invoice: Invoice): Promise<unknown> {
+  async create(invoice: Invoice | Partial<Invoice>): Promise<unknown> {
     try {
       const result = await this.prisma.invoice.create({
         data: {
@@ -184,7 +170,7 @@ export class PrismaInvoiceRepository implements IInvoiceRepo {
             Temporal.Now.plainDateISO().add({ days: 1 }).toLocaleString(),
           paymentTerms: invoice.paymentTerms || 14,
           status: invoice.status || "",
-          total: invoice.total || 0,
+          total: new Decimal(Number(invoice.total)) || 0,
           clientAddress: {
             create: {
               city: invoice?.clientAddress?.city || "",
@@ -202,7 +188,6 @@ export class PrismaInvoiceRepository implements IInvoiceRepo {
             },
           },
           items: {
-            //ts-ignore
             create:
               invoice?.items?.map((item) => ({
                 name: item.name || "",
@@ -220,9 +205,7 @@ export class PrismaInvoiceRepository implements IInvoiceRepo {
         },
       });
 
-      // console.log("Result:", result);
-      return validateInvoiceData(result);
-      //  return result;
+      return result;
     } catch (e) {
       if (
         e instanceof Prisma.PrismaClientKnownRequestError &&
@@ -230,12 +213,12 @@ export class PrismaInvoiceRepository implements IInvoiceRepo {
       ) {
         throw new Error("Unique constraint failed on the fields: (`id`)");
       } else {
-        throw new Error("Failed to create invoice");
+        throw new Error(`Failed to create invoice: ${e.message}`);
       }
     }
   }
 
-  async deleteInvoice(id: string) {
+  async delete(id: string) {
     try {
       const result = await this.prisma.invoice.delete({
         where: {
@@ -243,10 +226,23 @@ export class PrismaInvoiceRepository implements IInvoiceRepo {
         },
       });
       console.log("delete invoice result:", result);
-      return "Invoice deleted successfully";
-    } catch (error) {
-      console.error(error);
-      return error;
+      return result;
+    } catch (e) {
+      console.error(e);
+      return prismaErrorHandler(e);
     }
   }
 }
+
+const prismaErrorHandler = (e: any): never => {
+  if (e instanceof Prisma.PrismaClientKnownRequestError && e.code === "P2002") {
+    throw new Error("Unique constraint failed on the fields: (`id`)");
+  } else if (
+    e instanceof Prisma.PrismaClientKnownRequestError &&
+    e.code === "P2025"
+  ) {
+    throw new Error("Invoice not found");
+  } else {
+    throw new Error(`Database error: ${e.message}`);
+  }
+};

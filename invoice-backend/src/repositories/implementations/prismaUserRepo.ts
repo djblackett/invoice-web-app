@@ -1,9 +1,10 @@
 import { inject, injectable } from "inversify";
 import { IUserRepo } from "../userRepo";
 import { DatabaseConnection } from "../../database/prisma.database.connection";
-import { CreateUserArgs } from "../../constants/types";
-import { GraphQLError } from "graphql/error";
+import { CreateUserArgs, ReturnedUser } from "../../constants/types";
+import { Prisma, User } from "@prisma/client";
 
+// todo - separate the logic and types for user creation before encryption and afterwards
 
 @injectable()
 export class PrismaUserRepo implements IUserRepo {
@@ -21,52 +22,68 @@ export class PrismaUserRepo implements IUserRepo {
       return await this.prisma.user.findMany();
     } catch (error: any) {
       console.error(error);
-      return error;
+      throw new Error("Failed to fetch users");
     }
   }
 
-  async findUserById(id: number) {
+  async findUserById(id: number): Promise<User> {
     try {
-      return await this.prisma.user.findUnique({
+      const user = await this.prisma.user.findUniqueOrThrow({
         where: {
           id,
         },
       });
-    } catch (error: any) {
-      console.error(error);
-      return error;
+      return user;
+    } catch (e: any) {
+      console.error(e);
+      if (
+        e instanceof Prisma.PrismaClientKnownRequestError &&
+        e.code === "P2025"
+      ) {
+        throw new Error("User not found");
+      }
+
+      throw new Error("Failed to fetch user");
     }
   }
 
-  async createUser(userArgs: CreateUserArgs, hashedPassword: string) {
-    return this.prisma.user
-      .create({
+  async createUser(
+    userArgs: CreateUserArgs,
+    hashedPassword: string,
+  ): Promise<ReturnedUser> {
+    try {
+      return this.prisma.user.create({
         data: {
           name: userArgs.name,
           username: userArgs.username,
           passwordHash: hashedPassword,
         },
-      })
-      .catch((error: unknown) => {
-        throw new GraphQLError("Creating the user failed", {
-          extensions: {
-            code: "BAD_USER_INPUT",
-            invalidArgs: userArgs.username,
-            error,
-          },
-        });
       });
+    } catch (e: any) {
+      if (
+        e instanceof Prisma.PrismaClientKnownRequestError &&
+        e.code === "P2002"
+      ) {
+        throw new Error("Unique constraint failed on the fields: (`username`)");
+      }
+      throw new Error("Database error");
+    }
   }
 
   // Move login logic to its own files
-
   // todo distinguish between logging in for first time, and fetching correct user from auth header
   loginUser = async (username: string, password: string) => {
-    return this.prisma.user.findUnique({
-      where: {
-        username,
-      },
-    });
-  };
+    password; // todo - fix this when i have a better sense of what logging in requires
 
+    try {
+      return this.prisma.user.findUniqueOrThrow({
+        where: {
+          username,
+        },
+      });
+    } catch (e) {
+      console.error(e);
+      throw new Error("Failed to fetch user");
+    }
+  };
 }
