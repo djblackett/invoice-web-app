@@ -2,12 +2,12 @@ import { inject, injectable } from "inversify";
 import { PrismaUserRepo } from "../repositories/implementations/prismaUserRepo";
 import { CreateUserArgs } from "../constants/types";
 import bcrypt from "bcrypt";
+import { IUserRepo } from "../repositories/userRepo";
 
 @injectable()
 export class UserService {
-  constructor(@inject(PrismaUserRepo) private readonly userRepo: PrismaUserRepo) {}
+  constructor(@inject(PrismaUserRepo) private readonly userRepo: IUserRepo) {}
 
-// todo - move these to separate file
   createUser = async (args: CreateUserArgs) => {
     const hashedPassword = await bcrypt.hash(args.password, 10);
     return await this.userRepo.createUser(args, hashedPassword);
@@ -24,5 +24,4 @@ export class UserService {
   getUser = async (id: number) => {
     return await this.userRepo.findUserById(id);
   };
-
 }

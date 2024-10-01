@@ -2,25 +2,39 @@ import { PrismaInvoiceRepository } from "../repositories/implementations/prismaI
 import { Invoice } from "../constants/types";
 import { validateInvoiceData, validateInvoiceList } from "../utils";
 import { inject, injectable } from "inversify";
+import { IInvoiceRepo } from "../repositories/InvoiceRepo";
 
 @injectable()
 export class InvoiceService {
-  constructor(@inject(PrismaInvoiceRepository) private readonly invoiceRepo: PrismaInvoiceRepository) {}
+  constructor(
+    @inject(PrismaInvoiceRepository)
+    private readonly invoiceRepo: IInvoiceRepo,
+  ) {}
 
   getInvoices = async (): Promise<Invoice[]> => {
-    const result = await this.invoiceRepo.findAll();
-    console.log(result);
-    return validateInvoiceList(result);
+    try {
+      const result = await this.invoiceRepo.findAll();
+      console.log(result);
+      return validateInvoiceList(result);
+    } catch (e) {
+      console.error(e);
+      throw new Error("Validation failed: " + e.message);
+    }
   };
 
-  getInvoiceById = (id: string) => {
-    return this.invoiceRepo.findById(id);
+  getInvoiceById = async (id: string) => {
+    try {
+      return validateInvoiceData(await this.invoiceRepo.findById(id));
+    } catch (e) {
+      console.error(e);
+      throw new Error("Validation failed: " + e.message);
+    }
   };
 
-  addInvoice = (invoice: Invoice) => {
+  addInvoice = async (invoice: Invoice) => {
     console.log("Inside service:", invoice);
     // return validateInvoiceData(invoice);
-    return this.invoiceRepo.create(invoice);
+    return validateInvoiceData(await this.invoiceRepo.create(invoice));
   };
 
   updateInvoice = async (id: string, invoiceUpdates: object) => {
@@ -31,30 +45,29 @@ export class InvoiceService {
     const newInvoiceUnvalidated = { ...oldInvoice, ...invoiceUpdates };
     const validatedInvoice = validateInvoiceData(newInvoiceUnvalidated);
 
-    const result = await this.invoiceRepo.editInvoice(id, validatedInvoice);
+    const result = await this.invoiceRepo.update(id, validatedInvoice);
     console.log("Validated invoice after update:", result);
 
     return validateInvoiceData(result);
   };
 
   markAsPaid = async (id: string) => {
-    const result = await this.invoiceRepo.markAsPaid(id);
+    const result = this.invoiceRepo.markAsPaid(id);
     console.log("Validated invoice after markAsPaid:", result);
     return validateInvoiceData(result);
   };
 
   deleteInvoice = async (id: string) => {
-    return await this.invoiceRepo.deleteInvoice(id);
+    return validateInvoiceData(await this.invoiceRepo.delete(id));
   };
 
-  getClientAddresses = async () => {
-    return await this.invoiceRepo.findAllClientAddresses();
-  };
+  // getClientAddresses = async () => {
+  //   return await this.invoiceRepo.findAllClientAddresses();
+  // };
 
-  getSellerAddresses = async () => {
-    return await this.invoiceRepo.findAllSenderAddresses();
-  };
-
+  // getSellerAddresses = async () => {
+  //   return await this.invoiceRepo.findAllSenderAddresses();
+  // };
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   private mapUserErrorToResponse(error: any) {

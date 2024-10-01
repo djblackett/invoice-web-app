@@ -1,3 +1,4 @@
+import "reflect-metadata";
 import http from "http";
 import typeDefs from "./GraphQL/typeDefs";
 import { WebSocketServer } from "ws";

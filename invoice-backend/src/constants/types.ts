@@ -110,12 +110,19 @@ export interface ContextArgs {
 }
 
 export interface QueryContext extends BaseContext {
-  currentUser: ReturnedUser;
+  user?: ReturnedUser;
+  connection?: GraphQLWSContext;
 }
 
 export interface MyContext extends BaseContext {
-  token?: string;
+  // token?: string;
   applyMiddleware?: unknown;
+  connection?: GraphQLWSContext;
+  user?: {
+    id: number;
+    name: string;
+    username: string;
+  };
 }
 
 export interface User {
@@ -125,11 +132,13 @@ export interface User {
   passwordHash: string;
 }
 
-export interface ReturnedUser {
-  id: number;
-  name: string;
-  username: string;
-}
+// export interface ReturnedUser {
+//   id: number;
+//   name: string;
+//   username: string;
+// }
+
+export type ReturnedUser = Omit<User, "passwordHash">;
 
 export interface CreateUserArgs {
   name: string;

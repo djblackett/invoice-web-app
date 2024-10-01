@@ -5,8 +5,9 @@ import {
   Invoice,
   InvoiceCreateArgs,
   LoginArgs,
-  MarkAsPaidArgs, QueryContext,
-  ReturnedUser
+  MarkAsPaidArgs,
+  QueryContext,
+  ReturnedUser,
 } from "../constants/types";
 import { GraphQLError } from "graphql/error";
 import { PubSub } from "graphql-subscriptions";
@@ -22,10 +23,17 @@ interface PrismaContext {
   prisma: PrismaClient;
 }
 
-export function getResolvers(invoiceService: InvoiceService, userService: UserService) {
+export function getResolvers(
+  invoiceService: InvoiceService,
+  userService: UserService,
+) {
   return {
     Query: {
-      allInvoices: async (_parent: unknown, _args: never, _context: PrismaContext) => {
+      allInvoices: async (
+        _parent: unknown,
+        _args: never,
+        _context: PrismaContext,
+      ) => {
         console.log("entered allInvoices resolver");
         try {
           const result = await invoiceService.getInvoices();
@@ -44,28 +52,28 @@ export function getResolvers(invoiceService: InvoiceService, userService: UserSe
           throw new GraphQLError("Invoice not found");
         }
       },
-      getAllClientAddresses: async () => {
-        try {
-          return invoiceService.getClientAddresses();
-        } catch (error) {
-          throw new GraphQLError("Couldn't fetch clientAddresses", {
-            extensions: {
-              error: error,
-            },
-          });
-        }
-      },
-      getAllSenderAddresses: async () => {
-        try {
-          return invoiceService.getSellerAddresses();
-        } catch (error) {
-          throw new GraphQLError("Couldn't fetch senderAddresses", {
-            extensions: {
-              error: error,
-            },
-          });
-        }
-      },
+      // getAllClientAddresses: async () => {
+      //   try {
+      //     return invoiceService.getClientAddresses();
+      //   } catch (error) {
+      //     throw new GraphQLError("Couldn't fetch clientAddresses", {
+      //       extensions: {
+      //         error: error,
+      //       },
+      //     });
+      //   }
+      // },
+      // getAllSenderAddresses: async () => {
+      //   try {
+      //     return invoiceService.getSellerAddresses();
+      //   } catch (error) {
+      //     throw new GraphQLError("Couldn't fetch senderAddresses", {
+      //       extensions: {
+      //         error: error,
+      //       },
+      //     });
+      //   }
+      // },
       allUsers: async () => {
         try {
           return userService.getUsers();
@@ -88,23 +96,9 @@ export function getResolvers(invoiceService: InvoiceService, userService: UserSe
         } catch (error) {
           console.error(error);
           return error;
-          // throw new GraphQLError(
-          //   // "Creating the invoice failed. Make sure the id is unique",
-          //   "GraphQL error",
-          //   {
-          //     extensions: {
-          //       code: "BAD_INVOICE_INPUT",
-          //       invalidArgs: args.id,
-          //       error,
-          //     },
-          //   },
-          // );
         }
       },
-      editInvoice: async (
-        _parent: unknown,
-        args: Partial<Invoice>,
-      ) => {
+      editInvoice: async (_parent: unknown, args: Partial<Invoice>) => {
         // args contain all the potential fields for the invoice update
         // Build an update object dynamically
         const update: Partial<Invoice> = {};
@@ -130,26 +124,23 @@ export function getResolvers(invoiceService: InvoiceService, userService: UserSe
         try {
           const result = await invoiceService.updateInvoice(args.id, update);
           console.log("edit invoice - result from resolver", result);
-           return result;
+          return result;
         } catch (error) {
           console.log(error);
           return error;
-          // throw new GraphQLError("Invoice could not be updated", {
-          //   extensions: {
-          //     code: "BAD_INVOICE_INPUT",
-          //     invalidArgs: args,
-          //     error,
-          //   },
-          // });
         }
       },
       //
 
-      removeInvoice: async (_root: unknown, args: GetInvoiceByIdArgs, _context: QueryContext) => {
+      removeInvoice: async (
+        _root: unknown,
+        args: GetInvoiceByIdArgs,
+        _context: QueryContext,
+      ) => {
         try {
           return invoiceService.deleteInvoice(args.id);
         } catch (error) {
-           console.error(error);
+          console.error(error);
           //  return error;
           throw new GraphQLError(
             "Invoice could not be removed. Invoice may not exist",
@@ -190,24 +181,23 @@ export function getResolvers(invoiceService: InvoiceService, userService: UserSe
           console.log("Server env secret not set");
           return;
         }
-          console.log("before match");
-          const match = await bcrypt.compare(args.password, user.passwordHash);
+        console.log("before match");
+        const match = await bcrypt.compare(args.password, user.passwordHash);
 
-          console.log("match:", match);
-          if (match) {
-            // let jwt;
-            return {
-              value: jwt.sign(JSON.stringify(user), SECRET),
-            };
-          } else {
-            throw new GraphQLError("wrong credentials", {
-              extensions: {
-                code: "BAD_USER_INPUT",
-              },
-            });
-          }
+        console.log("match:", match);
+        if (match) {
+          // let jwt;
+          return {
+            value: jwt.sign(JSON.stringify(user), SECRET),
+          };
+        } else {
+          throw new GraphQLError("wrong credentials", {
+            extensions: {
+              code: "BAD_USER_INPUT",
+            },
+          });
         }
-      ,
+      },
       markAsPaid: async (_root: unknown, args: MarkAsPaidArgs) => {
         try {
           return invoiceService.markAsPaid(args.id);
@@ -215,14 +205,6 @@ export function getResolvers(invoiceService: InvoiceService, userService: UserSe
           console.error(error);
           return error;
         }
-        //   throw new GraphQLError("Invoice could not be marked as paid", {
-        //     extensions: {
-        //       code: "BAD_INVOICE_INPUT",
-        //       invalidArgs: args.id,
-        //       error,
-        //     },
-        //   });
-        // }
       },
     },
     Subscription: {

@@ -7,6 +7,11 @@ import { IDatabaseConnection } from "./database.connection";
 export class DatabaseConnection implements IDatabaseConnection {
   static prisma = new PrismaClient({
     errorFormat: "pretty",
+    // omit: {
+    //   user: {
+    //     passwordHash: true,
+    //   },
+    // },
   });
 
   constructor() {} //

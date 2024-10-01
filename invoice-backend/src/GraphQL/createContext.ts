@@ -1,16 +1,19 @@
 import jwt from "jsonwebtoken";
-import { ContextArgs } from "../constants/types";
+import { ContextArgs, QueryContext, ReturnedUser } from "../constants/types";
 import container from "../config/inversify.config";
 import { SECRET } from "../config/server.config";
 import { UserService } from "../services/user.service";
 
 const DEBUG = false;
 
-export async function createContext({ req, connection }: ContextArgs) {
+export async function createContext({
+  req,
+  connection,
+}: ContextArgs): Promise<QueryContext> {
   if (connection) {
     // This is a subscription request
     DEBUG && console.log(connection);
-    return connection;
+    return { connection };
   }
 
   // This is a regular request
@@ -19,15 +22,16 @@ export async function createContext({ req, connection }: ContextArgs) {
 
   DEBUG && console.log("Regular request, checking authorization header...");
   const auth = req?.headers.authorization;
+  // console.log("auth", auth);
 
   if (!auth) {
     DEBUG && console.log("No authorization header, returning early.");
-    return;
+    return {};
   }
 
-  if ( !auth.startsWith("Bearer ")) {
+  if (!auth.startsWith("Bearer ")) {
     DEBUG && console.log("Invalid authorization header, returning early.");
-    return;
+    return {};
   }
 
   if (!SECRET) {
@@ -40,13 +44,25 @@ export async function createContext({ req, connection }: ContextArgs) {
 
     if (typeof decodedToken === "string") {
       DEBUG && console.log(decodedToken);
-      return;
+      return {};
     }
 
     const userService = container.get(UserService);
-    return await userService.getUser(decodedToken.id);
+    const user = await userService.getUser(decodedToken.id);
+    if (user) {
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
+      const userNoPassword: ReturnedUser = {
+        id: user.id,
+        name: user.name,
+        username: user.username,
+      };
+      // return { user: userNoPassword };
+      return {};
+    }
+    return {};
   } catch (error) {
     DEBUG && console.error("JWT verification failed", error);
+    throw new Error(`JWT verification failed: ${error.message}`);
   }
 }
 console.log("After createContext");
