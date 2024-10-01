@@ -1,6 +1,11 @@
 import { CreateUserArgs, ReturnedUser, User } from "../constants/types";
+import { CreateUserArgs, ReturnedUser, User } from "../constants/types";
 
 export interface IUserRepo {
+  createUser: (
+    userArgs: CreateUserArgs,
+    hashedPassword: string,
+  ) => Promise<ReturnedUser>;
   createUser: (
     userArgs: CreateUserArgs,
     hashedPassword: string,
