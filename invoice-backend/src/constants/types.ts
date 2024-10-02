@@ -102,6 +102,24 @@ export const invoiceZod = z.object({
   total: z.coerce.number(),
 });
 
+export const userCreateZod = z.object({
+  id: z.number(),
+  name: z.string(),
+  username: z.string(),
+  password: z.string(),
+});
+
+export const userZod = z.object({
+  id: z.number(),
+  name: z.string(),
+  username: z.string(),
+});
+
+export const loggedInUserZod = z.object({
+  id: z.number(),
+  username: z.string(),
+});
+
 export const invoiceListZod = z.array(invoiceZod);
 
 export interface ContextArgs {
@@ -144,7 +162,7 @@ export interface CreateUserArgsHashedPassword extends CreateUserArgs {
   hashedPassword: string;
 }
 
-export interface CreateUserArgsUnhashedPassword {
+export interface CreateUserArgsUnhashedPassword extends CreateUserArgs {
   password: string;
 }
 

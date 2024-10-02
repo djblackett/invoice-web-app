@@ -8,8 +8,6 @@ import {
 } from "../../constants/types";
 import { Prisma, User } from "@prisma/client";
 
-// todo - separate the logic and types for user creation before encryption and afterwards
-
 @injectable()
 export class PrismaUserRepo implements IUserRepo {
   protected prisma;

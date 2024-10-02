@@ -1,27 +1,46 @@
 import { inject, injectable } from "inversify";
 import { PrismaUserRepo } from "../repositories/implementations/prismaUserRepo";
-import { CreateUserArgs } from "../constants/types";
+import {
+  CreateUserArgsHashedPassword,
+  CreateUserArgsUnhashedPassword,
+} from "../constants/types";
 import bcrypt from "bcrypt";
 import { IUserRepo } from "../repositories/userRepo";
+import { validateReturnedUser, validateUserCreate } from "../utils";
 
 @injectable()
 export class UserService {
   constructor(@inject(PrismaUserRepo) private readonly userRepo: IUserRepo) {}
 
-  createUser = async (args: CreateUserArgs) => {
+  createUser = async (args: CreateUserArgsUnhashedPassword) => {
+    const validatedArgs = validateUserCreate(args);
     const hashedPassword = await bcrypt.hash(args.password, 10);
-    return await this.userRepo.createUser(args, hashedPassword);
+
+    const userArgs: CreateUserArgsHashedPassword = {
+      name: validatedArgs.name,
+      username: validatedArgs.username,
+      hashedPassword: hashedPassword,
+    };
+
+    const result = await this.userRepo.createUser(userArgs);
+    return result;
   };
 
   getUsers = async () => {
-    return await this.userRepo.findAllUsers();
+    const userList = await this.userRepo.findAllUsers();
+    const validatedUserList = validateReturnedUser(userList);
+    return validatedUserList;
   };
 
-  login = async (email: string, password: string) => {
-    return await this.userRepo.loginUser(email, password);
+  login = async (username: string, password: string) => {
+    const loggedInUser = await this.userRepo.loginUser(username, password);
+    const validatedLoggedInUser = validateReturnedUser(loggedInUser);
+    return validatedLoggedInUser;
   };
 
   getUser = async (id: number) => {
-    return await this.userRepo.findUserById(id);
+    const result = await this.userRepo.findUserById(id);
+    const validatedUser = validateReturnedUser(result);
+    return validatedUser;
   };
 }
