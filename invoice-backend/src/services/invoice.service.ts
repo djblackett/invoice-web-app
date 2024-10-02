@@ -46,7 +46,6 @@ export class InvoiceService {
     const validatedInvoice = validateInvoiceData(newInvoiceUnvalidated);
 
     const result = await this.invoiceRepo.update(id, validatedInvoice);
-    const result = await this.invoiceRepo.update(id, validatedInvoice);
     console.log("Validated invoice after update:", result);
 
     return validateInvoiceData(result);
