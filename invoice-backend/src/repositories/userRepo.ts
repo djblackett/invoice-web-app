@@ -1,4 +1,9 @@
-import { CreateUserArgs, ReturnedUser, User } from "../constants/types";
+import {
+  CreateUserArgs,
+  LoggedInUser,
+  ReturnedUser,
+  User,
+} from "../constants/types";
 
 export interface IUserRepo {
   createUser: (
@@ -7,5 +12,8 @@ export interface IUserRepo {
   ) => Promise<ReturnedUser>;
   findAllUsers: () => Promise<User[]>;
   findUserById: (id: number) => Promise<User | null>;
-  loginUser: (username: string, password: string) => Promise<User | null>;
+  loginUser: (
+    username: string,
+    passwordHash: string,
+  ) => Promise<LoggedInUser | null>;
 }

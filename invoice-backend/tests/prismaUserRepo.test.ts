@@ -5,20 +5,30 @@ import { DatabaseConnectionMock } from "./database.connection.mock";
 import { IDatabaseConnection } from "../src/database/database.connection";
 import { PrismaClientKnownRequestError } from "@prisma/client/runtime/library";
 import { PrismaUserRepo } from "../src/repositories/implementations/prismaUserRepo";
-import { CreateUserArgs, User } from "../src/constants/types";
+import {
+  CreateUserArgsHashedPassword,
+  LoggedInUser,
+  ReturnedUser,
+  User,
+} from "../src/constants/types";
 
 vi.mock("../libs/prisma");
 
-const mockUserArgs: Partial<CreateUserArgs> = {
+const mockUserArgs: CreateUserArgsHashedPassword = {
+  name: "John Doe",
+  username: "johndoe",
+  hashedPassword: "hashedpassword123",
+};
+
+const mockUser: ReturnedUser = {
+  id: 1,
   name: "John Doe",
   username: "johndoe",
 };
 
-const mockUser: Partial<User> | User = {
+const mockLoggedInUser: LoggedInUser = {
   id: 1,
-  name: "John Doe",
   username: "johndoe",
-  // passwordHash: "hashedpassword123",
 };
 
 beforeEach(() => {
@@ -94,10 +104,7 @@ describe("createUser", () => {
   test("should create a new user", async () => {
     prisma.user.create.mockResolvedValue(mockUser as User);
 
-    const createdUser = await userRepo.createUser({
-      ...mockUserArgs,
-      password: "hashedpassword123",
-    });
+    const createdUser = await userRepo.createUser(mockUserArgs);
     expect(createdUser).toEqual(mockUser);
   });
 
@@ -109,15 +116,16 @@ describe("createUser", () => {
       }),
     );
 
-    await expect(
-      userRepo.createUser(mockUserArgs, "hashedpassword123"),
-    ).rejects.toThrowError(/Username already exists/);
+    await expect(userRepo.createUser(mockUserArgs)).rejects.toThrowError(
+      /Username already exists/,
+    );
   });
 });
 
 describe("loginUser", () => {
   test("should return user by username", async () => {
-    prisma.user.findUniqueOrThrow.mockResolvedValue(mockUser);
+    // todo - why is this type conversion necessary?
+    prisma.user.findUniqueOrThrow.mockResolvedValue(mockLoggedInUser as User);
 
     const user = await userRepo.loginUser("johndoe", "password123");
     expect(user).toEqual(mockUser);
@@ -131,7 +139,6 @@ describe("loginUser", () => {
       }),
     );
 
-    // const user = await userRepo.loginUser("unknownuser", "password123");
     await expect(
       userRepo.loginUser("johndoe", "password123"),
     ).rejects.toThrowError(/username not found/);

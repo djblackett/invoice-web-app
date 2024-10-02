@@ -132,19 +132,23 @@ export interface User {
   passwordHash: string;
 }
 
-// export interface ReturnedUser {
-//   id: number;
-//   name: string;
-//   username: string;
-// }
-
 export type ReturnedUser = Omit<User, "passwordHash">;
+export type LoggedInUser = Omit<ReturnedUser, "name">;
 
 export interface CreateUserArgs {
   name: string;
   username: string;
+}
+
+export interface CreateUserArgsHashedPassword extends CreateUserArgs {
+  hashedPassword: string;
+}
+
+export interface CreateUserArgsUnhashedPassword {
   password: string;
 }
+
+export type CreateUserNoName = Omit<CreateUserArgs, "name">;
 
 export interface LoginArgs {
   username: string;

@@ -1,7 +1,11 @@
 import { inject, injectable } from "inversify";
 import { IUserRepo } from "../userRepo";
 import { DatabaseConnection } from "../../database/prisma.database.connection";
-import { CreateUserArgs, ReturnedUser } from "../../constants/types";
+import {
+  CreateUserArgsHashedPassword,
+  LoggedInUser,
+  ReturnedUser,
+} from "../../constants/types";
 import { Prisma, User } from "@prisma/client";
 
 // todo - separate the logic and types for user creation before encryption and afterwards
@@ -48,15 +52,14 @@ export class PrismaUserRepo implements IUserRepo {
   }
 
   async createUser(
-    userArgs: CreateUserArgs,
-    hashedPassword: string,
+    userArgs: CreateUserArgsHashedPassword,
   ): Promise<ReturnedUser> {
     try {
       return this.prisma.user.create({
         data: {
           name: userArgs.name,
           username: userArgs.username,
-          passwordHash: hashedPassword,
+          passwordHash: userArgs.hashedPassword,
         },
       });
     } catch (e: any) {
@@ -72,11 +75,26 @@ export class PrismaUserRepo implements IUserRepo {
 
   // Move login logic to its own files
   // todo distinguish between logging in for first time, and fetching correct user from auth header
-  loginUser = async (username: string, password: string) => {
-    return this.prisma.user.findUnique({
-      where: {
-        username,
-      },
-    });
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  loginUser = async (
+    username: string,
+    passwordHash: string,
+  ): Promise<LoggedInUser | null> => {
+    try {
+      const result = (await this.prisma.user.findUnique({
+        where: {
+          username,
+          passwordHash,
+        },
+      })) as ReturnedUser;
+
+      return {
+        id: result.id,
+        username: result.username,
+      };
+    } catch (e: any) {
+      console.error(e);
+      return null;
+    }
   };
 }
