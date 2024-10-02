@@ -79,7 +79,7 @@ export class PrismaUserRepo implements IUserRepo {
     passwordHash: string,
   ): Promise<LoggedInUser | null> => {
     try {
-      const result = (await this.prisma.user.findUnique({
+      const result = (await this.prisma.user.findUniqueOrThrow({
         where: {
           username,
           passwordHash,
@@ -92,7 +92,16 @@ export class PrismaUserRepo implements IUserRepo {
       };
     } catch (e: any) {
       console.error(e);
-      return null;
+
+      if (
+        e instanceof Prisma.PrismaClientKnownRequestError &&
+        e.code === "P2025"
+      ) {
+        throw new Error("Incorrect username or password");
+      }
+
+      // todo - usernotfound error and incorrect password error
+      throw new Error("Database error");
     }
   };
 }

@@ -128,12 +128,12 @@ describe("loginUser", () => {
     prisma.user.findUniqueOrThrow.mockResolvedValue(mockLoggedInUser as User);
 
     const user = await userRepo.loginUser("johndoe", "password123");
-    expect(user).toEqual(mockUser);
+    expect(user).toEqual(mockLoggedInUser);
   });
 
   test("should handle error when user not found by username", async () => {
     prisma.user.findUniqueOrThrow.mockRejectedValue(
-      new PrismaClientKnownRequestError("username not found", {
+      new PrismaClientKnownRequestError("Incorrect username or password", {
         code: "P2025",
         clientVersion: "5.19.0",
       }),
@@ -141,7 +141,7 @@ describe("loginUser", () => {
 
     await expect(
       userRepo.loginUser("johndoe", "password123"),
-    ).rejects.toThrowError(/username not found/);
+    ).rejects.toThrowError(/Incorrect username or password/);
   });
 
   test("should handle error when login fails", async () => {
