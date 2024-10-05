@@ -3,7 +3,6 @@ import { IUserRepo } from "../userRepo";
 import { DatabaseConnection } from "../../database/prisma.database.connection";
 import {
   CreateUserArgsHashedPassword,
-  LoggedInUser,
   ReturnedUser,
 } from "../../constants/types";
 import { Prisma, User } from "@prisma/client";
@@ -77,19 +76,16 @@ export class PrismaUserRepo implements IUserRepo {
   loginUser = async (
     username: string,
     passwordHash: string,
-  ): Promise<LoggedInUser | null> => {
+  ): Promise<User | null> => {
     try {
-      const result = (await this.prisma.user.findUniqueOrThrow({
+      const result = await this.prisma.user.findUniqueOrThrow({
         where: {
           username,
           passwordHash,
         },
-      })) as ReturnedUser;
+      });
 
-      return {
-        id: result.id,
-        username: result.username,
-      };
+      return result;
     } catch (e: any) {
       console.error(e);
 

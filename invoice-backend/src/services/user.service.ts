@@ -7,6 +7,9 @@ import {
 import bcrypt from "bcrypt";
 import { IUserRepo } from "../repositories/userRepo";
 import { validateReturnedUser, validateUserCreate } from "../utils";
+import { GraphQLError } from "graphql";
+import { SECRET } from "../config/server.config";
+import jwt from "jsonwebtoken";
 
 @injectable()
 export class UserService {
@@ -33,8 +36,38 @@ export class UserService {
   };
 
   login = async (username: string, password: string) => {
-    const loggedInUser = await this.userRepo.loginUser(username, password);
-    const validatedLoggedInUser = validateReturnedUser(loggedInUser);
+    const user = await this.userRepo.loginUser(username, password);
+
+    if (!SECRET) {
+      console.log("Server env secret not set");
+      return;
+    }
+
+    console.log("before match");
+
+    // todo - adjust code and types so that returned user has passwordhash, but it doesn't get sent outside of service
+
+    if (user) {
+      const match = await bcrypt.compare(password, user.passwordHash);
+
+      // todo - does this go in middleware, or is that for receiving the webtoken?
+      // todo - what should be returned? webtoken? Currently doesn't make sense
+      console.log("match:", match);
+      if (match) {
+        // let jwt;
+        return {
+          value: jwt.sign(JSON.stringify(user), SECRET),
+        };
+      } else {
+        throw new GraphQLError("wrong credentials", {
+          extensions: {
+            code: "BAD_USER_INPUT",
+          },
+        });
+      }
+    }
+    const validatedLoggedInUser = validateReturnedUser(user);
+
     return validatedLoggedInUser;
   };
 
