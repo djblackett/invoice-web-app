@@ -2,6 +2,7 @@ import { z } from "zod";
 import express from "express";
 import { BaseContext } from "@apollo/server/dist/cjs";
 import { Context as GraphQLWSContext } from "graphql-ws";
+import { PrismaClient } from "@prisma/client";
 
 export interface Invoice {
   clientAddress: ClientAddress;
@@ -209,3 +210,7 @@ export interface InvoiceCreateArgs {
 }
 
 export type MarkAsPaidArgs = GetInvoiceByIdArgs;
+
+export interface PrismaContext {
+  prisma: PrismaClient;
+}

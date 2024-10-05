@@ -1,6 +1,6 @@
 import { inject } from "inversify";
 import { InvoiceService } from "../services/invoice.service";
-import { getResolvers } from "../GraphQL/resolvers";
+import { getResolvers } from "../resolvers/index";
 import { controller } from "inversify-express-utils";
 import { UserService } from "../services/user.service";
 

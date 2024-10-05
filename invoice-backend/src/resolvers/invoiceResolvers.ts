@@ -1,32 +1,18 @@
-import { PrismaClient } from "@prisma/client";
+import { GraphQLError } from "graphql/error/GraphQLError";
+import { InvoiceService } from "../services/invoice.service";
 import {
-  CreateUserArgsUnhashedPassword,
   GetInvoiceByIdArgs,
   Invoice,
   InvoiceCreateArgs,
-  LoginArgs,
   MarkAsPaidArgs,
+  PrismaContext,
   QueryContext,
-  ReturnedUser,
 } from "../constants/types";
-import { GraphQLError } from "graphql/error";
 import { PubSub } from "graphql-subscriptions";
-import { InvoiceService } from "../services/invoice.service";
-import bcrypt from "bcrypt";
-import jwt from "jsonwebtoken";
-import { SECRET } from "../config/server.config";
-import { UserService } from "../services/user.service";
 
 const pubsub = new PubSub();
 
-export interface PrismaContext {
-  prisma: PrismaClient;
-}
-
-export function getResolvers(
-  invoiceService: InvoiceService,
-  userService: UserService,
-) {
+export function getInvoiceResolvers(invoiceService: InvoiceService) {
   return {
     Query: {
       allInvoices: async (
@@ -50,39 +36,6 @@ export function getResolvers(
           return invoice;
         } else {
           throw new GraphQLError("Invoice not found");
-        }
-      },
-      // getAllClientAddresses: async () => {
-      //   try {
-      //     return invoiceService.getClientAddresses();
-      //   } catch (error) {
-      //     throw new GraphQLError("Couldn't fetch clientAddresses", {
-      //       extensions: {
-      //         error: error,
-      //       },
-      //     });
-      //   }
-      // },
-      // getAllSenderAddresses: async () => {
-      //   try {
-      //     return invoiceService.getSellerAddresses();
-      //   } catch (error) {
-      //     throw new GraphQLError("Couldn't fetch senderAddresses", {
-      //       extensions: {
-      //         error: error,
-      //       },
-      //     });
-      //   }
-      // },
-      allUsers: async () => {
-        try {
-          return userService.getUsers();
-        } catch (error) {
-          throw new GraphQLError("Couldn't fetch users", {
-            extensions: {
-              error: error,
-            },
-          });
         }
       },
     },
@@ -152,53 +105,6 @@ export function getResolvers(
               },
             },
           );
-        }
-      },
-      createUser: async (
-        _root: unknown,
-        args: CreateUserArgsUnhashedPassword,
-      ) => {
-        const user = await userService.createUser(args);
-        const userNoPassword: ReturnedUser = {
-          id: user.id,
-          name: user.name,
-          username: user.username,
-        };
-        return userNoPassword;
-      },
-
-      login: async (_root: unknown, args: LoginArgs) => {
-        const user = await userService.login(args.username, args.password);
-
-        if (!user) {
-          throw new GraphQLError("User does not exist", {
-            extensions: {
-              code: "BAD_USER_INPUT",
-            },
-          });
-        }
-
-        console.log(user);
-
-        if (!SECRET) {
-          console.log("Server env secret not set");
-          return;
-        }
-        console.log("before match");
-        const match = await bcrypt.compare(args.password, user.passwordHash);
-
-        console.log("match:", match);
-        if (match) {
-          // let jwt;
-          return {
-            value: jwt.sign(JSON.stringify(user), SECRET),
-          };
-        } else {
-          throw new GraphQLError("wrong credentials", {
-            extensions: {
-              code: "BAD_USER_INPUT",
-            },
-          });
         }
       },
       markAsPaid: async (_root: unknown, args: MarkAsPaidArgs) => {
