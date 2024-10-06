@@ -4,9 +4,13 @@ import express, { Application, NextFunction, Request, Response } from "express";
 import cors from "cors";
 import { BaseException, InternalServerException } from "./exception.config";
 
-export const SECRET = process.env.SECRET;
+export const SECRET = process.env.SECRET || "";
 export const PORT = process.env.PORT || 8000;
 export const NODE_ENV = process.env.NODE_ENV || "development";
+
+if (!SECRET) {
+  throw new Error("Server env secret not set");
+}
 
 export function serverConfig(app: Application) {
   app.use(

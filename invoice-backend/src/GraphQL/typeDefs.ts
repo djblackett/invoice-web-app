@@ -82,6 +82,9 @@ type Query {
    getAllClientAddresses: [ClientAddress]
    getAllSenderAddresses: [SenderAddress]
    allUsers: [User]
+   getUserById(
+     id: number!
+   ): User
    me: User
  }
 

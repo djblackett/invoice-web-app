@@ -1,6 +1,6 @@
 import { PrismaClient } from "@prisma/client";
 import {
-  CreateUserArgsUnhashedPassword,
+  CreateUserDTO,
   GetInvoiceByIdArgs,
   Invoice,
   InvoiceCreateArgs,
@@ -154,10 +154,7 @@ export function getResolvers(
           );
         }
       },
-      createUser: async (
-        _root: unknown,
-        args: CreateUserArgsUnhashedPassword,
-      ) => {
+      createUser: async (_root: unknown, args: CreateUserDTO) => {
         const user = await userService.createUser(args);
         const userNoPassword: ReturnedUser = {
           id: user.id,

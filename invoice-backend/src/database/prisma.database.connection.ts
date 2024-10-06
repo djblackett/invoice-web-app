@@ -1,17 +1,16 @@
 import { injectable } from "inversify";
 import { PrismaClient } from "@prisma/client";
-// import { Logger } from "../config/logger.config";
 import { IDatabaseConnection } from "./database.connection";
 
 @injectable()
 export class DatabaseConnection implements IDatabaseConnection {
   static prisma = new PrismaClient({
     errorFormat: "pretty",
-    // omit: {
-    //   user: {
-    //     passwordHash: true,
-    //   },
-    // },
+    omit: {
+      user: {
+        passwordHash: true,
+      },
+    },
   });
 
   constructor() {} //

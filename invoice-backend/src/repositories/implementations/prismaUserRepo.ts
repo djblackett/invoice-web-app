@@ -1,11 +1,8 @@
 import { inject, injectable } from "inversify";
 import { IUserRepo } from "../userRepo";
 import { DatabaseConnection } from "../../database/prisma.database.connection";
-import {
-  CreateUserArgsHashedPassword,
-  ReturnedUser,
-} from "../../constants/types";
-import { Prisma, User } from "@prisma/client";
+import { UserEntity, ReturnedUser, UserDTO } from "../../constants/types";
+import { Prisma } from "@prisma/client";
 
 @injectable()
 export class PrismaUserRepo implements IUserRepo {
@@ -23,11 +20,11 @@ export class PrismaUserRepo implements IUserRepo {
       return await this.prisma.user.findMany();
     } catch (error: any) {
       console.error(error);
-      throw new Error("Failed to fetch users");
+      throw new Error("Database error");
     }
   }
 
-  async findUserById(id: number): Promise<User> {
+  async findUserById(id: number): Promise<UserDTO> {
     try {
       const user = await this.prisma.user.findUniqueOrThrow({
         where: {
@@ -48,15 +45,13 @@ export class PrismaUserRepo implements IUserRepo {
     }
   }
 
-  async createUser(
-    userArgs: CreateUserArgsHashedPassword,
-  ): Promise<ReturnedUser> {
+  async createUser(userArgs: UserEntity): Promise<ReturnedUser> {
     try {
       return this.prisma.user.create({
         data: {
           name: userArgs.name,
           username: userArgs.username,
-          passwordHash: userArgs.hashedPassword,
+          passwordHash: userArgs.passwordHash,
         },
       });
     } catch (e: any) {
@@ -70,18 +65,17 @@ export class PrismaUserRepo implements IUserRepo {
     }
   }
 
-  // Move login logic to its own files
-  // todo distinguish between logging in for first time, and fetching correct user from auth header
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  loginUser = async (
-    username: string,
-    passwordHash: string,
-  ): Promise<User | null> => {
+  findUserByUsername = async (username: string): Promise<UserEntity | null> => {
     try {
       const result = await this.prisma.user.findUniqueOrThrow({
+        select: {
+          id: true,
+          name: true,
+          username: true,
+          passwordHash: true,
+        },
         where: {
           username,
-          passwordHash,
         },
       });
 
@@ -95,8 +89,6 @@ export class PrismaUserRepo implements IUserRepo {
       ) {
         throw new Error("Incorrect username or password");
       }
-
-      // todo - usernotfound error and incorrect password error
       throw new Error("Database error");
     }
   };

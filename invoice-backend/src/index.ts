@@ -53,6 +53,7 @@ const start = async () => {
     const server = new ApolloServer<MyContext>({
       schema,
       introspection: true,
+      status400ForVariableCoercionErrors: true,
       plugins: [
         ApolloServerPluginDrainHttpServer({ httpServer }),
         {

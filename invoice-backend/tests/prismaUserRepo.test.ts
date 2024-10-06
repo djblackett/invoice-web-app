@@ -6,7 +6,7 @@ import { IDatabaseConnection } from "../src/database/database.connection";
 import { PrismaClientKnownRequestError } from "@prisma/client/runtime/library";
 import { PrismaUserRepo } from "../src/repositories/implementations/prismaUserRepo";
 import {
-  CreateUserArgsHashedPassword,
+  UserEntity,
   LoggedInUser,
   ReturnedUser,
   User,
@@ -14,10 +14,10 @@ import {
 
 vi.mock("../libs/prisma");
 
-const mockUserArgs: CreateUserArgsHashedPassword = {
+const mockUserArgs: UserEntity = {
   name: "John Doe",
   username: "johndoe",
-  hashedPassword: "hashedpassword123",
+  passwordHash: "hashedpassword123",
 };
 
 const mockUser: ReturnedUser = {
@@ -58,13 +58,11 @@ describe("findAllUsers", () => {
   });
 
   test("should handle error when fetching all users", async () => {
-    prisma.user.findMany.mockRejectedValue(new Error("Failed to fetch users"));
+    prisma.user.findMany.mockRejectedValue(new Error("Database error"));
 
     // const result = await ;
 
-    expect(userRepo.findAllUsers()).rejects.toThrowError(
-      "Failed to fetch users",
-    ); // Check that the error is returned as expected
+    expect(userRepo.findAllUsers()).rejects.toThrowError("Database error"); // Check that the error is returned as expected
   });
 });
 
@@ -127,7 +125,7 @@ describe("loginUser", () => {
     // todo - why is this type conversion necessary?
     prisma.user.findUniqueOrThrow.mockResolvedValue(mockLoggedInUser as User);
 
-    const user = await userRepo.loginUser("johndoe", "password123");
+    const user = await userRepo.findUserByUsername("johndoe", "password123");
     expect(user).toEqual(mockLoggedInUser);
   });
 
@@ -140,7 +138,7 @@ describe("loginUser", () => {
     );
 
     await expect(
-      userRepo.loginUser("johndoe", "password123"),
+      userRepo.findUserByUsername("johndoe", "password123"),
     ).rejects.toThrowError(/Incorrect username or password/);
   });
 
@@ -150,7 +148,7 @@ describe("loginUser", () => {
     );
 
     await expect(
-      userRepo.loginUser("johndoe", "password123"),
+      userRepo.findUserByUsername("johndoe", "password123"),
     ).rejects.toThrowError(/Database error/);
   });
 });

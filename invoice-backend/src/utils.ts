@@ -1,9 +1,12 @@
+import { ValidationException } from "./config/exception.config";
 import {
-  CreateUserArgsUnhashedPassword,
+  CreateUserDTO,
   invoiceListZod,
   invoiceZod,
   ReturnedUser,
   userCreateZod,
+  UserDTO,
+  UserEntity,
   userZod,
 } from "./constants/types";
 
@@ -13,7 +16,7 @@ export const validateInvoiceData = (inputs: unknown) => {
   if (validationResult.success) {
     return validationResult.data;
   } else {
-    throw new Error(
+    throw new ValidationException(
       `Validation failed: ${JSON.stringify(validationResult.error.issues)}`,
     );
   }
@@ -25,7 +28,7 @@ export const validateInvoiceList = (inputs: unknown) => {
   if (validationResult.success) {
     return validationResult.data;
   } else {
-    throw new Error(
+    throw new ValidationException(
       `Validation failed: ${JSON.stringify(validationResult.error.issues)}`,
     );
   }
@@ -35,9 +38,9 @@ export const validateUserCreate = (inputs: unknown) => {
   const validationResult = userCreateZod.safeParse(inputs);
 
   if (validationResult.success) {
-    return validationResult.data as CreateUserArgsUnhashedPassword;
+    return validationResult.data as CreateUserDTO;
   } else {
-    throw new Error(
+    throw new ValidationException(
       `Validation failed: ${JSON.stringify(validationResult.error.issues)}`,
     );
   }
@@ -49,7 +52,7 @@ export const validateReturnedUser = (inputs: unknown) => {
   if (validationResult.success) {
     return validationResult.data as ReturnedUser;
   } else {
-    throw new Error(
+    throw new ValidationException(
       `Validation failed: ${JSON.stringify(validationResult.error.issues)}`,
     );
   }
@@ -59,10 +62,17 @@ export const validateUserList = (inputs: unknown) => {
   const validationResult = userZod.array().safeParse(inputs);
 
   if (validationResult.success) {
-    return validationResult.data as ReturnedUser[];
+    return validationResult.data as UserDTO[];
   } else {
-    throw new Error(
+    throw new ValidationException(
       `Validation failed: ${JSON.stringify(validationResult.error.issues)}`,
     );
   }
 };
+
+export function mapUserEntityToDTO(user: UserEntity): UserDTO {
+  return {
+    name: user.name,
+    username: user.username,
+  };
+}

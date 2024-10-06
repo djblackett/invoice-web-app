@@ -1,77 +1,81 @@
 import { GraphQLError } from "graphql";
 import { UserService } from "../services/user.service";
-import { SECRET } from "../config/server.config";
-import bcrypt from "bcrypt";
-import jwt from "jsonwebtoken";
+import { CreateUserDTO, LoginArgs } from "../constants/types";
 import {
-  CreateUserArgsUnhashedPassword,
-  ReturnedUser,
-  LoginArgs,
-} from "../constants/types";
+  NotFoundException,
+  UnauthorizedException,
+} from "../config/exception.config";
 
 export function getUserResolvers(userService: UserService) {
   return {
     Query: {
       allUsers: async () => {
         try {
-          return userService.getUsers();
+          return await userService.getUsers();
         } catch (error) {
-          throw new GraphQLError("Couldn't fetch users", {
+          // console.error(error);
+          console.error("Error caught in resolver", error);
+          throw new GraphQLError("Internal server error", {
             extensions: {
-              error: error,
+              code: "INTERNAL_SERVER_ERROR",
             },
           });
         }
       },
     },
+
     Mutation: {
-      createUser: async (
-        _root: unknown,
-        args: CreateUserArgsUnhashedPassword,
-      ) => {
-        const user = await userService.createUser(args);
-        const userNoPassword: ReturnedUser = {
-          id: user.id,
-          name: user.name,
-          username: user.username,
-        };
-        return userNoPassword;
+      createUser: async (_root: unknown, args: CreateUserDTO) => {
+        try {
+          const user = await userService.createUser(args);
+          return user;
+        } catch (error) {
+          console.error(error);
+          if (error.name === "ValidationError") {
+            throw new GraphQLError("Validation error", {
+              extensions: {
+                code: "BAD_USER_INPUT",
+                error: error.message,
+              },
+            });
+          } else {
+            throw new GraphQLError("Internal server error", {
+              extensions: {
+                code: "INTERNAL_SERVER_ERROR",
+              },
+            });
+          }
+        }
       },
 
       login: async (_root: unknown, args: LoginArgs) => {
-        const user = await userService.login(args.username, args.password);
-
-        if (!user) {
-          throw new GraphQLError("User does not exist", {
-            extensions: {
-              code: "BAD_USER_INPUT",
-            },
-          });
-        }
-
-        console.log(user);
-
-        if (!SECRET) {
-          console.log("Server env secret not set");
-          return;
-        }
-
-        console.log("before match");
-        // todo - adjust code and types so that returned user has passwordhash, but it doesn't get sent outside of service
-        const match = await bcrypt.compare(args.password, user.passwordHash);
-
-        console.log("match:", match);
-        if (match) {
-          // let jwt;
-          return {
-            value: jwt.sign(JSON.stringify(user), SECRET),
-          };
-        } else {
-          throw new GraphQLError("wrong credentials", {
-            extensions: {
-              code: "BAD_USER_INPUT",
-            },
-          });
+        try {
+          const loginResponse = await userService.login(
+            args.username,
+            args.password,
+          );
+          return loginResponse;
+        } catch (error) {
+          console.error(error);
+          if (error instanceof NotFoundException) {
+            throw new GraphQLError("User not found", {
+              extensions: {
+                code: "BAD_USER_INPUT",
+              },
+            });
+          } else if (error instanceof UnauthorizedException) {
+            throw new GraphQLError("Invalid username or password", {
+              extensions: {
+                code: "UNAUTHENTICATED",
+              },
+            });
+          } else {
+            throw new GraphQLError("Internal server error", {
+              extensions: {
+                code: "INTERNAL_SERVER_ERROR",
+              },
+            });
+          }
         }
       },
     },

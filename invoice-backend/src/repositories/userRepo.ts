@@ -1,12 +1,8 @@
-import {
-  CreateUserArgsHashedPassword,
-  ReturnedUser,
-  User,
-} from "../constants/types";
+import { UserEntity, ReturnedUser, UserDTO } from "../constants/types";
 
 export interface IUserRepo {
-  createUser: (userArgs: CreateUserArgsHashedPassword) => Promise<ReturnedUser>;
+  createUser: (userArgs: UserEntity) => Promise<UserDTO>;
   findAllUsers: () => Promise<ReturnedUser[]>;
-  findUserById: (id: number) => Promise<User | null>;
-  loginUser: (username: string, passwordHash: string) => Promise<User | null>;
+  findUserById: (id: number) => Promise<UserDTO | null>;
+  findUserByUsername: (username: string) => Promise<UserEntity | null>;
 }

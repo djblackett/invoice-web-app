@@ -152,19 +152,32 @@ export interface User {
 }
 
 export type ReturnedUser = Omit<User, "passwordHash">;
+
 export type LoggedInUser = Omit<ReturnedUser, "name">;
+
+export interface LoginResponseDTO {
+  token: string;
+  user: UserDTO;
+}
 
 export interface CreateUserArgs {
   name: string;
   username: string;
 }
 
-export interface CreateUserArgsHashedPassword extends CreateUserArgs {
-  hashedPassword: string;
+export interface UserEntity extends CreateUserArgs {
+  id?: number;
+  passwordHash: string;
 }
 
-export interface CreateUserArgsUnhashedPassword extends CreateUserArgs {
+export interface CreateUserDTO extends CreateUserArgs {
   password: string;
+}
+
+export interface UserDTO {
+  id?: number;
+  name: string;
+  username: string;
 }
 
 export type CreateUserNoName = Omit<CreateUserArgs, "name">;
