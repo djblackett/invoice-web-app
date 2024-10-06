@@ -125,7 +125,7 @@ describe("loginUser", () => {
     // todo - why is this type conversion necessary?
     prisma.user.findUniqueOrThrow.mockResolvedValue(mockLoggedInUser as User);
 
-    const user = await userRepo.findUserByUsername("johndoe", "password123");
+    const user = await userRepo.findUserByUsername("johndoe");
     expect(user).toEqual(mockLoggedInUser);
   });
 
@@ -137,9 +137,9 @@ describe("loginUser", () => {
       }),
     );
 
-    await expect(
-      userRepo.findUserByUsername("johndoe", "password123"),
-    ).rejects.toThrowError(/Incorrect username or password/);
+    await expect(userRepo.findUserByUsername("johndoe")).rejects.toThrowError(
+      /Incorrect username or password/,
+    );
   });
 
   test("should handle error when login fails", async () => {
@@ -147,9 +147,9 @@ describe("loginUser", () => {
       new Error("Database error"),
     );
 
-    await expect(
-      userRepo.findUserByUsername("johndoe", "password123"),
-    ).rejects.toThrowError(/Database error/);
+    await expect(userRepo.findUserByUsername("johndoe")).rejects.toThrowError(
+      /Database error/,
+    );
   });
 });
 // });
