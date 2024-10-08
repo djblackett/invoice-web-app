@@ -46,7 +46,6 @@ describe("Query.allUsers", () => {
     userServiceMock.getUsers.mockRejectedValue(
       new InternalServerException("Internal server error"),
     );
-    userResolvers.Query.allUsers;
     try {
       await userResolvers.Query.allUsers();
     } catch (error) {
