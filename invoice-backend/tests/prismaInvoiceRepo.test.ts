@@ -1,7 +1,10 @@
 import "reflect-metadata";
 import { describe, expect, test, vi } from "vitest";
 import prisma from "../libs/__mocks__/prisma";
-import { PrismaInvoiceRepository } from "../src/repositories/implementations/prismaInvoiceRepository";
+import {
+  prismaErrorHandler,
+  PrismaInvoiceRepository,
+} from "../src/repositories/implementations/prismaInvoiceRepository";
 import { DatabaseConnectionMock } from "./database.connection.mock";
 import { IDatabaseConnection } from "../src/database/database.connection";
 import { Invoice } from "@prisma/client";
@@ -312,21 +315,62 @@ describe("Prisma Query: updateInvoice", () => {
       mockRepo.update("D64FDS", mockInvoicePrismaResponse),
     ).rejects.toThrowError("Database error");
   });
-});
 
-describe("Prisma Query: deleteInvoice", () => {
-  test("should return the deleted invoice object", async () => {
+  test("should handle update when items are not provided", async () => {
     const mockInvoice: Invoice = {
       ...mockResponseWithIds,
       id: "D64FUO",
-      total: new Decimal(mockInvoicePrismaResponse.total),
     };
 
-    prisma.invoice.delete.mockResolvedValue(mockInvoice);
+    const invoiceUpdates = {
+      clientName: "Updated Client",
+    };
+
+    prisma.$transaction.mockImplementation(async (callback) => {
+      await callback(prisma);
+      return { ...mockInvoice, ...invoiceUpdates };
+    });
+
+    prisma.invoice.update.mockResolvedValue({
+      ...mockInvoice,
+      ...invoiceUpdates,
+    });
+    prisma.invoice.findUnique.mockResolvedValue(mockInvoice);
+
+    const updatedInvoice = await mockRepo.update("D64FUO", invoiceUpdates);
+
+    expect(updatedInvoice.clientName).toStrictEqual("Updated Client");
+    // eslint-disable-next-line @typescript-eslint/unbound-method
+    expect(prisma.$transaction).toHaveBeenCalled();
+    // eslint-disable-next-line @typescript-eslint/unbound-method
+    expect(prisma.invoice.update).toHaveBeenCalled();
+    // eslint-disable-next-line @typescript-eslint/unbound-method
+    expect(prisma.item.deleteMany).not.toHaveBeenCalled();
+  });
+
+  test("should throw error if prisma.invoice.update fails", async () => {
+    const invoiceUpdates = {
+      clientName: "Updated Client",
+    };
+
+    prisma.$transaction.mockRejectedValue(new Error("Transaction failed"));
+
+    await expect(
+      mockRepo.update("D64FUO", invoiceUpdates),
+    ).rejects.toThrowError("Database error: Transaction failed");
+    // eslint-disable-next-line @typescript-eslint/unbound-method
+    expect(prisma.$transaction).toHaveBeenCalled();
+  });
+});
+
+describe("Prisma Query: deleteInvoice", () => {
+  test("should return true when invoice is successfully deleted", async () => {
+    // Stumped by this TS error - it's like it's using stale cached type defs
+    prisma.invoice.delete.mockResolvedValue(true);
 
     const deletedInvoice = await mockRepo.delete("D64FUO");
 
-    expect(deletedInvoice).toStrictEqual(mockInvoice);
+    expect(deletedInvoice).toStrictEqual(true);
   });
 
   test("should throw error if no invoice is found", async () => {
@@ -348,6 +392,20 @@ describe("Prisma Query: deleteInvoice", () => {
     await expect(mockRepo.delete("D64FDS")).rejects.toThrowError(
       "Database error",
     );
+  });
+
+  test("should handle delete when invoice has related items", async () => {
+    // const id = "D64FUO";
+
+    // prisma.invoice.delete.mockResolvedValue(true);
+
+    const deletedInvoice = await mockRepo.delete("D64FUO");
+
+    expect(deletedInvoice).toStrictEqual(true);
+    // eslint-disable-next-line @typescript-eslint/unbound-method
+    expect(prisma.invoice.delete).toHaveBeenCalledWith({
+      where: { id: "D64FUO" },
+    });
   });
 });
 
@@ -385,6 +443,108 @@ describe("Prisma Query: markAsPaid", () => {
 
     await expect(mockRepo.markAsPaid("D64FDS")).rejects.toThrowError(
       "Database error",
+    );
+  });
+});
+
+describe("Prisma Query: createInvoice", () => {
+  // Existing tests...
+
+  test("should handle create when items are empty", async () => {
+    const invoiceWithoutItems: DomainInvoice = {
+      ...mockInvoiceParams,
+      items: [],
+    };
+
+    const expectedResponse = {
+      ...mockInvoicePrismaResponse,
+      items: [],
+      total: new Decimal(0),
+    };
+
+    prisma.invoice.create.mockResolvedValue(
+      expectedResponse as unknown as Invoice,
+    );
+
+    const createdInvoice = await mockRepo.create(invoiceWithoutItems);
+
+    expect(createdInvoice).toStrictEqual(expectedResponse);
+    // eslint-disable-next-line @typescript-eslint/unbound-method
+    expect(prisma.invoice.create).toHaveBeenCalled();
+  });
+
+  test("should handle create when optional fields are missing", async () => {
+    const incompleteInvoiceParams: Partial<DomainInvoice> = {
+      id: "D64FUO",
+    };
+
+    const expectedResponse = {
+      ...mockInvoicePrismaResponse,
+      id: "D64FUO",
+      clientEmail: "",
+      clientName: "",
+      createdAt: expect.any(String),
+      paymentDue: expect.any(String),
+      description: "",
+      paymentTerms: 14,
+      status: "",
+      total: new Decimal(0),
+      clientAddress: {
+        street: "",
+        city: "",
+        postCode: "",
+        country: "",
+      },
+      senderAddress: {
+        street: "",
+        city: "",
+        postCode: "",
+        country: "",
+      },
+      items: [],
+    };
+
+    prisma.invoice.create.mockResolvedValue(
+      expectedResponse as unknown as Invoice,
+    );
+
+    const createdInvoice = await mockRepo.create(incompleteInvoiceParams);
+
+    expect(createdInvoice).toStrictEqual(expectedResponse);
+    // eslint-disable-next-line @typescript-eslint/unbound-method
+    expect(prisma.invoice.create).toHaveBeenCalled();
+  });
+});
+
+describe("Error Handling in prismaErrorHandler", () => {
+  test("should throw 'Unique constraint failed' error for code P2002", () => {
+    const error = new PrismaClientKnownRequestError(
+      "Unique constraint failed",
+      {
+        code: "P2002",
+        clientVersion: "5.19.1",
+      },
+    );
+
+    expect(() => prismaErrorHandler(error)).toThrowError(
+      "Unique constraint failed on the fields: (`id`)",
+    );
+  });
+
+  test("should throw 'Invoice not found' error for code P2025", () => {
+    const error = new PrismaClientKnownRequestError("Invoice not found", {
+      code: "P2025",
+      clientVersion: "5.19.1",
+    });
+
+    expect(() => prismaErrorHandler(error)).toThrowError("Invoice not found");
+  });
+
+  test("should throw 'Database error' for other errors", () => {
+    const error = new Error("Some other error");
+
+    expect(() => prismaErrorHandler(error)).toThrowError(
+      "Database error: Some other error",
     );
   });
 });
