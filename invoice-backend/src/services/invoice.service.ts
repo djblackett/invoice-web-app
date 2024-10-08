@@ -52,61 +52,11 @@ export class InvoiceService {
   };
 
   markAsPaid = async (id: string) => {
-    const result = this.invoiceRepo.markAsPaid(id);
-    console.log("Validated invoice after markAsPaid:", result);
+    const result = await this.invoiceRepo.markAsPaid(id);
     return validateInvoiceData(result);
   };
 
   deleteInvoice = async (id: string) => {
     return validateInvoiceData(await this.invoiceRepo.delete(id));
   };
-
-  // getClientAddresses = async () => {
-  //   return await this.invoiceRepo.findAllClientAddresses();
-  // };
-
-  // getSellerAddresses = async () => {
-  //   return await this.invoiceRepo.findAllSenderAddresses();
-  // };
-
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  private mapUserErrorToResponse(error: any) {
-    switch (error.message) {
-      case "ValidationError":
-        return {
-          status: 400,
-          error: "ValidationError",
-          data: undefined,
-          success: false,
-        };
-      case "UserNotFound":
-        return {
-          status: 404,
-          error: "UserNotFound",
-          data: undefined,
-          success: false,
-        };
-      case "UsernameAlreadyTaken":
-        return {
-          status: 409,
-          error: "UsernameAlreadyTaken",
-          data: undefined,
-          success: false,
-        };
-      case "EmailAlreadyInUse":
-        return {
-          status: 409,
-          error: "EmailAlreadyInUse",
-          data: undefined,
-          success: false,
-        };
-      default:
-        return {
-          status: 500,
-          error: "ServerError",
-          data: undefined,
-          success: false,
-        };
-    }
-  }
 }
