@@ -1,6 +1,6 @@
 import { Prisma } from "@prisma/client";
 import { inject, injectable } from "inversify";
-import { ClientAddress, Invoice, Item } from "../../constants/types";
+import { Invoice } from "../../constants/types";
 import { DatabaseConnection } from "../../database/prisma.database.connection";
 import { Temporal } from "temporal-polyfill";
 import { IInvoiceRepo } from "../InvoiceRepo";
@@ -52,27 +52,9 @@ export class PrismaInvoiceRepository implements IInvoiceRepo {
     }
   }
 
-  async findAllClientAddresses(): Promise<ClientAddress[] | null> {
-    try {
-      return await this.prisma.clientAddress.findMany();
-    } catch (error) {
-      console.error(error);
-      throw new Error("ServerError");
-    }
-  }
-
-  async findAllSenderAddresses(): Promise<ClientAddress[] | null> {
-    try {
-      return await this.prisma.senderAddress.findMany();
-    } catch (error) {
-      console.error(error);
-      throw new Error("ServerError");
-    }
-  }
-
   async markAsPaid(id: string) {
     try {
-      return this.prisma.invoice.update({
+      return await this.prisma.invoice.update({
         where: {
           id,
         },
@@ -128,12 +110,14 @@ export class PrismaInvoiceRepository implements IInvoiceRepo {
               : undefined,
             items: {
               createMany: {
-                data: (invoiceUpdates.items as Item[]).map((item) => ({
-                  name: item.name,
-                  price: item.price,
-                  quantity: item.quantity,
-                  total: item.total,
-                })) as Prisma.ItemCreateManyInput[],
+                data:
+                  invoiceUpdates.items &&
+                  (invoiceUpdates.items.map((item) => ({
+                    name: item.name,
+                    price: item.price,
+                    quantity: item.quantity,
+                    total: item.total,
+                  })) as Prisma.ItemCreateManyInput[]),
                 skipDuplicates: true,
               },
             },
@@ -189,13 +173,15 @@ export class PrismaInvoiceRepository implements IInvoiceRepo {
           },
           items: {
             create:
-              invoice?.items?.map((item) => ({
-                name: item.name || "",
-                price: Number(item.price) || 0,
-                quantity: Number(item.quantity) || 0,
-                total: Number(item.total) || 0,
-                id: item.id || undefined,
-              })) || [],
+              (invoice.items &&
+                invoice?.items?.map((item) => ({
+                  name: item.name || "",
+                  price: Number(item.price) || 0,
+                  quantity: Number(item.quantity) || 0,
+                  total: Number(item.total) || 0,
+                  id: item.id || undefined,
+                }))) ||
+              [],
           },
         },
         include: {
@@ -218,23 +204,21 @@ export class PrismaInvoiceRepository implements IInvoiceRepo {
     }
   }
 
-  async delete(id: string) {
+  async delete(id: string): Promise<boolean> {
     try {
-      const result = await this.prisma.invoice.delete({
-        where: {
-          id,
-        },
+      await this.prisma.invoice.delete({
+        where: { id },
       });
-      console.log("delete invoice result:", result);
-      return result;
+      return true;
     } catch (e) {
       console.error(e);
-      return prismaErrorHandler(e);
+      prismaErrorHandler(e);
+      return false;
     }
   }
 }
 
-const prismaErrorHandler = (e: any): never => {
+export const prismaErrorHandler = (e: any): never => {
   if (e instanceof Prisma.PrismaClientKnownRequestError && e.code === "P2002") {
     throw new Error("Unique constraint failed on the fields: (`id`)");
   } else if (
