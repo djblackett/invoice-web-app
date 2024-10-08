@@ -104,7 +104,7 @@ export const invoiceZod = z.object({
 });
 
 export const userCreateZod = z.object({
-  id: z.number(),
+  id: z.number().optional(),
   name: z.string(),
   username: z.string(),
   password: z.string(),

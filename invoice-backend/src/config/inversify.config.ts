@@ -7,8 +7,13 @@ import { PrismaUserRepo } from "../repositories/implementations/prismaUserRepo";
 import InvoiceController from "../controllers/invoice.controller";
 import { DatabaseConnection } from "../database/prisma.database.connection";
 import { Logger } from "./logger.config";
+import { PubSub } from "graphql-subscriptions";
+import TYPES from "../constants/identifiers";
 
 const container = new Container();
+
+
+container.bind<PubSub>(TYPES.PubSub).toConstantValue(new PubSub());
 
 container.bind(DatabaseConnection).toSelf();
 container.bind(InvoiceService).toSelf();
