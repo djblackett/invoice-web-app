@@ -5,29 +5,27 @@ import {
   Invoice,
   InvoiceCreateArgs,
   MarkAsPaidArgs,
-  PrismaContext,
   QueryContext,
 } from "../constants/types";
 import { PubSub } from "graphql-subscriptions";
 
-const pubsub = new PubSub();
-
-export function getInvoiceResolvers(invoiceService: InvoiceService) {
+export function getInvoiceResolvers(
+  invoiceService: InvoiceService,
+  pubsub: PubSub,
+) {
   return {
     Query: {
-      allInvoices: async (
-        _parent: unknown,
-        _args: never,
-        _context: PrismaContext,
-      ) => {
-        console.log("entered allInvoices resolver");
+      allInvoices: async () => {
         try {
           const result = await invoiceService.getInvoices();
-          console.log(result);
           return result;
         } catch (error) {
           console.error(error);
-          return error;
+          throw new GraphQLError("Failed to retrieve invoices", {
+            extensions: {
+              code: "INTERNAL_SERVER_ERROR",
+            },
+          });
         }
       },
       getInvoiceById: async (_root: never, args: GetInvoiceByIdArgs) => {
@@ -35,20 +33,27 @@ export function getInvoiceResolvers(invoiceService: InvoiceService) {
         if (invoice) {
           return invoice;
         } else {
-          throw new GraphQLError("Invoice not found");
+          throw new GraphQLError("Invoice not found", {
+            extensions: {
+              code: "NOT_FOUND",
+            },
+          });
         }
       },
     },
     Mutation: {
       addInvoice: async (_root: never, args: InvoiceCreateArgs) => {
         try {
-          console.log("args:", args);
           const newInvoice = await invoiceService.addInvoice(args);
           await pubsub.publish("INVOICE_ADDED", { invoiceAdded: newInvoice });
           return newInvoice;
         } catch (error) {
           console.error(error);
-          return error;
+          throw new GraphQLError("Failed to add invoice", {
+            extensions: {
+              code: "INTERNAL_SERVER_ERROR",
+            },
+          });
         }
       },
       editInvoice: async (_parent: unknown, args: Partial<Invoice>) => {
@@ -69,18 +74,21 @@ export function getInvoiceResolvers(invoiceService: InvoiceService) {
         if (!args.id) {
           throw new GraphQLError("Invoice id is required", {
             extensions: {
-              code: "BAD_INVOICE_INPUT",
+              code: "BAD_USER_INPUT",
               invalidArgs: args,
             },
           });
         }
         try {
           const result = await invoiceService.updateInvoice(args.id, update);
-          console.log("edit invoice - result from resolver", result);
           return result;
         } catch (error) {
-          console.log(error);
-          return error;
+          console.error(error);
+          throw new GraphQLError("Failed to update invoice", {
+            extensions: {
+              code: "INTERNAL_SERVER_ERROR",
+            },
+          });
         }
       },
       //
@@ -91,17 +99,15 @@ export function getInvoiceResolvers(invoiceService: InvoiceService) {
         _context: QueryContext,
       ) => {
         try {
-          return invoiceService.deleteInvoice(args.id);
+          return await invoiceService.deleteInvoice(args.id);
         } catch (error) {
           console.error(error);
-          //  return error;
           throw new GraphQLError(
             "Invoice could not be removed. Invoice may not exist",
             {
               extensions: {
-                code: "BAD_INVOICE_INPUT",
+                code: "BAD_USER_INPUT",
                 invalidArgs: args.id,
-                error,
               },
             },
           );
@@ -109,18 +115,39 @@ export function getInvoiceResolvers(invoiceService: InvoiceService) {
       },
       markAsPaid: async (_root: unknown, args: MarkAsPaidArgs) => {
         try {
-          return invoiceService.markAsPaid(args.id);
+          const result = await invoiceService.markAsPaid(args.id);
+          if (!result) {
+            throw new GraphQLError("Invoice not found", {
+              extensions: {
+                code: "NOT_FOUND",
+                invalidArgs: args.id,
+              },
+            });
+          }
+          return result;
         } catch (error) {
           console.error(error);
-          return error;
+          throw new GraphQLError("Invoice could not be marked as paid", {
+            extensions: {
+              code: "INTERNAL_SERVER_ERROR",
+            },
+          });
         }
       },
     },
     Subscription: {
       invoiceAdded: {
         subscribe: async () => {
-          console.log("inside subscribe resolver");
-          return pubsub.asyncIterator("INVOICE_ADDED");
+          try {
+            return pubsub.asyncIterator("INVOICE_ADDED");
+          } catch (error) {
+            console.error(error);
+            throw new GraphQLError("Failed to subscribe to invoiceAdded", {
+              extensions: {
+                code: "INTERNAL_SERVER_ERROR",
+              },
+            });
+          }
         },
       },
     },
