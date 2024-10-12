@@ -29,7 +29,7 @@ export function getUserResolvers(userService: UserService) {
         try {
           const user = await userService.createUser(args);
           return user;
-        } catch (error) {
+        } catch (error: any) {
           console.error(error);
           if (error.name === "ValidationError") {
             throw new GraphQLError("Validation error", {

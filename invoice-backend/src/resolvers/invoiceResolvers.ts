@@ -5,7 +5,6 @@ import {
   Invoice,
   InvoiceCreateArgs,
   MarkAsPaidArgs,
-  QueryContext,
 } from "../constants/types";
 import { PubSub } from "graphql-subscriptions";
 
@@ -57,20 +56,6 @@ export function getInvoiceResolvers(
         }
       },
       editInvoice: async (_parent: unknown, args: Partial<Invoice>) => {
-        // args contain all the potential fields for the invoice update
-        // Build an update object dynamically
-        const update: Partial<Invoice> = {};
-
-        Object.keys(args).forEach((key) => {
-          const argKey = key as keyof Partial<Invoice>;
-          if (args[argKey] !== undefined && argKey !== "id") {
-            // This type assertion should be safe because the two interfaces' keys mirror each other
-            // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment,@typescript-eslint/ban-ts-comment
-            // @ts-ignore
-            update[argKey] = args[argKey];
-          }
-        });
-
         if (!args.id) {
           throw new GraphQLError("Invoice id is required", {
             extensions: {
@@ -79,8 +64,11 @@ export function getInvoiceResolvers(
             },
           });
         }
+
+        const { id, ...update } = args;
+
         try {
-          const result = await invoiceService.updateInvoice(args.id, update);
+          const result = await invoiceService.updateInvoice(id, update);
           return result;
         } catch (error) {
           console.error(error);
@@ -91,26 +79,26 @@ export function getInvoiceResolvers(
           });
         }
       },
-      //
 
-      removeInvoice: async (
-        _root: unknown,
-        args: GetInvoiceByIdArgs,
-        _context: QueryContext,
-      ) => {
+      removeInvoice: async (_root: never, args: GetInvoiceByIdArgs) => {
         try {
-          return await invoiceService.deleteInvoice(args.id);
-        } catch (error) {
-          console.error(error);
-          throw new GraphQLError(
-            "Invoice could not be removed. Invoice may not exist",
-            {
+          const result = await invoiceService.deleteInvoice(args.id);
+          if (!result) {
+            throw new GraphQLError("Invoice not found", {
               extensions: {
-                code: "BAD_USER_INPUT",
+                code: "NOT_FOUND",
                 invalidArgs: args.id,
               },
+            });
+          }
+          return result;
+        } catch (error) {
+          console.error(error);
+          throw new GraphQLError("Invoice could not be removed", {
+            extensions: {
+              code: "INTERNAL_SERVER_ERROR",
             },
-          );
+          });
         }
       },
       markAsPaid: async (_root: unknown, args: MarkAsPaidArgs) => {

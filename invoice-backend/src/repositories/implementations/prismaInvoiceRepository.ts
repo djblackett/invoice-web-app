@@ -5,6 +5,11 @@ import { DatabaseConnection } from "../../database/prisma.database.connection";
 import { Temporal } from "temporal-polyfill";
 import { IInvoiceRepo } from "../InvoiceRepo";
 import { Decimal } from "@prisma/client/runtime/library";
+import {
+  BadRequestException,
+  InternalServerException,
+  NotFoundException,
+} from "../../config/exception.config";
 
 @injectable()
 export class PrismaInvoiceRepository implements IInvoiceRepo {
@@ -27,7 +32,7 @@ export class PrismaInvoiceRepository implements IInvoiceRepo {
         },
       });
       return result;
-    } catch (e) {
+    } catch (e: any) {
       throw new Error(`Database error: ${e.message}`);
     }
   }
@@ -192,7 +197,7 @@ export class PrismaInvoiceRepository implements IInvoiceRepo {
       });
 
       return result;
-    } catch (e) {
+    } catch (e: any) {
       if (
         e instanceof Prisma.PrismaClientKnownRequestError &&
         e.code === "P2002"
@@ -220,13 +225,15 @@ export class PrismaInvoiceRepository implements IInvoiceRepo {
 
 export const prismaErrorHandler = (e: any): never => {
   if (e instanceof Prisma.PrismaClientKnownRequestError && e.code === "P2002") {
-    throw new Error("Unique constraint failed on the fields: (`id`)");
+    throw new BadRequestException(
+      "Unique constraint failed on the fields: (`id`)",
+    );
   } else if (
     e instanceof Prisma.PrismaClientKnownRequestError &&
     e.code === "P2025"
   ) {
-    throw new Error("Invoice not found");
+    throw new NotFoundException("Invoice not found");
   } else {
-    throw new Error(`Database error: ${e.message}`);
+    throw new InternalServerException(`Database error: ${e.message}`);
   }
 };
