@@ -1,10 +1,17 @@
 import { injectable } from "inversify";
 import { PrismaClient } from "@prisma/client";
 import { IDatabaseConnection } from "./database.connection";
+import { DB } from "../config/server.config";
 
+console.log("DB.url", DB.url);
 @injectable()
 export class DatabaseConnection implements IDatabaseConnection {
   static prisma = new PrismaClient({
+    datasources: {
+      db: {
+        url: DB.url,
+      },
+    },
     errorFormat: "pretty",
     omit: {
       user: {
