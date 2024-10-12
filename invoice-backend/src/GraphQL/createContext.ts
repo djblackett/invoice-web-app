@@ -1,5 +1,5 @@
 import jwt from "jsonwebtoken";
-import { ContextArgs, QueryContext, ReturnedUser } from "../constants/types";
+import { ContextArgs, QueryContext, UserDTO } from "../constants/types";
 import container from "../config/inversify.config";
 import { SECRET } from "../config/server.config";
 import { UserService } from "../services/user.service";
@@ -51,7 +51,7 @@ export async function createContext({
     const user = await userService.getUser(decodedToken.id);
     if (user) {
       // eslint-disable-next-line @typescript-eslint/no-unused-vars
-      const userNoPassword: ReturnedUser = {
+      const userNoPassword: UserDTO = {
         id: user.id,
         name: user.name,
         username: user.username,
@@ -60,7 +60,7 @@ export async function createContext({
       return {};
     }
     return {};
-  } catch (error) {
+  } catch (error: any) {
     DEBUG && console.error("JWT verification failed", error);
     throw new Error(`JWT verification failed: ${error.message}`);
   }
