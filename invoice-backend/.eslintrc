@@ -14,9 +14,19 @@
       "env": {
         "jest": true
       }
+    },
+    {
+      "files": ["*.graphql", "*.gql"],
+      "parser": "@graphql-eslint/eslint-plugin",
+      "plugins": ["@graphql-eslint"],
+      "rules": {
+        "prettier/prettier": "error",
+        "@graphql-eslint/known-type-names": "error"
+        // Add other rules as needed
+      }
     }
   ],
-  "plugins": ["@typescript-eslint", "jest"],
+  "plugins": ["@typescript-eslint", "jest", "@graphql-eslint"],
   "env": {
     "browser": true,
     "es6": true,
