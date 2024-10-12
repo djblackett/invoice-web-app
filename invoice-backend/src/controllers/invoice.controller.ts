@@ -4,6 +4,7 @@ import { getResolvers } from "../resolvers/index";
 import { controller } from "inversify-express-utils";
 import { UserService } from "../services/user.service";
 import { PubSub } from "graphql-subscriptions";
+import TYPES from "../constants/identifiers";
 
 @controller("/api")
 class InvoiceController {
@@ -12,7 +13,7 @@ class InvoiceController {
   constructor(
     @inject(InvoiceService) private readonly invoiceService: InvoiceService,
     @inject(UserService) private readonly userService: UserService,
-    @inject(PubSub) private readonly pubsub: PubSub,
+    @inject(TYPES.PubSub) private readonly pubsub: PubSub,
   ) {
     this.resolvers = getResolvers(
       this.invoiceService,
