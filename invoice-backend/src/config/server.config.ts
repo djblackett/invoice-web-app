@@ -6,11 +6,34 @@ import { BaseException, InternalServerException } from "./exception.config";
 
 export const SECRET = process.env.SECRET || "";
 export const PORT = process.env.PORT || 8000;
-export const NODE_ENV = process.env.NODE_ENV || "development";
+export const NODE_ENV = process.env.NODE_ENV;
+let DB_URL: string;
 
 if (!SECRET) {
   throw new Error("Server env secret not set");
 }
+
+if (!PORT) {
+  throw new Error("Server env port not set");
+}
+
+if (NODE_ENV === "production") {
+  DB_URL = process.env.DB_URL || "";
+} else if (NODE_ENV === "test") {
+  DB_URL = process.env.DB_URL_TEST || "";
+} else {
+  DB_URL = process.env.DB_URL_DEV || "";
+}
+
+console.log(NODE_ENV);
+
+if (!DB_URL) {
+  throw new Error("Server env db url not set");
+}
+
+export const DB = {
+  url: DB_URL,
+};
 
 export function serverConfig(app: Application) {
   app.use(
