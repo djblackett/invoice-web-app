@@ -47,6 +47,18 @@ export function getUserResolvers(userService: UserService) {
           }
         }
       },
+      deleteUsers: async() => {
+        try {
+          return await userService.deleteUsers();
+        } catch (error) {
+          console.error(error);
+          throw new GraphQLError("Internal server error", {
+            extensions: {
+              code: "INTERNAL_SERVER_ERROR",
+            },
+          });
+        }
+      },
 
       login: async (_root: unknown, args: LoginArgs) => {
         try {

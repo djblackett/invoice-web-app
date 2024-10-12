@@ -99,4 +99,8 @@ export class UserService {
     const loginResponse: LoginResponseDTO = { token: token, user: userDTO };
     return loginResponse;
   };
+
+  deleteUsers = async () => {
+    return await this.userRepo.deleteAllUsers();
+  };
 }

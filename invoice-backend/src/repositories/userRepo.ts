@@ -5,4 +5,5 @@ export interface IUserRepo {
   findAllUsers: () => Promise<ReturnedUser[]>;
   findUserById: (id: number) => Promise<UserDTO | null>;
   findUserByUsername: (username: string) => Promise<UserEntity | null>;
+  deleteAllUsers: () => Promise<void>;
 }

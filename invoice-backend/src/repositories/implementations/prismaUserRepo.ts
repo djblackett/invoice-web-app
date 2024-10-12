@@ -15,6 +15,15 @@ export class PrismaUserRepo implements IUserRepo {
     this.prisma = databaseConnection.getDatabase();
   }
 
+  async deleteAllUsers() {
+    try {
+      await this.prisma.user.deleteMany();
+    } catch (error: any) {
+      console.error(error);
+      throw new Error("Database error");
+    }
+  }
+
   async findAllUsers() {
     try {
       return await this.prisma.user.findMany();
