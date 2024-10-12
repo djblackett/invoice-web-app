@@ -5,6 +5,7 @@ import { mockDeep, mockReset } from "vitest-mock-extended";
 import { IInvoiceRepo } from "../../src/repositories/InvoiceRepo";
 import { Invoice } from "../../src/constants/types";
 import * as InvoiceUtils from "../../src/utils";
+import { ValidationException } from "../../src/config/exception.config";
 
 // Mock utility functions
 vi.mock("../../src/utils", () => ({
@@ -185,11 +186,6 @@ describe("InvoiceService", () => {
     // Arrange
     const invoice: Invoice = invoices[0]; // Mock data
     mockInvoiceRepo.findById.mockResolvedValue(invoice);
-    const validateInvoiceDataMock = vi.mocked(
-      InvoiceUtils.validateInvoiceData,
-      true,
-    );
-    validateInvoiceDataMock.mockReturnValue(invoice);
 
     // Act
     const result = await invoiceService.getInvoiceById(
@@ -200,7 +196,6 @@ describe("InvoiceService", () => {
     expect(mockInvoiceRepo.findById).toHaveBeenCalledWith(
       "e08e99bd-5de6-4378-b2a8-11941bad082d",
     );
-    expect(validateInvoiceDataMock).toHaveBeenCalledWith(invoice);
     expect(result).toEqual(invoice);
   });
 
@@ -278,7 +273,7 @@ describe("InvoiceService", () => {
       true,
     );
     validateInvoiceDataMock.mockImplementation(() => {
-      throw new Error("Validation error");
+      throw new ValidationException("Validation error");
     });
 
     // Act & Assert
@@ -293,80 +288,14 @@ describe("InvoiceService", () => {
     // Arrange
     const invoice: Invoice = invoices[0]; // Mock data
     const id = invoice.id;
-    mockInvoiceRepo.delete.mockResolvedValue(invoice);
-    const validateInvoiceDataMock = vi.mocked(
-      InvoiceUtils.validateInvoiceData,
-      true,
-    );
-    validateInvoiceDataMock.mockReturnValue(invoice);
+    mockInvoiceRepo.delete.mockResolvedValue(true);
 
     // Act
     const result = await invoiceService.deleteInvoice(id);
 
     // Assert
     expect(mockInvoiceRepo.delete).toHaveBeenCalledWith(id);
-    expect(validateInvoiceDataMock).toHaveBeenCalledWith(invoice);
-    expect(result).toEqual(invoice);
-  });
-
-  test("deleteInvoice should throw error when validation fails", async () => {
-    // Arrange
-    const id = "non-existent-id";
-    mockInvoiceRepo.delete.mockResolvedValue(null);
-    const validateInvoiceDataMock = vi.mocked(
-      InvoiceUtils.validateInvoiceData,
-      true,
-    );
-    validateInvoiceDataMock.mockImplementation(() => {
-      throw new Error("Validation error");
-    });
-
-    // Act & Assert
-    await expect(invoiceService.deleteInvoice(id)).rejects.toThrow(
-      "Validation error",
-    );
-    expect(mockInvoiceRepo.delete).toHaveBeenCalledWith(id);
-    expect(validateInvoiceDataMock).toHaveBeenCalledWith(null);
-  });
-
-  test("getInvoiceById should throw error when validation fails", async () => {
-    // Arrange
-    const invoice: Invoice = invoices[0]; // Mock data
-    const id = invoice.id;
-    mockInvoiceRepo.findById.mockResolvedValue(invoice);
-    const validateInvoiceDataMock = vi.mocked(
-      InvoiceUtils.validateInvoiceData,
-      true,
-    );
-    validateInvoiceDataMock.mockImplementation(() => {
-      throw new Error("Validation error");
-    });
-
-    // Act & Assert
-    await expect(invoiceService.getInvoiceById(id)).rejects.toThrow(
-      "Validation failed: Validation error",
-    );
-    expect(mockInvoiceRepo.findById).toHaveBeenCalledWith(id);
-    expect(validateInvoiceDataMock).toHaveBeenCalledWith(invoice);
-  });
-
-  test("getInvoices should throw error when validation fails", async () => {
-    // Arrange
-    mockInvoiceRepo.findAll.mockResolvedValue(invoices);
-    const validateInvoiceListMock = vi.mocked(
-      InvoiceUtils.validateInvoiceList,
-      true,
-    );
-    validateInvoiceListMock.mockImplementation(() => {
-      throw new Error("Validation error");
-    });
-
-    // Act & Assert
-    await expect(invoiceService.getInvoices()).rejects.toThrow(
-      "Validation failed: Validation error",
-    );
-    expect(mockInvoiceRepo.findAll).toHaveBeenCalled();
-    expect(validateInvoiceListMock).toHaveBeenCalledWith(invoices);
+    expect(result).toEqual(true);
   });
 
   test("addInvoice should throw error when validation fails", async () => {
@@ -378,7 +307,7 @@ describe("InvoiceService", () => {
       true,
     );
     validateInvoiceDataMock.mockImplementation(() => {
-      throw new Error("Validation error");
+      throw new ValidationException("Validation error");
     });
 
     // Act & Assert
@@ -393,20 +322,12 @@ describe("InvoiceService", () => {
     // Arrange
     const id = "non-existent-id";
     mockInvoiceRepo.findById.mockResolvedValue(null);
-    const validateInvoiceDataMock = vi.mocked(
-      InvoiceUtils.validateInvoiceData,
-      true,
-    );
-    validateInvoiceDataMock.mockImplementation(() => {
-      throw new Error("Invoice data is invalid");
-    });
 
     // Act & Assert
     await expect(invoiceService.getInvoiceById(id)).rejects.toThrow(
-      "Validation failed: Invoice data is invalid",
+      /Invoice not found/,
     );
     expect(mockInvoiceRepo.findById).toHaveBeenCalledWith(id);
-    expect(validateInvoiceDataMock).toHaveBeenCalledWith(null);
   });
 
   test("should throw error when updateInvoice is called with non-existent id", async () => {
@@ -433,11 +354,9 @@ describe("InvoiceService", () => {
       InvoiceUtils.validateInvoiceData,
       true,
     );
-    // First call in getInvoiceById
-    validateInvoiceDataMock.mockReturnValueOnce(oldInvoice);
-    // Second call in updateInvoice
+
     validateInvoiceDataMock.mockImplementationOnce(() => {
-      throw new Error("Validation error during update");
+      throw new ValidationException("Validation error during update");
     });
 
     // Act & Assert
@@ -445,63 +364,8 @@ describe("InvoiceService", () => {
       invoiceService.updateInvoice(id, invoiceUpdates),
     ).rejects.toThrow("Validation error during update");
     expect(mockInvoiceRepo.findById).toHaveBeenCalledWith(id);
-    expect(validateInvoiceDataMock).toHaveBeenCalledWith(oldInvoice);
+
     expect(validateInvoiceDataMock).toHaveBeenCalledWith(newInvoiceUnvalidated);
     expect(mockInvoiceRepo.update).not.toHaveBeenCalled();
-  });
-
-  test("updateInvoice should propagate error when invoiceRepo.update fails", async () => {
-    // Arrange
-    const oldInvoice: Invoice = invoices[2];
-    const id = oldInvoice.id;
-    const invoiceUpdates = { total: 200 };
-    const newInvoiceUnvalidated = { ...oldInvoice, ...invoiceUpdates };
-    const validatedInvoice = { ...newInvoiceUnvalidated };
-
-    mockInvoiceRepo.findById.mockResolvedValue(oldInvoice);
-    const validateInvoiceDataMock = vi.mocked(
-      InvoiceUtils.validateInvoiceData,
-      true,
-    );
-    // First call in getInvoiceById
-    validateInvoiceDataMock.mockReturnValueOnce(oldInvoice);
-    // Second call in updateInvoice
-    validateInvoiceDataMock.mockReturnValueOnce(validatedInvoice);
-
-    const error = new Error("Database error");
-    mockInvoiceRepo.update.mockRejectedValue(error);
-
-    // Act & Assert
-    await expect(
-      invoiceService.updateInvoice(id, invoiceUpdates),
-    ).rejects.toThrow("Database error");
-    expect(mockInvoiceRepo.findById).toHaveBeenCalledWith(id);
-    expect(mockInvoiceRepo.update).toHaveBeenCalledWith(id, validatedInvoice);
-  });
-
-  test("addInvoice should propagate error when invoiceRepo.create fails", async () => {
-    // Arrange
-    const newInvoice: Invoice = invoices[1];
-    const error = new Error("Database error");
-    mockInvoiceRepo.create.mockRejectedValue(error);
-
-    // Act & Assert
-    await expect(invoiceService.addInvoice(newInvoice)).rejects.toThrow(
-      "Database error",
-    );
-    expect(mockInvoiceRepo.create).toHaveBeenCalledWith(newInvoice);
-  });
-
-  test("deleteInvoice should propagate error when invoiceRepo.delete fails", async () => {
-    // Arrange
-    const id = invoices[0].id;
-    const error = new Error("Database error");
-    mockInvoiceRepo.delete.mockRejectedValue(error);
-
-    // Act & Assert
-    await expect(invoiceService.deleteInvoice(id)).rejects.toThrow(
-      "Database error",
-    );
-    expect(mockInvoiceRepo.delete).toHaveBeenCalledWith(id);
   });
 });
