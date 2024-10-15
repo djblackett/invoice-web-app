@@ -9,11 +9,16 @@ const typeDefs = gql`
 
   type User {
     username: String!
-    id: ID!
+    id: Int!
   }
 
   type Token {
     value: String!
+  }
+
+  type LoginResponse {
+    user: User
+    token: String!
   }
 
   type Invoice {
@@ -53,6 +58,10 @@ const typeDefs = gql`
     total: Float
   }
 
+  type deleteResult {
+    acknowledged: Boolean
+  }
+
   input ClientInfo {
     city: String
     country: String
@@ -74,6 +83,7 @@ const typeDefs = gql`
     quantity: Int
     total: Float
   }
+
 
   type Query {
     allInvoices: [Invoice]
@@ -118,11 +128,15 @@ const typeDefs = gql`
 
     removeInvoice(id: String!): String
 
+    deleteAllInvoices: deleteResult
+
     markAsPaid(id: String!): Invoice
 
     createUser(name: String, username: String!, password: String!): User
 
-    login(username: String!, password: String!): Token
+    deleteUsers: deleteResult
+
+    login(username: String!, password: String!): LoginResponse
   }
 
   type Subscription {
