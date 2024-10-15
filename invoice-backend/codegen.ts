@@ -10,7 +10,23 @@ const config: CodegenConfig = {
     },
     "./graphql.schema.json": {
       plugins: ["introspection"]
-    }
+    },
+    "src/mocks/generated-mocks.ts": {
+       plugins: [
+        {"add": {
+          "content": '/* eslint-disable @typescript-eslint/no-use-before-define,@typescript-eslint/no-unused-vars,no-prototype-builtins */'
+        }},{
+          "typescript-mock-data": {
+            "typesFile": "../generated-types.ts",
+            "enumValues": "upper-case#upperCase",
+            "typeNames": "keep",
+            "scalars": {
+              "AWSTimestamp": "number.int"
+            }
+          }
+        }
+      ]
+          }
   }
 };
 

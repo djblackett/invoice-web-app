@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/ban-types */
 import { GraphQLResolveInfo } from 'graphql';
 export type Maybe<T> = T | null;
 export type InputMaybe<T> = Maybe<T>;
@@ -68,6 +69,7 @@ export type Mutation = {
   __typename?: 'Mutation';
   addInvoice?: Maybe<Invoice>;
   createUser?: Maybe<User>;
+  deleteUsers?: Maybe<DeleteResult>;
   editInvoice?: Maybe<Invoice>;
   login?: Maybe<Token>;
   markAsPaid?: Maybe<Invoice>;
@@ -181,6 +183,11 @@ export type User = {
   username: Scalars['String']['output'];
 };
 
+export type DeleteResult = {
+  __typename?: 'deleteResult';
+  acknowledged?: Maybe<Scalars['Boolean']['output']>;
+};
+
 
 
 export type ResolverTypeWrapper<T> = Promise<T> | T;
@@ -269,6 +276,7 @@ export type ResolversTypes = {
   Subscription: ResolverTypeWrapper<{}>;
   Token: ResolverTypeWrapper<Token>;
   User: ResolverTypeWrapper<User>;
+  deleteResult: ResolverTypeWrapper<DeleteResult>;
 };
 
 /** Mapping between all available schema types and the resolvers parents */
@@ -290,6 +298,7 @@ export type ResolversParentTypes = {
   Subscription: {};
   Token: Token;
   User: User;
+  deleteResult: DeleteResult;
 };
 
 export type ClientAddressResolvers<ContextType = any, ParentType extends ResolversParentTypes['ClientAddress'] = ResolversParentTypes['ClientAddress']> = {
@@ -328,6 +337,7 @@ export type ItemResolvers<ContextType = any, ParentType extends ResolversParentT
 export type MutationResolvers<ContextType = any, ParentType extends ResolversParentTypes['Mutation'] = ResolversParentTypes['Mutation']> = {
   addInvoice?: Resolver<Maybe<ResolversTypes['Invoice']>, ParentType, ContextType, Partial<MutationAddInvoiceArgs>>;
   createUser?: Resolver<Maybe<ResolversTypes['User']>, ParentType, ContextType, RequireFields<MutationCreateUserArgs, 'password' | 'username'>>;
+  deleteUsers?: Resolver<Maybe<ResolversTypes['deleteResult']>, ParentType, ContextType>;
   editInvoice?: Resolver<Maybe<ResolversTypes['Invoice']>, ParentType, ContextType, Partial<MutationEditInvoiceArgs>>;
   login?: Resolver<Maybe<ResolversTypes['Token']>, ParentType, ContextType, RequireFields<MutationLoginArgs, 'password' | 'username'>>;
   markAsPaid?: Resolver<Maybe<ResolversTypes['Invoice']>, ParentType, ContextType, RequireFields<MutationMarkAsPaidArgs, 'id'>>;
@@ -367,6 +377,11 @@ export type UserResolvers<ContextType = any, ParentType extends ResolversParentT
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 };
 
+export type DeleteResultResolvers<ContextType = any, ParentType extends ResolversParentTypes['deleteResult'] = ResolversParentTypes['deleteResult']> = {
+  acknowledged?: Resolver<Maybe<ResolversTypes['Boolean']>, ParentType, ContextType>;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
+};
+
 export type Resolvers<ContextType = any> = {
   ClientAddress?: ClientAddressResolvers<ContextType>;
   Invoice?: InvoiceResolvers<ContextType>;
@@ -377,5 +392,5 @@ export type Resolvers<ContextType = any> = {
   Subscription?: SubscriptionResolvers<ContextType>;
   Token?: TokenResolvers<ContextType>;
   User?: UserResolvers<ContextType>;
+  deleteResult?: DeleteResultResolvers<ContextType>;
 };
-
