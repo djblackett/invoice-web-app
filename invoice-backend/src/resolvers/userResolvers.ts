@@ -22,7 +22,21 @@ export function getUserResolvers(userService: UserService) {
           });
         }
       },
+      getUserById: async (_root: unknown, args: { id: number }) => {
+        try {
+          const user = await userService.getUser(args.id);
+          return user;
+        } catch (error) {
+          console.error(error);
+          throw new GraphQLError("Internal server error", {
+            extensions: {
+              code: "INTERNAL_SERVER_ERROR",
+            },
+          });
+        }
+      },
     },
+
 
     Mutation: {
       createUser: async (_root: unknown, args: CreateUserDTO) => {
@@ -49,7 +63,11 @@ export function getUserResolvers(userService: UserService) {
       },
       deleteUsers: async() => {
         try {
-          return await userService.deleteUsers();
+           const result = await userService.deleteUsers();
+           if (result) {
+            return { acknowledged: true };
+           }
+           return { acknowledged: false };
         } catch (error) {
           console.error(error);
           throw new GraphQLError("Internal server error", {

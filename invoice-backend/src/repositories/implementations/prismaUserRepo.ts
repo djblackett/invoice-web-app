@@ -15,9 +15,14 @@ export class PrismaUserRepo implements IUserRepo {
     this.prisma = databaseConnection.getDatabase();
   }
 
-  async deleteAllUsers() {
+  async deleteAllUsers(): Promise<boolean> {
     try {
-      await this.prisma.user.deleteMany();
+      const result = await this.prisma.user.deleteMany();
+      if (result) {
+        return true;
+      } else {
+        return false;
+      }
     } catch (error: any) {
       console.error(error);
       throw new Error("Database error");

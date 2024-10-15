@@ -100,7 +100,7 @@ export class UserService {
     return loginResponse;
   };
 
-  deleteUsers = async () => {
+  deleteUsers = async (): Promise<boolean> => {
     return await this.userRepo.deleteAllUsers();
   };
 }
