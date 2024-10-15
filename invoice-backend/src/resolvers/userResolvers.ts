@@ -37,7 +37,6 @@ export function getUserResolvers(userService: UserService) {
       },
     },
 
-
     Mutation: {
       createUser: async (_root: unknown, args: CreateUserDTO) => {
         try {
@@ -61,13 +60,13 @@ export function getUserResolvers(userService: UserService) {
           }
         }
       },
-      deleteUsers: async() => {
+      deleteUsers: async () => {
         try {
-           const result = await userService.deleteUsers();
-           if (result) {
+          const result = await userService.deleteUsers();
+          if (result) {
             return { acknowledged: true };
-           }
-           return { acknowledged: false };
+          }
+          return { acknowledged: false };
         } catch (error) {
           console.error(error);
           throw new GraphQLError("Internal server error", {

@@ -224,14 +224,12 @@ export class PrismaInvoiceRepository implements IInvoiceRepo {
 
   async deleteAllInvoices() {
     try {
-    return await this.prisma.invoice.deleteMany({});
-  } catch (e: any) {
-    throw new Error(`Database error: ${e.message}`);
+      return await this.prisma.invoice.deleteMany({});
+    } catch (e: any) {
+      throw new Error(`Database error: ${e.message}`);
+    }
   }
 }
-}
-
-
 
 export const prismaErrorHandler = (e: any): never => {
   if (e instanceof Prisma.PrismaClientKnownRequestError && e.code === "P2002") {

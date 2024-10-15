@@ -84,7 +84,6 @@ const typeDefs = gql`
     total: Float
   }
 
-
   type Query {
     allInvoices: [Invoice]
     getInvoiceById(id: String!): Invoice
