@@ -8,7 +8,7 @@ test("New invoice page is rendered", async ({ page }) => {
   await page.goto(BASE_URL);
   await page.getByTestId("newInvoiceButton").click();
 
-  const newInvoicePage = await page.getByTestId("newInvoicePage");
+  const newInvoicePage = page.getByTestId("newInvoicePage");
 
   await expect(newInvoicePage).toContainText("New Invoice");
   await expect(newInvoicePage).toContainText("Bill From");
