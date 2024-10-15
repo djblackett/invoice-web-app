@@ -2,13 +2,13 @@
 // learn more about it in the docs: https://pris.ly/d/prisma-schema
 
 generator client {
-  provider      = "prisma-client-js"
-  binaryTargets = ["native", "debian-openssl-3.0.x"]
+  provider = "prisma-client-js"
+   previewFeatures = ["omitApi"]
 }
 
 datasource db {
   provider = "postgresql"
-  url      = env("DATABASE_URL")
+  url      = env("DB_URL_TEST")
 }
 
 model Invoice {
@@ -22,8 +22,8 @@ model Invoice {
   status          String
   total           Decimal
   items           Item[]
-  clientAddress   ClientAddress? @relation(fields: [clientAddressId], references: [id])
-  senderAddress   SenderAddress? @relation(fields: [senderAddressId], references: [id])
+  clientAddress   ClientAddress? @relation(fields: [clientAddressId], references: [id], onDelete: Cascade)
+  senderAddress   SenderAddress? @relation(fields: [senderAddressId], references: [id], onDelete: Cascade)
   senderAddressId Int?           @unique
   clientAddressId Int?           @unique
 }

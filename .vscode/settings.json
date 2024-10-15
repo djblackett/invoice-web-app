@@ -1,5 +1,9 @@
 {
   "javascript.updateImportsOnFileMove.enabled": "always",
   "typescript.updateImportsOnFileMove.enabled": "always",
-  "typescript.tsdk": "node_modules\\typescript\\lib"
+  "typescript.tsdk": "node_modules\\typescript\\lib",
+  "yaml.schemas": {
+    "https://unpkg.com/graphql-config/config-schema.json": "file:///home/david/dev/invoice-web-app/invoice-backend/graphql.config.yml",
+    "https://www.graphql-code-generator.com/config.schema.json": "file:///home/david/dev/invoice-web-app/invoice-backend/codegen.yml"
+  }
 }

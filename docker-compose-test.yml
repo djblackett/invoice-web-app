@@ -1,0 +1,96 @@
+version: "3"
+services:
+  frontend-dev:
+    build:
+      context: invoice-frontend
+      dockerfile: dev.Dockerfile
+    environment:
+      - REACT_APP_BACKEND_URL=http://localhost/api
+      - REACT_APP_ENV=development
+    ports:
+      - "5173:5173"
+    networks:
+      - my_network_test
+    volumes:
+      - ./invoice-frontend:/usr/src/app/
+
+
+  backend-test:
+    build:
+      context: invoice-backend
+      dockerfile: dev.Dockerfile
+    depends_on:
+      db-test:
+        condition: service_started
+#    restart: unless-stopped
+    ports:
+      - "8000:8000"
+      - "4000:4000"
+    environment:
+      - NODE_ENV=test
+      - PORT=8000
+      - REQUEST_ORIGIN=http://proxy
+      - SECRET=theSecretStuff
+      - DATABASE_URL=postgres://postgres:example@db-test:5432/db-test?schema=public&connect_timout=300
+      - DB_URL_TEST=postgres://postgres:example@db-test:5432/db-test?schema=public&connect_timout=300
+    networks:
+      - my_network_test
+    volumes:
+      - ./invoice-backend:/usr/src/app/
+
+  db-test:
+    image: postgres:16.1
+    hostname: db-test
+    container_name: db-test
+    restart: always
+    environment:
+      POSTGRES_PASSWORD: example
+      PGUSER: postgres
+      POSTGRES_USER: postgres
+    ports:
+      - "5432:5432"
+    networks:
+      - my_network_test
+    volumes:
+      - pgdata-test:/var/lib/postgresql/data
+      - ./init.test.sql:/docker-entrypoint-initdb.d/init.sql
+    healthcheck:
+      test: [ "CMD-SHELL", "pg_isready -U postgres" ]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+
+  adminer-dev:
+    image: adminer:4.8.1
+    restart: always
+    ports:
+      - 8080:8080
+    networks:
+      - my_network_test
+
+  proxy-dev:
+    image: nginx:1.25.2
+    hostname: proxy-dev
+    container_name: proxy-dev
+    depends_on:
+      backend-test:
+        condition: service_started
+      frontend-dev:
+        condition: service_started
+    tty: true
+    stdin_open: true
+    volumes:
+      - ./nginx.dev.conf:/etc/nginx/nginx.conf
+    ports:
+      - "80:80"
+    networks:
+      - my_network_test
+
+
+networks:
+  my_network_test:
+    driver: bridge
+
+volumes:
+  pgdata-test:

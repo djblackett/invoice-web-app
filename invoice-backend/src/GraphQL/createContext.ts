@@ -1,40 +1,68 @@
-// import jwt from "jsonwebtoken";
-import {ContextArgs} from "../types";
-import {prisma} from "../../index";
-// const User = require("../Models/User");
+import jwt from "jsonwebtoken";
+import { ContextArgs, QueryContext, UserDTO } from "../constants/types";
+import container from "../config/inversify.config";
+import { SECRET } from "../config/server.config";
+import { UserService } from "../services/user.service";
 
+const DEBUG = false;
 
-
-// eslint-disable-next-line @typescript-eslint/require-await
-export async function createContext({ req, connection }: ContextArgs) {
-  console.log("-----------------connection");
+export async function createContext({
+  req,
+  connection,
+}: ContextArgs): Promise<QueryContext> {
   if (connection) {
     // This is a subscription request
-    // console.log("Subscription context: ", connection.context);
-    console.log(connection);
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-return
-    // return connection.context;
-    return connection;
-  } else {
-    // This is a regular request
-    console.log("regular request");
-    console.log("no connection");
+    DEBUG && console.log(connection);
+    return { connection };
+  }
 
-    const auth: string | undefined | null = req ? req.headers.authorization : null;
-    if (auth && auth.startsWith("Bearer ")) {
-      // const decodedToken = jwt.verify(
-      //   auth.substring(7),
-      //   process.env.JWT_SECRET
-      // );
-      // const currentUser = await User.findById(decodedToken.id);
-      const currentUser = {};
+  // This is a regular request
+  DEBUG && console.log("regular request");
+  DEBUG && console.log("no connection");
 
+  DEBUG && console.log("Regular request, checking authorization header...");
+  const auth = req?.headers.authorization;
+  // console.log("auth", auth);
+
+  if (!auth) {
+    DEBUG && console.log("No authorization header, returning early.");
+    return {};
+  }
+
+  if (!auth.startsWith("Bearer ")) {
+    DEBUG && console.log("Invalid authorization header, returning early.");
+    return {};
+  }
+
+  if (!SECRET) {
+    throw new Error("No secret set");
+  }
+
+  try {
+    const authToken = auth.split(" ")[1];
+    const decodedToken = jwt.verify(authToken, SECRET);
+
+    if (typeof decodedToken === "string") {
+      DEBUG && console.log(decodedToken);
+      return {};
     }
 
+    const userService = container.get(UserService);
+    const user = await userService.getUser(decodedToken.id);
+    if (user) {
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
+      const userNoPassword: UserDTO = {
+        id: user.id,
+        name: user.name,
+        username: user.username,
+      };
+      // return { user: userNoPassword };
+      return {};
+    }
+    return {};
+  } catch (error: any) {
+    DEBUG && console.error("JWT verification failed", error);
+    throw new Error(`JWT verification failed: ${error.message}`);
   }
-  return { prisma };
 }
-
 console.log("After createContext");
-
-// module.exports = { createContext };
