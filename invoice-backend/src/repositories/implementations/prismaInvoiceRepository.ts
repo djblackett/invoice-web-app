@@ -221,7 +221,17 @@ export class PrismaInvoiceRepository implements IInvoiceRepo {
       return false;
     }
   }
+
+  async deleteAllInvoices() {
+    try {
+    return await this.prisma.invoice.deleteMany({});
+  } catch (e: any) {
+    throw new Error(`Database error: ${e.message}`);
+  }
 }
+}
+
+
 
 export const prismaErrorHandler = (e: any): never => {
   if (e instanceof Prisma.PrismaClientKnownRequestError && e.code === "P2002") {

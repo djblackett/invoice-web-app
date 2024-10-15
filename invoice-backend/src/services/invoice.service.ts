@@ -104,4 +104,13 @@ export class InvoiceService {
       throw new InternalServerException("Internal server error");
     }
   };
+
+  deleteAllInvoices = async () => {
+    try {
+      return await this.invoiceRepo.deleteAllInvoices();
+    } catch (e) {
+      console.error(e);
+      throw new InternalServerException("Internal server error");
+    }
+  };
 }

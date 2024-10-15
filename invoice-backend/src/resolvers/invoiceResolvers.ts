@@ -7,6 +7,7 @@ import {
   MarkAsPaidArgs,
 } from "../constants/types";
 import { PubSub } from "graphql-subscriptions";
+import { NotFoundException } from "../config/exception.config";
 
 export function getInvoiceResolvers(
   invoiceService: InvoiceService,
@@ -28,16 +29,25 @@ export function getInvoiceResolvers(
         }
       },
       getInvoiceById: async (_root: never, args: GetInvoiceByIdArgs) => {
-        const invoice = await invoiceService.getInvoiceById(args.id);
-        if (invoice) {
-          return invoice;
-        } else {
-          throw new GraphQLError("Invoice not found", {
+        try {
+          const result = await invoiceService.getInvoiceById(args.id);
+            return result;
+        } catch (error) {
+          if (error instanceof NotFoundException) {
+            throw new GraphQLError("Invoice not found", {
+              extensions: {
+                code: "NOT_FOUND",
+              },
+            });
+          }
+          console.error(error);
+          throw new GraphQLError("Failed to retrieve invoice", {
             extensions: {
-              code: "NOT_FOUND",
+              code: "INTERNAL_SERVER_ERROR",
             },
           });
         }
+
       },
     },
     Mutation: {
@@ -95,6 +105,23 @@ export function getInvoiceResolvers(
         } catch (error) {
           console.error(error);
           throw new GraphQLError("Invoice could not be removed", {
+            extensions: {
+              code: "INTERNAL_SERVER_ERROR",
+            },
+          });
+        }
+      },
+      deleteAllInvoices: async () => {
+        try {
+          const result = await invoiceService.deleteAllInvoices();
+          if (result) {
+            return { acknowledged: true };
+          } else {
+            return { acknowledged: false };
+          }
+        } catch (error) {
+          console.error(error);
+          throw new GraphQLError("Failed to delete all invoices", {
             extensions: {
               code: "INTERNAL_SERVER_ERROR",
             },
