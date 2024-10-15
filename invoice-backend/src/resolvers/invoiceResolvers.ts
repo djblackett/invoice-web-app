@@ -31,7 +31,7 @@ export function getInvoiceResolvers(
       getInvoiceById: async (_root: never, args: GetInvoiceByIdArgs) => {
         try {
           const result = await invoiceService.getInvoiceById(args.id);
-            return result;
+          return result;
         } catch (error) {
           if (error instanceof NotFoundException) {
             throw new GraphQLError("Invoice not found", {
@@ -47,7 +47,6 @@ export function getInvoiceResolvers(
             },
           });
         }
-
       },
     },
     Mutation: {
@@ -93,22 +92,23 @@ export function getInvoiceResolvers(
       removeInvoice: async (_root: never, args: GetInvoiceByIdArgs) => {
         try {
           const result = await invoiceService.deleteInvoice(args.id);
-          if (!result) {
+          return result;
+        } catch (error) {
+          console.error(error);
+          if (error instanceof NotFoundException) {
             throw new GraphQLError("Invoice not found", {
               extensions: {
                 code: "NOT_FOUND",
                 invalidArgs: args.id,
               },
             });
+          } else {
+            throw new GraphQLError("Invoice could not be removed", {
+              extensions: {
+                code: "INTERNAL_SERVER_ERROR",
+              },
+            });
           }
-          return result;
-        } catch (error) {
-          console.error(error);
-          throw new GraphQLError("Invoice could not be removed", {
-            extensions: {
-              code: "INTERNAL_SERVER_ERROR",
-            },
-          });
         }
       },
       deleteAllInvoices: async () => {
@@ -131,7 +131,10 @@ export function getInvoiceResolvers(
       markAsPaid: async (_root: unknown, args: MarkAsPaidArgs) => {
         try {
           const result = await invoiceService.markAsPaid(args.id);
-          if (!result) {
+          return result;
+        } catch (error) {
+          console.error(error);
+          if (error instanceof NotFoundException) {
             throw new GraphQLError("Invoice not found", {
               extensions: {
                 code: "NOT_FOUND",
@@ -139,9 +142,6 @@ export function getInvoiceResolvers(
               },
             });
           }
-          return result;
-        } catch (error) {
-          console.error(error);
           throw new GraphQLError("Invoice could not be marked as paid", {
             extensions: {
               code: "INTERNAL_SERVER_ERROR",
