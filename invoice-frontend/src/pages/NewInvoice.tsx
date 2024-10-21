@@ -7,7 +7,7 @@ import useWindowWidth from "../hooks/useWindowWidth";
 import {
   DarkenScreen, EditTitle, FormContainerDarkenModal,
 } from "../styles/editStyles";
-import {Item} from "../types/types";
+import { Item } from "../types/types";
 
 export type NewInvoiceProps = {
   isNewOpen: boolean;
