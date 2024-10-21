@@ -8,13 +8,12 @@ import {
   BillText,
   DarkenScreen,
   EditTitle,
-  FormContainerDarkenModal, Input,
-  Label,
+  FormContainerDarkenModal
 } from "../styles/editStyles";
 import CompanyFormInfo from "../components/form-components/CompanyFormInfo";
 import ClientFormInfo from "../components/form-components/ClientFormInfo";
 import DateAndPayment from "../components/form-components/DateAndPayment";
-import LongFormEntry from "../components/form-components/LongFormEntry";
+
 import { validationSchema } from "../types/schemas";
 import FormErrorList from "../components/form-components/FormErrorList";
 import EditFormItemList from "../components/form-components/EditFormItemList";
@@ -26,6 +25,7 @@ import { EDIT_INVOICE } from "../graphql/queries";
 import { useMutation } from "@apollo/client";
 import { Invoice } from "../types/types";
 import { useResponsive } from "../hooks/useResponsive";
+import Description from "../components/form-components/Description";
 
 const formOptions = { resolver: yupResolver(validationSchema) };
 
@@ -50,9 +50,7 @@ function EditForm({
   });
 
   const {
-    register,
     handleSubmit,
-    formState: { errors },
     getValues,
     watch,
     trigger,
@@ -184,32 +182,13 @@ function EditForm({
               handleChangeSelectedOption={handleChangeSelectedOption}
             />
 
-            <LongFormEntry className="project-description">
-              <Label
-                htmlFor="projectDescription"
-                style={{ color: errors.projectDescription ? "#EC5757" : "" }}
-              >
-                Project Description
-              </Label>
-              <Input
-                // long
-                type="text"
-                defaultValue={invoice?.description}
-                {...register("projectDescription", { required: true })}
-                style={{
-                  border: errors.projectDescription ? "1px solid #EC5757" : "",
-                }}
-              />
-            </LongFormEntry>
-
+            <Description invoice={invoice} />
             <EditFormItemList
               invoice={invoice}
               isEditOpen={isEditOpen}
               isDraft={false}
             />
-
             <FormErrorList isEditOpen={isEditOpen} />
-
             <EditBottomMenu
               setIsOpen={setIsEditOpen}
               saveText="Save Changes"
