@@ -12,7 +12,6 @@ const useInvoices = () => {
   const invoiceList = useMemo(() => {
     if (!data) return [];
     const allInvoices = data.allInvoices || [];
-    // todo - check types for status
     return allInvoices.filter((invoice: { status: StatusKey }) => {
       const { status } = invoice;
       const { draft, pending, paid } = filter;

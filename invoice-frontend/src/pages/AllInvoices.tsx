@@ -1,21 +1,14 @@
-import React, {useState, useEffect } from "react";
-import { useSelector, useDispatch } from "react-redux";
-import { Link } from "react-router-dom";
+import { useState, useEffect } from "react";
+import { useDispatch } from "react-redux";
 import styled from "styled-components";
-import {useQuery} from "@apollo/client";
 import { MemoizedAllInvoicesToolbar } from "../components/menus-toolbars/AllInvoicesToolbar";
-import InvoiceGrid from "../components/invoice-components/InvoiceGrid";
-import InvoiceCard from "../components/invoice-components/InvoiceCard";
 import EmptyList from "../components/EmptyList";
-import {
-  // selectInvoices,
-  addIdToExistingInvoices,
-} from "../features/invoices/invoicesSlice";
-import { selectFilter } from "../features/invoices/filterSlice";
+import { addIdToExistingInvoices } from "../features/invoices/invoicesSlice";
 import NewInvoice from "./NewInvoice";
-import useWindowWidth  from "../hooks/useWindowWidth";
-import {AllInvoicesProps, Invoice} from "../types/types";
-import {ALL_INVOICES} from "../graphql/queries";
+import useWindowWidth from "../hooks/useWindowWidth";
+import { AllInvoicesProps } from "../types/types";
+import AllInvoicesView from "./AllInvoicesView";
+import useInvoices from "../hooks/useInvoices";
 
 
 const AllInvoicesContainer = styled.div`
@@ -34,91 +27,31 @@ const AllInvoicesContainer = styled.div`
   }
 `;
 
-const linkStyleMobile = {
-    width: "100%",
-    textDecoration: "none",
-    display: "flex",
-    justifyContent: "center",
-    alignItems: "center",
-};
-
-const linkStyleDesktop = {
-    width: "50%",
-    minWidth: "730px",
-    textDecoration: "none",
-    display: "flex",
-    justifyContent: "center",
-    alignItems: "center",
-};
-
 function AllInvoices({ setScrollPosition }: AllInvoicesProps) {
-  const filter = useSelector(selectFilter);
-  const dispatch = useDispatch();
-  const invoiceResults = useQuery(ALL_INVOICES);
-  const [invoiceList, setInvoiceList] = useState([]);
   const width = useWindowWidth();
-
+  const dispatch = useDispatch();
   const [isNewOpen, setIsNewOpen] = useState(false);
   const [padding, setPadding] = useState("");
+  const { invoiceList, loading, error } = useInvoices();
 
   const scrollToTop = () => {
-      if (setScrollPosition) {
-          setScrollPosition({x: window.scrollX, y: window.scrollY});
-      }
+    if (setScrollPosition) {
+      setScrollPosition({ x: window.scrollX, y: window.scrollY });
+    }
     window.scrollTo(0, 0);
   };
 
+  // This is necessary for dev environments where sample data may be loaded locally in which the invoices do not have ids.
+  // Will be removed for production release
   useEffect(() => {
-    if (invoiceResults.data) {
+    if (invoiceList.length > 0) {
       dispatch(addIdToExistingInvoices());
     }
-  }, [dispatch]);
+  }, [dispatch, invoiceList]);
 
+  if (loading) return <h2>Loading</h2>;
+  if (error) return <h1>{error.message}</h1>;
 
-  // Because the filter menu has 3 checkboxes, there are many cases to consider
-  // All of them checked is the same as none of them checked - Nobody really wants an empty list
-  useEffect(() => {
-    if (invoiceResults.data) {
-      setInvoiceList(
-        invoiceResults?.data?.allInvoices?.filter(
-          (invoice: { status: string }) => {
-            if (!filter.draft && !filter.pending && !filter.paid) {
-              return true;
-            }
-            if (filter.draft && filter.pending && filter.paid) {
-              return true;
-            }
-            if (filter.draft && filter.paid) {
-              return invoice.status === "paid" || invoice.status === "draft";
-            }
-            if (filter.draft && filter.pending) {
-              return invoice.status === "pending" || invoice.status === "draft";
-            }
-            if (filter.pending && filter.paid) {
-              return invoice.status === "paid" || invoice.status === "pending";
-            }
-            if (filter.paid) {
-              return invoice.status === "paid";
-            }
-            if (filter.pending) {
-              return invoice.status === "pending";
-            }
-            if (filter.draft) {
-              return invoice.status === "draft";
-            }
-          },
-        ),
-      );
-    }
-  }, [filter, invoiceResults.data]);
-
-  if (invoiceResults.loading) {
-    return <h2>Loading</h2>;
-  }
-
-  if (invoiceResults.error) {
-    return <h1>{invoiceResults.error.message}</h1>;
-  }
 
   return (
     <AllInvoicesContainer>
@@ -132,22 +65,13 @@ function AllInvoices({ setScrollPosition }: AllInvoicesProps) {
         padding={padding}
         setPadding={setPadding}
       />
-      {invoiceList.length > 0 && (
-        <InvoiceGrid>
-          {invoiceList.map((invoice: Invoice) => (
-            <Link
-              key={`${invoice.id  }-link`}
-              to={`/${invoice.id}`}
-              style={width < 1200 ? linkStyleMobile : linkStyleDesktop}
-              onClick={scrollToTop}
-            >
-              <InvoiceCard invoice={invoice} key={invoice.id} />
-            </Link>
-          ))}
-
-          {invoiceList.length === 0 && <EmptyList />}
-        </InvoiceGrid>
-      )}
+      <AllInvoicesView
+        invoiceList={invoiceList}
+        isNewOpen={isNewOpen}
+        setIsNewOpen={setIsNewOpen}
+        width={width}
+        scrollToTop={scrollToTop}
+      />
 
       {invoiceList.length === 0 && <EmptyList />}
 
