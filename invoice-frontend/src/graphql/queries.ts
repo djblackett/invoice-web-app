@@ -54,15 +54,15 @@ export const INVOICE_DETAILS = gql`
 export const ADD_INVOICE = gql`
     mutation addInvoice(
         $clientEmail: String,
-        $clientAddress: ClientAddress,
+        $clientAddress: ClientInfo,
         $clientName: String,
         $createdAt: String,
         $description: String,
         $id: String,
-        $items: [Item],
+        $items: [ItemInput],
         $paymentDue: String,
         $paymentTerms: Float,
-        $senderAddress: SenderAddress,
+        $senderAddress: SenderInfo,
         $status: String,
         $total: Float
     ) {
@@ -79,7 +79,36 @@ export const ADD_INVOICE = gql`
         senderAddress: $senderAddress,
         status: $status,
         total: $total
-      )
+      ) {
+    clientAddress {
+      city
+      country
+      postCode
+      street
+    }
+    clientEmail
+    clientName
+    createdAt
+    description
+    id
+    items {
+      id
+      name
+      price
+      quantity
+      total
+    }
+    paymentDue
+    paymentTerms
+    senderAddress {
+      city
+      country
+      postCode
+      street
+    }
+    status
+    total
+  }
     }
 `;
 
