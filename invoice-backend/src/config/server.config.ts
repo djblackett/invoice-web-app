@@ -26,6 +26,7 @@ if (NODE_ENV === "production") {
 }
 
 console.log(NODE_ENV);
+console.log(DB_URL);
 
 if (!DB_URL) {
   throw new Error("Server env db url not set");
@@ -42,7 +43,19 @@ export function serverConfig(app: Application) {
       extended: true,
     }),
   );
-  app.use(cors());
+  if (NODE_ENV === "development") {
+    app.use(
+      cors({
+        origin: "http://localhost:5173",
+        methods: ["GET", "POST", "PUT", "DELETE"],
+        // credentials: true,
+      }),
+    );
+  } else {
+    app.use(cors());
+  }
+  app.options("*", cors()); // This will handle all OPTIONS requests
+
   app.use(express.json());
 }
 
