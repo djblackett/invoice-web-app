@@ -4,7 +4,7 @@ import React, { useEffect, useState } from "react";
 import { useDispatch } from "react-redux";
 import { BillText, Input, Label } from "../../styles/editStyles";
 import LongFormEntry from "./LongFormEntry";
-import { CompanyFormInfo } from "./CompanyFormInfo";
+import CompanyFormInfo from "./CompanyFormInfo";
 import DateAndPayment from "./DateAndPayment";
 import EditFormItemList from "./EditFormItemList";
 import NewInvoiceBottomMenu from "../menus-toolbars/NewInvoiceBottomMenu";

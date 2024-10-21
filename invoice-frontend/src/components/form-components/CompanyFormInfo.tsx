@@ -19,13 +19,11 @@ export const CityPostContainer = styled.div`
 `;
 
 type CompanyFormInfoProps = {
-    editPageWidth: number;
     invoice?: Invoice;
     isDraft: boolean;
-
 }
 
-export function CompanyFormInfo({ isDraft, invoice }: CompanyFormInfoProps) {
+function CompanyFormInfo({ isDraft, invoice }: CompanyFormInfoProps) {
 
     const width = useWindowWidth();
     const { formState: { errors }, register } = useFormContext();
@@ -118,7 +116,8 @@ export function CompanyFormInfo({ isDraft, invoice }: CompanyFormInfoProps) {
 }
 
 CompanyFormInfo.propTypes = {
-    editPageWidth: PropTypes.number.isRequired,
     isDraft: PropTypes.bool.isRequired,
     // invoice: PropTypes.object
 };
+
+export default CompanyFormInfo;
