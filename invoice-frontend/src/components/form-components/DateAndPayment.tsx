@@ -1,82 +1,17 @@
-/* eslint-disable @typescript-eslint/no-unsafe-return */
 import DatePicker from "react-datepicker";
-import React, { forwardRef } from "react";
-import styled, { css } from "styled-components";
+import { forwardRef } from "react";
 import FormDropDown from "./FormDropDown";
 import FormEntry from "./FormEntry";
 import { DateAndPaymentContainer, Label } from "../../styles/editStyles";
-
-interface DateBox {
-  className?: string;
-  long?: boolean;
-}
-
-const CustomDateBox = styled.div<DateBox>`
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  width: 100%;
-  height: 48px;
-  border-radius: 4px;
-  border-color: ${({ theme }) => theme.formFieldOutline};
-  border-style: solid;
-  padding: 0 20px 0 16px;
-  margin-bottom: 1.5rem;
-  caret-color: #7C5DFA;
-  outline: none;
-  border-width: 1px;
-
-  letter-spacing: -0.25px;
-
-  color: ${({ theme }) => theme.textPlain};
-  background-color: ${({ theme }) => theme.inputBackgroundColor};
-
-  &:focus, &:hover {
-    border-color: ${({ theme }) => theme.formFieldOutlineFocus};
-  }
-
-  .custom-input {
-    padding: 0;
-  }
-
-  ${props => props.long && css`
-    width: 100%;
-  `}
-
-  `;
-
-interface DateInputProps {
-  className?: string,
-  ref: React.ForwardedRef<unknown>
-}
-
-const DateInput = styled.input<DateInputProps>`
-  color: ${({ theme }) => theme.dateText};
-  font-family: ${({ theme }) => theme.font};
-  font-style: normal;
-  font-weight: 700;
-  font-size: 12px;
-  line-height: 15px;
-  background-color: transparent;
-  outline: none;
-  border: none;
-  touch-action: none;
-  cursor: pointer;
-
-  &:focus, &:hover {
-    border-color: ${({ theme }) => theme.formFieldOutlineFocus};
-  }
-`;
+import { CustomDateBox, DateInput } from "../../styles/DateAndPaymentStyles";
 
 type DateAndPaymentProps = {
   handleChangeSelectedOption: (option: number) => void;
   handlePaymentClick: () => void;
   onChange: (date: Date) => void;
   paymentOpen: boolean;
-  // handlePaymentSelect: (e: SyntheticEvent) => void,
   selected: Date;
   selectedPaymentOption: number;
-  // setIsPaymentOpen: React.Dispatch<React.SetStateAction<boolean>>
 };
 
 function DateAndPayment({
@@ -126,10 +61,6 @@ function DateAndPayment({
           customInput={<ExampleCustomInput />}
           selected={selected}
           onChange={onChange}
-        // todo - make sure this CSS is applied in some other way
-        // style={{
-        //   width: "100%",
-        // }}
         />
       </FormEntry>
 

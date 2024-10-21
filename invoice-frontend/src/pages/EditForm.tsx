@@ -42,9 +42,11 @@ function EditForm({
   const [startDate, setStartDate] = useState(
     convertStringToDate(invoice?.createdAt),
   );
+
   const [selectedPaymentOption, setSelectedPaymentOption] = useState(
     invoice?.paymentTerms || 1,
   );
+
   const [isPaymentOpen, setIsPaymentOpen] = useState(false);
 
   const onClose = () => {
@@ -98,8 +100,6 @@ function EditForm({
           {invoice && invoice.id.substring(0, 6)}
         </EditTitle>
 
-        {/* "handleSubmit" will validate your inputs before invoking "onSubmit" */}
-        {/* eslint-disable-next-line react/jsx-props-no-spreading */}
         <FormProvider {...methods}>
           <form onSubmit={onSubmit} style={{ display: "flex", flexDirection: "column" }}>
             <BillText>Bill From</BillText>

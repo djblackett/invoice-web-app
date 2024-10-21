@@ -93,7 +93,7 @@ export const createInvoiceObject = (
   let invoiceTotal = 0;
 
   const { items } = newInvoice;
-  console.log("Hello");
+
   for (let i = 0; i < items.length; i++) {
     console.log(typeof  items[i].quantity);
     items[i].quantity = Number(items[i].quantity);
@@ -119,7 +119,5 @@ export const createInvoiceObject = (
     date.getFullYear(),
   ];
   newInvoice.paymentDue = [year, month, day].join("-");
-
-  // console.log("end of newVoice function", newInvoice);
   return newInvoice;
 };
