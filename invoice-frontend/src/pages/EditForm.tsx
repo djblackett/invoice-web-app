@@ -1,7 +1,6 @@
 import React, { useEffect, useState } from "react";
-import { FormProvider, useForm } from "react-hook-form";
+import { FormProvider } from "react-hook-form";
 import PropTypes from "prop-types";
-import { yupResolver } from "@hookform/resolvers/yup";
 import "../styles/react-datepicker.css";
 import EditBottomMenu from "../components/menus-toolbars/EditBottomMenu";
 import {
@@ -13,21 +12,16 @@ import {
 import CompanyFormInfo from "../components/form-components/CompanyFormInfo";
 import ClientFormInfo from "../components/form-components/ClientFormInfo";
 import DateAndPayment from "../components/form-components/DateAndPayment";
-
-import { validationSchema } from "../types/schemas";
 import FormErrorList from "../components/form-components/FormErrorList";
 import EditFormItemList from "../components/form-components/EditFormItemList";
 import {
   convertStringToDate,
-  createInvoiceObject,
 } from "../utils/utilityFunctions";
-import { EDIT_INVOICE } from "../graphql/queries";
-import { useMutation } from "@apollo/client";
 import { Invoice } from "../types/types";
 import { useResponsive } from "../hooks/useResponsive";
 import Description from "../components/form-components/Description";
+import { useEditInvoiceForm } from "../hooks/useEditInvoiceForm";
 
-const formOptions = { resolver: yupResolver(validationSchema) };
 
 type EditFormProps = {
   isEditOpen: boolean;
@@ -39,28 +33,12 @@ type EditFormProps = {
 function EditForm({
   isEditOpen,
   setIsEditOpen,
-  id,
   invoice
 }: EditFormProps) {
 
-
-  const methods = useForm({
-    ...formOptions,
-    mode: "onChange",
-  });
-
-  const {
-    handleSubmit,
-    getValues,
-    watch,
-    trigger,
-    reset,
-    setError,
-    clearErrors,
-  } = methods;
-
-  const watcher = watch();
   const { editPageWidth, padding } = useResponsive();
+
+  // todo - are these useState hooks necessary?
   const [startDate, setStartDate] = useState(
     convertStringToDate(invoice?.createdAt),
   );
@@ -69,60 +47,28 @@ function EditForm({
   );
   const [isPaymentOpen, setIsPaymentOpen] = useState(false);
 
+  const onClose = () => {
+    setIsEditOpen(false);
+    setSelectedPaymentOption(1);
+    reset();
+  };
 
-  const [editInvoice, result] = useMutation(EDIT_INVOICE);
+  const { methods, onSubmit } = useEditInvoiceForm({
+    invoice,
+    onClose,
+    startDate,
+    selectedPaymentOption,
+  });
 
-  // error notification if invoice has no items
-  useEffect(() => {
-    if (!watcher.items || watcher.items.length === 0) {
-      setError("items", { type: "custom", message: "An item must be added" });
-    }
-  }, [watcher.items]);
+  const {
+    reset,
+  } = methods;
 
   useEffect(() => {
     if (invoice) {
       setSelectedPaymentOption(invoice.paymentTerms);
     }
   }, [invoice]);
-
-  const onSubmit = async () => {
-    const data = getValues();
-    // alternate check for items
-    // returns without submitting invoice
-    if (!data.items || data.items.length === 0) {
-      setError("items", { type: "custom", message: "An item must be added" });
-      return;
-    }
-
-    // trigger validation on fields
-    trigger().then(async (value) => {
-      if (value) {
-        const newInvoice = createInvoiceObject(
-          data,
-          startDate,
-          selectedPaymentOption,
-          id,
-          invoice,
-        );
-
-        await editInvoice({
-          variables: {
-            ...newInvoice
-          }
-        });
-
-        console.log(result);
-
-        clearErrors();
-        setIsEditOpen(false);
-        setSelectedPaymentOption(1); // todo check this
-
-        reset();
-
-      }
-    });
-  };
-
 
   // sets the payment option after change
   const handleChangeSelectedOption = (option: number) => {
@@ -155,24 +101,17 @@ function EditForm({
         {/* "handleSubmit" will validate your inputs before invoking "onSubmit" */}
         {/* eslint-disable-next-line react/jsx-props-no-spreading */}
         <FormProvider {...methods}>
-          <form onSubmit={handleSubmit(onSubmit)} style={{ display: "flex", flexDirection: "column" }}>
-
-            {/* register your input into the hook by invoking the "register" function */}
-
-            {/* Company Details */}
+          <form onSubmit={onSubmit} style={{ display: "flex", flexDirection: "column" }}>
             <BillText>Bill From</BillText>
             <CompanyFormInfo
               invoice={invoice}
               isDraft={false}
             />
-
-            {/* //  Client details */}
             <BillText>Bill To</BillText>
             <ClientFormInfo
               invoice={invoice}
               isDraft={false}
             />
-
             <DateAndPayment
               selected={startDate}
               onChange={(date) => setStartDate(date)}
@@ -181,7 +120,6 @@ function EditForm({
               selectedPaymentOption={selectedPaymentOption}
               handleChangeSelectedOption={handleChangeSelectedOption}
             />
-
             <Description invoice={invoice} />
             <EditFormItemList
               invoice={invoice}
