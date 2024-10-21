@@ -1,9 +1,8 @@
-import React, { useEffect, useLayoutEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import { FormProvider, useForm } from "react-hook-form";
 import PropTypes from "prop-types";
 import { yupResolver } from "@hookform/resolvers/yup";
 import "../styles/react-datepicker.css";
-import useWindowWidth from "../hooks/useWindowWidth";
 import EditBottomMenu from "../components/menus-toolbars/EditBottomMenu";
 import {
   BillText,
@@ -12,7 +11,7 @@ import {
   FormContainerDarkenModal, Input,
   Label,
 } from "../styles/editStyles";
-import { CompanyFormInfo } from "../components/form-components/CompanyFormInfo";
+import CompanyFormInfo from "../components/form-components/CompanyFormInfo";
 import ClientFormInfo from "../components/form-components/ClientFormInfo";
 import DateAndPayment from "../components/form-components/DateAndPayment";
 import LongFormEntry from "../components/form-components/LongFormEntry";
@@ -23,20 +22,16 @@ import {
   convertStringToDate,
   createInvoiceObject,
 } from "../utils/utilityFunctions";
-
-
-
 import { EDIT_INVOICE } from "../graphql/queries";
 import { useMutation } from "@apollo/client";
 import { Invoice } from "../types/types";
+import { useResponsive } from "../hooks/useResponsive";
 
 const formOptions = { resolver: yupResolver(validationSchema) };
 
 type EditFormProps = {
   isEditOpen: boolean;
-  padding: string;
   setIsEditOpen: React.Dispatch<React.SetStateAction<boolean>>;
-  setPadding: React.Dispatch<React.SetStateAction<string>>;
   id: string;
   invoice: Invoice;
 };
@@ -44,8 +39,6 @@ type EditFormProps = {
 function EditForm({
   isEditOpen,
   setIsEditOpen,
-  padding,
-  setPadding,
   id,
   invoice
 }: EditFormProps) {
@@ -68,10 +61,8 @@ function EditForm({
     clearErrors,
   } = methods;
 
-  const width = useWindowWidth();
   const watcher = watch();
-
-  const [editPageWidth, setEditPageWidth] = useState(0);
+  const { editPageWidth, padding } = useResponsive();
   const [startDate, setStartDate] = useState(
     convertStringToDate(invoice?.createdAt),
   );
@@ -81,9 +72,7 @@ function EditForm({
   const [isPaymentOpen, setIsPaymentOpen] = useState(false);
 
 
-  const [editInvoice, result] = useMutation(EDIT_INVOICE, {
-
-  })
+  const [editInvoice, result] = useMutation(EDIT_INVOICE);
 
   // error notification if invoice has no items
   useEffect(() => {
@@ -136,25 +125,6 @@ function EditForm({
     });
   };
 
-  // calculates width and padding of editForm depending on window width and whether the edit tab is open
-  useLayoutEffect(() => {
-    if (width > 1200 && isEditOpen) {
-      setEditPageWidth(616);
-      setPadding("2.5rem 2.5rem 2rem calc(2.5rem + 17px)");
-    } else if (width < 1200 && width > 325 && isEditOpen) {
-      setEditPageWidth(616);
-      setPadding("2.5rem 2.5rem 2.5rem 2.5rem");
-    } else if (width < 325 && isEditOpen) {
-      setEditPageWidth(325);
-      setPadding("2rem 1.5rem 2.5rem 1.5rem");
-    } else if (width < 600 && isEditOpen) {
-      setEditPageWidth(width);
-      setPadding("1.5rem 1.5rem 1.5rem 1.5rem");
-    } else if (!isEditOpen) {
-      setEditPageWidth(0);
-    }
-  }, [width, padding, isEditOpen]);
-
 
   // sets the payment option after change
   const handleChangeSelectedOption = (option: number) => {
@@ -195,14 +165,12 @@ function EditForm({
             <BillText>Bill From</BillText>
             <CompanyFormInfo
               invoice={invoice}
-              editPageWidth={editPageWidth}
               isDraft={false}
             />
 
             {/* //  Client details */}
             <BillText>Bill To</BillText>
             <ClientFormInfo
-              editPageWidth={editPageWidth}
               invoice={invoice}
               isDraft={false}
             />
@@ -259,10 +227,6 @@ function EditForm({
 EditForm.propTypes = {
   isEditOpen: PropTypes.bool.isRequired,
   setIsEditOpen: PropTypes.func.isRequired,
-  // handleClose: PropTypes.func,
-  // invoice: PropTypes.object,
-  // padding: PropTypes.string,
-  // setPadding: PropTypes.func,
 };
 
 export default EditForm;
