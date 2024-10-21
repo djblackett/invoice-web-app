@@ -1,8 +1,8 @@
 import { Link, LinkProps } from 'react-router-dom';
 import styled from 'styled-components';
-import InvoiceGrid from '../components/invoice-components/InvoiceGrid';
-import InvoiceCard from '../components/invoice-components/InvoiceCard';
-import EmptyList from '../components/EmptyList';
+import InvoiceGrid from './invoice-components/InvoiceGrid';
+import InvoiceCard from './invoice-components/InvoiceCard';
+import EmptyList from './EmptyList';
 import { Invoice } from '../types/types';
 
 

@@ -7,7 +7,7 @@ import { addIdToExistingInvoices } from "../features/invoices/invoicesSlice";
 import NewInvoice from "./NewInvoice";
 import useWindowWidth from "../hooks/useWindowWidth";
 import { AllInvoicesProps } from "../types/types";
-import AllInvoicesView from "./AllInvoicesView";
+import AllInvoicesView from "../components/AllInvoicesView";
 import useInvoices from "../hooks/useInvoices";
 
 
