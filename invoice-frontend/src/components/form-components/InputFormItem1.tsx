@@ -1,6 +1,5 @@
-import { useFieldArray, useFormContext} from "react-hook-form";
-// import { v4 as uuidv4 } from "uuid";
-import React, { useEffect, useRef } from "react";
+import { useFieldArray, useFormContext } from "react-hook-form";
+import { useEffect, useRef } from "react";
 import PropTypes from "prop-types";
 import {
   Box,
@@ -13,8 +12,8 @@ import {
 } from "../../styles/editFormItemStyles";
 import NewItemButton from "../buttons/NewItemButton";
 import useWindowWidth from "../../hooks/useWindowWidth";
-import {Col, Col1} from "../../styles/EditFormItemListStyles";
-import { Invoice} from "../../types/types";
+import { Col, Col1 } from "../../styles/EditFormItemListStyles";
+import { Invoice } from "../../types/types";
 
 type InputFormItemProps = {
   invoice?: Invoice;
@@ -30,14 +29,12 @@ export default function InputFormItem1({ isDraft, invoice, isEditOpen }: InputFo
     name: "items", rules: { required: true, minLength: 1 }
   });
 
-  const { errors, isSubmitting} = formState;
+  const { errors, isSubmitting } = formState;
 
   const watchItems = watch("items", []);
   const watcher = watch();
   const width = useWindowWidth();
   const isInitialRender = useRef(true);
-  // eslint-disable-next-line no-console
-  // console.log(errors);
 
   useEffect(() => {
     if (!fields.length && !isInitialRender.current) {
@@ -55,12 +52,8 @@ export default function InputFormItem1({ isDraft, invoice, isEditOpen }: InputFo
 
   useEffect(() => {
     if (invoice && isEditOpen) {
-      // const {items} = getValues();
-      // console.log(items);
       invoice.items.forEach(i => {
-        // if (!items.includes(i)) {
-        append({id: i.id, name: i.name, quantity: i.quantity, price: i.price, total: i.total});
-        // }
+        append({ id: i.id, name: i.name, quantity: i.quantity, price: i.price, total: i.total });
       });
     }
 
@@ -69,7 +62,6 @@ export default function InputFormItem1({ isDraft, invoice, isEditOpen }: InputFo
         resetField("items");
       }, 200);
     }
-    // console.log("items added to form");
   }, [invoice, isEditOpen]);
 
   // validation check for at least one item
@@ -87,7 +79,7 @@ export default function InputFormItem1({ isDraft, invoice, isEditOpen }: InputFo
         <ItemName
           {...register(`items[${index}].name`, { required: !isDraft })}
           placeholder="Item name"
-          defaultValue={invoice? invoice?.items?.[index]?.name : "" }
+          defaultValue={invoice ? invoice?.items?.[index]?.name : ""}
           type="text"
           style={{ border: Array.isArray(errors.items) && errors?.items?.[index]?.name ? "1px solid #EC5757" : "" }}
         />
@@ -95,21 +87,21 @@ export default function InputFormItem1({ isDraft, invoice, isEditOpen }: InputFo
       <SmallBoxContainer>
         <Box>
           <Col style={{ marginBottom: "0.625rem" }}>Qty.</Col>
-          <Quantity {...register(`items[${index}].quantity`, { required: !isDraft, max: 100 } )} placeholder="0" type="text"
+          <Quantity {...register(`items[${index}].quantity`, { required: !isDraft, max: 100 })} placeholder="0" type="text"
             style={{ border: Array.isArray(errors.items) && errors?.items?.[index]?.quantity ? "1px solid #EC5757" : "" }}
-            defaultValue={invoice? invoice?.items?.[index]?.quantity : "" }/>
+            defaultValue={invoice ? invoice?.items?.[index]?.quantity : ""} />
         </Box>
         <Box>
           <Col style={{ marginBottom: "0.625rem" }}>Price</Col>
-          <Price {...register(`items[${index}].price`, { required: !isDraft, max: 100000 } )} placeholder="0.00" type="text"
-            defaultValue={invoice? invoice?.items?.[index]?.price : "" }
+          <Price {...register(`items[${index}].price`, { required: !isDraft, max: 100000 })} placeholder="0.00" type="text"
+            defaultValue={invoice ? invoice?.items?.[index]?.price : ""}
             style={{ border: Array.isArray(errors.items) && errors?.items?.[index]?.price ? "1px solid #EC5757" : "" }} />
 
         </Box>
         <TotalBox style={{ width: "fit-content" }}>
           <Col style={{ marginBottom: "0.625rem" }}>Total</Col>
           <Total>
-            { (Number(watchItems?.[index]?.quantity) * Number(watchItems?.[index]?.price)).toFixed(2)}
+            {(Number(watchItems?.[index]?.quantity) * Number(watchItems?.[index]?.price)).toFixed(2)}
           </Total>
         </TotalBox>
       </SmallBoxContainer>
@@ -130,7 +122,7 @@ export default function InputFormItem1({ isDraft, invoice, isEditOpen }: InputFo
         <ItemName
           {...register(`items[${index}].name`, { required: !isDraft })}
           placeholder="Item name"
-          defaultValue={invoice? invoice?.items?.[index]?.name : "" }
+          defaultValue={invoice ? invoice?.items?.[index]?.name : ""}
           type="text"
           style={{
             border:
@@ -139,20 +131,22 @@ export default function InputFormItem1({ isDraft, invoice, isEditOpen }: InputFo
                 : "",
           }}
         />
-        <Quantity {...register(`items[${index}].quantity`, { required: !isDraft, max: 100 } )} placeholder="0" type="text"
+        <Quantity {...register(`items[${index}].quantity`, { required: !isDraft, max: 100 })} placeholder="0" type="text"
           style={{ border: Array.isArray(errors.items) && errors?.items?.[index]?.quantity ? "1px solid #EC5757" : "" }}
-          defaultValue={invoice? invoice?.items?.[index]?.quantity : 0}/>
+          defaultValue={invoice ? invoice?.items?.[index]?.quantity : 0} />
         <Price {...register(`items[${index}].price`, {
           required: !isDraft,
-          max: 100000 } )}
-               placeholder="0.00" type="text"
-          defaultValue={invoice? invoice?.items?.[index]?.price : 0 }
+          max: 100000
+        })}
+          placeholder="0.00" type="text"
+          defaultValue={invoice ? invoice?.items?.[index]?.price : 0}
           style={{
             border:
-                Array.isArray(errors.items) && errors?.items?.[index]?.price ? "1px solid #EC5757" : "" }} />
+              Array.isArray(errors.items) && errors?.items?.[index]?.price ? "1px solid #EC5757" : ""
+          }} />
 
         <Total>
-          { (Number(watchItems?.[index]?.quantity) * Number(watchItems?.[index]?.price)).toFixed(2)}
+          {(Number(watchItems?.[index]?.quantity) * Number(watchItems?.[index]?.price)).toFixed(2)}
         </Total>
         <SVG
           name="removeButton" onClick={() => remove(index)}>
