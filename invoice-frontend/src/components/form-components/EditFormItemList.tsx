@@ -1,6 +1,6 @@
-import InputFormItem1  from "./InputFormItem1";
-import {Col, Col1, ItemsContainer, ItemsHeader, ItemTitle, ListContainer} from "../../styles/EditFormItemListStyles";
-import {Invoice} from "../../types/types";
+import InputFormItem1 from "./InputFormItem1";
+import { Col, Col1, ItemsContainer, ItemsHeader, ItemTitle, ListContainer } from "../../styles/EditFormItemListStyles";
+import { Invoice } from "../../types/types";
 
 type EditFormItemListProps = {
   invoice?: Invoice;
@@ -11,7 +11,7 @@ type EditFormItemListProps = {
 function EditFormItemList({
   isDraft,
   invoice,
-  isEditOpen,
+  isEditOpen = false,
 }: EditFormItemListProps) {
   return (
     <ListContainer>

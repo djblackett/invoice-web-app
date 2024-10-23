@@ -4,10 +4,11 @@ import { Invoice } from "../../types/types";
 import { useFormContext } from "react-hook-form";
 
 interface DescriptionProps {
-    invoice: Invoice;
+    invoice?: Invoice;
+    isDraft?: boolean;
 }
 
-function Description({ invoice }: DescriptionProps) {
+function Description({ invoice, isDraft = false }: DescriptionProps) {
     const { formState: { errors }, register } = useFormContext();
     return <>
         <LongFormEntry className="project-description">
@@ -20,7 +21,7 @@ function Description({ invoice }: DescriptionProps) {
             <Input
                 type="text"
                 defaultValue={invoice?.description}
-                {...register("projectDescription", { required: true })}
+                {...register("projectDescription", { required: !isDraft })}
                 style={{
                     border: errors.projectDescription ? "1px solid #EC5757" : "",
                 }}

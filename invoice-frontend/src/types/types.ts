@@ -92,3 +92,18 @@ export type AllInvoicesProps = {
 export type FullInvoiceProps = {
     invoice: Invoice
 }
+
+export interface FormData {
+  items?: {
+    name: string;
+    quantity: number;
+    price: number;
+  }[];
+  projectDescription: string;
+  clientName: string;
+  clientEmail: string;
+  clientStreetAddress: string;
+  clientCity: string;
+  clientPostalCode: string;
+  clientCountry: string;
+}

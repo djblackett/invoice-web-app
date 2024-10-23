@@ -4,7 +4,7 @@ import { yupResolver } from '@hookform/resolvers/yup';
 import { validationSchema } from '../types/schemas';
 import { useMutation } from '@apollo/client';
 import { EDIT_INVOICE } from '../graphql/queries';
-import { Invoice } from '../types/types';
+import { Invoice, FormData } from '../types/types';
 import { createInvoiceObject } from '../utils/utilityFunctions';
 
 interface UseEditInvoiceFormProps {
@@ -14,20 +14,6 @@ interface UseEditInvoiceFormProps {
   selectedPaymentOption: number,
 }
 
-interface FormData {
-  items?: {
-    name: string;
-    quantity: number;
-    price: number;
-  }[];
-  projectDescription: string;
-  clientName: string;
-  clientEmail: string;
-  clientStreetAddress: string;
-  clientCity: string;
-  clientPostalCode: string;
-  clientCountry: string;
-}
 
 export const useEditInvoiceForm = ({ invoice, onClose, startDate, selectedPaymentOption }: UseEditInvoiceFormProps) => {
   const methods = useForm<FormData>({

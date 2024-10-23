@@ -10,8 +10,11 @@ const plusSign = (
   </svg>
 );
 
-function NewInvoiceButton() {
-  return <Button>{plusSign}</Button>;
+interface NewInvoiceButtonProps {
+  saveText: string;
+}
+function NewInvoiceButton({ saveText }: NewInvoiceButtonProps) {
+  return <Button>{saveText + " "}{plusSign}</Button>;
 }
 
 export default NewInvoiceButton;
