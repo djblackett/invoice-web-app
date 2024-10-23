@@ -1,86 +1,14 @@
-import styled from "styled-components";
 import PropTypes from "prop-types";
 import { useFormContext } from "react-hook-form";
 import { flushSync } from "react-dom";
 import CancelButton from "../buttons/CancelButton";
-
-const MenuContainer = styled.div`
-  width: 100%;
-  max-width: 100vw;
-  display: flex;
-  flex-direction: row;
-  align-items: center;
-  justify-content: center;
-  padding: 0;
-  margin-top: 2.6rem;
-  margin-bottom: 4rem;
-  align-self: center;
-  transform: scale(.90);
-  
-  @media (min-width: 325px) {
-    justify-content: space-between;
-    transform: scale(1);
-  }
-  
-  @media (min-width: 768px) {
-    margin-bottom: 0;
-  }
-`;
-
-const NewInvoiceButton = styled.input`
-  border-radius: 24px;
-  background-color: #7c5dfa;
-  border: none;
-  height: 44px;
-  width: 90px;
-  display: flex;
-  flex-shrink: 1;
-  align-items: center;
-  justify-content: center;
-  text-align: center;
-  cursor: pointer;
-  font-weight: 700;
-  font-size: 12px;
-  line-height: 15px;
-  /* identical to box height, or 125% */
-  letter-spacing: -0.25px;
-  color: #ffffff;
-
-  @media (min-width: 1200px) {
-    height: 48px;
-    width: 138px;
-  }
-
-  &:hover {
-    background-color: #9277ff;
-  }
-`;
-
-const SaveDraft = styled(NewInvoiceButton)`
-  background-color: #373b53;
-  color: #888eb0;
-  margin-right: 8px;
-  width: 133px;
-
-  &:hover {
-    background-color: #0c0e16;
-  }
-`;
-
-const SaveAndDraftContainer = styled.div`
-  display: contents;
-
-  @media (min-width: 768px) {
-    display: flex;
-    flex-direction: row;
-  }
-`;
+import { FormType } from "../../types/types";
+import { MenuContainer, Save, SaveAndDraftContainer, SaveDraft } from "../../styles/NewInvoiceBottomMenuStyles";
 
 type NewInvoiceBoottemMenuProps = {
   closeText: string;
   justifyCancel: string;
-  onSubmit: (status: "draft" | "pending") => void;
-  saveText: string;
+  onSubmit: (data: FormType) => void;
   setIsDraft: (b: boolean) => void;
   setIsOpen: (b: boolean) => void;
 };
@@ -88,7 +16,6 @@ type NewInvoiceBoottemMenuProps = {
 function NewInvoiceBottomMenu({
   setIsDraft,
   setIsOpen,
-  saveText,
   closeText,
   justifyCancel,
   onSubmit,
@@ -120,7 +47,7 @@ function NewInvoiceBottomMenu({
       setIsDraft(false);
       setValue("status", "pending");
     });
-      onSubmit("pending");
+    onSubmit("pending");
   };
 
   return (
@@ -132,9 +59,9 @@ function NewInvoiceBottomMenu({
       />
       <SaveAndDraftContainer>
         <SaveDraft type="button" value="Save as draft" onClick={setToDraft} />
-        <NewInvoiceButton
+        <Save
           type="button"
-          value={saveText}
+          value="Save"
           onClick={setToPending}
         />
       </SaveAndDraftContainer>
