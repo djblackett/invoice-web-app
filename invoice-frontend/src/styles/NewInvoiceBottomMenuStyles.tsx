@@ -69,6 +69,7 @@ export const Save = styled(NewInvoiceButton)`
   cursor: pointer;
   width: fit-content;
   white-space: nowrap;
+  /* padding: */
 
   @media (min-width: 1200px) {
     width: 150px;
