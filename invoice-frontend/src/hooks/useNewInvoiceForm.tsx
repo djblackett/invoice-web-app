@@ -5,26 +5,9 @@ import { ADD_INVOICE, ALL_INVOICES } from '../graphql/queries';
 import { v4 as uuidv4 } from 'uuid';
 import { createInvoiceObject } from '../utils/utilityFunctions';
 import { FormType } from '../types/types';
+import { useNewInvoiceContext } from '../components/form-components/NewInvoiceContextProvider';
 
-interface UseNewInvoiceFormProps {
-    startDate: Date;
-    setStartDate: React.Dispatch<React.SetStateAction<Date>>;
-    isDraft: boolean;
-    setIsDraft: React.Dispatch<React.SetStateAction<boolean>>;
-    setIsNewOpen: React.Dispatch<React.SetStateAction<boolean>>;
-    selectedPaymentOption: number;
-    setSelectedPaymentOption: React.Dispatch<React.SetStateAction<number>>;
-}
-
-export const useNewInvoiceForm = ({
-    startDate,
-    setStartDate,
-    isDraft,
-    setIsDraft,
-    setIsNewOpen,
-    selectedPaymentOption,
-    setSelectedPaymentOption,
-}: UseNewInvoiceFormProps) => {
+export const useNewInvoiceForm = () => {
     // Initialize the form
     const methods = useForm<FormType>({
         mode: 'onChange',
@@ -61,6 +44,12 @@ export const useNewInvoiceForm = ({
         name: 'items',
     });
 
+    const { startDate,
+        setIsDraft,
+        setIsNewInvoiceOpen,
+        selectedPaymentOption,
+        setSelectedPaymentOption, } = useNewInvoiceContext();
+
     const watcher = watch();
 
     // Mutation to add a new invoice
@@ -80,7 +69,7 @@ export const useNewInvoiceForm = ({
         setIsDraft(true);
         reset();
         replace([{ id: uuidv4(), name: '', quantity: 0, price: 0, total: 0 }]);
-        setIsNewOpen(false);
+        setIsNewInvoiceOpen(false);
     };
 
     // Handle form submission
@@ -101,7 +90,7 @@ export const useNewInvoiceForm = ({
                 price: Number(item.price),
             }));
 
-            newInvoice.status = status;
+            newInvoice.status = "pending"
 
             try {
                 await addInvoice({
@@ -114,6 +103,37 @@ export const useNewInvoiceForm = ({
                 console.error(error);
             }
         }
+    };
+
+    const onSubmitDraft: SubmitHandler<FormType> = async (data) => {
+        if (!data.items) {
+            data.items = [{ id: "", name: "", quantity: 0, price: 0, total: 0 }]
+        }
+
+        // const isValid = await trigger();
+        // if (isValid) {
+        const newInvoice = createInvoiceObject(data, startDate, selectedPaymentOption);
+
+        // Ensure quantity and price are numbers
+        newInvoice.items = newInvoice.items.map((item) => ({
+            ...item,
+            quantity: Number(item.quantity) || 0,
+            price: Number(item.price) || 0,
+        }));
+
+        newInvoice.status = "draft";
+
+        try {
+            await addInvoice({
+                variables: {
+                    ...newInvoice,
+                },
+            });
+            handleFormReset();
+        } catch (error) {
+            console.error(error);
+        }
+        // }
     };
 
     // Handle payment dropdown toggle
@@ -146,6 +166,7 @@ export const useNewInvoiceForm = ({
     return {
         methods,
         onSubmit,
+        onSubmitDraft,
         isPaymentOpen,
         handlePaymentClick,
         handleChangeSelectedOption,

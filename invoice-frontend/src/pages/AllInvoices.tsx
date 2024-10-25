@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useEffect } from "react";
 import { useDispatch } from "react-redux";
 import { MemoizedAllInvoicesToolbar } from "../components/menus-toolbars/AllInvoicesToolbar";
 import { addIdToExistingInvoices } from "../features/invoices/invoicesSlice";
@@ -8,13 +8,12 @@ import { AllInvoicesProps } from "../types/types";
 import AllInvoicesView from "../components/AllInvoicesView";
 import useInvoices from "../hooks/useInvoices";
 import { AllInvoicesContainer } from "../styles/AllInvoicesStyles";
+import { NewInvoiceProvider } from "../components/form-components/NewInvoiceContextProvider";
 
 
 function AllInvoices({ setScrollPosition }: AllInvoicesProps) {
   const width = useWindowWidth();
   const dispatch = useDispatch();
-  const [isNewOpen, setIsNewOpen] = useState(false);
-  const [padding, setPadding] = useState("");
   const { invoiceList, loading, error } = useInvoices();
 
   const scrollToTop = () => {
@@ -38,16 +37,12 @@ function AllInvoices({ setScrollPosition }: AllInvoicesProps) {
 
   return (
     <AllInvoicesContainer>
-      <MemoizedAllInvoicesToolbar
-        invoiceList={invoiceList}
-        setIsNewOpen={setIsNewOpen}
-      />
-      <NewInvoice
-        isNewOpen={isNewOpen}
-        setIsNewOpen={setIsNewOpen}
-        padding={padding}
-        setPadding={setPadding}
-      />
+      <NewInvoiceProvider>
+        <MemoizedAllInvoicesToolbar
+          invoiceList={invoiceList}
+        />
+        <NewInvoice />
+      </NewInvoiceProvider>
       <AllInvoicesView
         invoiceList={invoiceList}
         width={width}
