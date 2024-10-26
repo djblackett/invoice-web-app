@@ -1,33 +1,22 @@
-import { useForm, useFieldArray, SubmitHandler } from 'react-hook-form';
-import { useEffect, useState } from 'react';
+import { useFieldArray, SubmitHandler } from 'react-hook-form';
+import { useEffect } from 'react';
 import { useMutation } from '@apollo/client';
 import { ADD_INVOICE, ALL_INVOICES } from '../graphql/queries';
 import { v4 as uuidv4 } from 'uuid';
 import { createInvoiceObject } from '../utils/utilityFunctions';
 import { FormType } from '../types/types';
 import { useNewInvoiceContext } from '../components/form-components/NewInvoiceContextProvider';
+import { flushSync } from 'react-dom';
 
 export const useNewInvoiceForm = () => {
-    // Initialize the form
-    const methods = useForm<FormType>({
-        mode: 'onChange',
-        defaultValues: {
-            status: 'draft',
-            city: '',
-            country: '',
-            postalCode: '',
-            streetAddress: '',
-            clientName: '',
-            clientEmail: '',
-            clientStreetAddress: '',
-            clientCity: '',
-            clientCountry: '',
-            clientPostalCode: '',
-            projectDescription: '',
-            items: [{ id: uuidv4(), name: '', quantity: 0, price: 0, total: 0 }],
-        },
-        // resolver: yupResolver(validationSchema),
-    });
+
+    const { startDate,
+        isDraft,
+        setIsDraft,
+        setIsNewInvoiceOpen,
+        selectedPaymentOption,
+        setSelectedPaymentOption,
+        methods } = useNewInvoiceContext();
 
     const {
         control,
@@ -36,7 +25,7 @@ export const useNewInvoiceForm = () => {
         watch,
         setError,
         clearErrors,
-        formState: { isSubmitSuccessful },
+        getValues,
     } = methods;
 
     const { replace } = useFieldArray({
@@ -44,11 +33,6 @@ export const useNewInvoiceForm = () => {
         name: 'items',
     });
 
-    const { startDate,
-        setIsDraft,
-        setIsNewInvoiceOpen,
-        selectedPaymentOption,
-        setSelectedPaymentOption, } = useNewInvoiceContext();
 
     const watcher = watch();
 
@@ -60,26 +44,34 @@ export const useNewInvoiceForm = () => {
         },
     });
 
-    // State for payment dropdown
-    const [isPaymentOpen, setIsPaymentOpen] = useState(false);
 
     // Handle form reset
     const handleFormReset = () => {
         setSelectedPaymentOption(1);
-        setIsDraft(true);
         reset();
+        clearErrors();
         replace([{ id: uuidv4(), name: '', quantity: 0, price: 0, total: 0 }]);
         setIsNewInvoiceOpen(false);
     };
 
     // Handle form submission
     const onSubmit: SubmitHandler<FormType> = async (data) => {
+        console.log("Submitting form");
+        flushSync(() => setIsDraft(false));
+
+        data = getValues();
+        console.log("Hello");
+        console.log(data);
+
         if (!data.items) {
+            console.log("No items");
             setError('items', { type: 'custom', message: 'An item must be added' });
             return;
         }
 
         const isValid = await trigger();
+        console.log("isValid:", isValid);
+        console.log(isDraft);
         if (isValid) {
             const newInvoice = createInvoiceObject(data, startDate, selectedPaymentOption);
 
@@ -106,12 +98,14 @@ export const useNewInvoiceForm = () => {
     };
 
     const onSubmitDraft: SubmitHandler<FormType> = async (data) => {
+        console.log("Submitting draft");
+        clearErrors();
+        flushSync(() => clearErrors());
+        console.log("isDraft:", isDraft)
         if (!data.items) {
             data.items = [{ id: "", name: "", quantity: 0, price: 0, total: 0 }]
         }
 
-        // const isValid = await trigger();
-        // if (isValid) {
         const newInvoice = createInvoiceObject(data, startDate, selectedPaymentOption);
 
         // Ensure quantity and price are numbers
@@ -130,30 +124,14 @@ export const useNewInvoiceForm = () => {
                 },
             });
             handleFormReset();
+            reset()
         } catch (error) {
             console.error(error);
         }
         // }
     };
 
-    // Handle payment dropdown toggle
-    const handlePaymentClick = () => {
-        setIsPaymentOpen(!isPaymentOpen);
-    };
 
-    // Handle payment option change
-    const handleChangeSelectedOption = (option: number) => {
-        setSelectedPaymentOption(option);
-    };
-
-    // Effect to set draft status on successful submit
-    useEffect(() => {
-        if (isSubmitSuccessful) {
-            setIsDraft(true);
-        }
-    }, [isSubmitSuccessful, setIsDraft]);
-
-    // Effect to validate items array
     useEffect(() => {
         if (!watcher.items) {
             setError('items', { type: 'custom', message: 'An item must be added' });
@@ -167,8 +145,5 @@ export const useNewInvoiceForm = () => {
         methods,
         onSubmit,
         onSubmitDraft,
-        isPaymentOpen,
-        handlePaymentClick,
-        handleChangeSelectedOption,
     };
 };

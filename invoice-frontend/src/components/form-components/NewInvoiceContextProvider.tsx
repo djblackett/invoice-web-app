@@ -1,5 +1,6 @@
 import React, { createContext, FC, ReactNode, useState } from "react";
-import { Item } from "../../types/types";
+import { FormType, Item } from "../../types/types";
+import { useForm, UseFormReturn } from "react-hook-form";
 
 
 interface AppContextType {
@@ -13,6 +14,10 @@ interface AppContextType {
     setSelectedPaymentOption: React.Dispatch<React.SetStateAction<number>>;
     isNewInvoiceOpen: boolean;
     setIsNewInvoiceOpen: React.Dispatch<React.SetStateAction<boolean>>;
+    handlePaymentClick: () => void;
+    isPaymentOpen: boolean;
+    handleChangeSelectedOption: (option: number) => void;
+    methods: UseFormReturn<FormType>;
 }
 
 
@@ -27,11 +32,26 @@ function useNewInvoiceContext() {
 }
 
 const NewInvoiceProvider: FC<{ children: ReactNode }> = ({ children }) => {
-    const [isDraft, setIsDraft] = useState(true);
+    const [isDraft, setIsDraft] = useState(false);
     const [startDate, setStartDate] = useState(new Date());
     const [items, setItems] = useState<Item[]>([]);
     const [selectedPaymentOption, setSelectedPaymentOption] = useState(1);
     const [isNewInvoiceOpen, setIsNewInvoiceOpen] = useState(false);
+    const [isPaymentOpen, setIsPaymentOpen] = useState(false);
+
+    const handlePaymentClick = () => {
+        setIsPaymentOpen(!isPaymentOpen);
+    };
+
+    // Handle payment option change
+    const handleChangeSelectedOption = (option: number) => {
+        setSelectedPaymentOption(option);
+    };
+
+    // Initialize the form
+    const methods = useForm<FormType>({
+        mode: 'onChange',
+    });
 
     const value = {
         isDraft,
@@ -43,7 +63,11 @@ const NewInvoiceProvider: FC<{ children: ReactNode }> = ({ children }) => {
         selectedPaymentOption,
         setSelectedPaymentOption,
         isNewInvoiceOpen,
-        setIsNewInvoiceOpen
+        setIsNewInvoiceOpen,
+        handlePaymentClick,
+        isPaymentOpen,
+        handleChangeSelectedOption,
+        methods
     };
 
     return <AppContext.Provider value={value}>{children}</AppContext.Provider>;
