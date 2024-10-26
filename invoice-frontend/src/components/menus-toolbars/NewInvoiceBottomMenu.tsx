@@ -15,7 +15,7 @@ function NewInvoiceBottomMenu({
   justifyCancel,
 }: NewInvoiceBoottemMenuProps) {
 
-  const { clearErrors, reset } = useFormContext();
+  const { clearErrors, reset, handleSubmit } = useFormContext();
 
   const {
     setIsNewInvoiceOpen,
@@ -45,7 +45,7 @@ function NewInvoiceBottomMenu({
         <Save
           type="button"
           value="Save"
-          onClick={() => onSubmit}
+          onClick={handleSubmit(onSubmit)}
         />
       </SaveAndDraftContainer>
     </MenuContainer>
@@ -57,5 +57,4 @@ export default NewInvoiceBottomMenu;
 NewInvoiceBottomMenu.propTypes = {
   closeText: PropTypes.string.isRequired,
   justifyCancel: PropTypes.string,
-  onSubmit: PropTypes.func.isRequired,
 };
