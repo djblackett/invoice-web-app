@@ -13,15 +13,12 @@ import { useNewInvoiceContext } from "./NewInvoiceContextProvider";
 
 export default function NewInvoiceForm() {
 
-  const { methods, isPaymentOpen, handleChangeSelectedOption, handlePaymentClick, onSubmit } = useNewInvoiceForm();
+  const { methods } = useNewInvoiceForm();
 
   const {
     startDate,
     setStartDate,
-    isDraft,
-    setIsDraft,
     isNewInvoiceOpen,
-    selectedPaymentOption,
   } = useNewInvoiceContext();
 
   return (
@@ -29,27 +26,22 @@ export default function NewInvoiceForm() {
       <form>
 
         <BillText>Bill From</BillText>
-        <CompanyFormInfo isDraft={isDraft} />
+        <CompanyFormInfo />
         <BillText>Bill To</BillText>
-        <ClientFormInfo isDraft={isDraft} />
+        <ClientFormInfo />
 
         <DateAndPayment
           selected={startDate}
           onChange={(date) => setStartDate(date)}
-          paymentOpen={isPaymentOpen}
-          handlePaymentClick={handlePaymentClick}
-          selectedPaymentOption={selectedPaymentOption}
-          handleChangeSelectedOption={handleChangeSelectedOption}
         />
 
-        <Description isDraft={isDraft} />
-        <EditFormItemList isDraft={isDraft} />
+        <Description />
+        <EditFormItemList />
 
         <FormErrorList isEditOpen={isNewInvoiceOpen} />
         <NewInvoiceBottomMenu
           closeText="Discard"
           justifyCancel="flex-start"
-          onSubmit={onSubmit}
         />
       </form>
     </FormProvider>

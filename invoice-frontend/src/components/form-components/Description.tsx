@@ -2,14 +2,15 @@ import { Label, Input } from "../../styles/editStyles";
 import LongFormEntry from "./LongFormEntry";
 import { Invoice } from "../../types/types";
 import { useFormContext } from "react-hook-form";
+import { useNewInvoiceContext } from "./NewInvoiceContextProvider";
 
 interface DescriptionProps {
     invoice?: Invoice;
-    isDraft?: boolean;
 }
 
-function Description({ invoice, isDraft = false }: DescriptionProps) {
+function Description({ invoice }: DescriptionProps) {
     const { formState: { errors }, register } = useFormContext();
+    const { isDraft } = useNewInvoiceContext();
     return <>
         <LongFormEntry className="project-description">
             <Label

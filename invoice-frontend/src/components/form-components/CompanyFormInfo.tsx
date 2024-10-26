@@ -1,4 +1,3 @@
-import PropTypes from "prop-types";
 import styled from "styled-components";
 import { useFormContext } from "react-hook-form";
 import FormEntry from "./FormEntry";
@@ -7,6 +6,7 @@ import AddressBox from "./AddressBox";
 import LongFormEntry from "./LongFormEntry";
 import useWindowWidth from "../../hooks/useWindowWidth";
 import { Invoice } from "../../types/types";
+import { useNewInvoiceContext } from "./NewInvoiceContextProvider";
 
 export const CityPostContainer = styled.div`
   display: flex;
@@ -20,13 +20,13 @@ export const CityPostContainer = styled.div`
 
 type CompanyFormInfoProps = {
     invoice?: Invoice;
-    isDraft: boolean;
 }
 
-function CompanyFormInfo({ isDraft, invoice }: CompanyFormInfoProps) {
+function CompanyFormInfo({ invoice }: CompanyFormInfoProps) {
 
     const width = useWindowWidth();
     const { formState: { errors }, register } = useFormContext();
+    const { isDraft } = useNewInvoiceContext();
 
     const countryChildren = (
         <LongFormEntry style={{ width: width < 768 ? "100%" : "" }} className="company-country">
@@ -110,14 +110,7 @@ function CompanyFormInfo({ isDraft, invoice }: CompanyFormInfoProps) {
             </AddressBox>
         </>
     );
-    // } else {
-    //     return null
-    // }
 }
 
-CompanyFormInfo.propTypes = {
-    isDraft: PropTypes.bool.isRequired,
-    // invoice: PropTypes.object
-};
 
 export default CompanyFormInfo;

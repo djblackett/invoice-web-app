@@ -1,4 +1,3 @@
-import PropTypes from "prop-types";
 import { useFormContext } from "react-hook-form";
 import FormEntry from "./FormEntry";
 import {
@@ -13,20 +12,15 @@ import AddressBox from "./AddressBox";
 import LongFormEntry from "./LongFormEntry";
 import useWindowWidth from "../../hooks/useWindowWidth";
 import { Invoice } from "../../types/types";
+import { useNewInvoiceContext } from "./NewInvoiceContextProvider";
 
-// const emailRegex = "/(?:[a-z0-9!#$%&'*+\\/=?^_`{|}~-]+(?:\\.[a-z0-9!#$%&'*+\\/=?^_`{|}~-]+)*|\"(?:[\x01-\x08\x0b\x0c\x0e-\x1f\x21\x23-\x5b\x5d-\x7f]|\n" +
-//     "\\\\[\x01-\x09\x0b\x0c\x0e-\x7f])*\")@(?:(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?|\n" +
-//     "\\[(?:(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\\.){3}(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?|[a-z0-9-]*[a-z0-9]:\n" +
-//     "(?:[\x01-\x08\x0b\x0c\x0e-\x1f\x21-\x5a\x53-\x7f]|\\\\[\x01-\x09\x0b\x0c\x0e-\x7f])+)\\])/";
 
 type ClientFormInfoProps = {
   invoice?: Invoice;
-  isDraft: boolean;
 };
 
 export default function ClientFormInfo({
   invoice,
-  isDraft,
 }: ClientFormInfoProps) {
 
   const width = useWindowWidth();
@@ -34,6 +28,8 @@ export default function ClientFormInfo({
     formState: { errors },
     register,
   } = useFormContext();
+
+  const { isDraft } = useNewInvoiceContext();
 
   const clientCountry = (
     <LongFormEntry
@@ -167,8 +163,3 @@ export default function ClientFormInfo({
     </>
   );
 }
-
-ClientFormInfo.propTypes = {
-  // invoice: PropTypes.object.isRequired,
-  isDraft: PropTypes.bool.isRequired,
-};

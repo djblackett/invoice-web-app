@@ -1,8 +1,7 @@
-/* eslint-disable @typescript-eslint/no-unsafe-return */
 import React, { useState, useEffect } from "react";
-import PropTypes from "prop-types";
 import { SVG } from "../buttons/NewItemButton";
 import { Main, DropDownHeader, DropDownList, ListItem, ItemButton } from "../../styles/FormDropDownStyles";
+import { useNewInvoiceContext } from "./NewInvoiceContextProvider";
 
 
 const options = ["Net 1 Day", "Net 7 Days", "Net 14 Days", "Net 30 Days"];
@@ -19,23 +18,12 @@ const arrowDown = (
   </svg>
 );
 
-export type FormDropDownProps = {
-  handleChangeSelectedOption: (option: number) => void;
-  handlePaymentClick: () => void;
-  isPaymentOpen: boolean;
-  selectedPaymentOption: number;
-};
 
-function FormDropDown({
-  selectedPaymentOption,
-  handleChangeSelectedOption,
-  isPaymentOpen,
-  handlePaymentClick,
-}: FormDropDownProps) {
+function PaymentTermsDropdown() {
 
-  // const { id } = useParams();
-  // const invoice = useSelector(state => selectInvoiceById(state, id));
-  // const selectedPaymentOption = invoice?.paymentTerms || 1;
+  const { selectedPaymentOption, isPaymentOpen, handleChangeSelectedOption, handlePaymentClick } = useNewInvoiceContext();
+
+
   const [selected, setSelected] = useState("Net 1 Day");
 
   const onOptionClicked = (option: string) => (e: React.SyntheticEvent) => {
@@ -84,11 +72,4 @@ function FormDropDown({
   );
 }
 
-export default FormDropDown;
-
-FormDropDown.propTypes = {
-  isPaymentOpen: PropTypes.bool.isRequired,
-  handlePaymentClick: PropTypes.func.isRequired,
-  selectedPaymentOption: PropTypes.number.isRequired,
-  handleChangeSelectedOption: PropTypes.func.isRequired,
-};
+export default PaymentTermsDropdown;

@@ -1,18 +1,19 @@
 import InputFormItem1 from "./InputFormItem1";
 import { Col, Col1, ItemsContainer, ItemsHeader, ItemTitle, ListContainer } from "../../styles/EditFormItemListStyles";
 import { Invoice } from "../../types/types";
+import { useNewInvoiceContext } from "./NewInvoiceContextProvider";
 
 type EditFormItemListProps = {
   invoice?: Invoice;
-  isDraft: boolean;
   isEditOpen?: boolean;
 };
 
 function EditFormItemList({
-  isDraft,
   invoice,
   isEditOpen = false,
 }: EditFormItemListProps) {
+
+  const { isDraft } = useNewInvoiceContext();
   return (
     <ListContainer>
       <ItemTitle>Item List</ItemTitle>
