@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import { FormProvider } from "react-hook-form";
 import PropTypes from "prop-types";
 import "../styles/react-datepicker.css";
@@ -20,13 +20,12 @@ import {
 import { Invoice } from "../types/types";
 import { useResponsive } from "../hooks/useResponsive";
 import Description from "../components/form-components/Description";
-import { useEditInvoiceForm } from "../hooks/useEditInvoiceForm";
+import { useNewInvoiceForm } from "../hooks/useNewInvoiceForm";
 
 
 type EditFormProps = {
   isEditOpen: boolean;
   setIsEditOpen: React.Dispatch<React.SetStateAction<boolean>>;
-  id: string;
   invoice: Invoice;
 };
 
@@ -43,44 +42,8 @@ function EditForm({
     convertStringToDate(invoice?.createdAt),
   );
 
-  const [selectedPaymentOption, setSelectedPaymentOption] = useState(
-    invoice?.paymentTerms || 1,
-  );
+  const { methods, onSubmit } = useNewInvoiceForm();
 
-  const [isPaymentOpen, setIsPaymentOpen] = useState(false);
-
-  const onClose = () => {
-    setIsEditOpen(false);
-    setSelectedPaymentOption(1);
-    reset();
-  };
-
-  const { methods, onSubmit } = useEditInvoiceForm({
-    invoice,
-    onClose,
-    startDate,
-    selectedPaymentOption,
-  });
-
-  const {
-    reset,
-  } = methods;
-
-  useEffect(() => {
-    if (invoice) {
-      setSelectedPaymentOption(invoice.paymentTerms);
-    }
-  }, [invoice]);
-
-  // sets the payment option after change
-  const handleChangeSelectedOption = (option: number) => {
-    setSelectedPaymentOption(option);
-  };
-
-  // handles the payment dropdown upon click
-  const handlePaymentClick = () => {
-    setIsPaymentOpen(!isPaymentOpen);
-  };
 
   // this shouldn't be possible, but better safe than sorry
   if (!invoice) {
@@ -105,26 +68,19 @@ function EditForm({
             <BillText>Bill From</BillText>
             <CompanyFormInfo
               invoice={invoice}
-              isDraft={false}
             />
             <BillText>Bill To</BillText>
             <ClientFormInfo
               invoice={invoice}
-              isDraft={false}
             />
             <DateAndPayment
               selected={startDate}
               onChange={(date) => setStartDate(date)}
-              paymentOpen={isPaymentOpen}
-              handlePaymentClick={handlePaymentClick}
-              selectedPaymentOption={selectedPaymentOption}
-              handleChangeSelectedOption={handleChangeSelectedOption}
             />
             <Description invoice={invoice} />
             <EditFormItemList
               invoice={invoice}
               isEditOpen={isEditOpen}
-              isDraft={false}
             />
             <FormErrorList isEditOpen={isEditOpen} />
             <EditBottomMenu
