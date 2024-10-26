@@ -1,80 +1,24 @@
-/* eslint-disable @typescript-eslint/no-misused-promises */
-/* eslint-disable @typescript-eslint/no-unused-vars */
-/* eslint-disable @typescript-eslint/no-unsafe-return */
-import styled from "styled-components";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import React from "react";
 import DeleteButton from "./buttons/DeleteButton";
 import CancelButton from "./buttons/CancelButton";
 import { useMutation } from "@apollo/client";
 import { REMOVE_INVOICE, ALL_INVOICES } from "../graphql/queries";
+import { ModalContainer, Confirm, ButtonContainer } from "../styles/DeleteModalStyles";
+import { DarkenScreen } from "../styles/editStyles";
+import { Description } from "../styles/FullInvoiceStyles";
 
-export const DarkenScreen = styled.div`
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  position: fixed;
-  min-height: 100%;
-  top: 0;
-  bottom: 0;
-  left: 0;
-  right: 0;
-  background-color: rgba(0, 0, 0, 0.5);
-  z-index: 100;
-`;
-
-const ModalContainer = styled.div`
-  display: flex;
-  position: absolute;
-  align-items: flex-start;
-  justify-content: center;
-  flex-direction: column;
-  padding: 3rem;
-  background-color: ${({ theme }) => theme.background};
-  max-width: 480px;
-  border-radius: 8px;
-  box-shadow: 0px 10px 10px -10px rgba(72, 84, 159, 0.100397);
-  margin: 0 1.5rem;
-`;
-
-const Confirm = styled.h1`
-  font-weight: 700;
-  font-size: 24px;
-  line-height: 32px;
-  /* identical to box height, or 133% */
-  letter-spacing: -0.5px;
-  color: ${({ theme }) => theme.text};
-  margin: 0;
-  margin-bottom: 13px;
-`;
-
-const Description = styled.p`
-  font-weight: 500;
-  font-size: 12px;
-  line-height: 22px;
-  /* or 183% */
-
-  letter-spacing: 0.25px;
-  color: ${({ theme }) => theme.greyText};
-`;
-
-const ButtonContainer = styled.div`
-  display: flex;
-  align-self: flex-end;
-  justify-content: center;
-`;
 
 export type DeleteModalProps = {
-  id: string;
   isModalOpen: boolean;
   setIsModalOpen: React.Dispatch<React.SetStateAction<boolean>>;
 }
 
-function DeleteModal({ isModalOpen, setIsModalOpen, id }: DeleteModalProps) {
-  // const dispatch = useDispatch();
+function DeleteModal({ isModalOpen, setIsModalOpen }: DeleteModalProps) {
   const navigate = useNavigate();
+  const id = useParams();
 
-  const [deleteInvoice, result] = useMutation(REMOVE_INVOICE, {
+  const [deleteInvoice] = useMutation(REMOVE_INVOICE, {
     refetchQueries: [{ query: ALL_INVOICES }],
     onError: (error) => {
       console.log(error.graphQLErrors[0].message);
@@ -112,9 +56,3 @@ function DeleteModal({ isModalOpen, setIsModalOpen, id }: DeleteModalProps) {
 }
 
 export default DeleteModal;
-
-// DeleteModal.propTypes = {
-//   isModalOpen: PropTypes.bool,
-//   setIsModalOpen: PropTypes.func.isRequired,
-//   invoice: PropTypes.object.isRequired,
-// };
