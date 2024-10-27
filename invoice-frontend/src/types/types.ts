@@ -89,9 +89,6 @@ export type AllInvoicesProps = {
     setScrollPosition: Dispatch<SetStateAction<ScrollPosition>>;
 };
 
-export type FullInvoiceProps = {
-    invoice: Invoice
-}
 
 export interface FormData {
   items?: {

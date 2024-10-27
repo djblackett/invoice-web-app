@@ -1,14 +1,18 @@
 import { useFieldArray, SubmitHandler } from 'react-hook-form';
 import { useEffect } from 'react';
 import { useMutation } from '@apollo/client';
-import { ADD_INVOICE, ALL_INVOICES } from '../graphql/queries';
+import { ADD_INVOICE, ALL_INVOICES, EDIT_INVOICE, GET_INVOICE_BY_ID } from '../graphql/queries';
 import { v4 as uuidv4 } from 'uuid';
 import { createInvoiceObject } from '../utils/utilityFunctions';
 import { FormType } from '../types/types';
 import { useNewInvoiceContext } from '../components/form-components/NewInvoiceContextProvider';
 import { flushSync } from 'react-dom';
+import { useParams } from 'react-router-dom';
+
 
 export const useNewInvoiceForm = () => {
+
+    const { id } = useParams();
 
     const { startDate,
         isDraft,
@@ -33,12 +37,30 @@ export const useNewInvoiceForm = () => {
         name: 'items',
     });
 
+    // const { updateInvoice } = useInvoice();
+
 
     const watcher = watch();
 
     // Mutation to add a new invoice
     const [addInvoice] = useMutation(ADD_INVOICE, {
         refetchQueries: [{ query: ALL_INVOICES }],
+
+        onError: (error) => {
+            console.error(error);
+        },
+    });
+
+    const [updateInvoice] = useMutation(EDIT_INVOICE, {
+        update: (cache, { data: { editInvoice } }) => {
+            cache.writeQuery({
+                query: GET_INVOICE_BY_ID,
+                variables: { getInvoiceById: editInvoice.id },
+                data: {
+                    getInvoiceById: editInvoice,
+                },
+            });
+        },
         onError: (error) => {
             console.error(error);
         },
@@ -50,7 +72,7 @@ export const useNewInvoiceForm = () => {
         setSelectedPaymentOption(1);
         reset();
         clearErrors();
-        replace([{ id: uuidv4(), name: '', quantity: 0, price: 0, total: 0 }]);
+
         setIsNewInvoiceOpen(false);
     };
 
@@ -60,8 +82,6 @@ export const useNewInvoiceForm = () => {
         flushSync(() => setIsDraft(false));
 
         data = getValues();
-        console.log("Hello");
-        console.log(data);
 
         if (!data.items) {
             console.log("No items");
@@ -70,8 +90,6 @@ export const useNewInvoiceForm = () => {
         }
 
         const isValid = await trigger();
-        console.log("isValid:", isValid);
-        console.log(isDraft);
         if (isValid) {
             const newInvoice = createInvoiceObject(data, startDate, selectedPaymentOption);
 
@@ -91,6 +109,7 @@ export const useNewInvoiceForm = () => {
                     },
                 });
                 handleFormReset();
+                replace([{ id: uuidv4(), name: '', quantity: 0, price: 0, total: 0 }]);
             } catch (error) {
                 console.error(error);
             }
@@ -124,13 +143,34 @@ export const useNewInvoiceForm = () => {
                 },
             });
             handleFormReset();
-            reset()
+            replace([{ id: uuidv4(), name: '', quantity: 0, price: 0, total: 0 }]);
         } catch (error) {
             console.error(error);
         }
         // }
     };
 
+    const onSubmitUpdate: SubmitHandler<FormType> = async (data) => {
+        console.log("Submitting update");
+        const isValid = await trigger();
+        if (isValid) {
+            const newInvoice = createInvoiceObject(data, startDate, selectedPaymentOption);
+
+            newInvoice.id = String(id);
+            console.log(id);
+
+            try {
+                await updateInvoice({
+                    variables: {
+                        ...newInvoice,
+                    },
+                });
+                setIsNewInvoiceOpen(false);
+            } catch (error) {
+                console.error(error);
+            }
+        }
+    };
 
     useEffect(() => {
         if (!watcher.items) {
@@ -145,5 +185,6 @@ export const useNewInvoiceForm = () => {
         methods,
         onSubmit,
         onSubmitDraft,
+        onSubmitUpdate,
     };
 };
