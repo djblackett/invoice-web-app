@@ -5,22 +5,22 @@ import FullInvoice from "../components/invoice-components/FullInvoice";
 import EditForm from "./EditForm";
 import DeleteModal from "../components/DeleteModal";
 import { arrowLeft, GoBack, GoBackButton, Icon, ViewContainer } from "../styles/ViewInvoiceStyles";
-import useInvoice from "../hooks/useInvoice";
 import { NewInvoiceProvider } from "../components/form-components/NewInvoiceContextProvider";
+import { useQuery } from "@apollo/client";
+import { GET_INVOICE_BY_ID } from "../graphql/queries";
+
 
 function ViewInvoice() {
+  const navigate = useNavigate();
+  const [isModalOpen, setIsModalOpen] = useState(false);
   const { id } = useParams();
 
+  const { data, loading, error } = useQuery(GET_INVOICE_BY_ID, {
+    variables: { getInvoiceById: id },
+    fetchPolicy: "cache-and-network"
+  });
 
-  const navigate = useNavigate();
-  const [isEditOpen, setIsEditOpen] = useState(false);
-  const [isModalOpen, setIsModalOpen] = useState(false);
-
-  const { invoice, loading, error } = useInvoice();
-
-  const toggleEditTab = () => {
-    setIsEditOpen(!isEditOpen);
-  };
+  const invoice = data?.getInvoiceById;
 
   const goBack = () => {
     navigate("/");
@@ -38,9 +38,6 @@ function ViewInvoice() {
     <ViewContainer>
       <NewInvoiceProvider>
         <EditForm
-          isEditOpen={isEditOpen}
-          setIsEditOpen={setIsEditOpen}
-          id={id as string}
           invoice={invoice}
         />
         <GoBackButton onClick={goBack}>
@@ -49,11 +46,9 @@ function ViewInvoice() {
         </GoBackButton>
         <InvoiceToolbar
           invoice={invoice}
-          setEdit={toggleEditTab}
           setIsModalOpen={setIsModalOpen}
-          isEditOpen={isEditOpen}
         />
-        <FullInvoice invoice={invoice} />
+        <FullInvoice invoice={invoice} loading={loading} />
         <DeleteModal
           setIsModalOpen={setIsModalOpen}
           isModalOpen={isModalOpen}
