@@ -165,6 +165,7 @@ export const EDIT_INVOICE = gql`
     }
     status
     total
+    __typename
   }
   }
 `;
@@ -238,8 +239,8 @@ export const ALL_INVOICES = gql`
 `;
 
 export const GET_INVOICE_BY_ID = gql`
-    query GetInvoiceById($getInvoiceByIdId: String!) {
-        getInvoiceById(id: $getInvoiceByIdId) {
+    query GetInvoiceById($getInvoiceById: String!) {
+        getInvoiceById(id: $getInvoiceById) {
             clientAddress {
                 city
                 country
@@ -268,6 +269,7 @@ export const GET_INVOICE_BY_ID = gql`
             }
             status
             total
+            __typename
         }
     }
 
