@@ -81,6 +81,7 @@ function InvoiceToolbar({
   return (
     <Toolbar
       className="invoice-toolbar"
+      data-testid="invoice-toolbar"
       style={{
         display: width < 600 ? "contents" : "flex",
       }}
