@@ -1,10 +1,6 @@
-module.exports = {
-  arrowParens: "always",
-  semi: true,
-  trailingComma: "all",
-  singleQuote: false,
-  endOfLine: "lf",
-  // pnpm doesn't support plugin autoloading
-  // https://github.com/tailwindlabs/prettier-plugin-tailwindcss#installation
-  plugins: [],
-};
+export const arrowParens = "always";
+export const semi = true;
+export const trailingComma = "all";
+export const singleQuote = false;
+export const endOfLine = "lf";
+export const plugins = [];

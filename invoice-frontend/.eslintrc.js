@@ -4,18 +4,24 @@ export default {
         ecmaVersion: "latest",
         sourceType: "module",
         tsconfigRootDir: __dirname,
-        project: ["./tsconfig.json"], // could be tsconfig.json too
+        project: ["./tsconfig.json"],
     },
     "plugins": [
         "@typescript-eslint",
         "react",
         "prettier",
         "cypress",
-        "jest"
+        "vitest",
+        "testing-library",
+        "jest-dom"
+
     ],
     "env": {
         "browser": true,
-        "es2021": true
+        "es2021": true,
+        "vitest/globals": true,
+        "jest": true,
+        "node": true
     },
     "extends": [
         // "eslint:recommended",
@@ -25,12 +31,14 @@ export default {
         "plugin:react/jsx-runtime",
         "plugin:react-hooks/recommended",
         "plugin:jsx-a11y/recommended",
-        "plugin:jest/recommended",
         "plugin:typescript-sort-keys/recommended",
         "plugin:@typescript-eslint/recommended",
         "plugin:react/recommended",
+        "plugin:vitest/recommended",
+        "plugin:testing-library/react",
+        "plugin:jest-dom/recommended",
         // "plugin:unicorn/recommended",
-        "plugin:cypress/recommended",
+        // "plugin:cypress/recommended",
         "prettier"
     ],
     "overrides": [
@@ -39,6 +47,7 @@ export default {
                 'plugin:@typescript-eslint/recommended-requiring-type-checking',
             ],
             files: ['./**/*.{ts,tsx}'],
+
         },
     ],
     "rules": {
