@@ -23,6 +23,7 @@ const Button = styled.button`
 type DeleteProps = {
   handleClick: () => void;
 };
+
 function DeleteButton({ handleClick }: DeleteProps) {
   return (
     <Button onClick={handleClick} type="button">

@@ -7,6 +7,9 @@ import { REMOVE_INVOICE, ALL_INVOICES } from "../graphql/queries";
 import { ModalContainer, Confirm, ButtonContainer } from "../styles/DeleteModalStyles";
 import { DarkenScreen } from "../styles/editStyles";
 import { Description } from "../styles/FullInvoiceStyles";
+import { ToastContainer, toast, Theme } from "react-toastify";
+import { useTheme } from "styled-components";
+import useWindowWidth from "../hooks/useWindowWidth";
 
 
 export type DeleteModalProps = {
@@ -15,13 +18,30 @@ export type DeleteModalProps = {
 }
 
 function DeleteModal({ isModalOpen, setIsModalOpen }: DeleteModalProps) {
+  const colorMode = localStorage.getItem("theme");
   const navigate = useNavigate();
-  const id = useParams();
+  const { id } = useParams<{ id: string }>();
+  const width = useWindowWidth();
+  const theme = useTheme();
+
 
   const [deleteInvoice] = useMutation(REMOVE_INVOICE, {
     refetchQueries: [{ query: ALL_INVOICES }],
+    onCompleted: () => {
+      navigate("/");
+    },
     onError: (error) => {
-      console.log(error.graphQLErrors[0].message);
+      console.log(error.graphQLErrors[0]);
+      toast.error("An error occurred!", {
+        position: "top-center",
+        autoClose: 3000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+        progress: undefined,
+        theme: (colorMode as Theme) || undefined,
+      });
     },
   });
 
@@ -31,9 +51,6 @@ function DeleteModal({ isModalOpen, setIsModalOpen }: DeleteModalProps) {
         removeInvoiceId: id
       }
     });
-
-    navigate("/");
-    return;
   };
 
   const closeModal = () => setIsModalOpen(false);
@@ -49,6 +66,7 @@ function DeleteModal({ isModalOpen, setIsModalOpen }: DeleteModalProps) {
         <ButtonContainer>
           <CancelButton handleClick={closeModal} text="Cancel" />
           <DeleteButton handleClick={handleClick} />
+          <ToastContainer style={{ marginTop: width > 1200 ? 0 : "72px", backgroundColor: theme.background }} />
         </ButtonContainer>
       </ModalContainer>
     </DarkenScreen>

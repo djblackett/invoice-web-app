@@ -17,6 +17,9 @@ export const DarkenScreen = styled.div`
 export const ModalContainer = styled.div`
   display: flex;
   position: absolute;
+  top: 20%;
+  left: 50%;
+  transform: translate(-50%, 0);
   align-items: flex-start;
   justify-content: center;
   flex-direction: column;
