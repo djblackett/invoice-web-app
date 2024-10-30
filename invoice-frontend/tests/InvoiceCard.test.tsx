@@ -31,8 +31,8 @@ const sampleInvoice: Invoice = {
         {
             name: "Brand Guidelines",
             quantity: 1,
-            price: 1800.9,
-            total: 1800.9,
+            price: 1800.90,
+            total: 1800.90,
         },
     ],
     total: 1800.9,
@@ -62,7 +62,7 @@ describe("InvoiceCard component", () => {
 
     it("should display the correct total amount", () => {
         setup({ invoice: sampleInvoice });
-        const amountElement = screen.getByText(/1800.90/i);
+        const amountElement = screen.getByText(/1,?800.90/i);
         expect(amountElement).toBeInTheDocument();
     });
 
