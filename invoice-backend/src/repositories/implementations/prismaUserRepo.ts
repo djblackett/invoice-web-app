@@ -2,7 +2,7 @@ import { inject, injectable } from "inversify";
 import { IUserRepo } from "../userRepo";
 import { DatabaseConnection } from "../../database/prisma.database.connection";
 import { UserEntity, ReturnedUser, UserDTO } from "../../constants/types";
-import { Prisma } from "@prisma/client";
+import { PrismaClientKnownRequestError } from "@prisma/client/runtime/library";
 
 @injectable()
 export class PrismaUserRepo implements IUserRepo {
@@ -48,10 +48,7 @@ export class PrismaUserRepo implements IUserRepo {
       return user;
     } catch (e: any) {
       console.error(e);
-      if (
-        e instanceof Prisma.PrismaClientKnownRequestError &&
-        e.code === "P2025"
-      ) {
+      if (e instanceof PrismaClientKnownRequestError && e.code === "P2025") {
         throw new Error("User not found");
       }
 
@@ -69,10 +66,7 @@ export class PrismaUserRepo implements IUserRepo {
         },
       });
     } catch (e: any) {
-      if (
-        e instanceof Prisma.PrismaClientKnownRequestError &&
-        e.code === "P2002"
-      ) {
+      if (e instanceof PrismaClientKnownRequestError && e.code === "P2002") {
         throw new Error("Unique constraint failed on the fields: (`username`)");
       }
       throw new Error("Database error");
@@ -97,10 +91,7 @@ export class PrismaUserRepo implements IUserRepo {
     } catch (e: any) {
       console.error(e);
 
-      if (
-        e instanceof Prisma.PrismaClientKnownRequestError &&
-        e.code === "P2025"
-      ) {
+      if (e instanceof PrismaClientKnownRequestError && e.code === "P2025") {
         throw new Error("Incorrect username or password");
       }
       throw new Error("Database error");
