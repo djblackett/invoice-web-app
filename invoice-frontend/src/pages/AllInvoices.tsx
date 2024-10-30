@@ -9,12 +9,20 @@ import AllInvoicesView from "../components/AllInvoicesView";
 import useInvoices from "../hooks/useInvoices";
 import { AllInvoicesContainer } from "../styles/AllInvoicesStyles";
 import { NewInvoiceProvider } from "../components/form-components/NewInvoiceContextProvider";
+import { useMutation } from "@apollo/client";
+import { DELETE_ALL_INVOICES } from "src/graphql/queries";
 
 
 function AllInvoices({ setScrollPosition }: AllInvoicesProps) {
   const width = useWindowWidth();
   const dispatch = useDispatch();
   const { invoiceList, loading, error } = useInvoices();
+
+  const [removeInvoices] = useMutation(DELETE_ALL_INVOICES);
+
+  const clearInvoices = () => {
+    removeInvoices();
+  }
 
   const scrollToTop = () => {
     if (setScrollPosition) {
@@ -50,7 +58,7 @@ function AllInvoices({ setScrollPosition }: AllInvoicesProps) {
       />
 
       {/* Clear button below is for debugging the empty invoices page - removes them from redux only*/}
-      {/* <button onClick={() => dispatch(clearInvoices())}>Clear Invoices</button> */}
+      <button onClick={clearInvoices}>Clear Invoices</button>
     </AllInvoicesContainer>
   );
 }

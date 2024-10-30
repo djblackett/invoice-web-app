@@ -52,121 +52,125 @@ export const INVOICE_DETAILS = gql`
 `;
 
 export const ADD_INVOICE = gql`
-    mutation addInvoice(
-        $clientEmail: String,
-        $clientAddress: ClientInfo,
-        $clientName: String,
-        $createdAt: String,
-        $description: String,
-        $id: String,
-        $items: [ItemInput],
-        $paymentDue: String,
-        $paymentTerms: Float,
-        $senderAddress: SenderInfo,
-        $status: String,
-        $total: Float
+  mutation addInvoice(
+    $clientEmail: String
+    $clientAddress: ClientInfo
+    $clientName: String
+    $createdAt: String
+    $description: String
+    $id: String
+    $items: [ItemInput]
+    $paymentDue: String
+    $paymentTerms: Float
+    $senderAddress: SenderInfo
+    $status: String
+    $total: Float
+  ) {
+    addInvoice(
+      clientEmail: $clientEmail
+      clientAddress: $clientAddress
+      clientName: $clientName
+      createdAt: $createdAt
+      description: $description
+      id: $id
+      items: $items
+      paymentDue: $paymentDue
+      paymentTerms: $paymentTerms
+      senderAddress: $senderAddress
+      status: $status
+      total: $total
     ) {
-      addInvoice(
-       clientEmail: $clientEmail,
-        clientAddress: $clientAddress,
-        clientName: $clientName,
-        createdAt: $createdAt,
-        description: $description,
-        id: $id,
-        items: $items,
-        paymentDue: $paymentDue,
-        paymentTerms: $paymentTerms,
-        senderAddress: $senderAddress,
-        status: $status,
-        total: $total
-      ) {
-    clientAddress {
-      city
-      country
-      postCode
-      street
-    }
-    clientEmail
-    clientName
-    createdAt
-    description
-    id
-    items {
+      clientAddress {
+        city
+        country
+        postCode
+        street
+      }
+      clientEmail
+      clientName
+      createdAt
+      description
       id
-      name
-      price
-      quantity
+      items {
+        id
+        name
+        price
+        quantity
+        total
+      }
+      paymentDue
+      paymentTerms
+      senderAddress {
+        city
+        country
+        postCode
+        street
+      }
+      status
       total
     }
-    paymentDue
-    paymentTerms
-    senderAddress {
-      city
-      country
-      postCode
-      street
-    }
-    status
-    total
   }
-    }
 `;
 
 export const EDIT_INVOICE = gql`
-  mutation editInvoice($clientAddress: ClientInfo,
-  $clientEmail: String,
-  $clientName: String,
-  $createdAt: String,
-  $description: String,
-  $id: String,
-  $items: [ItemInput],
-  $paymentDue: String,
-  $paymentTerms: Float,
-  $senderAddress: SenderInfo,
-  $status: String,
-  $total: Float) {
-  editInvoice(clientAddress: $clientAddress,
-  clientEmail: $clientEmail,
-  clientName: $clientName,
-  createdAt: $createdAt,
-  description: $description,
-  id: $id,
-  items: $items,
-  paymentDue: $paymentDue,
-  paymentTerms: $paymentTerms,
-  senderAddress: $senderAddress,
-  status: $status,
-  total: $total) {
-    clientAddress {
-      city
-      country
-      postCode
-      street
-    }
-    clientEmail
-    clientName
-    createdAt
-    description
-    id
-    items {
+  mutation editInvoice(
+    $clientAddress: ClientInfo
+    $clientEmail: String
+    $clientName: String
+    $createdAt: String
+    $description: String
+    $id: String
+    $items: [ItemInput]
+    $paymentDue: String
+    $paymentTerms: Float
+    $senderAddress: SenderInfo
+    $status: String
+    $total: Float
+  ) {
+    editInvoice(
+      clientAddress: $clientAddress
+      clientEmail: $clientEmail
+      clientName: $clientName
+      createdAt: $createdAt
+      description: $description
+      id: $id
+      items: $items
+      paymentDue: $paymentDue
+      paymentTerms: $paymentTerms
+      senderAddress: $senderAddress
+      status: $status
+      total: $total
+    ) {
+      clientAddress {
+        city
+        country
+        postCode
+        street
+      }
+      clientEmail
+      clientName
+      createdAt
+      description
       id
-      name
-      price
-      quantity
+      items {
+        id
+        name
+        price
+        quantity
+        total
+      }
+      paymentDue
+      paymentTerms
+      senderAddress {
+        city
+        country
+        postCode
+        street
+      }
+      status
       total
+      __typename
     }
-    paymentDue
-    paymentTerms
-    senderAddress {
-      city
-      country
-      postCode
-      street
-    }
-    status
-    total
-    __typename
-  }
   }
 `;
 
@@ -239,42 +243,40 @@ export const ALL_INVOICES = gql`
 `;
 
 export const GET_INVOICE_BY_ID = gql`
-    query GetInvoiceById($getInvoiceById: String!) {
-        getInvoiceById(id: $getInvoiceById) {
-            clientAddress {
-                city
-                country
-                postCode
-                street
-            }
-            clientEmail
-            clientName
-            createdAt
-            description
-            id
-            items {
-                id
-                name
-                price
-                quantity
-                total
-            }
-            paymentDue
-            paymentTerms
-            senderAddress {
-                city
-                country
-                postCode
-                street
-            }
-            status
-            total
-            __typename
-        }
+  query GetInvoiceById($getInvoiceById: String!) {
+    getInvoiceById(id: $getInvoiceById) {
+      clientAddress {
+        city
+        country
+        postCode
+        street
+      }
+      clientEmail
+      clientName
+      createdAt
+      description
+      id
+      items {
+        id
+        name
+        price
+        quantity
+        total
+      }
+      paymentDue
+      paymentTerms
+      senderAddress {
+        city
+        country
+        postCode
+        street
+      }
+      status
+      total
+      __typename
     }
-
+  }
 `;
-
 
 export const REMOVE_INVOICE = gql`
   mutation RemoveInvoice($removeInvoiceId: String!) {
@@ -282,45 +284,48 @@ export const REMOVE_INVOICE = gql`
   }
 `;
 
-export const MARK_AS_PAID = gql`
-
-mutation MarkAsPaid($markAsPaidId: String!)
-{
-  markAsPaid(id: $markAsPaidId)
-  {
-    clientAddress
-    {
-      city
-      country
-      postCode
-      street
+export const DELETE_ALL_INVOICES = gql`
+  mutation DeleteAllInvoices {
+    deleteAllInvoices {
+      acknowledged
     }
-    clientEmail
-    clientName
-    createdAt
-    description
-    id
-    items
-    {
+  }
+`;
+
+export const MARK_AS_PAID = gql`
+  mutation MarkAsPaid($markAsPaidId: String!) {
+    markAsPaid(id: $markAsPaidId) {
+      clientAddress {
+        city
+        country
+        postCode
+        street
+      }
+      clientEmail
+      clientName
+      createdAt
+      description
       id
-      name
-      price
-      quantity
+      items {
+        id
+        name
+        price
+        quantity
+        total
+      }
+      paymentDue
+      paymentTerms
+      senderAddress {
+        city
+        country
+        postCode
+        street
+      }
+      status
       total
     }
-    paymentDue
-    paymentTerms
-    senderAddress
-    {
-      city
-      country
-      postCode
-      street
-    }
-    status
-    total
   }
-}`;
+`;
 
 export const INVOICE_ADDED = gql`
   subscription {
