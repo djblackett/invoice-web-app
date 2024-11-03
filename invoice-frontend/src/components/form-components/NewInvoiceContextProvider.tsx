@@ -6,8 +6,8 @@ import { useForm, UseFormReturn } from "react-hook-form";
 interface AppContextType {
     isDraft: boolean;
     setIsDraft: React.Dispatch<React.SetStateAction<boolean>>;
-    startDate: Date;
-    setStartDate: React.Dispatch<React.SetStateAction<Date>>;
+    startDate: Date | null;
+    setStartDate: React.Dispatch<React.SetStateAction<Date | null>>;
     items: Item[];
     setItems: React.Dispatch<React.SetStateAction<Item[]>>;
     selectedPaymentOption: number;
@@ -33,7 +33,7 @@ function useNewInvoiceContext() {
 
 const NewInvoiceProvider: FC<{ children: ReactNode }> = ({ children }) => {
     const [isDraft, setIsDraft] = useState(false);
-    const [startDate, setStartDate] = useState(new Date());
+    const [startDate, setStartDate] = useState(null);
     const [items, setItems] = useState<Item[]>([]);
     const [selectedPaymentOption, setSelectedPaymentOption] = useState(1);
     const [isNewInvoiceOpen, setIsNewInvoiceOpen] = useState(false);

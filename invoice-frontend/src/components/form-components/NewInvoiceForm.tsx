@@ -16,8 +16,6 @@ export default function NewInvoiceForm() {
   const { methods } = useNewInvoiceForm();
 
   const {
-    startDate,
-    setStartDate,
     isNewInvoiceOpen,
   } = useNewInvoiceContext();
 
@@ -30,10 +28,7 @@ export default function NewInvoiceForm() {
         <BillText>Bill To</BillText>
         <ClientFormInfo />
 
-        <DateAndPayment
-          selected={startDate}
-          onChange={(date) => setStartDate(date)}
-        />
+        <DateAndPayment />
 
         <Description />
         <EditFormItemList />

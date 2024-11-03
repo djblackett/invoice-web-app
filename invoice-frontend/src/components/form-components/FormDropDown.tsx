@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import { SVG } from "../buttons/NewItemButton";
 import { Main, DropDownHeader, DropDownList, ListItem, ItemButton } from "../../styles/FormDropDownStyles";
 import { useNewInvoiceContext } from "./NewInvoiceContextProvider";
+import { Invoice } from "src/types/types";
 
 
 const options = ["Net 1 Day", "Net 7 Days", "Net 14 Days", "Net 30 Days"];
@@ -18,10 +19,15 @@ const arrowDown = (
   </svg>
 );
 
+interface PaymentTermsProps {
+  invoice?: Invoice;
+}
 
-function PaymentTermsDropdown() {
+function PaymentTermsDropdown({ invoice }: PaymentTermsProps) {
 
-  const { selectedPaymentOption, isPaymentOpen, handleChangeSelectedOption, handlePaymentClick } = useNewInvoiceContext();
+  const { setSelectedPaymentOption, selectedPaymentOption, isPaymentOpen, handleChangeSelectedOption, handlePaymentClick } = useNewInvoiceContext();
+
+
 
 
   const [selected, setSelected] = useState("Net 1 Day");
@@ -32,7 +38,14 @@ function PaymentTermsDropdown() {
 
     const num = Number(option.split(" ")[1]);
     handleChangeSelectedOption(num);
+    console.log(num);
   };
+
+  useEffect(() => {
+    if (invoice) {
+      setSelectedPaymentOption(invoice.paymentTerms);
+    }
+  }, [invoice])
 
   useEffect(() => {
     if (selectedPaymentOption === 1) {
@@ -40,7 +53,7 @@ function PaymentTermsDropdown() {
     } else if (String(selectedPaymentOption).match(/\d+/)) {
       setSelected(`Net ${selectedPaymentOption} Days`);
     }
-  }, [selectedPaymentOption]);
+  }, [selectedPaymentOption, invoice]);
 
 
   return (
