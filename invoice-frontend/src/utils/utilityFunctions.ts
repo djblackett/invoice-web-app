@@ -1,6 +1,7 @@
 import { FieldValues } from "react-hook-form";
 import { v4 as uuidv4 } from "uuid";
 import { Invoice } from "../types/types";
+import { parse } from "date-fns";
 
 export const generateId = () => {
   const list = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
@@ -27,44 +28,41 @@ export function getMoney(amount: number) {
   return amount.toFixed(2).replace(/(\d)(?=(\d{3})+\.)/g, "$1,");
 }
 
-export const convertedDate = (dateString: string) => {
-  if (dateString) {
-    const date = dateString.split("-");
-    const dateObj = new Date(
-      Date.UTC(Number(date[0]), Number(date[1]), Number(date[2])),
-    );
-    return dateObj.toDateString().substring(4);
-  }
+export const convertedDate = (paymentDue: string) => {
+  const date = paymentDue.split("-");
+  const dateObj = new Date(
+    Date.UTC(Number(date[0]), Number(date[1]) - 1, Number(date[2])),
+  );
+  const utcDateArr = dateObj.toUTCString().split(" ");
+  return `${utcDateArr[1]}  ${utcDateArr[2]} ${utcDateArr[3]}`;
 };
 
 export const convertDateToString = (date: Date) => {
   const [month, day, year] = [
-    date.getMonth(),
-    date.getDate(),
-    date.getFullYear(),
+    date.getUTCMonth() + 1,
+    date.getUTCDate(),
+    date.getUTCFullYear(),
   ];
-  return [year, month, day].join("-");
+  return [year, month, day.toString().padStart(2, "0")].join("-");
 };
 
 export const convertStringToDate = (str: string | undefined) => {
   if (!str) {
     return new Date();
   }
-  const dateArray = str.split("-");
-  return new Date(
-    Date.UTC(Number(dateArray[0]), Number(dateArray[1]), Number(dateArray[2])),
-  );
+  return parse(str, "yyyy-MM-dd", new Date(Date.UTC(0, 0, 0))); // Parses as UTC
 };
 
 export const createInvoiceObject = (
   data: FieldValues,
-  startDate: Date,
+  startDate: Date | null,
   selectedPaymentOption: number,
   id?: string,
   invoice?: Invoice,
 ) => {
-
-  console.log("creating invoice...")
+  if (startDate === null) {
+    startDate = new Date();
+  }
   const newInvoice: Invoice = {
     id: id || "",
     clientName: data.clientName,
@@ -81,7 +79,9 @@ export const createInvoiceObject = (
       street: data.streetAddress,
     },
     clientEmail: data.clientEmail,
-    createdAt: convertDateToString(startDate),
+    createdAt: startDate
+      ? convertDateToString(startDate)
+      : convertDateToString(new Date()),
     description: data.projectDescription,
     items: [...data.items],
     paymentDue: "",
@@ -91,11 +91,10 @@ export const createInvoiceObject = (
   };
 
   let invoiceTotal = 0;
-
   const { items } = newInvoice;
 
   for (let i = 0; i < items.length; i++) {
-    console.log(typeof  items[i].quantity);
+    console.log(typeof items[i].quantity);
     items[i].quantity = Number(items[i].quantity);
     items[i].price = Number(items[i].price);
     items[i].total = items[i].quantity * items[i].price;
@@ -109,15 +108,16 @@ export const createInvoiceObject = (
   newInvoice.id = newInvoice.id ? newInvoice.id : generateId();
   newInvoice.paymentTerms = selectedPaymentOption;
 
-  const date = new Date(
-    startDate.getTime() + 86400000 * newInvoice.paymentTerms,
-  );
+  // calculate payment due date
+  const date = new Date(startDate.getTime() + 86400000 * selectedPaymentOption);
 
   const [month, day, year] = [
-    date.getMonth(),
-    date.getDate(),
-    date.getFullYear(),
+    date.getUTCMonth() + 1,
+    date.getUTCDate(),
+    date.getUTCFullYear(),
   ];
-  newInvoice.paymentDue = [year, month, day].join("-");
+  newInvoice.paymentDue = [year, month, day.toString().padStart(2, "0")].join(
+    "-",
+  );
   return newInvoice;
 };
