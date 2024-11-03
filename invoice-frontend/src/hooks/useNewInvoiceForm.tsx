@@ -11,11 +11,9 @@ import { useParams } from 'react-router-dom';
 
 
 export const useNewInvoiceForm = () => {
-
     const { id } = useParams();
 
     const { startDate,
-        isDraft,
         setIsDraft,
         setIsNewInvoiceOpen,
         selectedPaymentOption,
@@ -37,12 +35,9 @@ export const useNewInvoiceForm = () => {
         name: 'items',
     });
 
-    // const { updateInvoice } = useInvoice();
-
-
     const watcher = watch();
 
-    // Mutation to add a new invoice
+    // Mutation definitions
     const [addInvoice] = useMutation(ADD_INVOICE, {
         refetchQueries: [{ query: ALL_INVOICES }],
 
@@ -67,7 +62,6 @@ export const useNewInvoiceForm = () => {
     });
 
 
-    // Handle form reset
     const handleFormReset = () => {
         setSelectedPaymentOption(1);
         reset();
@@ -76,7 +70,7 @@ export const useNewInvoiceForm = () => {
         setIsNewInvoiceOpen(false);
     };
 
-    // Handle form submission
+    // Create a new invoice (all fields required)
     const onSubmit: SubmitHandler<FormType> = async (data) => {
         console.log("Submitting form");
         flushSync(() => setIsDraft(false));
@@ -116,17 +110,19 @@ export const useNewInvoiceForm = () => {
         }
     };
 
-    const onSubmitDraft: SubmitHandler<FormType> = async (data) => {
+    // Create a new draft invoice (all fields not required)
+    const onSubmitDraft: SubmitHandler<FormType> = async () => {
         console.log("Submitting draft");
         clearErrors();
-        flushSync(() => clearErrors());
-        console.log("isDraft:", isDraft)
+        const data = getValues();
+
         if (!data.items) {
             data.items = [{ id: "", name: "", quantity: 0, price: 0, total: 0 }]
         }
 
         const newInvoice = createInvoiceObject(data, startDate, selectedPaymentOption);
 
+        // todo - Determine if this is still relevant after refactoring
         // Ensure quantity and price are numbers
         newInvoice.items = newInvoice.items.map((item) => ({
             ...item,
@@ -150,13 +146,14 @@ export const useNewInvoiceForm = () => {
         // }
     };
 
+    // Update an existing invoice (all fields required)
     const onSubmitUpdate: SubmitHandler<FormType> = async (data) => {
         console.log("Submitting update");
         const isValid = await trigger();
         if (isValid) {
             const newInvoice = createInvoiceObject(data, startDate, selectedPaymentOption);
-
             newInvoice.id = String(id);
+            newInvoice.status = "pending";
             console.log(id);
 
             try {
