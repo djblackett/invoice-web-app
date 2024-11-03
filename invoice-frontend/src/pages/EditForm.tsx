@@ -17,6 +17,7 @@ import { useResponsive } from "../hooks/useResponsive";
 import Description from "../components/form-components/Description";
 import { useNewInvoiceForm } from "../hooks/useNewInvoiceForm";
 import { useNewInvoiceContext } from "../components/form-components/NewInvoiceContextProvider";
+import { useEffect } from "react";
 
 
 type EditFormProps = {
@@ -30,6 +31,11 @@ function EditForm({
   const { editPageWidth, padding } = useResponsive();
   const { isNewInvoiceOpen, startDate, setStartDate } = useNewInvoiceContext()
   const { methods } = useNewInvoiceForm();
+
+  // useEffect(() => {
+  //   setStartDate(new Date(invoice.createdAt));
+  // }, [invoice]);
+
 
 
   // this shouldn't be possible, but better safe than sorry
@@ -61,8 +67,9 @@ function EditForm({
               invoice={invoice}
             />
             <DateAndPayment
-              selected={startDate}
-              onChange={(date) => setStartDate(date)}
+              // selected={startDate}
+              invoice={invoice}
+
             />
             <Description invoice={invoice} />
             <EditFormItemList

@@ -2,7 +2,7 @@ import styled from "styled-components";
 import { useMemo } from "react";
 import InvoiceStatus from "./InvoiceStatus";
 import { getMoney } from "../../utils/utilityFunctions";
-import {Invoice} from "../../types/types";
+import { Invoice } from "../../types/types";
 
 const Card = styled.div`
   height: 134px;
@@ -28,16 +28,16 @@ const Card = styled.div`
 
   @media (min-width: 600px) {
     grid-template-rows: 1fr;
-    
+
     // calculations for the grid-template-columns based on design spec
     // container = 672px  or 624px without padding
     // 1st box = 87  so 87/624 = 14%
     //2nd box = 143px so 143/624 = 23%
-    // 3rd 136 so 136/ 624 = 
-    // 130 
-    // 124 
+    // 3rd 136 so 136/ 624 =
+    // 130
+    // 124
     // 4
-    
+
     grid-template-columns: 14% 23% 21.6% 20.8% 19.9% 2%;
     grid-auto-flow: dense;
     align-items: center;
@@ -143,7 +143,7 @@ function InvoiceCard({ invoice }: InvoiceCardProps) {
     if (invoice.paymentDue) {
       const date = invoice.paymentDue.split("-");
       const dateObj = new Date(
-        Date.UTC(Number(date[0]), Number(date[1]), Number(date[2])),
+        Date.UTC(Number(date[0]), Number(date[1]) - 1, Number(date[2])),
       );
       const utcDateArr = dateObj.toUTCString().split(" ");
       return `${utcDateArr[1]}  ${utcDateArr[2]} ${utcDateArr[3]}`;

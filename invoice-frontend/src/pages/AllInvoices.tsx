@@ -10,7 +10,7 @@ import useInvoices from "../hooks/useInvoices";
 import { AllInvoicesContainer } from "../styles/AllInvoicesStyles";
 import { NewInvoiceProvider } from "../components/form-components/NewInvoiceContextProvider";
 import { useMutation } from "@apollo/client";
-import { DELETE_ALL_INVOICES } from "src/graphql/queries";
+import { ALL_INVOICES, DELETE_ALL_INVOICES } from "src/graphql/queries";
 
 
 function AllInvoices({ setScrollPosition }: AllInvoicesProps) {
@@ -18,7 +18,9 @@ function AllInvoices({ setScrollPosition }: AllInvoicesProps) {
   const dispatch = useDispatch();
   const { invoiceList, loading, error } = useInvoices();
 
-  const [removeInvoices] = useMutation(DELETE_ALL_INVOICES);
+  const [removeInvoices] = useMutation(DELETE_ALL_INVOICES, {
+    refetchQueries: [{ query: ALL_INVOICES }]
+  });
 
   const clearInvoices = () => {
     removeInvoices();
