@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/ban-types */
 import { GraphQLResolveInfo } from "graphql";
 export type Maybe<T> = T | null;
 export type InputMaybe<T> = Maybe<T>;
@@ -80,13 +79,20 @@ export type ItemInput = {
   total?: InputMaybe<Scalars["Float"]["input"]>;
 };
 
+export type LoginResponse = {
+  __typename?: "LoginResponse";
+  token: Scalars["String"]["output"];
+  user?: Maybe<User>;
+};
+
 export type Mutation = {
   __typename?: "Mutation";
   addInvoice?: Maybe<Invoice>;
   createUser?: Maybe<User>;
+  deleteAllInvoices?: Maybe<DeleteResult>;
   deleteUsers?: Maybe<DeleteResult>;
   editInvoice?: Maybe<Invoice>;
-  login?: Maybe<Token>;
+  login?: Maybe<LoginResponse>;
   markAsPaid?: Maybe<Invoice>;
   removeInvoice?: Maybe<Scalars["String"]["output"]>;
 };
@@ -186,7 +192,7 @@ export type Token = {
 
 export type User = {
   __typename?: "User";
-  id: Scalars["ID"]["output"];
+  id: Scalars["Int"]["output"];
   username: Scalars["String"]["output"];
 };
 
@@ -306,11 +312,11 @@ export type ResolversTypes = {
   ClientAddress: ResolverTypeWrapper<ClientAddress>;
   ClientInfo: ClientInfo;
   Float: ResolverTypeWrapper<Scalars["Float"]["output"]>;
-  ID: ResolverTypeWrapper<Scalars["ID"]["output"]>;
   Int: ResolverTypeWrapper<Scalars["Int"]["output"]>;
   Invoice: ResolverTypeWrapper<Invoice>;
   Item: ResolverTypeWrapper<Item>;
   ItemInput: ItemInput;
+  LoginResponse: ResolverTypeWrapper<LoginResponse>;
   Mutation: ResolverTypeWrapper<{}>;
   Query: ResolverTypeWrapper<{}>;
   SenderAddress: ResolverTypeWrapper<SenderAddress>;
@@ -328,11 +334,11 @@ export type ResolversParentTypes = {
   ClientAddress: ClientAddress;
   ClientInfo: ClientInfo;
   Float: Scalars["Float"]["output"];
-  ID: Scalars["ID"]["output"];
   Int: Scalars["Int"]["output"];
   Invoice: Invoice;
   Item: Item;
   ItemInput: ItemInput;
+  LoginResponse: LoginResponse;
   Mutation: {};
   Query: {};
   SenderAddress: SenderAddress;
@@ -425,6 +431,16 @@ export type ItemResolvers<
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 };
 
+export type LoginResponseResolvers<
+  ContextType = any,
+  ParentType extends
+    ResolversParentTypes["LoginResponse"] = ResolversParentTypes["LoginResponse"],
+> = {
+  token?: Resolver<ResolversTypes["String"], ParentType, ContextType>;
+  user?: Resolver<Maybe<ResolversTypes["User"]>, ParentType, ContextType>;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
+};
+
 export type MutationResolvers<
   ContextType = any,
   ParentType extends
@@ -442,6 +458,11 @@ export type MutationResolvers<
     ContextType,
     RequireFields<MutationCreateUserArgs, "password" | "username">
   >;
+  deleteAllInvoices?: Resolver<
+    Maybe<ResolversTypes["deleteResult"]>,
+    ParentType,
+    ContextType
+  >;
   deleteUsers?: Resolver<
     Maybe<ResolversTypes["deleteResult"]>,
     ParentType,
@@ -454,7 +475,7 @@ export type MutationResolvers<
     Partial<MutationEditInvoiceArgs>
   >;
   login?: Resolver<
-    Maybe<ResolversTypes["Token"]>,
+    Maybe<ResolversTypes["LoginResponse"]>,
     ParentType,
     ContextType,
     RequireFields<MutationLoginArgs, "password" | "username">
@@ -552,7 +573,7 @@ export type UserResolvers<
   ParentType extends
     ResolversParentTypes["User"] = ResolversParentTypes["User"],
 > = {
-  id?: Resolver<ResolversTypes["ID"], ParentType, ContextType>;
+  id?: Resolver<ResolversTypes["Int"], ParentType, ContextType>;
   username?: Resolver<ResolversTypes["String"], ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 };
@@ -574,6 +595,7 @@ export type Resolvers<ContextType = any> = {
   ClientAddress?: ClientAddressResolvers<ContextType>;
   Invoice?: InvoiceResolvers<ContextType>;
   Item?: ItemResolvers<ContextType>;
+  LoginResponse?: LoginResponseResolvers<ContextType>;
   Mutation?: MutationResolvers<ContextType>;
   Query?: QueryResolvers<ContextType>;
   SenderAddress?: SenderAddressResolvers<ContextType>;
