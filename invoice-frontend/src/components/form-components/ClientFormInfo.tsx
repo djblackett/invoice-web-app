@@ -127,7 +127,7 @@ export default function ClientFormInfo({
             }}
             type="text"
             defaultValue={invoice ? invoice.clientAddress.city : ""}
-            {...register("clientCity", { required: !isDraft, pattern: /^\w+$/i, maxLength: 30 })}
+            {...register("clientCity", { required: !isDraft, pattern: /[\w ]*/i, maxLength: 30 })}
           />
         </FormEntry>
 

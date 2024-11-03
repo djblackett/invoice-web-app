@@ -74,7 +74,7 @@ function CompanyFormInfo({ invoice }: CompanyFormInfoProps) {
                             style={{ border: errors?.city ? "1px solid #EC5757" : "" }}
                             defaultValue={invoice ? invoice.senderAddress.city : ""}
                             type="text"
-                            {...register("city", { required: !isDraft, pattern: /^\w+$/i, maxLength: 30 })}
+                            {...register("city", { required: !isDraft, pattern: /[\w ]*/i, maxLength: 30 })}
                         />
                     </FormEntry>
 
