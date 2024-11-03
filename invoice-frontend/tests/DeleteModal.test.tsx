@@ -1,5 +1,5 @@
 import { describe, it, expect, vi, afterEach } from 'vitest';
-import { render, screen, fireEvent, waitFor } from 'testUtils';
+import { render, screen, fireEvent, waitFor } from './testUtils';
 import { MockedProvider } from '@apollo/client/testing';
 import DeleteModal, { DeleteModalProps } from '../src/components/DeleteModal';
 import { REMOVE_INVOICE, ALL_INVOICES } from '../src/graphql/queries';

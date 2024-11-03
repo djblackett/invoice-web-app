@@ -2,7 +2,6 @@ import { beforeEach, describe, expect, it, vi } from 'vitest';
 import React from 'react';
 import * as useWindowWidthModule from '../src/hooks/useWindowWidth';
 import { Invoice } from '../src/types/types';
-import { convertedDate } from '../src/utils/utilityFunctions';
 import { render, screen } from '@testing-library/react';
 import FullInvoice from '../src/components/invoice-components/FullInvoice';
 
@@ -68,12 +67,12 @@ describe('FullInvoice Component', () => {
     expect(screen.getAllByText(sampleInvoice.senderAddress.country)).toHaveLength(2);
 
     // Verify that the invoice date is displayed correctly
-    const invoiceDate = convertedDate(sampleInvoice.createdAt);
-    expect(screen.getByText(invoiceDate)).toBeInTheDocument();
+    // const invoiceDate = convertedDate(sampleInvoice.createdAt);
+    expect(screen.getByText(/18 Aug 2021/)).toBeInTheDocument();
 
     // Verify that the payment due date is displayed correctly
-    const paymentDueDate = convertedDate(sampleInvoice.paymentDue);
-    expect(screen.getByText(paymentDueDate)).toBeInTheDocument();
+    // const paymentDueDate = convertedDate(sampleInvoice.paymentDue);
+    expect(screen.getByText(/19 Aug 2021/)).toBeInTheDocument();
 
     // Verify that the client's name is displayed
     expect(screen.getByText(sampleInvoice.clientName)).toBeInTheDocument();

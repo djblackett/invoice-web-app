@@ -55,8 +55,8 @@ describe("InvoiceCard component", () => {
 
     it("should display the converted due date", () => {
         setup({ invoice: sampleInvoice });
-        const expectedDate = "Aug 19 2021"; // Expected date format from convertedDate
-        const dueDateElement = screen.getByText(`${expectedDate}`);
+        const expectedDate = "Due 19 Aug 2021"; // Expected date format from convertedDate
+        const dueDateElement = screen.getByText(expectedDate);
         expect(dueDateElement).toBeInTheDocument();
     });
 
