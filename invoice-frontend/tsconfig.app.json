@@ -27,5 +27,5 @@
       "testUtils": ["./tests/testUtils"]
     }
   },
-  "include": ["src", "./tests/setupTests.ts", "vite.config.ts", "tests/DateAndPayment.test.tsx"]
+  "include": ["src", "./tests/setupTests.ts", "vite.config.ts", "tests/DateAndPayment.test.tsx", "tests/utils/utilityFunctions.test.ts"]
 }

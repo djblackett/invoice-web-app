@@ -49,10 +49,9 @@ export const BillText = styled.p`
   margin-bottom: 1.5rem;
 `;
 
-
 type InputProps = {
   readonly $long?: boolean;
-}
+};
 
 export const Input = styled.input<InputProps>`
   cursor: pointer;
@@ -67,7 +66,7 @@ export const Input = styled.input<InputProps>`
   font-weight: 700;
   font-size: 12px;
   line-height: 15px;
-  caret-color: #7C5DFA;
+  caret-color: #7c5dfa;
   outline: none;
 
   letter-spacing: -0.25px;
@@ -75,17 +74,20 @@ export const Input = styled.input<InputProps>`
   color: ${({ theme }) => theme.textPlain};
   background-color: ${({ theme }) => theme.inputBackgroundColor};
 
-  &:focus, &:hover {
+  &:focus,
+  &:hover {
     border-color: ${({ theme }) => theme.formFieldOutlineFocus};
   }
 
   .custom-input {
     padding: 0;
   }
-  
-  ${props => props.$long && css`
-    width: 100%;
-  `}
+
+  ${(props) =>
+    props.$long &&
+    css`
+      width: 100%;
+    `}
 `;
 
 export const StreetAddressInput = styled(Input)`
@@ -98,14 +100,13 @@ export const StreetAddressInput = styled(Input)`
 
 export const AddressDetailInput = styled(Input)`
   width: 100%;
-  
+
   @media (min-width: 768px) {
     max-width: 152px;
   }
 `;
 export const CountryInput = styled(Input)`
   width: max-content;
- 
 
   @media (min-width: 768px) {
     width: 152px;
@@ -142,16 +143,15 @@ export const ErrorList = styled.ul`
   &:last-of-type {
     margin-bottom: 2.8rem;
   }
-
 `;
 export const ErrorText = styled.li`
-  color: #EC5757;
+  color: #ec5757;
   margin: 0;
   padding: 0;
 `;
 
 export const ErrorTextInline = styled.p`
-  color: #EC5757;
+  color: #ec5757;
   margin: 0;
   padding: 0;
   position: absolute;
@@ -165,7 +165,7 @@ export const DateAndPaymentContainer = styled.div`
   flex-wrap: wrap;
   flex-direction: column;
   z-index: 60;
-  
+
   @media (min-width: 768px) {
     display: flex;
     justify-content: space-between;
@@ -175,7 +175,8 @@ export const DateAndPaymentContainer = styled.div`
     flex-wrap: nowrap;
   }
 
-  // section targets the react-date-picker component to apply theming 
+  // section targets the react-date-picker component to apply theming
+
   .react-datepicker__header {
     background-color: ${({ theme }) => theme.background};
     color: ${({ theme }) => theme.dateText};
@@ -184,13 +185,16 @@ export const DateAndPaymentContainer = styled.div`
     padding-bottom: 1.5rem;
   }
 
-  .react-datepicker__day, .react-datepicker__month-text, .react-datepicker__quarter-text, .react-datepicker__year-text {
+  .react-datepicker__day,
+  .react-datepicker__month-text,
+  .react-datepicker__quarter-text,
+  .react-datepicker__year-text {
     color: ${({ theme }) => theme.dateText};
   }
-  
+
   .react-datepicker__day {
     &:hover {
-      background: #7C5DFA;
+      background: #7c5dfa;
       color: white;
     }
   }
@@ -202,7 +206,7 @@ export const DateAndPaymentContainer = styled.div`
     box-shadow: ${({ theme }) => theme.filterShadow};
     transition: all 250ms ease-in-out;
   }
-  
+
   .react-datepicker__month-year-dropdown {
     background-color: ${({ theme }) => theme.background};
     color: ${({ theme }) => theme.dateText};
@@ -210,7 +214,7 @@ export const DateAndPaymentContainer = styled.div`
   }
 
   .react-datepicker__day--selected {
-    color: #7C5DFA;
+    color: #7c5dfa;
     background-color: transparent;
     font-weight: bold;
   }
@@ -227,16 +231,16 @@ export const DateAndPaymentContainer = styled.div`
     color: ${({ theme }) => theme.dateText};
     align-self: center;
     justify-self: center;
-    font-family: 'Spartan',sans-serif;
+    font-family: "Spartan", sans-serif;
     font-style: normal;
     font-weight: 700;
     font-size: 12px;
     line-height: 15px;
-    /* identical to box height, or 125% */
+
     letter-spacing: -0.25px;
     text-align: center;
   }
-  
+
   .react-datepicker__day--keyboard-selected {
     background-color: rgba(124, 93, 250, 0.5);
   }
