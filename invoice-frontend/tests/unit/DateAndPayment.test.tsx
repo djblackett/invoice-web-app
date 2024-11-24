@@ -1,6 +1,6 @@
-import { render, screen } from 'testUtils';
-import DateAndPayment from '../src/components/form-components/DateAndPayment';
-import { useNewInvoiceContext } from '../src/components/form-components/NewInvoiceContextProvider';
+import { render, screen } from '../testUtils';
+import DateAndPayment from '../../src/components/form-components/DateAndPayment';
+import { useNewInvoiceContext } from '../../src/components/form-components/NewInvoiceContextProvider';
 import { afterEach, beforeEach, describe, expect, it, vi, MockedFunction } from 'vitest';
 
 // Mock the context provider

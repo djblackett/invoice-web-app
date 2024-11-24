@@ -1,9 +1,9 @@
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 import React from 'react';
-import * as useWindowWidthModule from '../src/hooks/useWindowWidth';
-import { Invoice } from '../src/types/types';
+import * as useWindowWidthModule from '../../src/hooks/useWindowWidth';
+import { Invoice } from '../../src/types/types';
 import { render, screen } from '@testing-library/react';
-import FullInvoice from '../src/components/invoice-components/FullInvoice';
+import FullInvoice from '../../src/components/invoice-components/FullInvoice';
 
 // Sample invoice data for testing
 const sampleInvoice: Invoice = {

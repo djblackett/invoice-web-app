@@ -1,10 +1,10 @@
 import { describe, it, expect, vi, afterEach } from 'vitest';
-import { render, screen, fireEvent, waitFor } from './testUtils';
+import { render, screen, fireEvent, waitFor } from '../testUtils';
 import { MockedProvider } from '@apollo/client/testing';
-import DeleteModal, { DeleteModalProps } from '../src/components/DeleteModal';
-import { REMOVE_INVOICE, ALL_INVOICES } from '../src/graphql/queries';
+import DeleteModal, { DeleteModalProps } from '../../src/components/DeleteModal';
+import { REMOVE_INVOICE, ALL_INVOICES } from '../../src/graphql/queries';
 import { ThemeProvider } from 'styled-components';
-import { lightTheme } from '../src/styles/Themes';
+import { lightTheme } from '../../src/styles/Themes';
 import React from 'react';
 
 const mocks = [

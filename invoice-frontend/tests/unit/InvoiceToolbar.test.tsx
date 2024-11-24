@@ -1,12 +1,12 @@
 import { render, screen, fireEvent } from "@testing-library/react";
 import React from "react";
 import { describe, it, expect, vi, beforeEach } from "vitest";
-import useWindowWidth from "../src/hooks/useWindowWidth";
-import { Invoice } from "../src/types/types";
-import InvoiceToolbar, { InvoiceToolBarProps } from "../src/components/invoice-components/InvoiceToolbar";
-import { NewInvoiceProvider } from "../src/components/form-components/NewInvoiceContextProvider";
+import useWindowWidth from "../../src/hooks/useWindowWidth";
+import { Invoice } from "../../src/types/types";
+import InvoiceToolbar, { InvoiceToolBarProps } from "../../src/components/invoice-components/InvoiceToolbar";
+import { NewInvoiceProvider } from "../../src/components/form-components/NewInvoiceContextProvider";
 import { ThemeProvider } from "styled-components";
-import { lightTheme } from "../src/styles/Themes";
+import { lightTheme } from "../../src/styles/Themes";
 import { ApolloClient, ApolloProvider, InMemoryCache } from "@apollo/client";
 
 
