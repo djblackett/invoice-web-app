@@ -1,5 +1,5 @@
 services:
-  frontend-dev:
+  frontend-test:
     build:
       context: invoice-frontend
       dockerfile: dev.Dockerfile
@@ -24,7 +24,8 @@ services:
 #    restart: unless-stopped
     ports:
       - "8000:8000"
-      - "4000:4000"
+      # - "4000:4000"
+    command: sh -c "npx prisma generate dev && npx prisma db push && npm run test"
     environment:
       - NODE_ENV=test
       - PORT=8000
@@ -60,7 +61,7 @@ services:
       retries: 5
 
 
-  adminer-dev:
+  adminer-test:
     image: adminer:4.8.1
     restart: always
     ports:
@@ -68,14 +69,14 @@ services:
     networks:
       - my_network_test
 
-  proxy-dev:
+  proxy-test:
     image: nginx:1.25.2
-    hostname: proxy-dev
-    container_name: proxy-dev
+    hostname: proxy-test
+    container_name: proxy-test
     depends_on:
       backend-test:
         condition: service_started
-      frontend-dev:
+      frontend-test:
         condition: service_started
     tty: true
     stdin_open: true
