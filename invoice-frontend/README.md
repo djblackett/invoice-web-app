@@ -12,7 +12,7 @@
 
 `npm run test:unit`
 
-#### End to end tests
+#### End-to-end tests
 
 You will need to start the backend before running the e2e tests
 `npm run test:e2e`
@@ -28,8 +28,8 @@ First `cd ..` to go to root directory
 
 ### Development environment
 
-`docker compose -f docker-compose.dev.yml`
+`docker compose -f docker-compose.dev.yml up`
 
 ### Test env
 
-`docker compose -f docker-compose-test.yml`
+`docker compose -f docker-compose-test.yml up`
