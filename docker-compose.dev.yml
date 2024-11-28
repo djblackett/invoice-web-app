@@ -13,7 +13,6 @@ services:
     volumes:
       - ./invoice-frontend:/usr/src/app/
 
-
   backend-dev:
     build:
       context: invoice-backend
@@ -24,7 +23,7 @@ services:
 #    restart: unless-stopped
     ports:
       - "8000:8000"
-      - "4000:4000"
+    command: sh -c "npx prisma generate && npx prisma db push && DATABASE_URL=postgresql://postgres:example@db-dev:5432/db-dev?schema=public npm run dev"
     environment:
       - NODE_ENV=development
       - PORT=8000
