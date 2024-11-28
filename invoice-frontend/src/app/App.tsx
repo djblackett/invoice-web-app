@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-unsafe-return */
-import { useEffect, useLayoutEffect, useState } from "react";
+import { useLayoutEffect, useState } from "react";
 import "../styles/App.css";
 import styled, { ThemeProvider } from "styled-components";
 import { useRoutes } from "react-router-dom";
@@ -56,11 +56,9 @@ const Main = styled.div`
 loadDevMessages();
 loadErrorMessages();
 
-// todo - returning window scroll to proper position is currently non-functional
-// can use the useRef hook to dynamically get the position of a node to scroll to later
 function App() {
   const [theme, setTheme] = useState("light");
-  const [scrollPosition, setScrollPosition] = useState({ x: 0, y: 0 });
+
 
   useLayoutEffect(() => {
     if (localStorage.getItem("theme") !== null) {
@@ -69,9 +67,6 @@ function App() {
     }
   }, []);
 
-  useEffect(() => {
-    window.scrollTo(scrollPosition.x, scrollPosition.y);
-  }, []);
 
   const themeToggler = () => {
     // eslint-disable-next-line @typescript-eslint/no-unused-expressions
@@ -87,11 +82,11 @@ function App() {
       children: [
         {
           index: true,
-          element: <AllInvoices setScrollPosition={setScrollPosition} />,
+          element: <AllInvoices />,
         },
         {
           path: ":id",
-          element: <ViewInvoice scrollPosition={scrollPosition} />,
+          element: <ViewInvoice />,
         },
       ],
     },
