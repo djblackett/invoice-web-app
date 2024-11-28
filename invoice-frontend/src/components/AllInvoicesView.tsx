@@ -22,10 +22,10 @@ const StyledLink = styled(Link) <StyledLinkProps>`
 interface AllInvoicesViewProps {
     invoiceList: Invoice[];
     width: number;
-    scrollToTop: () => void;
+    // scrollToTop: () => void;
 }
 
-const AllInvoicesView = ({ invoiceList, width, scrollToTop }: AllInvoicesViewProps) => {
+const AllInvoicesView = ({ invoiceList, width }: AllInvoicesViewProps) => {
     return (
         <>
             {invoiceList.length > 0 ? (
@@ -35,7 +35,7 @@ const AllInvoicesView = ({ invoiceList, width, scrollToTop }: AllInvoicesViewPro
                             key={invoice.id}
                             to={`/${invoice.id}`}
                             isMobile={width < 1200}
-                            onClick={scrollToTop}
+
                         >
                             <InvoiceCard invoice={invoice} />
                         </StyledLink>

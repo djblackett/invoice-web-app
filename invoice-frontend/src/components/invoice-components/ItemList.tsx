@@ -1,16 +1,13 @@
 import styled from "styled-components";
-import { useLayoutEffect } from "react";
-import { useDispatch } from "react-redux";
 import InvoiceItem from "./InvoiceItem";
-import { addIdToExistingInvoices } from "../../features/invoices/invoicesSlice";
 import { getMoney } from "../../utils/utilityFunctions";
-import {Invoice} from "../../types/types";
+import { Invoice } from "../../types/types";
 
 const ListContainer = styled.div`
   display: grid;
   width: 100%;
   border-radius: 8px;
-  
+
 `;
 
 const AmountDue = styled.div`
@@ -113,39 +110,32 @@ type ItemListProps = {
 
 function ItemList({ invoice }: ItemListProps) {
 
- // todo - remove once graphql implementation is complete
-  // const dispatch = useDispatch();
-  //
-  // useLayoutEffect(() => {
-  //   dispatch(addIdToExistingInvoices());
-  // }, []);
-
-    if (invoice) {
-        return (
-            <ListContainer>
-                <ItemsHeader>
-                    <Col1>Item Name</Col1>
-                    <Col>QTY.</Col>
-                    <Col>Price</Col>
-                    <Col>Total</Col>
-                </ItemsHeader>
-                <ItemsContainer>
-                    {invoice && invoice?.items?.map((item) => (
-                        <InvoiceItem item={item} key={`itemList-${item?.id || ++count}`}/>
-                    ))}
-                </ItemsContainer>
-                <AmountDue>
-                    <AmountDueTitle>
-                        <span className="amount-due">Amount Due</span>
-                        <span className="grand-total">Grand Total</span>
-                    </AmountDueTitle>
-                    <AmountDueTotal>£ {getMoney(invoice?.total)}</AmountDueTotal>
-                </AmountDue>
-            </ListContainer>
-        );
-    } else {
-        return null;
-    }
+  if (invoice) {
+    return (
+      <ListContainer>
+        <ItemsHeader>
+          <Col1>Item Name</Col1>
+          <Col>QTY.</Col>
+          <Col>Price</Col>
+          <Col>Total</Col>
+        </ItemsHeader>
+        <ItemsContainer>
+          {invoice && invoice?.items?.map((item) => (
+            <InvoiceItem item={item} key={`itemList-${item?.id || ++count}`} />
+          ))}
+        </ItemsContainer>
+        <AmountDue>
+          <AmountDueTitle>
+            <span className="amount-due">Amount Due</span>
+            <span className="grand-total">Grand Total</span>
+          </AmountDueTitle>
+          <AmountDueTotal>£ {getMoney(invoice?.total)}</AmountDueTotal>
+        </AmountDue>
+      </ListContainer>
+    );
+  } else {
+    return null;
+  }
 }
 
 export default ItemList;
