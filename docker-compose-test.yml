@@ -7,11 +7,16 @@ services:
       - REACT_APP_BACKEND_URL=http://localhost/api
       - REACT_APP_ENV=test
     ports:
-      - "5173:5173"
+      - ":5173"
     networks:
       - my_network_test
     volumes:
       - ./invoice-frontend:/usr/src/app/
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:5173"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
 
   backend-test:
     build:
@@ -19,18 +24,16 @@ services:
       dockerfile: dev.Dockerfile
     depends_on:
       db-test:
-        condition: service_started
-#    restart: unless-stopped
+        condition: service_healthy
     ports:
-      - "8000:8000"
+      - ":8000"
     command: sh -c "npx prisma generate && npx prisma db push && npm run test"
     environment:
       - NODE_ENV=test
       - PORT=8000
       - REQUEST_ORIGIN=http://proxy
       - SECRET=theSecretStuff
-      - DATABASE_URL=postgres://postgres:example@db-test:5432/db-test?schema=public&connect_timout=300
-      - DB_URL_TEST=postgres://postgres:example@db-test:5432/db-test?schema=public&connect_timout=300
+      - DATABASE_URL=postgres://postgres:example@db-test:5432/db-test?schema=public&connect_timeout=300
     networks:
       - my_network_test
     volumes:
@@ -46,7 +49,7 @@ services:
       PGUSER: postgres
       POSTGRES_USER: postgres
     ports:
-      - "5432:5432"
+      - ":5432"
     networks:
       - my_network_test
     volumes:
@@ -58,15 +61,6 @@ services:
       timeout: 5s
       retries: 5
 
-
-  adminer-test:
-    image: adminer:4.8.1
-    restart: always
-    ports:
-      - 8080:8080
-    networks:
-      - my_network_test
-
   proxy-test:
     image: nginx:1.25.2
     hostname: proxy-test
@@ -76,8 +70,6 @@ services:
         condition: service_started
       frontend-test:
         condition: service_started
-    tty: true
-    stdin_open: true
     volumes:
       - ./nginx.test.conf:/etc/nginx/nginx.conf
     ports:
@@ -92,3 +84,9 @@ networks:
 
 volumes:
   pgdata-test:
+
+logging:
+  driver: "json-file"
+  options:
+    max-size: "10m"
+    max-file: "3"
