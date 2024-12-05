@@ -1,0 +1,162 @@
+name: CI/CD Pipeline
+
+on:
+  push:
+    branches:
+      # - main
+      - dev
+      - "feature/**"
+      - "release/**"
+      - "hotfix/**"
+  pull_request:
+    branches:
+      - main
+      - dev
+
+jobs:
+  setup:
+    name: Setup and Cache
+    runs-on: ubuntu-latest
+    outputs:
+      cache-hit: ${{ steps.cache-deps.outputs.cache-hit }}
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4.2.2
+
+      - name: Cache Node Modules
+        id: cache-deps
+        uses: actions/cache@v4.2.0
+        with:
+          path: |
+            invoice-frontend/node_modules
+            invoice-backend/node_modules
+          key: ${{ runner.os }}-node-${{ hashFiles('**/package-lock.json') }}
+          restore-keys: |
+            ${{ runner.os }}-node-
+
+  frontend:
+    name: Frontend CI
+    needs: setup
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4.2.2
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4.1.0
+        with:
+          node-version: "22.12.0"
+
+      - name: Restore Cache
+        uses: actions/cache@v4.2.0
+        with:
+          path: invoice-frontend/node_modules
+          key: ${{ runner.os }}-node-${{ hashFiles('invoice-frontend/package-lock.json') }}
+          restore-keys: |
+            ${{ runner.os }}-node-
+
+      - name: Install Dependencies
+        run: |
+          cd invoice-frontend
+          npm install
+
+      - name: Lint
+        run: |
+          cd invoice-frontend
+          npm run eslint
+
+      - name: Run Tests
+        run: |
+          cd invoice-frontend
+          npm run test
+
+      - name: Build Docker Image
+        run: |
+          cd invoice-frontend
+          docker build -t djblackett/invoice-frontend:${{ github.sha }} .
+
+      - name: Push Docker Image
+        uses: docker/login-action@v3.3.0
+        with:
+          username: ${{ secrets.DOCKER_USERNAME }}
+          password: ${{ secrets.DOCKER_PASSWORD }}
+
+      - name: Push Frontend Image
+        run: |
+          docker push djblackett/invoice-frontend:${{ github.sha }}
+
+  backend:
+    name: Backend CI
+    needs: setup
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4.2.2
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4.1.0
+        with:
+          node-version: "22.12.0"
+
+      - name: Restore Cache
+        uses: actions/cache@v4.2.0
+        with:
+          path: backend/node_modules
+          key: ${{ runner.os }}-node-${{ hashFiles('invoice-backend/package-lock.json') }}
+          restore-keys: |
+            ${{ runner.os }}-node-
+
+      - name: Install Dependencies
+        run: |
+          cd invoice-backend
+          npm install
+
+      - name: Lint
+        run: |
+          cd invoice-backend
+          npm run eslint
+
+      - name: Run Tests
+        run: |
+          cd invoice-backend
+          npm run test
+
+      - name: Build Docker Image
+        run: |
+          cd invoice-backend
+          docker build -t djblackett/invoice-backend:${{ github.sha }} .
+
+      - name: Push Docker Image
+        uses: docker/login-action@v3.3.0
+        with:
+          username: ${{ secrets.DOCKER_USERNAME }}
+          password: ${{ secrets.DOCKER_PASSWORD }}
+
+      - name: Push Backend Image
+        run: |
+          docker push djblackett/invoice-backend:${{ github.sha }}
+
+  deploy:
+    name: Deploy to Environment
+    needs: [frontend, backend]
+    runs-on: ubuntu-latest
+    if: |
+      github.ref == 'refs/heads/main' ||
+      startsWith(github.ref, 'refs/heads/release/')
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4.2.2
+
+      - name: Install Fly.io CLI
+        run: |
+          curl -L https://fly.io/install.sh | sh
+          export PATH="$HOME/.fly/bin:$PATH"
+
+      - name: Authenticate Fly.io
+        env:
+          FLY_API_TOKEN: ${{ secrets.FLY_API_TOKEN }}
+        run: fly auth login --access-token $FLY_API_TOKEN
+
+      - name: Deploy to Fly.io
+        run: |
+          fly deploy --dockerfile docker-compose.prod.yml --build-arg COMMIT_SHA=${{ github.sha }}
