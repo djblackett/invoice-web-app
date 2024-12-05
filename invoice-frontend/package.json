@@ -10,7 +10,7 @@
 		"test:unit": "tsc -p tsconfig.dev.json && vitest tests/unit",
 		"test:e2e": "tsc -p tsconfig.dev.json && playwright test tests/e2e",
 		"eslint": "eslint .",
-		"lint": "eslint \"src /**/*.ts\"",
+		"lint": "eslint \"src/**/*.ts\"",
 		"lint:fix": "eslint . --fix .",
 		"lint:css": "stylelint './src/**/*.js'",
 		"format": "prettier-eslint --eslint-config-path ./.eslintrc.js --write '**/*.js'",

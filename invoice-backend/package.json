@@ -11,7 +11,7 @@
     "test": "NODE_ENV=test ts-node-dev --loader ts-node/esm src/index.ts",
     "dev": "NODE_ENV=development ts-node-dev --loader ts-node/esm src/index.ts",
     "prod": "NODE_ENV=production ts-node-dev src/index.ts",
-    "lint": "eslint \"src /**/*.ts\"",
+    "lint": "eslint \"src/**/*.ts\"",
     "format": "prettier --write .",
     "start": "NODE_ENV=production node dist/src/index.js",
     "generate": "graphql-codegen",
