@@ -22,14 +22,15 @@ RUN apt-get update -y && apt-get install -y openssl
 ENV NODE_ENV=production
 WORKDIR /usr/src/app
 
-COPY package.json package-lock.json ./
+COPY --chown=node:node package.json package-lock.json ./
 
 RUN npm ci --verbose
-COPY --from=build /usr/src/app/dist/src ./dist/src
-COPY --from=build /usr/src/app/node_modules/.prisma ./node_modules/.prisma
-COPY --from=build /usr/src/app/node_modules/@prisma ./node_modules/@prisma
-COPY --from=build /usr/src/app/prisma ./prisma
+COPY --chown=node:node --from=build /usr/src/app/dist/src ./dist/src
+COPY --chown=node:node --from=build /usr/src/app/node_modules/.prisma ./node_modules/.prisma
+COPY --chown=node:node --from=build /usr/src/app/node_modules/@prisma ./node_modules/@prisma
+COPY --chown=node:node --from=build /usr/src/app/prisma ./prisma
 
 EXPOSE 8000
+USER node
 
 CMD ["npm", "start"]
