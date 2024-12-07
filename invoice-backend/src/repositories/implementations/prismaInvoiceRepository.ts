@@ -95,23 +95,23 @@ export class PrismaInvoiceRepository implements IInvoiceRepo {
             ...invoiceUpdates,
             clientAddress: invoiceUpdates.clientAddress
               ? {
-                  update: {
-                    street: invoiceUpdates.clientAddress.street,
-                    city: invoiceUpdates.clientAddress.city,
-                    postCode: invoiceUpdates.clientAddress.postCode,
-                    country: invoiceUpdates.clientAddress.country,
-                  },
-                }
+                update: {
+                  street: invoiceUpdates.clientAddress.street,
+                  city: invoiceUpdates.clientAddress.city,
+                  postCode: invoiceUpdates.clientAddress.postCode,
+                  country: invoiceUpdates.clientAddress.country,
+                },
+              }
               : undefined,
             senderAddress: invoiceUpdates.senderAddress
               ? {
-                  update: {
-                    street: invoiceUpdates.senderAddress.street,
-                    city: invoiceUpdates.senderAddress.city,
-                    postCode: invoiceUpdates.senderAddress.postCode,
-                    country: invoiceUpdates.senderAddress.country,
-                  },
-                }
+                update: {
+                  street: invoiceUpdates.senderAddress.street,
+                  city: invoiceUpdates.senderAddress.city,
+                  postCode: invoiceUpdates.senderAddress.postCode,
+                  country: invoiceUpdates.senderAddress.country,
+                },
+              }
               : undefined,
             items: {
               createMany: {
@@ -159,7 +159,7 @@ export class PrismaInvoiceRepository implements IInvoiceRepo {
             Temporal.Now.plainDateISO().add({ days: 1 }).toLocaleString(),
           paymentTerms: invoice.paymentTerms || 14,
           status: invoice.status || "",
-          total: new Decimal(Number(invoice.total)) || 0,
+          total: new Decimal(Number(invoice.total)),
           clientAddress: {
             create: {
               city: invoice?.clientAddress?.city || "",

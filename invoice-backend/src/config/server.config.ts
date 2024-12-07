@@ -45,17 +45,17 @@ export function serverConfig(app: Application) {
       extended: true,
     }),
   );
-  if (NODE_ENV === "development") {
-    app.use(
-      cors({
-        origin: "http://localhost:5173",
-        methods: ["GET", "POST", "PUT", "DELETE"],
-        // credentials: true,
-      }),
-    );
-  } else {
-    app.use(cors());
-  }
+  // if (NODE_ENV === "development") {
+  // app.use(
+  //   cors({
+  //     origin: "http://localhost:5173",
+  //     methods: ["GET", "POST", "PUT", "DELETE"],
+  //     // credentials: true,
+  //   }),
+  // );
+  // } else {
+  app.use(cors());
+  // }
   app.options("*", cors()); // This will handle all OPTIONS requests
 
   app.use(express.json());

@@ -49,9 +49,9 @@ export const createServer = async () => {
         },
         NODE_ENV === "production"
           ? ApolloServerPluginLandingPageProductionDefault({
-              graphRef: "my-graph-id@my-graph-variant",
-              footer: false,
-            })
+            graphRef: "my-graph-id@my-graph-variant",
+            footer: false,
+          })
           : ApolloServerPluginLandingPageLocalDefault({ footer: false }),
       ],
     });

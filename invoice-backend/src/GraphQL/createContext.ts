@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unused-expressions */
 import jwt from "jsonwebtoken";
 import { ContextArgs, QueryContext, UserDTO } from "../constants/types";
 import container from "../config/inversify.config";
@@ -50,7 +51,7 @@ export async function createContext({
     const userService = container.get(UserService);
     const user = await userService.getUser(decodedToken.id);
     if (user) {
-      // eslint-disable-next-line @typescript-eslint/no-unused-vars
+       
       const userNoPassword: UserDTO = {
         id: user.id,
         name: user.name,

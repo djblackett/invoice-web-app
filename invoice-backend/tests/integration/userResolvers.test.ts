@@ -223,7 +223,7 @@ describe("Integration Tests", () => {
 
     expect(response.errors).toBeDefined();
     expect(response.errors[0].message).toContain(
-      'Variable "$username" of required type "String!" was not provided.',
+      "Variable \"$username\" of required type \"String!\" was not provided.",
     );
   });
 

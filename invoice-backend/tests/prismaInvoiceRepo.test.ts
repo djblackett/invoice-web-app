@@ -285,13 +285,13 @@ describe("Prisma Query: updateInvoice", () => {
     // Eslint is interfering with the tests
     // None of the tests rely on 'this' so this rule can be safely ignored
     expect(updatedInvoice.clientName).toStrictEqual("Dr. Evil");
-    // eslint-disable-next-line @typescript-eslint/unbound-method
+         
     expect(prisma.$transaction).toHaveBeenCalled();
-    // eslint-disable-next-line @typescript-eslint/unbound-method
+         
     expect(prisma.item.deleteMany).toHaveBeenCalledWith({
       where: { invoiceId: "D64FUO" },
     });
-    // eslint-disable-next-line @typescript-eslint/unbound-method
+         
     expect(prisma.invoice.update).toHaveBeenCalled();
   });
 
@@ -340,11 +340,11 @@ describe("Prisma Query: updateInvoice", () => {
     const updatedInvoice = await mockRepo.update("D64FUO", invoiceUpdates);
 
     expect(updatedInvoice.clientName).toStrictEqual("Updated Client");
-    // eslint-disable-next-line @typescript-eslint/unbound-method
+         
     expect(prisma.$transaction).toHaveBeenCalled();
-    // eslint-disable-next-line @typescript-eslint/unbound-method
+         
     expect(prisma.invoice.update).toHaveBeenCalled();
-    // eslint-disable-next-line @typescript-eslint/unbound-method
+         
     expect(prisma.item.deleteMany).not.toHaveBeenCalled();
   });
 
@@ -358,7 +358,7 @@ describe("Prisma Query: updateInvoice", () => {
     await expect(
       mockRepo.update("D64FUO", invoiceUpdates),
     ).rejects.toThrowError("Database error: Transaction failed");
-    // eslint-disable-next-line @typescript-eslint/unbound-method
+         
     expect(prisma.$transaction).toHaveBeenCalled();
   });
 });
@@ -402,7 +402,7 @@ describe("Prisma Query: deleteInvoice", () => {
     const deletedInvoice = await mockRepo.delete("D64FUO");
 
     expect(deletedInvoice).toStrictEqual(true);
-    // eslint-disable-next-line @typescript-eslint/unbound-method
+         
     expect(prisma.invoice.delete).toHaveBeenCalledWith({
       where: { id: "D64FUO" },
     });
@@ -469,7 +469,7 @@ describe("Prisma Query: createInvoice", () => {
     const createdInvoice = await mockRepo.create(invoiceWithoutItems);
 
     expect(createdInvoice).toStrictEqual(expectedResponse);
-    // eslint-disable-next-line @typescript-eslint/unbound-method
+         
     expect(prisma.invoice.create).toHaveBeenCalled();
   });
 
@@ -511,7 +511,7 @@ describe("Prisma Query: createInvoice", () => {
     const createdInvoice = await mockRepo.create(incompleteInvoiceParams);
 
     expect(createdInvoice).toStrictEqual(expectedResponse);
-    // eslint-disable-next-line @typescript-eslint/unbound-method
+         
     expect(prisma.invoice.create).toHaveBeenCalled();
   });
 });
