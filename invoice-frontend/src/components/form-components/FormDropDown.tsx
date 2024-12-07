@@ -45,7 +45,7 @@ function PaymentTermsDropdown({ invoice }: PaymentTermsProps) {
     if (invoice) {
       setSelectedPaymentOption(invoice.paymentTerms);
     }
-  }, [invoice])
+  }, [invoice]);
 
   useEffect(() => {
     if (selectedPaymentOption === 1) {

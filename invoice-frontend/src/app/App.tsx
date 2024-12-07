@@ -1,4 +1,4 @@
-/* eslint-disable @typescript-eslint/no-unsafe-return */
+ 
 import { useLayoutEffect, useState } from "react";
 import "../styles/App.css";
 import styled, { ThemeProvider } from "styled-components";

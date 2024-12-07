@@ -17,4 +17,6 @@ const Layout = React.memo(() => (
   </Container>
 ));
 
+Layout.displayName = "ReactRouterLayoutComponent";
+
 export default Layout;

@@ -1,7 +1,7 @@
-import React, { useEffect, useState} from "react";
+import React, { useEffect, useState } from "react";
 import { useFormContext } from "react-hook-form";
-import {useTheme} from "styled-components";
-import {Col, Col1 } from "../../styles/EditFormItemListStyles";
+import { useTheme } from "styled-components";
+import { Col, Col1 } from "../../styles/EditFormItemListStyles";
 import {
   Box,
   deleteIcon,
@@ -16,8 +16,8 @@ import {
   SVG,
   Total
 } from "../../styles/editFormItemStyles";
-import useWindowWidth  from "../../hooks/useWindowWidth";
-import { Item } from  "../../types/types";
+import useWindowWidth from "../../hooks/useWindowWidth";
+import { Item } from "../../types/types";
 
 type EditFormItemProps = {
   item: Item;
@@ -98,7 +98,7 @@ function EditFormItem({ item, items, setItems }: EditFormItemProps) {
           <Price name="price" onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
             setPrice((v) => (e.target.validity.valid ? e.target.value : v))}
           value={price}
-          style={{ borderColor: isTotalValid || !(submitCount > 0 && price.length === 0)  ? "" : "#EC5757" }}
+          style={{ borderColor: isTotalValid || !(submitCount > 0 && price.length === 0) ? "" : "#EC5757" }}
           />
         </Box>
         <Box>
@@ -132,19 +132,19 @@ function EditFormItem({ item, items, setItems }: EditFormItemProps) {
             onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
               setQuantity((v) => (e.target.validity.valid ? e.target.value : v))}
             value={quantity}
-            style={{ borderColor: (submitCount > 0 && quantity.length === 0)  ? "#EC5757" : "" }}
+            style={{ borderColor: (submitCount > 0 && quantity.length === 0) ? "#EC5757" : "" }}
           />
           <Price name="price"
             type="text"
             onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
               setPrice((v) => (e.target.validity.valid ? e.target.value : v))}
 
-            style={{ borderColor: isTotalValid && !(submitCount > 0 && price.length === 0)  ? "" : "#EC5757" }}
+            style={{ borderColor: isTotalValid && !(submitCount > 0 && price.length === 0) ? "" : "#EC5757" }}
             value={price}
           />
         </QuantityPriceContainer>
         <MobileQuantityPrice>
-          {`${item.quantity  } x £ ${  Number(item.price).toFixed(2)}`}
+          {`${item.quantity} x £ ${Number(item.price).toFixed(2)}`}
         </MobileQuantityPrice>
       </MobileHelperContainer>
       <Total onChange={handleChange} style={{ color: isTotalValid ? "" : "#EC5757" }}>
@@ -166,11 +166,3 @@ function EditFormItem({ item, items, setItems }: EditFormItemProps) {
 }
 
 export default EditFormItem;
-
-EditFormItem.propTypes = {
-  // item: PropTypes.object.isRequired,
-  // // id: PropTypes.string,
-  // items: PropTypes.arrayOf(PropTypes.object).isRequired,
-  // setItems: PropTypes.func.isRequired,
-  // submitCount: PropTypes.number.isRequired
-};

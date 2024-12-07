@@ -26,7 +26,7 @@ const PrimaryButton = styled.div`
 
   @media (min-width: 1200px) {
   }
-`
+`;
 
 const plusSign = (
   <svg width="11" height="11" xmlns="http://www.w3.org/2000/svg">

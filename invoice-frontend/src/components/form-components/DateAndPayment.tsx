@@ -1,5 +1,5 @@
 import DatePicker from "react-datepicker";
-import { forwardRef, SetStateAction, useEffect, useState } from "react";
+import { forwardRef, useEffect, } from "react";
 import PaymentTermsDropdown from "./FormDropDown";
 import FormEntry from "./FormEntry";
 import { DateAndPaymentContainer, Label } from "../../styles/editStyles";
@@ -22,10 +22,6 @@ type CustomInputProps = {
 };
 
 const ExampleCustomInput = forwardRef(({ value, onClick }: CustomInputProps, ref) => {
-  const { setStartDate } = useNewInvoiceContext();
-  const onClickOutside = (e: any) => {
-    setStartDate(e.target.value);
-  }
   return (
     <CustomDateBox
       className="custom-input"
@@ -35,15 +31,12 @@ const ExampleCustomInput = forwardRef(({ value, onClick }: CustomInputProps, ref
         ref={ref}
         defaultValue={value}
         data-testid="invoiceDate"
-      // onClickOutside={onClickOutside}
-      // onChange={onChange}
-
       />
       {dateIcon}
     </CustomDateBox>
-  )
+  );
 });
-
+ExampleCustomInput.displayName = "CustomDateInputObj";
 
 function DateAndPayment({
   invoice
@@ -58,10 +51,11 @@ function DateAndPayment({
     setStartDate(date);
   };
 
-  const handleChangeRaw = (value: any) => {
-    setStartDate(value);
+  const handleChangeRaw = (value: unknown) => {
+    if (value instanceof Date) {
+      setStartDate(value);
+    }
   };
-
 
 
   useEffect(() => {
@@ -73,11 +67,11 @@ function DateAndPayment({
       // setStartDate(adjustedDate);
       setStartDate(date);
       // new Date(val.getTime() - val.getTimezoneOffset() * 60000)
-      console.log("startDate", startDate)
+      console.log("startDate", startDate);
       console.log("createdAt", invoice?.createdAt);
-      console.log("convertedDate", convertStringToDate(invoice?.createdAt))
+      console.log("convertedDate", convertStringToDate(invoice?.createdAt));
     }
-  }, [invoice])
+  }, [invoice]);
 
   return (
     <DateAndPaymentContainer>

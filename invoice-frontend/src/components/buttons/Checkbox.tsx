@@ -1,13 +1,12 @@
-import PropTypes from "prop-types";
 import styled, { css } from "styled-components";
 
 const checkedStyles = css`
-  background-color: ${({theme}) => theme.newButton};
+  background-color: ${({ theme }) => theme.newButton};
   border-color: transparent;
 `;
 
 const uncheckedStyles = css`
-  background-color: ${({theme}) => theme.editButtonHover};
+  background-color: ${({ theme }) => theme.editButtonHover};
 `;
 
 interface CheckedProps {
@@ -59,7 +58,7 @@ export interface CheckboxProps extends CheckedProps {
   className?: string;
 }
 
-function Checkbox({ className, checked = false, ...props }: CheckboxProps) {
+function Checkbox({ checked = false, ...props }: CheckboxProps) {
   return (
     <CheckboxContainer className="styledCheckbox" checked={checked}>
       <HiddenCheckbox checked={checked} {...props} readOnly />
@@ -72,8 +71,3 @@ function Checkbox({ className, checked = false, ...props }: CheckboxProps) {
   );
 }
 export default Checkbox;
-
-Checkbox.propTypes = {
-  className: PropTypes.string,
-  checked: PropTypes.bool.isRequired,
-};
