@@ -14,7 +14,7 @@ import {
   PrismaClientKnownRequestError,
 } from "@prisma/client/runtime/library";
 
-vi.mock("../libs/prisma");
+vi.mock("../../libs/prisma");
 
 const mockInvoiceParams: DomainInvoice = {
   id: "D64FUO",

@@ -8,7 +8,7 @@ import * as InvoiceUtils from "../../../src/utils";
 import { ValidationException } from "../../../src/config/exception.config";
 
 // Mock utility functions
-vi.mock("../../src/utils", () => ({
+vi.mock("../../../src/utils", () => ({
   validateInvoiceData: vi.fn(),
   validateInvoiceList: vi.fn(),
 }));

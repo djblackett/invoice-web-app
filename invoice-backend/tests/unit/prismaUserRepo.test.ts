@@ -12,7 +12,7 @@ import {
   User,
 } from "../../src/constants/types";
 
-vi.mock("../libs/prisma");
+vi.mock("../../libs/prisma");
 
 const mockUserArgs: UserEntity = {
   name: "John Doe",
