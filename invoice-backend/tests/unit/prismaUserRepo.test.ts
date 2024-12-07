@@ -1,16 +1,16 @@
 import "reflect-metadata";
 import { describe, expect, test, vi } from "vitest";
-import prisma from "../libs/__mocks__/prisma";
+import prisma from "../../libs/__mocks__/prisma";
 import { DatabaseConnectionMock } from "./database.connection.mock";
-import { IDatabaseConnection } from "../src/database/database.connection";
+import { IDatabaseConnection } from "../../src/database/database.connection";
 import { PrismaClientKnownRequestError } from "@prisma/client/runtime/library";
-import { PrismaUserRepo } from "../src/repositories/implementations/prismaUserRepo";
+import { PrismaUserRepo } from "../../src/repositories/implementations/prismaUserRepo";
 import {
   UserEntity,
   LoggedInUser,
   ReturnedUser,
   User,
-} from "../src/constants/types";
+} from "../../src/constants/types";
 
 vi.mock("../libs/prisma");
 

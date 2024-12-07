@@ -1,14 +1,14 @@
 import "reflect-metadata";
 import { describe, expect, test, vi } from "vitest";
-import prisma from "../libs/__mocks__/prisma";
+import prisma from "../../libs/__mocks__/prisma";
 import {
   prismaErrorHandler,
   PrismaInvoiceRepository,
-} from "../src/repositories/implementations/prismaInvoiceRepository";
+} from "../../src/repositories/implementations/prismaInvoiceRepository";
 import { DatabaseConnectionMock } from "./database.connection.mock";
-import { IDatabaseConnection } from "../src/database/database.connection";
+import { IDatabaseConnection } from "../../src/database/database.connection";
 import { Invoice } from "@prisma/client";
-import { Invoice as DomainInvoice } from "../src/constants/types";
+import { Invoice as DomainInvoice } from "../../src/constants/types";
 import {
   Decimal,
   PrismaClientKnownRequestError,
@@ -285,13 +285,13 @@ describe("Prisma Query: updateInvoice", () => {
     // Eslint is interfering with the tests
     // None of the tests rely on 'this' so this rule can be safely ignored
     expect(updatedInvoice.clientName).toStrictEqual("Dr. Evil");
-         
+
     expect(prisma.$transaction).toHaveBeenCalled();
-         
+
     expect(prisma.item.deleteMany).toHaveBeenCalledWith({
       where: { invoiceId: "D64FUO" },
     });
-         
+
     expect(prisma.invoice.update).toHaveBeenCalled();
   });
 
@@ -340,11 +340,11 @@ describe("Prisma Query: updateInvoice", () => {
     const updatedInvoice = await mockRepo.update("D64FUO", invoiceUpdates);
 
     expect(updatedInvoice.clientName).toStrictEqual("Updated Client");
-         
+
     expect(prisma.$transaction).toHaveBeenCalled();
-         
+
     expect(prisma.invoice.update).toHaveBeenCalled();
-         
+
     expect(prisma.item.deleteMany).not.toHaveBeenCalled();
   });
 
@@ -358,14 +358,14 @@ describe("Prisma Query: updateInvoice", () => {
     await expect(
       mockRepo.update("D64FUO", invoiceUpdates),
     ).rejects.toThrowError("Database error: Transaction failed");
-         
+
     expect(prisma.$transaction).toHaveBeenCalled();
   });
 });
 
 describe("Prisma Query: deleteInvoice", () => {
   test("should return true when invoice is successfully deleted", async () => {
-    // Stumped by this TS error - it's like it's using stale cached type defs
+    // @ts-expect-error Stumped by this TS error - it's like it's using stale cached type defs
     prisma.invoice.delete.mockResolvedValue(true);
 
     const deletedInvoice = await mockRepo.delete("D64FUO");
@@ -402,7 +402,7 @@ describe("Prisma Query: deleteInvoice", () => {
     const deletedInvoice = await mockRepo.delete("D64FUO");
 
     expect(deletedInvoice).toStrictEqual(true);
-         
+
     expect(prisma.invoice.delete).toHaveBeenCalledWith({
       where: { id: "D64FUO" },
     });
@@ -469,7 +469,7 @@ describe("Prisma Query: createInvoice", () => {
     const createdInvoice = await mockRepo.create(invoiceWithoutItems);
 
     expect(createdInvoice).toStrictEqual(expectedResponse);
-         
+
     expect(prisma.invoice.create).toHaveBeenCalled();
   });
 
@@ -511,7 +511,7 @@ describe("Prisma Query: createInvoice", () => {
     const createdInvoice = await mockRepo.create(incompleteInvoiceParams);
 
     expect(createdInvoice).toStrictEqual(expectedResponse);
-         
+
     expect(prisma.invoice.create).toHaveBeenCalled();
   });
 });

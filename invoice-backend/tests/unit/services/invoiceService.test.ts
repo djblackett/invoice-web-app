@@ -1,11 +1,11 @@
 import "reflect-metadata";
-import { InvoiceService } from "../../src/services/invoice.service";
+import { InvoiceService } from "../../../src/services/invoice.service";
 import { describe, expect, beforeEach } from "vitest";
 import { mockDeep, mockReset } from "vitest-mock-extended";
-import { IInvoiceRepo } from "../../src/repositories/InvoiceRepo";
-import { Invoice } from "../../src/constants/types";
-import * as InvoiceUtils from "../../src/utils";
-import { ValidationException } from "../../src/config/exception.config";
+import { IInvoiceRepo } from "../../../src/repositories/InvoiceRepo";
+import { Invoice } from "../../../src/constants/types";
+import * as InvoiceUtils from "../../../src/utils";
+import { ValidationException } from "../../../src/config/exception.config";
 
 // Mock utility functions
 vi.mock("../../src/utils", () => ({

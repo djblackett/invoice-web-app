@@ -1,6 +1,6 @@
 import { MockProxy, mock } from "vitest-mock-extended";
-import { getInvoiceResolvers } from "../../src/resolvers/invoiceResolvers";
-import { InvoiceService } from "../../src/services/invoice.service";
+import { getInvoiceResolvers } from "../../../src/resolvers/invoiceResolvers";
+import { InvoiceService } from "../../../src/services/invoice.service";
 import { PubSub } from "graphql-subscriptions";
 import { GraphQLError } from "graphql";
 import {
@@ -8,12 +8,12 @@ import {
   InvoiceCreateArgs,
   GetInvoiceByIdArgs,
   MarkAsPaidArgs,
-} from "../../src/constants/types";
+} from "../../../src/constants/types";
 import {
   InternalServerException,
   NotFoundException,
   ValidationException,
-} from "../../src/config/exception.config";
+} from "../../../src/config/exception.config";
 
 let invoiceServiceMock: MockProxy<InvoiceService>;
 let pubsubMock: MockProxy<PubSub>;
