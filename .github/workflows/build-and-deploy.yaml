@@ -118,6 +118,11 @@ jobs:
           cd invoice-backend
           npm run lint
 
+      - name: Initialize Prisma
+        run: |
+          cd invoice-backend
+          npm run prisma-generate
+
       - name: Run Tests
         run: |
           cd invoice-backend
