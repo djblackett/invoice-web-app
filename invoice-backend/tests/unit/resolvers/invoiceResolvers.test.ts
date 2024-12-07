@@ -1,3 +1,5 @@
+/* eslint-disable @typescript-eslint/ban-ts-comment */
+// @ts-nocheck
 import { MockProxy, mock } from "vitest-mock-extended";
 import { getInvoiceResolvers } from "../../../src/resolvers/invoiceResolvers";
 import { InvoiceService } from "../../../src/services/invoice.service";

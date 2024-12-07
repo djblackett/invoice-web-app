@@ -90,7 +90,7 @@ describe("UserService - getUsers", () => {
     // Act
     try {
       await userService.getUsers();
-    } catch (error) {
+    } catch (error: any) {
       expect(error).toBeInstanceOf(InternalServerException);
       expect(error.message).toBe("Internal server error");
       expect(userRepoMock.findAllUsers).toHaveBeenCalled();

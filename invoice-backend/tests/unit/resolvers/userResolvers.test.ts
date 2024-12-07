@@ -1,13 +1,17 @@
 import { MockProxy, mock } from "vitest-mock-extended";
-import { getUserResolvers } from "../../src/resolvers/userResolvers";
-import { UserService } from "../../src/services/user.service";
+import { getUserResolvers } from "../../../src/resolvers/userResolvers";
+import { UserService } from "../../../src/services/user.service";
 import { GraphQLError } from "graphql";
 import {
   InternalServerException,
   NotFoundException,
   UnauthorizedException,
-} from "../../src/config/exception.config";
-import { CreateUserDTO, LoginArgs, UserDTO } from "../../src/constants/types";
+} from "../../../src/config/exception.config";
+import {
+  CreateUserDTO,
+  LoginArgs,
+  UserDTO,
+} from "../../../src/constants/types";
 
 let userServiceMock: MockProxy<UserService>;
 let userResolvers: {
@@ -48,7 +52,7 @@ describe("Query.allUsers", () => {
     );
     try {
       await userResolvers.Query.allUsers();
-    } catch (error) {
+    } catch (error: any) {
       expect(error).toBeInstanceOf(GraphQLError);
       expect(error.message).toBe("Internal server error");
       expect(error.extensions.code).toBe("INTERNAL_SERVER_ERROR");
