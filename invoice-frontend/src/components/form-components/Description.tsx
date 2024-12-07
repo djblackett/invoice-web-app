@@ -9,26 +9,26 @@ interface DescriptionProps {
 }
 
 function Description({ invoice }: DescriptionProps) {
-    const { formState: { errors }, register } = useFormContext();
-    const { isDraft } = useNewInvoiceContext();
-    return <>
-        <LongFormEntry className="project-description">
-            <Label
-                htmlFor="projectDescription"
-                style={{ color: errors.projectDescription ? "#EC5757" : "" }}
-            >
+  const { formState: { errors }, register } = useFormContext();
+  const { isDraft } = useNewInvoiceContext();
+  return <>
+    <LongFormEntry className="project-description">
+      <Label
+        htmlFor="projectDescription"
+        style={{ color: errors.projectDescription ? "#EC5757" : "" }}
+      >
                 Project Description
-            </Label>
-            <Input
-                type="text"
-                defaultValue={invoice?.description}
-                {...register("projectDescription", { required: !isDraft })}
-                style={{
-                    border: errors.projectDescription ? "1px solid #EC5757" : "",
-                }}
-            />
-        </LongFormEntry>
-    </>
+      </Label>
+      <Input
+        type="text"
+        defaultValue={invoice?.description}
+        {...register("projectDescription", { required: !isDraft })}
+        style={{
+          border: errors.projectDescription ? "1px solid #EC5757" : "",
+        }}
+      />
+    </LongFormEntry>
+  </>;
 }
 
 export default Description;

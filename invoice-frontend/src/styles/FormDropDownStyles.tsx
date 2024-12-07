@@ -1,7 +1,7 @@
 import styled from "styled-components";
 
 export const Main = styled.div.attrs({
-    tabIndex: 0,
+  tabIndex: 0,
 })`
   display: inline;
   z-index: 10;

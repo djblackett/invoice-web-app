@@ -28,7 +28,7 @@ function EditForm({
 }: EditFormProps) {
 
   const { editPageWidth, padding } = useResponsive();
-  const { isNewInvoiceOpen } = useNewInvoiceContext()
+  const { isNewInvoiceOpen } = useNewInvoiceContext();
   const { methods } = useNewInvoiceForm();
 
   if (!invoice) {

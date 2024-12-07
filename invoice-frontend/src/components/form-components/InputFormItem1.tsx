@@ -138,12 +138,12 @@ export default function InputFormItem1({ isDraft, invoice, isEditOpen }: InputFo
           required: !isDraft,
           max: 100000
         })}
-          placeholder="0.00" type="text"
-          defaultValue={invoice ? invoice?.items?.[index]?.price : 0}
-          style={{
-            border:
+        placeholder="0.00" type="text"
+        defaultValue={invoice ? invoice?.items?.[index]?.price : 0}
+        style={{
+          border:
               Array.isArray(errors.items) && errors?.items?.[index]?.price ? "1px solid #EC5757" : ""
-          }} />
+        }} />
 
         <Total>
           {(Number(watchItems?.[index]?.quantity) * Number(watchItems?.[index]?.price)).toFixed(2)}

@@ -142,7 +142,7 @@ function Header({ themeToggler, theme }: HeaderProps) {
 
         <AvatarBox>
           <img
-            src={`/assets/image-avatar.jpg`}
+            src={"/assets/image-avatar.jpg"}
             alt="user avatar"
             style={{ borderRadius: "50%", height: "32px", width: "32px" }}
           />
