@@ -1,5 +1,6 @@
 // npx playwright codegen http://localhost:5173/
 import { test, expect, Page } from "@playwright/test";
+import { BASE_URL } from "../config";
 
 const maxAttempts = 12;
 let attempts = 0;
@@ -13,7 +14,7 @@ async function isSeptemberVisible(page: Page) {
 }
 
 async function cleanUpDB(page: Page) {
-  await page.goto("http://localhost:5173/");
+  await page.goto(BASE_URL);
   await page.locator("button").filter({ hasText: "Clear Invoices" }).click();
   // await page.locator("button").filter({ hasText: "Delete" }).nth(1).click();
 }
@@ -25,14 +26,14 @@ test.afterEach(async ({ page }) => {
 test("test", async ({ page }) => {
   const name = "Test1" + Math.floor(Math.random() * 1000);
   try {
-    await page.goto("http://localhost:5173/");
+    await page.goto(BASE_URL);
     await page
       .locator("div")
       .filter({ hasText: /^New Invoice$/ })
       .click();
-    await page.locator("input[name=\"clientName\"]").click();
+    await page.locator('input[name="clientName"]').click();
 
-    await page.locator("input[name=\"clientName\"]").fill(name);
+    await page.locator('input[name="clientName"]').fill(name);
     await page
       .locator("div")
       .filter({ hasText: /^Invoice Date$/ })
@@ -89,35 +90,35 @@ test("test", async ({ page }) => {
 });
 
 test("invoice is successfully created", async ({ page }) => {
-  await page.goto("http://localhost:5173/");
+  await page.goto(BASE_URL);
   await page
     .locator("p")
     .filter({ hasText: /^New Invoice$/ })
     .click();
-  await page.locator("input[name=\"streetAddress\"]").click();
-  await page.locator("input[name=\"streetAddress\"]").fill("1234 street");
-  await page.locator("input[name=\"city\"]").click();
-  await page.locator("input[name=\"city\"]").fill("Toronto");
-  await page.locator("input[name=\"postalCode\"]").click();
-  await page.locator("input[name=\"postalCode\"]").fill("b1e7h9");
-  await page.locator("input[name=\"country\"]").click();
-  await page.locator("input[name=\"country\"]").fill("Canada");
-  await page.locator("input[name=\"clientName\"]").click();
-  await page.locator("input[name=\"clientName\"]").fill("Ralph D.");
-  await page.locator("input[name=\"clientEmail\"]").click();
-  await page.locator("input[name=\"clientEmail\"]").fill("ralph_d@gmail.com");
-  await page.locator("input[name=\"clientStreetAddress\"]").click();
+  await page.locator('input[name="streetAddress"]').click();
+  await page.locator('input[name="streetAddress"]').fill("1234 street");
+  await page.locator('input[name="city"]').click();
+  await page.locator('input[name="city"]').fill("Toronto");
+  await page.locator('input[name="postalCode"]').click();
+  await page.locator('input[name="postalCode"]').fill("b1e7h9");
+  await page.locator('input[name="country"]').click();
+  await page.locator('input[name="country"]').fill("Canada");
+  await page.locator('input[name="clientName"]').click();
+  await page.locator('input[name="clientName"]').fill("Ralph D.");
+  await page.locator('input[name="clientEmail"]').click();
+  await page.locator('input[name="clientEmail"]').fill("ralph_d@gmail.com");
+  await page.locator('input[name="clientStreetAddress"]').click();
   await page
-    .locator("input[name=\"clientStreetAddress\"]")
+    .locator('input[name="clientStreetAddress"]')
     .fill("1543 main street");
-  await page.locator("input[name=\"clientCity\"]").click();
-  await page.locator("input[name=\"clientCity\"]").fill("Ottawa");
-  await page.locator("input[name=\"clientPostalCode\"]").click();
-  await page.locator("input[name=\"clientPostalCode\"]").press("Shift+CapsLock");
-  await page.locator("input[name=\"clientPostalCode\"]").press("CapsLock");
-  await page.locator("input[name=\"clientPostalCode\"]").fill("s7g3f2");
-  await page.locator("input[name=\"clientCountry\"]").click();
-  await page.locator("input[name=\"clientCountry\"]").fill("Canada");
+  await page.locator('input[name="clientCity"]').click();
+  await page.locator('input[name="clientCity"]').fill("Ottawa");
+  await page.locator('input[name="clientPostalCode"]').click();
+  await page.locator('input[name="clientPostalCode"]').press("Shift+CapsLock");
+  await page.locator('input[name="clientPostalCode"]').press("CapsLock");
+  await page.locator('input[name="clientPostalCode"]').fill("s7g3f2");
+  await page.locator('input[name="clientCountry"]').click();
+  await page.locator('input[name="clientCountry"]').fill("Canada");
   await page
     .locator("div")
     .filter({ hasText: /^Invoice Date$/ })
@@ -130,9 +131,9 @@ test("invoice is successfully created", async ({ page }) => {
     .filter({ hasText: /^Net 1 Day$/ })
     .click();
   await page.getByRole("button", { name: "Net 30 Days" }).click();
-  await page.locator("input[name=\"projectDescription\"]").click();
+  await page.locator('input[name="projectDescription"]').click();
   await page
-    .locator("input[name=\"projectDescription\"]")
+    .locator('input[name="projectDescription"]')
     .fill("Construction supplies");
   await page.getByRole("button", { name: "+ Add New Item" }).click();
   await page.getByPlaceholder("Item name").click();
@@ -142,12 +143,12 @@ test("invoice is successfully created", async ({ page }) => {
   await page.getByPlaceholder("0.00").click();
   await page.getByPlaceholder("0.00").fill("19.99");
   await page.getByRole("button", { name: "+ Add New Item" }).click();
-  await page.locator("input[name=\"items\\[1\\]\\.name\"]").click();
-  await page.locator("input[name=\"items\\[1\\]\\.name\"]").fill("nails");
-  await page.locator("input[name=\"items\\[1\\]\\.quantity\"]").click();
-  await page.locator("input[name=\"items\\[1\\]\\.quantity\"]").fill("50");
-  await page.locator("input[name=\"items\\[1\\]\\.price\"]").click();
-  await page.locator("input[name=\"items\\[1\\]\\.price\"]").fill("0.19");
+  await page.locator('input[name="items\\[1\\]\\.name"]').click();
+  await page.locator('input[name="items\\[1\\]\\.name"]').fill("nails");
+  await page.locator('input[name="items\\[1\\]\\.quantity"]').click();
+  await page.locator('input[name="items\\[1\\]\\.quantity"]').fill("50");
+  await page.locator('input[name="items\\[1\\]\\.price"]').click();
+  await page.locator('input[name="items\\[1\\]\\.price"]').fill("0.19");
 
   await page.getByRole("button", { name: "Save", exact: true }).click();
   await page.getByRole("link", { name: "Ralph D. Due 27 Dec" }).click();
