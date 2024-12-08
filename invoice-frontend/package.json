@@ -8,7 +8,7 @@
 		"build": "vite build",
 		"preview": "vite preview",
 		"test:unit": "tsc -p tsconfig.dev.json && vitest tests/unit",
-		"test:e2e": "tsc -p tsconfig.dev.json && playwright test tests/e2e --headless",
+		"test:e2e": "tsc -p tsconfig.dev.json && playwright test tests/e2e",
 		"eslint": "eslint .",
 		"lint": "eslint .",
 		"lint:fix": "eslint . --fix .",
