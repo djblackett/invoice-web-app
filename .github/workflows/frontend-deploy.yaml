@@ -142,8 +142,7 @@ jobs:
           name: playwright-report
           path: playwright-report/
           retention-days: 30
-        env:
-          HEADLESS: true
+        
 
   build:
     runs-on: ubuntu-latest
