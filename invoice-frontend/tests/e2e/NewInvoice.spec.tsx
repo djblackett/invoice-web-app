@@ -4,6 +4,7 @@ import { test, expect } from "@playwright/test";
 import { BASE_URL } from "../config";
 // import NewInvoice from "../src/pages/NewInvoice";
 
+
 test.skip("New invoice page is rendered", async ({ page }) => {
     await page.goto(BASE_URL);
     await page.getByTestId("newInvoiceButton").click();
