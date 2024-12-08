@@ -13,7 +13,6 @@ test("renders 'Invoices' text", async ({ page }) => {
 
 test("filter drop down opens", async ({ page }) => {
   await page.goto(BASE_URL);
-
   await page.getByTestId("filterButton").click();
 
   await expect(page.getByTestId("filterDropDown")).toContainText("Draft");
