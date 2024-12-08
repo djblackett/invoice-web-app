@@ -13,10 +13,101 @@ on:
       - "invoice-frontend/**" # Triggers on PRs that modify the frontend directory
 
 jobs:
+  test:
+    name: Backend CI
+    env:
+      DATABASE_URL: postgres://postgres:example@localhost:5432/db-test
+    runs-on: ubuntu-latest
+    services:
+      postgres:
+        image: postgres:16
+        env:
+          POSTGRES_USER: postgres
+          PG_USER: postgres
+          POSTGRES_PASSWORD: example
+          POSTGRES_DB: db-test
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd="pg_isready -U postgres"
+          --health-interval=10s
+          --health-timeout=5s
+          --health-retries=5
+
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4.2.2
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4.1.0
+        with:
+          node-version: "22.12.0"
+
+      - name: Restore Cache
+        uses: actions/cache@v4.2.0
+        with:
+          path: backend/node_modules
+          key: ${{ runner.os }}-node-${{ hashFiles('invoice-backend/package-lock.json') }}
+          restore-keys: |
+            ${{ runner.os }}-node-
+
+      - name: Install Dependencies
+        run: |
+          cd invoice-backend
+          npm install
+
+      - name: Wait for PostgreSQL to be Ready
+        run: |
+          for i in {1..10}; do
+            if pg_isready -h localhost -p 5432 -U postgres; then
+              echo "PostgreSQL is ready!"
+              break
+            fi
+            echo "Waiting for PostgreSQL..."
+            sleep 5
+          done
+
+      - name: Test Database Connection
+        env:
+          PGPASSWORD: example
+        run: |
+          psql -h localhost -U postgres -d db-test -c '\l'
+
+      - name: Lint
+        run: |
+          cd invoice-backend
+          npm run lint
+
+      - name: Initialize Prisma
+        run: |
+          cd invoice-backend
+          npm run prisma-generate && npm run prisma-push
+
+      - name: Run Tests
+        run: |
+          cd invoice-backend
+          npm run test:unit && npm run test:integration
+
+      - name: Install Dependencies
+        run: |
+          cd invoice-frontend
+          npm install
+
+      - name: Lint
+        run: |
+          cd invoice-frontend
+          npm run lint
+
+      - name: Run Tests
+        run: |
+          cd invoice-frontend
+          npm run test:unit && npm run test:e2e
+
   build:
     runs-on: ubuntu-latest
+    needs: test
     env:
-      REACT_APP_BACKEND_URL: http://proxy:8000 # This must be updated once I know the URL
+      REACT_APP_BACKEND_URL: http://localhost:8000 # This must be updated once I know the URL
       FRONTEND_DIR: invoice-frontend
     strategy:
       matrix:
