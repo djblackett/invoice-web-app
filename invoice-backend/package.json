@@ -4,8 +4,8 @@
   "description": "",
   "main": "src/index.ts",
   "scripts": {
-    "test:unit": "DATABASE_URL=postgres://postgres:example@db-test:5432/db-test vitest ./tests/unit",
-    "test:integration": "DATABASE_URL=postgres://postgres:example@db-test:5432/db-test vitest ./tests/integration",
+    "test:unit": "DATABASE_URL=postgres://postgres:example@localhost:5432/db-test vitest ./tests/unit",
+    "test:integration": "DATABASE_URL=postgres://postgres:example@localhost:5432/db-test vitest ./tests/integration",
     "coverage": "vitest run --coverage",
     "build": "tsc -p tsconfig.build.json",
     "build:slim": "npm run prisma-generate && ncc build ./src/index.ts -o dist -t",
