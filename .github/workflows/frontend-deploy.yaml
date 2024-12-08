@@ -139,6 +139,8 @@ jobs:
         # Optionally, install wait-on temporarily
         # install wait-on
         # npm install wait-on --no-save
+        env:
+          HEADLESS: true
 
   build:
     runs-on: ubuntu-latest
