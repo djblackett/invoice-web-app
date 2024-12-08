@@ -47,6 +47,10 @@ jobs:
           PG_USER: postgres
           POSTGRES_PASSWORD: example
           POSTGRES_DB: db-test
+          REQUEST_ORIGIN: http://localhost:5173
+          SECRET: theSecretStuff # not critical
+          REACT_APP_BACKEND_URL: http://localhost/graphql
+          REACT_APP_ENV: test
         ports:
           - 5432:5432
         options: >-
