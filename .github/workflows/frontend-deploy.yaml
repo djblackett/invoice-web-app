@@ -14,7 +14,7 @@ on:
 
 jobs:
   test:
-    name: Backend CI
+    name: Comprehensive test
     env:
       DATABASE_URL: postgres://postgres:example@localhost:5432/db-test
     runs-on: ubuntu-latest
@@ -101,6 +101,7 @@ jobs:
       - name: Run Tests
         run: |
           cd invoice-frontend
+          npx playwright install
           npm run test:unit && npm run test:e2e
 
   build:
