@@ -89,8 +89,23 @@ jobs:
     name: Backend CI
     needs: setup
     env:
-      DATABASE_URL: postgres://postgres:example@db-test:5432/db-test
+      DATABASE_URL: postgres://localhost:example@db-test:5432/db-test
     runs-on: ubuntu-latest
+    services:
+      postgres:
+        image: postgres:16
+        env:
+          POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: example
+          POSTGRES_DB: db-test
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd="pg_isready -U postgres"
+          --health-interval=10s
+          --health-timeout=5s
+          --health-retries=5
+
     steps:
       - name: Checkout Code
         uses: actions/checkout@v4.2.2
@@ -126,7 +141,7 @@ jobs:
       - name: Run Tests
         run: |
           cd invoice-backend
-          npm run test:unit
+          npm run test:unit && npm run test:integration
 
       - name: Build Docker Image
         run: |
