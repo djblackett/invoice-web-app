@@ -128,18 +128,21 @@ jobs:
           cd invoice-backend
           npm install
 
+      - name: Test Database Connection
+        env:
+          PGPASSWORD: example
+        run: |
+          psql -h localhost -U postgres -d db-test -c '\l'
+
       - name: Lint
         run: |
           cd invoice-backend
           npm run lint
 
-      - name: Initialize Database Schema
-        run: psql -h localhost -U postgres -d db-test
-
       - name: Initialize Prisma
         run: |
           cd invoice-backend
-          npm run prisma-generate && npx prisma@5.22.0 db push
+          npm run prisma-generate && npm run prisma-push
 
       - name: Run Tests
         run: |

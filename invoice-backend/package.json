@@ -18,7 +18,8 @@
     "start": "NODE_ENV=production node dist/src/index.js",
     "generate": "graphql-codegen",
     "codegen": "graphql-codegen --config codegen.ts",
-    "prisma-generate": "npx prisma@5.22.0 generate"
+    "prisma-generate": "npx prisma@5.22.0 generate",
+    "prisma-push": "npx prisma@5.22.0 db push"
   },
   "author": "David Andrea",
   "license": "ISC",
