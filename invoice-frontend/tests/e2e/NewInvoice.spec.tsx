@@ -6,7 +6,6 @@ import { BASE_URL } from "../config";
 test.skip("New invoice page is rendered", async ({ page }) => {
     await page.goto(BASE_URL);
     await page.getByTestId("newInvoiceButton").click();
-
     const newInvoicePage = page.getByTestId("newInvoicePage");
 
     await expect(newInvoicePage).toContainText("New Invoice");
