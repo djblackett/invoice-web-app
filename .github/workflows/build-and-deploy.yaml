@@ -89,7 +89,7 @@ jobs:
     name: Backend CI
     needs: setup
     env:
-      DATABASE_URL: postgres://localhost:example@localhost:5432/db-test
+      DATABASE_URL: postgres://localhost:example@:5432/db-test
     runs-on: ubuntu-latest
     services:
       postgres:
