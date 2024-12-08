@@ -3,7 +3,6 @@ import { BASE_URL } from "../config";
 
 test("has title", async ({ page }) => {
   await page.goto(BASE_URL);
-
   await expect(page).toHaveTitle(/Frontend Mentor | Invoice app/);
 });
 
