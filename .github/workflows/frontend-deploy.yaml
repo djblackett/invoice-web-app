@@ -13,6 +13,26 @@ on:
       - "invoice-frontend/**" # Triggers on PRs that modify the frontend directory
 
 jobs:
+  setup:
+    name: Setup and Cache
+    runs-on: ubuntu-latest
+    outputs:
+      cache-hit: ${{ steps.cache-deps.outputs.cache-hit }}
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4.2.2
+
+      - name: Cache Node Modules
+        id: cache-deps
+        uses: actions/cache@v4.2.0
+        with:
+          path: |
+            invoice-frontend/node_modules
+            invoice-backend/node_modules
+          key: ${{ runner.os }}-node-${{ hashFiles('**/package-lock.json') }}
+          restore-keys: |
+            ${{ runner.os }}-node-
+
   test:
     name: Comprehensive test
     env:
@@ -41,12 +61,12 @@ jobs:
       - name: Set up Node.js
         uses: actions/setup-node@v4.1.0
         with:
-          node-version: "22.12.0"
+          node-version: "20.x"
 
       - name: Restore Cache
         uses: actions/cache@v4.2.0
         with:
-          path: backend/node_modules
+          path: invoice-backend/node_modules
           key: ${{ runner.os }}-node-${{ hashFiles('invoice-backend/package-lock.json') }}
           restore-keys: |
             ${{ runner.os }}-node-
@@ -54,7 +74,7 @@ jobs:
       - name: Install Dependencies
         run: |
           cd invoice-backend
-          npm install
+          npm ci
 
       - name: Wait for PostgreSQL to be Ready
         run: |
@@ -88,10 +108,18 @@ jobs:
           cd invoice-backend
           npm run test:unit && npm run test:integration
 
+      - name: Restore Cache
+        uses: actions/cache@v4.2.0
+        with:
+          path: invoice-frontend/node_modules
+          key: ${{ runner.os }}-node-${{ hashFiles('invoice-frontend/package-lock.json') }}
+          restore-keys: |
+            ${{ runner.os }}-node-
+
       - name: Install Dependencies
         run: |
           cd invoice-frontend
-          npm install
+          npm ci
 
       - name: Lint
         run: |
@@ -116,10 +144,10 @@ jobs:
 
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4.2.2
 
       - name: Set up Node.js
-        uses: actions/setup-node@v3
+        uses: actions/setup-node@v4.1.0
         with:
           node-version: "20.x"
           cache: "npm"
@@ -133,7 +161,7 @@ jobs:
         run: npm run build
 
       - name: Deploy to GitHub Pages
-        uses: peaceiris/actions-gh-pages@v3
+        uses: peaceiris/actions-gh-pages@v4.0.0
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
           publish_dir: ${{ env.FRONTEND_DIR }}/dist # Adjust this if your build output directory differs
