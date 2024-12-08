@@ -1,4 +1,4 @@
- 
+
 import { useLayoutEffect, useState } from "react";
 import "../styles/App.css";
 import styled, { ThemeProvider } from "styled-components";
@@ -104,5 +104,6 @@ function App() {
     </ThemeProvider>
   );
 }
+
 
 export default App;
