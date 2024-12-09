@@ -1,7 +1,4 @@
-// import { useEffect } from "react";
-// import { useDispatch } from "react-redux";
 import { MemoizedAllInvoicesToolbar } from "../components/menus-toolbars/AllInvoicesToolbar";
-// import { addIdToExistingInvoices } from "../features/invoices/invoicesSlice";
 import NewInvoice from "./NewInvoice";
 import useWindowWidth from "../hooks/useWindowWidth";
 import AllInvoicesView from "../components/AllInvoicesView";

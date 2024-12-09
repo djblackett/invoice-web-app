@@ -4,7 +4,6 @@ import filterReducer from "../features/invoices/filterSlice";
 
 const store = configureStore({
   reducer: {
-    // invoices: invoicesReducer,
     filter: filterReducer,
   },
 });
