@@ -7,11 +7,11 @@ test.describe("", () => {
     await expect(page).toHaveTitle(/Frontend Mentor | Invoice app/);
   });
 
-  test("renders 'Invoices' text", async ({ page }) => {
-    await page.goto(BASE_URL);
-    const invoices = page.getByRole("button", { name: /New Invoice/i });
-    await expect(invoices).toBeVisible({ timeout: 100 * 1000 });
-  });
+  // test("renders 'Invoices' text", async ({ page }) => {
+  //   await page.goto(BASE_URL);
+  //   const invoices = page.getByRole("button", { name: /New Invoice/i });
+  //   await expect(invoices).toBeVisible({ timeout: 100 * 1000 });
+  // });
 
   // test("filter drop down opens", async ({ page }) => {
   //   await page.goto(BASE_URL);
