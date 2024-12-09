@@ -4,8 +4,8 @@ on:
   push:
     branches:
       - main
-    paths:
-      - "invoice-frontend/**" # Triggers on any changes within the frontend directory
+    # paths:
+    #   - "invoice-frontend/**" # Triggers on any changes within the frontend directory
   pull_request:
     branches:
       - main
@@ -152,7 +152,7 @@ jobs:
       - name: Run Playwright e2e tests
         run: |
           cd invoice-frontend
-          npm run test:e2e
+          npx playwright test
       - uses: actions/upload-artifact@v3
         if: always()
         with:
