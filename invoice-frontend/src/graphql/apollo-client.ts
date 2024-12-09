@@ -19,9 +19,12 @@ const authLink = setContext((_, { headers }) => {
   };
 });
 
-const httpLink = createHttpLink({ uri: "http://localhost:8000/api" });
+const httpLink = createHttpLink({ uri: "http://localhost:8000/graphql" });
 
 const wsLink = new GraphQLWsLink(createClient({ url: "ws://localhost:8000" }));
+
+console.log("Apollo Client HTTP Link:", httpLink.options.uri);
+console.log("Apollo Client WS Link:", wsLink.client.url);
 
 const splitLink = split(
   ({ query }) => {
