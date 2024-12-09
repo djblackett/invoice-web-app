@@ -4,7 +4,7 @@ services:
       context: invoice-frontend
       dockerfile: dev.Dockerfile
     environment:
-      - REACT_APP_BACKEND_URL=http://localhost/graphql
+      - REACT_APP_BACKEND_URL=http://localhost:8000/graphql
       - REACT_APP_ENV=test
     ports:
       - "5173:5173"
@@ -61,21 +61,21 @@ services:
       timeout: 5s
       retries: 5
 
-  proxy-test:
-    image: nginx:1.25.2
-    hostname: proxy-test
-    container_name: proxy-test
-    depends_on:
-      backend-test:
-        condition: service_started
-      frontend-test:
-        condition: service_started
-    volumes:
-      - ./nginx.test.conf:/etc/nginx/nginx.conf
-    ports:
-      - "80:80"
-    networks:
-      - my_network_test
+  # proxy-test:
+  #   image: nginx:1.25.2
+  #   hostname: proxy-test
+  #   container_name: proxy-test
+  #   depends_on:
+  #     backend-test:
+  #       condition: service_started
+  #     frontend-test:
+  #       condition: service_started
+  #   volumes:
+  #     - ./nginx.test.conf:/etc/nginx/nginx.conf
+  #   ports:
+  #     - "80:80"
+  #   networks:
+  #     - my_network_test
 
 
 networks:
