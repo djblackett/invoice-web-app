@@ -17,7 +17,7 @@ test("Create and verify an invoice", async ({ page }) => {
   await expect(page).toHaveTitle(/Frontend Mentor | Invoice app/);
 
   // Create a new invoice
-  const newInvoiceButton = page.getByTestId("newInvoiceButton");
+  const newInvoiceButton = page.getByText(/New/i);
   await expect(newInvoiceButton).toBeVisible({ timeout: 60000 });
   await expect(newInvoiceButton).toBeEnabled();
   await newInvoiceButton.click();
