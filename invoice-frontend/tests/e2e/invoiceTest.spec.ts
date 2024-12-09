@@ -2,16 +2,16 @@ import { test, expect } from "@playwright/test";
 import { BASE_URL } from "../config";
 
 test.describe("", () => {
-  test("has title", async ({ page }) => {
-    await page.goto(BASE_URL);
-    await expect(page).toHaveTitle(/Frontend Mentor | Invoice app/);
-  });
-
-  // test("renders 'Invoices' text", async ({ page }) => {
+  // test("has title", async ({ page }) => {
   //   await page.goto(BASE_URL);
-  //   const invoices = page.getByRole("button", { name: /New Invoice/i });
-  //   await expect(invoices).toBeVisible({ timeout: 100 * 1000 });
+  //   await expect(page).toHaveTitle(/Frontend Mentor | Invoice app/);
   // });
+
+  test("renders 'Invoices' text", async ({ page }) => {
+    await page.goto(BASE_URL);
+    const invoices = page.getByRole("button", { name: /New Invoice/i });
+    await expect(invoices).toBeVisible({ timeout: 100 * 1000 });
+  });
 
   // test("filter drop down opens", async ({ page }) => {
   //   await page.goto(BASE_URL);
