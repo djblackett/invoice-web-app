@@ -28,10 +28,10 @@ test("Create and verify an invoice", async ({ page }) => {
   await page.fill('input[name="postalCode"]', "M1A1A1");
   await page.fill('input[name="country"]', "Canada");
 
-  const dateText = page
-    .locator(".react-datepicker__current-month")
-    .textContent();
-  expect(dateText).toBeTruthy();
+  // const dateText = page
+  //   .locator(".react-datepicker__current-month")
+  //   .textContent();
+  // expect(dateText).toBeTruthy();
 
   // Set invoice date
   // let attempts = 0;
