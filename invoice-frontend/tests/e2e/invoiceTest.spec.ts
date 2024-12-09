@@ -9,7 +9,7 @@ test.describe("", () => {
 
   test("renders 'Invoices' text", async ({ page }) => {
     await page.goto(BASE_URL);
-    const invoices = page.getByText("Invoices");
+    const invoices = page.getByRole("button", { name: "New Invoice" });
     await expect(invoices).toBeVisible();
   });
 

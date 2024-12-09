@@ -4,7 +4,7 @@ import { BASE_URL } from "../config";
 test.describe("New Invoice tab should open and contain correct labels", () => {
   test("New invoice page is rendered", async ({ page }) => {
     await page.goto(BASE_URL);
-    await page.getByText(/New/).click();
+    await page.getByRole("button", { name: "New Invoice" }).click();
 
     const newInvoicePage = page.getByTestId("newInvoicePage");
 
