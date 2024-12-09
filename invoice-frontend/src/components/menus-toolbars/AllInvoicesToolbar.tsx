@@ -57,7 +57,7 @@ function AllInvoicesToolbar({
         </InvoicesLeft>
       </TitleBox>
       <ControlBox>
-        <FilterButton onClick={toggling} data-testid="filterButton">
+        <FilterButton onClick={toggling} data-testid="filterButton" aria-label="Filter invoices by status">
           <Filter>
             Filter <span className="wideScreenText">by status</span>
           </Filter>

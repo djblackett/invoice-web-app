@@ -2,7 +2,7 @@ import styled from "styled-components";
 import { WhiteCircle, NewText } from "../../styles/AllInvoicesToolbarStyles";
 
 
-const PrimaryButton = styled.div`
+const PrimaryButton = styled.button`
    border-radius: 24px;
   background-color: #7c5dfa;
   height: 44px;
@@ -42,7 +42,7 @@ interface NewInvoiceButtonProps {
   handleClick: () => void;
 }
 function NewInvoiceButton({ handleClick }: NewInvoiceButtonProps) {
-  return <PrimaryButton onClick={handleClick} data-testid="newInvoiceButton"><WhiteCircle>{plusSign}</WhiteCircle>
+  return <PrimaryButton onClick={handleClick} data-testid="newInvoiceButton" aria-label="Create a new invoice"><WhiteCircle>{plusSign}</WhiteCircle>
     <NewText>
       New <span className="largeScreenText">Invoice</span>
     </NewText></PrimaryButton>;
