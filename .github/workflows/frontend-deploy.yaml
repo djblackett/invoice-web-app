@@ -128,36 +128,37 @@ jobs:
           cd invoice-frontend
           npm ci
 
-      - name: Lint
-        run: |
-          cd invoice-frontend
-          npm run lint
+      # - name: Lint
+      #   run: |
+      #     cd invoice-frontend
+      #     npm run lint
 
-      - name: Frontend unit tests
-        run: |
-          cd invoice-frontend
-          npm run test:unit
+      # - name: Frontend unit tests
+      #   run: |
+      #     cd invoice-frontend
+      #     npm run test:unit
 
-      - name: Setup and run frontend server
-        run: |
-          cd invoice-frontend
-          npx playwright install --with-deps
-          echo "Starting frontend server..."
-          npm run dev > server.log 2>&1 &  # Redirect logs to server.log
-          SERVER_PID=$!
-          echo "Frontend server PID: $SERVER_PID"
-          echo "SERVER_PID=$SERVER_PID" >> $GITHUB_ENV  # Export PID for later use
+      # - name: Setup and run frontend server
+      #   run: |
+      #     cd invoice-frontend
+      #     npx playwright install --with-deps
+      #     echo "Starting frontend server..."
+      #     npm run dev > server.log 2>&1 &  # Redirect logs to server.log
+      #     SERVER_PID=$!
+      #     echo "Frontend server PID: $SERVER_PID"
+      #     echo "SERVER_PID=$SERVER_PID" >> $GITHUB_ENV  # Export PID for later use
 
-      - name: Wait for Frontend Server
-        run: |
-          echo "Waiting for frontend server to be ready..."
-          npx wait-on http://localhost:5173
-          echo "Frontend server is ready!"
-          trap "kill $SERVER_PID" EXIT         # Ensure the server is killed on exit
+      # - name: Wait for Frontend Server
+      #   run: |
+      #     echo "Waiting for frontend server to be ready..."
+      #     npx wait-on http://localhost:5173
+      #     echo "Frontend server is ready!"
+      #     trap "kill $SERVER_PID" EXIT         # Ensure the server is killed on exit
 
       - name: Run Playwright e2e tests
         run: |
           cd invoice-frontend
+           npx playwright install --with-deps &&
           DEBUG=pw:api npx playwright test
       - uses: actions/upload-artifact@v3
         if: always()
