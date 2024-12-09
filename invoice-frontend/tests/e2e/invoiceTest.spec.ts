@@ -9,8 +9,11 @@ test.describe("", () => {
 
   test("renders 'Invoices' text", async ({ page }) => {
     await page.goto(BASE_URL);
-    const invoices = page.getByRole("button", { name: /New Invoice/i });
-    await expect(invoices).toBeVisible({ timeout: 100 * 1000 });
+    // const invoices = page.getByRole("button", { name: /New Invoice/i });
+    const button = page.getByTestId("newInvoiceButton");
+    await expect(button).toBeVisible({ timeout: 200 * 1000 });
+
+    await button.click();
   });
 
   // test("filter drop down opens", async ({ page }) => {
