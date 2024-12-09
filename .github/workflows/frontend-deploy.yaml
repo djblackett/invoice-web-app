@@ -134,7 +134,9 @@ jobs:
           npm run lint
 
       - name: Frontend unit tests
-        run: npm run test:unit
+        run: |
+          cd invoice-frontend
+          npm run test:unit
 
       - name: Setup and run frontend server
         run: |
@@ -148,7 +150,9 @@ jobs:
           # kill $SERVER_PID  # Terminate the server after tests
 
       - name: Run Playwright e2e tests
-        run: npm run test:e2e
+        run: |
+          cd invoice-frontend
+          npm run test:e2e
       - uses: actions/upload-artifact@v3
         if: always()
         with:
