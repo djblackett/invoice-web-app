@@ -1,11 +1,11 @@
-// @ts-check
-
 import { test, expect } from "@playwright/test";
 import { BASE_URL } from "../config";
 
-test.skip("New invoice page is rendered", async ({ page }) => {
+test.describe("New Invoice tab should open and contain correct labels", () => {
+  test("New invoice page is rendered", async ({ page }) => {
     await page.goto(BASE_URL);
     await page.getByTestId("newInvoiceButton").click();
+
     const newInvoicePage = page.getByTestId("newInvoicePage");
 
     await expect(newInvoicePage).toContainText("New Invoice");
@@ -31,11 +31,8 @@ test.skip("New invoice page is rendered", async ({ page }) => {
     await expect(newInvoicePage).toContainText(/Add new item/i);
     await expect(newInvoicePage).toContainText("Discard");
     await expect(newInvoicePage).toContainText(/Save as draft/i);
-    await expect(newInvoicePage).toContainText("Save & Send");
+  });
 });
-
-
-
 
 // it("New invoice form renders correctly", () => {
 

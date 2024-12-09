@@ -42,7 +42,7 @@ interface NewInvoiceButtonProps {
   handleClick: () => void;
 }
 function NewInvoiceButton({ handleClick }: NewInvoiceButtonProps) {
-  return <PrimaryButton onClick={handleClick}><WhiteCircle>{plusSign}</WhiteCircle>
+  return <PrimaryButton onClick={handleClick} data-testid="newInvoiceButton" ><WhiteCircle>{plusSign}</WhiteCircle>
     <NewText>
       New <span className="largeScreenText">Invoice</span>
     </NewText></PrimaryButton>;
