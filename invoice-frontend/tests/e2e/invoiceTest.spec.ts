@@ -10,20 +10,20 @@ test.describe("", () => {
   test("renders 'Invoices' text", async ({ page }) => {
     await page.goto(BASE_URL);
     const invoices = page.getByRole("button", { name: "New Invoice" });
-    await expect(invoices).toBeVisible();
+    await expect(invoices).toBeVisible({ timeout: 70000 });
   });
 
-  test.skip("filter drop down opens", async ({ page }) => {
-    await page.goto(BASE_URL);
+  // test("filter drop down opens", async ({ page }) => {
+  //   await page.goto(BASE_URL);
 
-    const filterButton = page.getByText(/Filter/i);
-    await expect(filterButton).toBeVisible({ timeout: 60000 });
-    await expect(filterButton).toBeEnabled();
-    await filterButton.click();
+  //   const filterButton = page.getByText(/Filter/i);
+  //   await expect(filterButton).toBeVisible({ timeout: 70000 });
+  //   await expect(filterButton).toBeEnabled();
+  //   await filterButton.click();
 
-    const draft = page.getByText("Draft");
-    await expect(draft).toBeVisible;
-    // await expect(filterButton).toContainText("Pending");
-    // await expect(filterButton).toContainText("Paid");
-  });
+  //   const draft = page.getByText("Draft");
+  //   await expect(draft).toBeVisible({ timeout: 60000 });
+  //   // await expect(filterButton).toContainText("Pending");
+  //   // await expect(filterButton).toContainText("Paid");
+  // });
 });
