@@ -164,12 +164,12 @@ jobs:
         if: always()
         with:
           name: playwright-report
-          path: playwright-report/
+          path: invoice-frontend/playwright-report/
           retention-days: 30
-      - name: Stop Frontend Server
-        run: |
-          echo "Stopping frontend server..."
-          kill ${{ env.SERVER_PID }}
+      # - name: Stop Frontend Server
+      #   run: |
+      #     echo "Stopping frontend server..."
+      #     kill ${{ env.SERVER_PID }}
 
   build:
     runs-on: ubuntu-latest
