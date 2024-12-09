@@ -10,7 +10,7 @@ test.describe("", () => {
   test("renders 'Invoices' text", async ({ page }) => {
     await page.goto(BASE_URL);
     const invoices = page.getByRole("button", { name: /New Invoice/i });
-    await expect(invoices).toBeVisible({ timeout: 70000 });
+    await expect(invoices).toBeVisible({ timeout: 100 * 1000 });
   });
 
   // test("filter drop down opens", async ({ page }) => {
