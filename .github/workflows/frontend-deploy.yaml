@@ -153,6 +153,7 @@ jobs:
           echo "Waiting for frontend server to be ready..."
           npx wait-on http://localhost:5173
           echo "Frontend server is ready!"
+          trap "kill $SERVER_PID" EXIT         # Ensure the server is killed on exit
 
       - name: Run Playwright e2e tests
         run: |

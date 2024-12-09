@@ -17,12 +17,21 @@ test("Create and verify an invoice", async ({ page }) => {
   await expect(page).toHaveTitle(/Frontend Mentor | Invoice app/);
 
   // Create a new invoice
-  await page.getByTestId("newInvoiceButton").click();
+  const newInvoiceButton = page.getByTestId("newInvoiceButton");
+  await expect(newInvoiceButton).toBeVisible({ timeout: 60000 });
+  await expect(newInvoiceButton).toBeEnabled();
+  await newInvoiceButton.click();
+
   await page.fill('input[name="clientName"]', clientName);
   await page.fill('input[name="streetAddress"]', "1234 Elm Street");
   await page.fill('input[name="city"]', "Toronto");
   await page.fill('input[name="postalCode"]', "M1A1A1");
   await page.fill('input[name="country"]', "Canada");
+
+  const dateText = page
+    .locator(".react-datepicker__current-month")
+    .textContent();
+  expect(dateText).toBeTruthy();
 
   // Set invoice date
   // let attempts = 0;

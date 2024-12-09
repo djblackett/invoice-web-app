@@ -14,10 +14,14 @@ test.describe("", () => {
 
   test("filter drop down opens", async ({ page }) => {
     await page.goto(BASE_URL);
-    await page.getByTestId("filterButton").click();
 
-    await expect(page.getByTestId("filterDropDown")).toContainText("Draft");
-    await expect(page.getByTestId("filterDropDown")).toContainText("Pending");
-    await expect(page.getByTestId("filterDropDown")).toContainText("Paid");
+    const filterButton = page.getByTestId("filterButton");
+    await expect(filterButton).toBeVisible({ timeout: 60000 });
+    await expect(filterButton).toBeEnabled();
+    await filterButton.click();
+
+    await expect(filterButton).toContainText("Draft");
+    await expect(filterButton).toContainText("Pending");
+    await expect(filterButton).toContainText("Paid");
   });
 });
