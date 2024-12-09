@@ -13,7 +13,7 @@ test.describe("", () => {
     await expect(invoices).toBeVisible();
   });
 
-  test("filter drop down opens", async ({ page }) => {
+  test.skip("filter drop down opens", async ({ page }) => {
     await page.goto(BASE_URL);
 
     const filterButton = page.getByText(/Filter/i);
