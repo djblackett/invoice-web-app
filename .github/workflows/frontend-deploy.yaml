@@ -133,15 +133,22 @@ jobs:
           cd invoice-frontend
           npm run lint
 
-      - name: Run Tests
+      - name: Frontend unit tests
+        run: npm run test:unit
+
+      - name: Setup and run frontend server
         run: |
           cd invoice-frontend
           npx playwright install --with-deps
           npm run dev &  # Run the development server in the background
-          SERVER_PID=$!   # Capture the PID of the background process
-          npx --yes wait-on http://localhost:5173  && # Wait until the server is up
-          npm run test:unit && npm run test:e2e
-          kill $SERVER_PID  # Terminate the server after tests
+
+          # SERVER_PID=$!   # Capture the PID of the background process
+          # npx --yes wait-on http://localhost:5173  && # Wait until the server is up
+          # && npm run test:e2e
+          # kill $SERVER_PID  # Terminate the server after tests
+
+      - name: Run Playwright e2e tests
+        run: npm run test:e2e
       - uses: actions/upload-artifact@v3
         if: always()
         with:
