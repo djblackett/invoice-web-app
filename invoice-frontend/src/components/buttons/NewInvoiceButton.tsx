@@ -2,7 +2,7 @@ import styled from "styled-components";
 import { WhiteCircle, NewText } from "../../styles/AllInvoicesToolbarStyles";
 
 
-const PrimaryButton = styled.button`
+const PrimaryButton = styled.div`
    border-radius: 24px;
   background-color: #7c5dfa;
   height: 44px;
