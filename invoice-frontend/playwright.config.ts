@@ -72,7 +72,9 @@ export default defineConfig({
     command: process.env.CI
       ? "npm run build && npm run preview"
       : "npm run dev",
-    url: process.env.CI ? "http://127.0.0.1:4173" : "http://127.0.0.1:5173",
+    url: process.env.CI
+      ? "http://127.0.0.1:4173/invoice-web-app"
+      : "http://127.0.0.1:5173/invoice-web-app",
     reuseExistingServer: !process.env.CI,
   },
 });
