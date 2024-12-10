@@ -2246,7 +2246,7 @@ text-align: right;
       display: inline;
     }
   }
-`,BR=I.button`
+`,BR=I.div`
   display: flex;
   justify-content: center;
   align-items: center;
