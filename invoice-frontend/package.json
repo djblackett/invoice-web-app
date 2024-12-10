@@ -81,6 +81,5 @@
 		"vitest": "2.1.8",
 		"vitest-mock-extended": "^2.0.2",
 		"wait-on": "^8.0.1"
-	},
-	"homepage": "https://djblackett.github.io/invoice-web-app/"
+	}
 }
