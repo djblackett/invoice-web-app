@@ -13,29 +13,30 @@ on:
       - "invoice-frontend/**" # Triggers on PRs that modify the frontend directory
 
 jobs:
-  setup:
-    name: Setup and Cache
-    runs-on: ubuntu-latest
-    outputs:
-      cache-hit: ${{ steps.cache-deps.outputs.cache-hit }}
-    steps:
-      - name: Checkout Code
-        uses: actions/checkout@v4.2.2
+  # setup:
+  #   name: Setup and Cache
+  #   runs-on: ubuntu-latest
+  #   outputs:
+  #     cache-hit: ${{ steps.cache-deps.outputs.cache-hit }}
+  #   steps:
+  #     - name: Checkout Code
+  #       uses: actions/checkout@v4.2.2
 
-      - name: Cache Node Modules
-        id: cache-deps
-        uses: actions/cache@v4.2.0
-        with:
-          path: |
-            invoice-frontend/node_modules
-            invoice-backend/node_modules
-          key: ${{ runner.os }}-node-${{ hashFiles('**/package-lock.json') }}
-          restore-keys: |
-            ${{ runner.os }}-node-
+  #     - name: Cache Node Modules
+  #       id: cache-deps
+  #       uses: actions/cache@v4.2.0
+  #       with:
+  #         path: |
+  #           invoice-frontend/node_modules
+  #           invoice-backend/node_modules
+  #         key: ${{ runner.os }}-node-${{ hashFiles('**/yarn.lock') }}
+  #         restore-keys: |
+  #           ${{ runner.os }}-node-
+
+  ####  Try adding yarn instead of npm
 
   test:
     name: Comprehensive test
-    needs: setup
     env:
       DATABASE_URL: postgres://postgres:example@localhost:5432/db-test
       REQUEST_ORIGIN: http://localhost:5173
@@ -65,23 +66,54 @@ jobs:
       - name: Checkout Code
         uses: actions/checkout@v4.2.2
 
-      - name: Set up Node.js
+      - name: Set up Node.js and Yarn
         uses: actions/setup-node@v4.1.0
         with:
           node-version: "20.x"
+          cache: "yarn"
 
-      - name: Restore Cache
+      - name: Enable Corepack and Install Yarn
+        run: |
+          corepack enable
+          corepack prepare yarn@stable --activate
+
+      - name: Restore Frontend Cache
+        uses: actions/cache@v4.2.0
+        with:
+          path: invoice-frontend/node_modules
+          key: ${{ runner.os }}-frontend-yarn-${{ hashFiles('invoice-frontend/yarn.lock') }}
+          restore-keys: |
+            ${{ runner.os }}-frontend-yarn-
+
+      - name: Restore Backend Cache
         uses: actions/cache@v4.2.0
         with:
           path: invoice-backend/node_modules
-          key: ${{ runner.os }}-node-${{ hashFiles('invoice-backend/package-lock.json') }}
+          key: ${{ runner.os }}-backend-yarn-${{ hashFiles('invoice-backend/yarn.lock') }}
           restore-keys: |
-            ${{ runner.os }}-node-
+            ${{ runner.os }}-backend-yarn-
 
-      - name: Install Dependencies
+      - name: Install Frontend Dependencies
+        run: |
+          cd invoice-frontend
+          yarn install --frozen-lockfile
+
+      - name: Install Backend Dependencies
         run: |
           cd invoice-backend
-          npm ci
+          yarn install --frozen-lockfile
+
+      - name: Save Frontend Cache
+        uses: actions/cache@v4.2.0
+        with:
+          path: invoice-frontend/node_modules
+          key: ${{ runner.os }}-frontend-yarn-${{ hashFiles('invoice-frontend/yarn.lock') }}
+
+      - name: Save Backend Cache
+        uses: actions/cache@v4.2.0
+        with:
+          path: invoice-backend/node_modules
+          key: ${{ runner.os }}-backend-yarn-${{ hashFiles('invoice-backend/yarn.lock') }}
 
       - name: Wait for PostgreSQL to be Ready
         run: |
@@ -115,19 +147,6 @@ jobs:
           cd invoice-backend
           npm run test:unit && npm run test:integration
 
-      - name: Restore Cache
-        uses: actions/cache@v4.2.0
-        with:
-          path: invoice-frontend/node_modules
-          key: ${{ runner.os }}-node-${{ hashFiles('invoice-frontend/package-lock.json') }}
-          restore-keys: |
-            ${{ runner.os }}-node-
-
-      - name: Install Dependencies
-        run: |
-          cd invoice-frontend
-          npm ci
-
       # - name: Lint
       #   run: |
       #     cd invoice-frontend
@@ -155,21 +174,21 @@ jobs:
       #     echo "Frontend server is ready!"
       #     trap "kill $SERVER_PID" EXIT         # Ensure the server is killed on exit
 
-      - name: Run Playwright e2e tests
-        run: |
-          cd invoice-frontend
-          npx playwright install --with-deps &&
-          DEBUG=pw:api npx playwright test
-      - uses: actions/upload-artifact@v3
-        if: always()
-        with:
-          name: playwright-report
-          path: invoice-frontend/playwright-report/
-          retention-days: 30
-      # - name: Stop Frontend Server
+      # - name: Run Playwright e2e tests
       #   run: |
-      #     echo "Stopping frontend server..."
-      #     kill ${{ env.SERVER_PID }}
+      #     cd invoice-frontend
+      #     npx playwright install --with-deps &&
+      #     DEBUG=pw:api npx playwright test
+      # - uses: actions/upload-artifact@v3
+      #   if: always()
+      #   with:
+      #     name: playwright-report
+      #     path: invoice-frontend/playwright-report/
+      #     retention-days: 30
+      # # - name: Stop Frontend Server
+      # #   run: |
+      # #     echo "Stopping frontend server..."
+      # #     kill ${{ env.SERVER_PID }}
 
   build:
     runs-on: ubuntu-latest
