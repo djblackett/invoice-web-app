@@ -73,14 +73,14 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-backend-yarn-
 
-      # Step 6: Restore Playwright Browser Binaries Cache
-      - name: Restore Playwright Cache
-        uses: actions/cache@v4.2.0
-        with:
-          path: invoice-frontend/.cache/ms-playwright
-          key: ${{ runner.os }}-playwright-${{ hashFiles('**/playwright.config.js') }}
-          restore-keys: |
-            ${{ runner.os }}-playwright-
+      # # Step 6: Restore Playwright Browser Binaries Cache
+      # - name: Restore Playwright Cache
+      #   uses: actions/cache@v4.2.0
+      #   with:
+      #     path: invoice-frontend/.cache/ms-playwright
+      #     key: ${{ runner.os }}-playwright-${{ hashFiles('**/playwright.config.js') }}
+      #     restore-keys: |
+      #       ${{ runner.os }}-playwright-
 
       - name: Install Frontend Dependencies
         run: |
@@ -92,7 +92,6 @@ jobs:
           cd invoice-backend
           yarn install --frozen-lockfile
 
-      # Step 9: Install Playwright and Download Browsers
       - name: Install Playwright Browsers
         run: |
           # Set the Playwright browsers path to a cacheable directory
@@ -162,23 +161,6 @@ jobs:
           cd invoice-frontend
           npm run test:unit
 
-      # - name: Setup and run frontend server
-      #   run: |
-      #     cd invoice-frontend
-      #     npx playwright install --with-deps
-      #     echo "Starting frontend server..."
-      #     npm run dev > server.log 2>&1 &  # Redirect logs to server.log
-      #     SERVER_PID=$!
-      #     echo "Frontend server PID: $SERVER_PID"
-      #     echo "SERVER_PID=$SERVER_PID" >> $GITHUB_ENV  # Export PID for later use
-
-      # - name: Wait for Frontend Server
-      #   run: |
-      #     echo "Waiting for frontend server to be ready..."
-      #     npx wait-on http://localhost:5173
-      #     echo "Frontend server is ready!"
-      #     trap "kill $SERVER_PID" EXIT         # Ensure the server is killed on exit
-
       - name: Run Playwright e2e tests
         run: |
           cd invoice-frontend
@@ -189,10 +171,6 @@ jobs:
           name: playwright-report
           path: invoice-frontend/playwright-report/
           retention-days: 30
-      # # - name: Stop Frontend Server
-      # #   run: |
-      # #     echo "Stopping frontend server..."
-      # #     kill ${{ env.SERVER_PID }}
 
   build:
     runs-on: ubuntu-latest
