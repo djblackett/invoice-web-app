@@ -41,6 +41,9 @@ jobs:
           --health-retries=5
 
     steps:
+      - name: Collect Workflow Telemetry
+        uses: catchpoint/workflow-telemetry-action@v2
+
       - name: Checkout Code
         uses: actions/checkout@v4.2.2
 
@@ -96,7 +99,7 @@ jobs:
           # export PLAYWRIGHT_BROWSERS_PATH=.cache/ms-playwright
           # Install Playwright (ensure it's listed in your dependencies)
           cd invoice-frontend
-          sudo apt-get update && yarn playwright install --with-deps
+          sudo apt-get update &&yarn playwright install --with-deps
 
       # Step 10: Save Playwright Browser Binaries Cache
       # - name: Save Playwright Cache
@@ -175,8 +178,7 @@ jobs:
       #     npx wait-on http://localhost:5173
       #     echo "Frontend server is ready!"
       #     trap "kill $SERVER_PID" EXIT         # Ensure the server is killed on exit
-      - name: Collect Workflow Telemetry
-        uses: catchpoint/workflow-telemetry-action@v2
+
       - name: Run Playwright e2e tests
         run: |
           cd invoice-frontend
