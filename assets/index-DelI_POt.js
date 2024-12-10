@@ -2258,7 +2258,7 @@ text-align: right;
   @media (min-width: 325px) {
     flex-direction: row;
   }
-`,UR=I.button`
+`,UR=I.div`
    border-radius: 24px;
   background-color: #7c5dfa;
   height: 44px;
