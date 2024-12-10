@@ -13,28 +13,6 @@ on:
       - "invoice-frontend/**" # Triggers on PRs that modify the frontend directory
 
 jobs:
-  # setup:
-  #   name: Setup and Cache
-  #   runs-on: ubuntu-latest
-  #   outputs:
-  #     cache-hit: ${{ steps.cache-deps.outputs.cache-hit }}
-  #   steps:
-  #     - name: Checkout Code
-  #       uses: actions/checkout@v4.2.2
-
-  #     - name: Cache Node Modules
-  #       id: cache-deps
-  #       uses: actions/cache@v4.2.0
-  #       with:
-  #         path: |
-  #           invoice-frontend/node_modules
-  #           invoice-backend/node_modules
-  #         key: ${{ runner.os }}-node-${{ hashFiles('**/yarn.lock') }}
-  #         restore-keys: |
-  #           ${{ runner.os }}-node-
-
-  ####  Try adding yarn instead of npm
-
   test:
     name: Comprehensive test
     env:
@@ -70,12 +48,11 @@ jobs:
         uses: actions/setup-node@v4.1.0
         with:
           node-version: "20.x"
-          cache: "yarn"
 
       - name: Enable Corepack and Install Yarn
         run: |
           corepack enable
-          corepack prepare yarn@stable --activate
+          corepack prepare yarn@1.22.22 --activate
 
       - name: Restore Frontend Cache
         uses: actions/cache@v4.2.0
