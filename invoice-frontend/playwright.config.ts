@@ -11,14 +11,14 @@ import { defineConfig, devices } from "@playwright/test";
  */
 export default defineConfig({
   testDir: "./tests/e2e",
-  testMatch: "*.spec.ts",
+  testMatch: "**/*.spec.ts",
   timeout: 30 * 1000,
   /* Run tests in files in parallel */
   // fullyParallel: true,
   /* Fail the build on CI if you accidentally left test.only in the source code. */
   forbidOnly: !!process.env.CI,
   /* Retry on CI only */
-  retries: 0,
+  retries: process.env.CI ? 1 : 0,
   /* Opt out of parallel tests on CI. */
   workers: process.env.CI ? 4 : undefined,
   /* Reporter to use. See https://playwright.dev/docs/test-reporters */
@@ -29,7 +29,7 @@ export default defineConfig({
     baseURL: process.env.CI
       ? "http://127.0.0.1:4173/invoice-web-app"
       : "http://127.0.0.1:5173/invoice-web-app",
-    // video: "off", // Disable video recording
+    video: process.env.CI ? "on" : "off",
 
     /* Collect trace when retrying the failed test. See https://playwright.dev/docs/trace-viewer */
     trace: "on-first-retry",
@@ -41,10 +41,10 @@ export default defineConfig({
       name: "chromium",
       use: { ...devices["Desktop Chrome"] },
     },
-    // {
-    //   name: "firefox",
-    //   use: { ...devices["Desktop Firefox"] },
-    // },
+    {
+      name: "firefox",
+      use: { ...devices["Desktop Firefox"] },
+    },
     // {
     //   name: "webkit",
     //   use: { ...devices["Desktop Safari"] },
