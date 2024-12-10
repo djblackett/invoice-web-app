@@ -13,7 +13,7 @@ export default [
       },
     },
   },
-  { ignores: ["dist", "build", "node_modules", "test-examples/*"] },
+  { ignores: ["dist", "build", "node_modules", "test-examples/*", ".cache"] },
   { files: ["**/*.{js,mjs,cjs,ts,jsx,tsx}"] },
   { languageOptions: { globals: globals.browser } },
   {

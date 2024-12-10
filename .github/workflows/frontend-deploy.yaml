@@ -74,7 +74,7 @@ jobs:
       - name: Restore Playwright Cache
         uses: actions/cache@v4.2.0
         with:
-          path: .cache/ms-playwright
+          path: invoice-frontend/.cache/ms-playwright
           key: ${{ runner.os }}-playwright-${{ hashFiles('**/playwright.config.js') }}
           restore-keys: |
             ${{ runner.os }}-playwright-
@@ -93,7 +93,7 @@ jobs:
       - name: Install Playwright Browsers
         run: |
           # Set the Playwright browsers path to a cacheable directory
-          export PLAYWRIGHT_BROWSERS_PATH=.cache/ms-playwright
+          export PLAYWRIGHT_BROWSERS_PATH=invoice-frontend/.cache/ms-playwright
           # Install Playwright (ensure it's listed in your dependencies)
           cd invoice-frontend
           sudo apt-get update && yarn playwright install --with-deps
