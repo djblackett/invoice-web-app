@@ -183,7 +183,7 @@ export const Filter = styled.p`
   }
 `;
 
-export const FilterButton = styled.button`
+export const FilterButton = styled.div`
   display: flex;
   justify-content: center;
   align-items: center;
