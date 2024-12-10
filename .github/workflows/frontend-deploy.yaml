@@ -93,19 +93,17 @@ jobs:
       - name: Install Playwright Browsers
         run: |
           # Set the Playwright browsers path to a cacheable directory
-          export PLAYWRIGHT_BROWSERS_PATH=.cache/ms-playwright
+          # export PLAYWRIGHT_BROWSERS_PATH=.cache/ms-playwright
           # Install Playwright (ensure it's listed in your dependencies)
           cd invoice-frontend
-          sudo apt-get update && PLAYWRIGHT_BROWSERS_PATH=0 yarn playwright install --with-deps
-          # # Install browsers
-          # npx playwright install --with-deps
+          sudo apt-get update yarn playwright install --with-deps
 
       # Step 10: Save Playwright Browser Binaries Cache
-      - name: Save Playwright Cache
-        uses: actions/cache@v4.2.0
-        with:
-          path: .cache/ms-playwright
-          key: ${{ runner.os }}-playwright-${{ hashFiles('**/playwright.config.js') }}
+      # - name: Save Playwright Cache
+      #   uses: actions/cache@v4.2.0
+      #   with:
+      #     path: .cache/ms-playwright
+      #     key: ${{ runner.os }}-playwright-${{ hashFiles('**/playwright.config.js') }}
 
       - name: Save Frontend Cache
         uses: actions/cache@v4.2.0
@@ -181,7 +179,6 @@ jobs:
       - name: Run Playwright e2e tests
         run: |
           cd invoice-frontend
-          # npx playwright install --with-deps &&
           DEBUG=pw:api npx playwright test
       - uses: actions/upload-artifact@v3
         if: always()
