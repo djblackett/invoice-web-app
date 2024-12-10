@@ -151,15 +151,15 @@ jobs:
           cd invoice-backend
           npm run test:unit && npm run test:integration
 
-      # - name: Lint
-      #   run: |
-      #     cd invoice-frontend
-      #     npm run lint
+      - name: Lint
+        run: |
+          cd invoice-frontend
+          npm run lint
 
-      # - name: Frontend unit tests
-      #   run: |
-      #     cd invoice-frontend
-      #     npm run test:unit
+      - name: Frontend unit tests
+        run: |
+          cd invoice-frontend
+          npm run test:unit
 
       # - name: Setup and run frontend server
       #   run: |
@@ -178,17 +178,17 @@ jobs:
       #     echo "Frontend server is ready!"
       #     trap "kill $SERVER_PID" EXIT         # Ensure the server is killed on exit
 
-      # - name: Run Playwright e2e tests
-      #   run: |
-      #     cd invoice-frontend
-      #     npx playwright install --with-deps &&
-      #     DEBUG=pw:api npx playwright test
-      # - uses: actions/upload-artifact@v3
-      #   if: always()
-      #   with:
-      #     name: playwright-report
-      #     path: invoice-frontend/playwright-report/
-      #     retention-days: 30
+      - name: Run Playwright e2e tests
+        run: |
+          cd invoice-frontend
+          # npx playwright install --with-deps &&
+          DEBUG=pw:api npx playwright test
+      - uses: actions/upload-artifact@v3
+        if: always()
+        with:
+          name: playwright-report
+          path: invoice-frontend/playwright-report/
+          retention-days: 30
       # # - name: Stop Frontend Server
       # #   run: |
       # #     echo "Stopping frontend server..."
