@@ -175,7 +175,8 @@ jobs:
       #     npx wait-on http://localhost:5173
       #     echo "Frontend server is ready!"
       #     trap "kill $SERVER_PID" EXIT         # Ensure the server is killed on exit
-
+      - name: Collect Workflow Telemetry
+        uses: catchpoint/workflow-telemetry-action@v2
       - name: Run Playwright e2e tests
         run: |
           cd invoice-frontend
