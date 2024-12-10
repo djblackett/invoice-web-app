@@ -95,7 +95,7 @@ jobs:
           # Set the Playwright browsers path to a cacheable directory
           export PLAYWRIGHT_BROWSERS_PATH=.cache/ms-playwright
           # Install Playwright (ensure it's listed in your dependencies)
-          cd invoice-backend
+          cd invoice-frontend
           sudo apt-get update && yarn playwright install --with-deps
           # # Install browsers
           # npx playwright install --with-deps
