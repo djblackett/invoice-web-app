@@ -158,7 +158,7 @@ jobs:
       - name: Run Playwright e2e tests
         run: |
           cd invoice-frontend
-           npx playwright install --with-deps &&
+          npx playwright install --with-deps &&
           DEBUG=pw:api npx playwright test
       - uses: actions/upload-artifact@v3
         if: always()

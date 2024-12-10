@@ -11,7 +11,7 @@ test.describe("", () => {
     await page.goto(BASE_URL);
     // const invoices = page.getByRole("button", { name: /New Invoice/i });
     const button = page.getByTestId("newInvoiceButton");
-    await expect(button).toBeVisible({ timeout: 30000 * 1000 });
+    await expect(button).toBeVisible( waitUntil: "networkidle" );
 
     await button.click();
   });
