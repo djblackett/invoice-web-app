@@ -4,7 +4,7 @@ import { useDispatch } from "react-redux";
 import PropTypes from "prop-types";
 import CheckboxSelection from "./CheckboxSelection";
 import { changeFilter } from "../../features/invoices/filterSlice";
-import {StatusKey} from "../../types/types";
+import { StatusKey } from "../../types/types";
 
 const Main = styled("div")`
   align-self: center;
@@ -57,7 +57,7 @@ const DropDownListContainer = styled("div")`
   border-radius: 8px;
   overflow: hidden;
   box-shadow: ${({ theme }) => theme.filterShadow};
-  
+
   transition: height 250ms;
 
   @media (min-width: 768px) {
@@ -91,7 +91,7 @@ const ListItem = styled.li.attrs({})`
   justify-content: center;
   list-style: none;
   padding: 0.5rem;
- 
+
   width: 100%;
   background-color: ${({ theme }) => theme.background};
 
@@ -140,7 +140,7 @@ export default function FilterDropDown({
       <DropDownContainer data-testid="filterDropDown">
         <DropDownHeader>{icon}</DropDownHeader>
         <DropDownListContainer style={{ height: isOpen ? "130px" : 0 }}>
-          <DropDownList>
+          <DropDownList data-testid="draft-filter">
             {options.map((option: string) => (
               <ListItem key={`${option}-li`} onClick={clickCallback(option)}>
                 <ItemButton>
