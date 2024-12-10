@@ -84,20 +84,20 @@ jobs:
           cd invoice-frontend
           yarn install --frozen-lockfile
 
+      - name: Install Backend Dependencies
+        run: |
+          cd invoice-backend
+          yarn install --frozen-lockfile
+
       # Step 9: Install Playwright and Download Browsers
       - name: Install Playwright Browsers
         run: |
           # Set the Playwright browsers path to a cacheable directory
           export PLAYWRIGHT_BROWSERS_PATH=.cache/ms-playwright
           # Install Playwright (ensure it's listed in your dependencies)
-          yarn playwright install --with-deps
+          cd invoice-backend && yarn playwright install --with-deps
           # # Install browsers
           # npx playwright install --with-deps
-
-      - name: Install Backend Dependencies
-        run: |
-          cd invoice-backend
-          yarn install --frozen-lockfile
 
       # Step 10: Save Playwright Browser Binaries Cache
       - name: Save Playwright Cache
