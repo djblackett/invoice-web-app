@@ -13,7 +13,15 @@ export default [
       },
     },
   },
-  { ignores: ["dist", "build", "node_modules", "test-examples/*", ".cache"] },
+  {
+    ignores: [
+      "dist",
+      "build",
+      "node_modules",
+      "test-examples/*",
+      "**/.cache/ms-playwright",
+    ],
+  },
   { files: ["**/*.{js,mjs,cjs,ts,jsx,tsx}"] },
   { languageOptions: { globals: globals.browser } },
   {
