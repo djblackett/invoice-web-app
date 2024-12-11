@@ -2449,7 +2449,7 @@ text-align: right;
   display: flex;
   justify-content: center;
   align-items: center;
-`,lL=({invoiceList:e,width:t})=>x.jsx(x.Fragment,{children:e.length>0?x.jsx(IS,{children:e.map(r=>x.jsx(sL,{to:`/${r.id}`,isMobile:t<1200,children:x.jsx(MS,{invoice:r})},r.id))}):x.jsx(aL,{})}),uL=()=>{const e=av(Jv),{data:t,loading:r,error:n}=K4(_d);return{invoiceList:N.useMemo(()=>t?(t.allInvoices||[]).filter(a=>{const{status:s}=a,{draft:l,pending:u,paid:c}=e;return!!(!l&&!u&&!c||l&&u&&c||l&&s==="draft"||u&&s==="pending"||c&&s==="paid")}):[],[t,e]),loading:r,error:n}},cL=I.div`
+`,lL=({invoiceList:e,width:t,loading:r,error:n})=>r?x.jsx("h2",{children:"Loading"}):n?x.jsx("h1",{children:n.message}):x.jsx(x.Fragment,{children:e.length>0?x.jsx(IS,{children:e.map(i=>x.jsx(sL,{to:`/${i.id}`,isMobile:t<1200,children:x.jsx(MS,{invoice:i})},i.id))}):x.jsx(aL,{})}),uL=()=>{const e=av(Jv),{data:t,loading:r,error:n}=K4(_d);return{invoiceList:N.useMemo(()=>t?(t.allInvoices||[]).filter(a=>{const{status:s}=a,{draft:l,pending:u,paid:c}=e;return!!(!l&&!u&&!c||l&&u&&c||l&&s==="draft"||u&&s==="pending"||c&&s==="paid")}):[],[t,e]),loading:r,error:n}},cL=I.div`
   width: 100%;
   height: 100%;
   display: flex;
@@ -2463,7 +2463,7 @@ text-align: right;
     padding-right: 48px;
     padding-left: 48px;
   }
-`;function fL(){const e=Yn(),{invoiceList:t,loading:r,error:n}=uL(),[i]=Ml(zP,{refetchQueries:[{query:_d}]}),o=()=>{i()};return r?x.jsx("h2",{children:"Loading"}):n?x.jsx("h1",{children:n.message}):x.jsxs(cL,{children:[x.jsxs(uk,{children:[x.jsx(qR,{invoiceList:t}),x.jsx(QR,{})]}),x.jsx(lL,{invoiceList:t,width:e}),x.jsx("button",{onClick:o,children:"Clear Invoices"})]})}const dL=I.div`
+`;function fL(){const e=Yn(),{invoiceList:t,loading:r,error:n}=uL(),[i]=Ml(zP,{refetchQueries:[{query:_d}]}),o=()=>{i()};return x.jsxs(cL,{children:[x.jsxs(uk,{children:[x.jsx(qR,{invoiceList:t}),x.jsx(QR,{})]}),x.jsx(lL,{invoiceList:t,width:e,loading:r,error:n}),x.jsx("button",{onClick:o,children:"Clear Invoices"})]})}const dL=I.div`
   height: 100%;
   width: 100%;
   min-height: 100vh;
