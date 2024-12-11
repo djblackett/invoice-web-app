@@ -136,9 +136,14 @@ jobs:
         run: |
           psql -h localhost -U postgres -d db-test -c '\l'
 
-      - name: Lint
+      - name: Lint backend
         run: |
           cd invoice-backend
+          npm run lint
+
+      - name: Lint frontend
+        run: |
+          cd invoice-frontend
           npm run lint
 
       - name: Initialize Prisma
@@ -146,17 +151,12 @@ jobs:
           cd invoice-backend
           npm run prisma-generate && npm run prisma-push
 
-      - name: Run Tests
+      - name: Run backend tests (unit and integration)
         run: |
           cd invoice-backend
           npm run test:unit && npm run test:integration
 
-      - name: Lint
-        run: |
-          cd invoice-frontend
-          npm run lint
-
-      - name: Frontend unit tests
+      - name: Run frontend unit tests
         run: |
           cd invoice-frontend
           npm run test:unit
