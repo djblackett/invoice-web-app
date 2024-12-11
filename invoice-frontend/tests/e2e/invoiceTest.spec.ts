@@ -46,7 +46,9 @@
 //   })();
 // });
 
-import { test, expect, chromium } from "@playwright/test";
+import { chromium } from "@playwright/test";
+// use your extended Playwright setup
+import { expect, test } from "../config";
 import { BASE_URL } from "../config";
 
 test("should navigate to the page and interact with elements", async () => {
