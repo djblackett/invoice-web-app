@@ -3,8 +3,10 @@ services:
     build:
       context: invoice-frontend
       dockerfile: dev.Dockerfile
+    depends_on:
+      - backend-test
     environment:
-      - REACT_APP_BACKEND_URL=http://localhost:8000/graphql
+      - VITE_BACKEND_URL=http://localhost:8000/graphql
       - REACT_APP_ENV=test
     ports:
       - "5173:5173"
@@ -27,7 +29,7 @@ services:
         condition: service_healthy
     ports:
       - "8000:8000"
-    command: sh -c "npx prisma generate && npx prisma db push && npm run test"
+    command: sh -c "npx prisma@5.22 generate && npx prisma@5.22 db push && npm run test"
     environment:
       - NODE_ENV=test
       - PORT=8000

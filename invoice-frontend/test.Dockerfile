@@ -2,7 +2,7 @@ FROM node:18.17.0
 
 WORKDIR /usr/src/app
 
-ENV REACT_APP_BACKEND_URL="http://localhost:8000" REACT_APP_ENV="development"
+ENV VITE_BACKEND_URL="http://localhost:8000" REACT_APP_ENV="development"
 
 EXPOSE 5173
 

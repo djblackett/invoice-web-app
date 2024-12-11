@@ -18,8 +18,8 @@ import store from "./app/store";
 import App from "./app/App";
 
 
-const REACT_APP_BACKEND_URL = process.env.REACT_APP_BACKEND_URL || "";
-if (!REACT_APP_BACKEND_URL) {
+const VITE_BACKEND_URL = import.meta.env.VITE_BACKEND_URL || "";
+if (!VITE_BACKEND_URL) {
   throw new Error("Backend URL was not set during frontend build process");
 }
 
@@ -33,8 +33,8 @@ const authLink = setContext((_, { headers }) => {
   };
 });
 
-const httpLink = createHttpLink({ uri: "http://" + REACT_APP_BACKEND_URL + "/graphql" });
-const wsLink = new GraphQLWsLink(createClient({ url: "ws://" + REACT_APP_BACKEND_URL }));
+const httpLink = createHttpLink({ uri: "http://" + VITE_BACKEND_URL + "/graphql" });
+const wsLink = new GraphQLWsLink(createClient({ url: "ws://" + VITE_BACKEND_URL }));
 
 const splitLink = split(
   ({ query }) => {

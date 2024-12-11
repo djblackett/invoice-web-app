@@ -19,7 +19,7 @@ jobs:
       DATABASE_URL: postgres://postgres:example@localhost:5432/db-test
       REQUEST_ORIGIN: http://localhost:5173
       SECRET: theSecretStuff # not critical
-      REACT_APP_BACKEND_URL: localhost:8000
+      VITE_BACKEND_URL: localhost:8000
       REACT_APP_ENV: test
 
     runs-on: ubuntu-22.04
@@ -176,7 +176,7 @@ jobs:
     runs-on: ubuntu-latest
     # needs: test
     env:
-      REACT_APP_BACKEND_URL: http://localhost:8000 # This must be updated once I know the URL
+      VITE_BACKEND_URL: http://localhost:8000 # This must be updated once I know the URL
       FRONTEND_DIR: invoice-frontend
     steps:
       - name: Checkout repository

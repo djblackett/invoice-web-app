@@ -82,7 +82,7 @@
     "reflect-metadata": "^0.2.2",
     "temporal-polyfill": "^0.2.5",
     "uuid": "10.0.0",
-    "winston": "^3.3.2",
+    "winston": "3.3.1",
     "winston-express": "0.1.1",
     "ws": "^8.13.0",
     "zod": "^3.23.8"
