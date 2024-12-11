@@ -1,0 +1,64 @@
+app = "invoice-app"
+
+[build]
+  dockerfile = "Dockerfile"
+
+[processes]
+  frontend = "frontend"
+  backend = "backend"
+  db = "db"
+
+[env]
+  # Shared environment variables can go here, or process-specific ones in the `[[services]]` section
+
+[[services]]
+  process = "frontend"
+  internal_port = 80
+  protocol = "tcp"
+  [services.concurrency]
+    type = "connections"
+    hard_limit = 25
+    soft_limit = 20
+
+  [[services.ports]]
+    handlers = ["http"]
+    port = 80
+
+  [[services.tcp_checks]]
+    interval = "15s"
+    timeout = "2s"
+
+[[services]]
+  process = "backend"
+  internal_port = 8000
+  protocol = "tcp"
+  [services.concurrency]
+    type = "connections"
+    hard_limit = 25
+    soft_limit = 20
+
+  [[services.ports]]
+    handlers = ["http"]
+    port = 8000
+
+  [[services.tcp_checks]]
+    interval = "15s"
+    timeout = "2s"
+
+[env]
+  # Frontend-specific environment variables
+  VITE_BACKEND_URL = "http://backend/graphql"
+
+  # Backend-specific environment variables
+  PORT = "8000"
+  REQUEST_ORIGIN = "http://frontend"
+
+[deploy]
+  release_command = "bin/migrate"
+
+[[mounts]]
+  source = "pgdata-prod"
+  destination = "/var/lib/postgresql/data"
+
+[experimental]
+  allow_priviliged = true
