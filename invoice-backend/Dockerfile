@@ -1,5 +1,6 @@
 FROM node:20.13.1-bookworm-slim AS build
 ENV NODE_ENV=production
+RUN npm install -g npm@10.3.0
 
 RUN apt-get update -y && apt-get install -y openssl
 

@@ -1,5 +1,6 @@
 FROM node:lts-alpine3.20 AS build
 ENV NODE_ENV=production
+RUN npm install -g npm@10.3.0
 
 WORKDIR /usr/src/app/
 
