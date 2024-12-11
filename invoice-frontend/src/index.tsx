@@ -19,13 +19,10 @@ import App from "./app/App";
 
 
 const VITE_BACKEND_URL = import.meta.env.VITE_BACKEND_URL || "";
-// if (import.meta.env.PROD) {
-//   VITE_BACKEND_URL = ""
-// }
+
 if (!VITE_BACKEND_URL) {
   throw new Error("Backend URL was not set during frontend build process");
 }
-
 
 
 const authLink = setContext((_, { headers }) => {
