@@ -7,7 +7,7 @@ import { Invoice } from "../types/types";
 
 
 interface StyledLinkProps extends LinkProps {
-    isMobile: boolean;
+  isMobile: boolean;
 }
 
 const StyledLink = styled(Link) <StyledLinkProps>`
@@ -20,12 +20,18 @@ const StyledLink = styled(Link) <StyledLinkProps>`
 `;
 
 interface AllInvoicesViewProps {
-    invoiceList: Invoice[];
-    width: number;
-    // scrollToTop: () => void;
+  invoiceList: Invoice[];
+  width: number;
+  loading: boolean;
+  error?: Error;
+  // scrollToTop: () => void;
 }
 
-const AllInvoicesView = ({ invoiceList, width }: AllInvoicesViewProps) => {
+const AllInvoicesView = ({ invoiceList, width, loading, error }: AllInvoicesViewProps) => {
+
+  if (loading) return <h2>Loading</h2>;
+  if (error) return <h1>{error.message}</h1>;
+
   return (
     <>
       {invoiceList.length > 0 ? (
@@ -35,7 +41,6 @@ const AllInvoicesView = ({ invoiceList, width }: AllInvoicesViewProps) => {
               key={invoice.id}
               to={`/${invoice.id}`}
               isMobile={width < 1200}
-
             >
               <InvoiceCard invoice={invoice} />
             </StyledLink>

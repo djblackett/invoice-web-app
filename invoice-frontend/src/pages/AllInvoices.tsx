@@ -22,8 +22,7 @@ function AllInvoices() {
   };
 
 
-  if (loading) return <h2>Loading</h2>;
-  if (error) return <h1>{error.message}</h1>;
+  
 
 
   return (
@@ -37,6 +36,8 @@ function AllInvoices() {
       <AllInvoicesView
         invoiceList={invoiceList}
         width={width}
+        loading={loading}
+        error={error}
       />
 
       {/* Clear button below is for debugging the empty invoices page - removes them from redux only*/}
