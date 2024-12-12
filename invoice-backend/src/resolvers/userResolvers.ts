@@ -13,7 +13,6 @@ export function getUserResolvers(userService: UserService) {
         try {
           return await userService.getUsers();
         } catch (error) {
-          // console.error(error);
           console.error("Error caught in resolver", error);
           throw new GraphQLError("Internal server error", {
             extensions: {

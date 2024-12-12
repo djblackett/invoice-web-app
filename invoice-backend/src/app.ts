@@ -1,7 +1,11 @@
 import "reflect-metadata";
 import { InversifyExpressServer } from "inversify-express-utils";
 import container from "./config/inversify.config";
-import { serverConfig, serverErrorConfig } from "./config/server.config";
+import {
+  NODE_ENV,
+  serverConfig,
+  serverErrorConfig,
+} from "./config/server.config";
 import "./controllers/invoice.controller";
 import { Request, Response } from "express";
 import { DatabaseConnection } from "./database/prisma.database.connection";
@@ -23,14 +27,16 @@ export const createApp = async () => {
       res.send("pong");
     });
 
-    const limiter = rateLimit({
-      windowMs: 15 * 60 * 1000, // 15 minutes
-      limit: 100, // Limit each IP to 100 requests per `window` (here, per 15 minutes)
-      standardHeaders: true, // Return rate limit info in the `RateLimit-*` headers
-      legacyHeaders: false, // Disable the `X-RateLimit-*` headers
-    });
+    if (NODE_ENV === "production") {
+      const limiter = rateLimit({
+        windowMs: 15 * 60 * 1000, // 15 minutes
+        limit: 100, // Limit each IP to 100 requests per `window` (here, per 15 minutes)
+        standardHeaders: true, // Return rate limit info in the `RateLimit-*` headers
+        legacyHeaders: false, // Disable the `X-RateLimit-*` headers
+      });
 
-    app.use(limiter);
+      app.use(limiter);
+    }
 
     return app;
   } catch (error) {
