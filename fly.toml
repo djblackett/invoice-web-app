@@ -10,6 +10,12 @@ app = "invoice-app"
 
 [env]
   # Shared environment variables can go here, or process-specific ones in the `[[services]]` section
+   # Frontend-specific environment variables
+  VITE_BACKEND_URL = "http://backend/graphql"
+
+  # Backend-specific environment variables
+  PORT = "8000"
+  REQUEST_ORIGIN = "http://frontend"
 
 [[services]]
   process = "frontend"
@@ -45,13 +51,6 @@ app = "invoice-app"
     interval = "15s"
     timeout = "2s"
 
-[env]
-  # Frontend-specific environment variables
-  VITE_BACKEND_URL = "http://backend/graphql"
-
-  # Backend-specific environment variables
-  PORT = "8000"
-  REQUEST_ORIGIN = "http://frontend"
 
 [deploy]
   release_command = "bin/migrate"

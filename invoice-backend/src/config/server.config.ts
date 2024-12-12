@@ -5,7 +5,7 @@ import cors from "cors";
 import { BaseException, InternalServerException } from "./exception.config";
 
 export const SECRET = process.env.SECRET || "";
-export const PORT = process.env.PORT || 8000;
+export const PORT = Number(process.env.PORT) || 8000;
 export const NODE_ENV = process.env.NODE_ENV;
 export const DATABASE_URL = process.env.DATABASE_URL || "";
 let DB_URL: string;
@@ -45,17 +45,26 @@ export function serverConfig(app: Application) {
       extended: true,
     }),
   );
-  // if (NODE_ENV === "development") {
-  // app.use(
-  //   cors({
-  //     origin: "http://localhost:5173",
-  //     methods: ["GET", "POST", "PUT", "DELETE"],
-  //     // credentials: true,
-  //   }),
-  // );
-  // } else {
-  app.use(cors());
-  // }
+  if (NODE_ENV === "development") {
+    app.use(
+      cors({
+        origin: "http://localhost:5173",
+        methods: ["GET", "HEAD", "PATCH", "POST", "PUT", "DELETE"],
+        // credentials: true,
+      }),
+    );
+  } else if (NODE_ENV === "production") {
+    app.use(
+      cors({
+        origin: "https://your-username.github.io", // GitHub Pages URL
+        methods: "GET,HEAD,PUT,PATCH,POST,DELETE",
+        credentials: true,
+      }),
+    );
+  } else {
+    app.use(cors());
+  }
+
   app.options("*", cors()); // This will handle all OPTIONS requests
 
   app.use(express.json());
