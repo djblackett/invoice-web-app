@@ -45,7 +45,7 @@ export function serverConfig(app: Application) {
       extended: true,
     }),
   );
-  if (NODE_ENV === "development") {
+  if (NODE_ENV === "development" || NODE_ENV === "test" || NODE_ENV === "CI") {}
     app.use(
       cors({
         origin: "http://localhost:5173",
