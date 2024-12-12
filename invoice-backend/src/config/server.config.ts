@@ -56,7 +56,7 @@ export function serverConfig(app: Application) {
   } else if (NODE_ENV === "production") {
     app.use(
       cors({
-        origin: "https://your-username.github.io", // GitHub Pages URL
+        origin: "https://djblackett.github.io", // GitHub Pages URL
         methods: "GET,HEAD,PUT,PATCH,POST,DELETE",
         credentials: true,
       }),
