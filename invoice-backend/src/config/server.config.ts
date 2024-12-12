@@ -26,14 +26,6 @@ if (NODE_ENV === "production") {
   DB_URL = process.env.DB_URL_DEV || "";
 }
 
-console.error("NODE_ENV:", NODE_ENV);
-console.error("DB_URL:", DB_URL);
-console.error("DATABASE_URL", DATABASE_URL);
-
-// if (!DB_URL) {
-//   throw new Error("Server env db url not set");
-// }
-
 export const DB = {
   url: DATABASE_URL,
 };
@@ -45,7 +37,10 @@ export function serverConfig(app: Application) {
       extended: true,
     }),
   );
-  if (NODE_ENV === "development" || NODE_ENV === "test" || NODE_ENV === "CI") {}
+
+  console.log(NODE_ENV);
+
+  if (NODE_ENV === "development" || NODE_ENV === "CI") {
     app.use(
       cors({
         origin: "http://localhost:5173",
@@ -65,7 +60,7 @@ export function serverConfig(app: Application) {
     app.use(cors());
   }
 
-  app.options("*", cors()); // This will handle all OPTIONS requests
+  // app.options("*", cors()); // This will handle all OPTIONS requests
 
   app.use(express.json());
 }

@@ -1,4 +1,3 @@
-// index.ts
 import { PORT } from "./config/server.config";
 import { createServer } from "./server";
 

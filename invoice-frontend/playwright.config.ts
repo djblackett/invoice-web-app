@@ -20,15 +20,15 @@ export default defineConfig({
   /* Retry on CI only */
   retries: process.env.CI ? 1 : 0,
   /* Opt out of parallel tests on CI. */
-  workers: process.env.CI ? 4 : undefined,
+  workers: process.env.CI ? 4 : 4,
   /* Reporter to use. See https://playwright.dev/docs/test-reporters */
   reporter: "html",
   /* Shared settings for all the projects below. See https://playwright.dev/docs/api/class-testoptions. */
   use: {
     /* Base URL to use in actions like `await page.goto('/')`. */
     baseURL: process.env.CI
-      ? "http://127.0.0.1:4173/invoice-web-app"
-      : "http://127.0.0.1:5173/invoice-web-app",
+      ? "http://localhost:4173/invoice-web-app"
+      : "http://localhost:5173/invoice-web-app",
     video: "on",
     /* Collect trace when retrying the failed test. See https://playwright.dev/docs/trace-viewer */
     trace: "on-first-retry",
@@ -73,9 +73,9 @@ export default defineConfig({
     command: process.env.CI
       ? "npm run build && npm run preview"
       : "npm run dev",
-    url: process.env.CI
-      ? "http://127.0.0.1:4173/invoice-web-app"
-      : "http://127.0.0.1:5173/invoice-web-app",
+    // url: process.env.CI
+    //   ? "http://localhost:4173/invoice-web-app"
+    //   : "http://localhost:5173/invoice-web-app",
     reuseExistingServer: !process.env.CI,
   },
 });

@@ -46,8 +46,9 @@
 //   })();
 // });
 
-import { chromium } from "@playwright/test";
+// import test, { chromium, expect } from "@playwright/test";
 // use your extended Playwright setup
+import { chromium } from "@playwright/test";
 import { expect, test } from "../config";
 import { BASE_URL } from "../config";
 
