@@ -40,7 +40,7 @@ export function serverConfig(app: Application) {
 
   console.log(NODE_ENV);
 
-  if (NODE_ENV === "development" || NODE_ENV === "CI") {
+  if (NODE_ENV === "development") {
     app.use(
       cors({
         origin: "http://localhost:5173",
