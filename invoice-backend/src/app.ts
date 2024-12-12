@@ -5,6 +5,7 @@ import { serverConfig, serverErrorConfig } from "./config/server.config";
 import "./controllers/invoice.controller";
 import { Request, Response } from "express";
 import { DatabaseConnection } from "./database/prisma.database.connection";
+import rateLimit from "express-rate-limit";
 
 export const createApp = async () => {
   try {
@@ -17,11 +18,19 @@ export const createApp = async () => {
 
     const app = inversifyServer.build();
 
-    // Additional setup like middlewares or routes
     app.get("/api/ping", (_req: Request, res: Response) => {
       console.log("someone pinged here");
       res.send("pong");
     });
+
+    const limiter = rateLimit({
+      windowMs: 15 * 60 * 1000, // 15 minutes
+      limit: 100, // Limit each IP to 100 requests per `window` (here, per 15 minutes)
+      standardHeaders: true, // Return rate limit info in the `RateLimit-*` headers
+      legacyHeaders: false, // Disable the `X-RateLimit-*` headers
+    });
+
+    app.use(limiter);
 
     return app;
   } catch (error) {
