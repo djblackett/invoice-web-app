@@ -48,19 +48,22 @@
 
 // import test, { chromium, expect } from "@playwright/test";
 // use your extended Playwright setup
-import { chromium } from "@playwright/test";
+// import { chromium } from "@playwright/test";
+// import { Page } from "@playwright/test";
 import { expect, test } from "../config";
 import { BASE_URL } from "../config";
 
-test("should navigate to the page and interact with elements", async () => {
-  const browser = await chromium.launch();
+test("should navigate to the page and interact with elements", async ({
+  page,
+}) => {
+  // const browser = await chromium.launch();
 
-  // Enable video recording
-  const context = await browser.newContext({
-    recordVideo: { dir: "./videos/" }, // Specify the directory to save videos
-  });
+  // // Enable video recording
+  // const context = await browser.newContext({
+  //   recordVideo: { dir: "./videos/" }, // Specify the directory to save videos
+  // });
 
-  const page = await context.newPage();
+  // const page = await context.newPage();
 
   try {
     // Navigate to the base URL
@@ -87,8 +90,8 @@ test("should navigate to the page and interact with elements", async () => {
     await expect(filterButton).toContainText("Pending");
     await expect(filterButton).toContainText("Paid");
   } finally {
-    // Clean up resources
-    await context.close();
-    await browser.close();
+    // // Clean up resources
+    // await context.close();
+    // await browser.close();
   }
 });
