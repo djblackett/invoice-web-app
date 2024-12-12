@@ -19,7 +19,7 @@ jobs:
       DATABASE_URL: postgres://postgres:example@localhost:5432/db-test
       REQUEST_ORIGIN: http://localhost:4173
       SECRET: theSecretStuff # not critical
-      VITE_BACKEND_URL: http://localhost:8000
+      VITE_BACKEND_URL: http://localhost:8000/graphql
       REACT_APP_ENV: test
 
     runs-on: ubuntu-22.04
