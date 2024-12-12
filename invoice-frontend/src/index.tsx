@@ -35,7 +35,7 @@ const authLink = setContext((_, { headers }) => {
   };
 });
 
-const httpLink = createHttpLink({ uri: VITE_BACKEND_URL + "/graphql" });
+const httpLink = createHttpLink({ uri: VITE_BACKEND_URL });
 const wsLink = new GraphQLWsLink(createClient({ url: "ws://" + VITE_BACKEND_URL }));
 
 const splitLink = split(
