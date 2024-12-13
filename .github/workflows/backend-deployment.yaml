@@ -1,0 +1,136 @@
+name: Build and Deploy backend to Fly.io
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - "invoice-backend/**" # Triggers on any changes within the backend directory
+  pull_request:
+    branches:
+      - main
+    paths:
+      - "invoice-backend/**" # Triggers on PRs that modify the backend directory
+
+jobs:
+  test:
+    name: Backend tests
+    env:
+      DATABASE_URL: postgres://postgres:example@localhost:5432/db-test
+      REQUEST_ORIGIN: http://localhost:4173
+      SECRET: theSecretStuff # not critical - only for ephemeral testing env
+      VITE_BACKEND_URL: http://localhost:8000
+      NODE_ENV: CI
+
+    runs-on: ubuntu-22.04
+    services:
+      postgres:
+        image: postgres:16
+        env:
+          POSTGRES_USER: postgres
+          PG_USER: postgres
+          POSTGRES_PASSWORD: example
+          POSTGRES_DB: db-test
+
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd="pg_isready -U postgres"
+          --health-interval=10s
+          --health-timeout=5s
+          --health-retries=5
+
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4.2.2
+
+      - name: Set up Node.js and Yarn
+        uses: actions/setup-node@v4.1.0
+        with:
+          node-version: "20.x"
+
+      - name: Enable Corepack and Install Yarn
+        run: |
+          corepack enable
+          corepack prepare yarn@1.22.22 --activate
+
+      - name: Restore Backend Cache
+        uses: actions/cache@v4.2.0
+        with:
+          path: invoice-backend/node_modules
+          key: ${{ runner.os }}-backend-yarn-${{ hashFiles('invoice-backend/yarn.lock') }}
+          restore-keys: |
+            ${{ runner.os }}-backend-yarn-
+
+      - name: Install Backend Dependencies
+        run: |
+          cd invoice-backend
+          yarn install --frozen-lockfile
+
+      - name: Lint backend
+        run: |
+          cd invoice-backend
+          npm run lint
+
+      - name: Save Backend Cache
+        uses: actions/cache@v4.2.0
+        with:
+          path: invoice-backend/node_modules
+          key: ${{ runner.os }}-backend-yarn-${{ hashFiles('invoice-backend/yarn.lock') }}
+
+      - name: Wait for PostgreSQL to be Ready
+        run: |
+          for i in {1..10}; do
+            if pg_isready -h localhost -p 5432 -U postgres; then
+              echo "PostgreSQL is ready!"
+              break
+            fi
+            echo "Waiting for PostgreSQL..."
+            sleep 5
+          done
+
+      - name: Test Database Connection
+        env:
+          PGPASSWORD: example
+        run: |
+          psql -h localhost -U postgres -d db-test -c '\l'
+
+      - name: Initialize Prisma
+        run: |
+          cd invoice-backend
+          npm run prisma-generate && npm run prisma-push
+
+      - name: Run backend unit tests
+        run: |
+          cd invoice-backend
+          npm run test:unit
+
+      - name: Run backend integration tests
+        run: |
+          cd invoice-backend
+          npm run test:integration
+
+  deploy:
+    name: Deploy to Environment
+    needs: [test]
+    runs-on: ubuntu-latest
+    if: |
+      github.ref == 'refs/heads/main' ||
+      startsWith(github.ref, 'refs/heads/release/')
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4.2.2
+
+      - name: Install Fly.io CLI
+        run: |
+          curl -L https://fly.io/install.sh | sh
+          export PATH="$HOME/.fly/bin:$PATH"
+
+      - name: Authenticate Fly.io
+        env:
+          FLY_API_TOKEN: ${{ secrets.FLY_API_TOKEN }} # must set this up still
+        run: fly auth login --access-token $FLY_API_TOKEN
+
+      - name: Deploy to Fly.io
+        run: |
+          fly deploy --dockerfile docker-compose.prod.yml --build-arg COMMIT_SHA=${{ github.sha }}

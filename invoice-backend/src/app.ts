@@ -22,11 +22,6 @@ export const createApp = async () => {
 
     const app = inversifyServer.build();
 
-    app.get("/api/ping", (_req: Request, res: Response) => {
-      console.log("someone pinged here");
-      res.send("pong");
-    });
-
     app.get("/health", (_req: Request, res: Response) => {
       console.log("someone pinged here");
       res.send("Service is healthy");
