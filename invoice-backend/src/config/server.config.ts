@@ -40,7 +40,7 @@ export function serverConfig(app: Application) {
 
   console.log(NODE_ENV);
   console.log("NODE_ENV:", process.env.NODE_ENV);
-
+  app.use(cors());
   // if (NODE_ENV === "development") {
   //   app.use(
   //     cors({
