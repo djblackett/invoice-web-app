@@ -2449,7 +2449,7 @@ text-align: right;
   display: flex;
   justify-content: center;
   align-items: center;
-`,uL=({invoiceList:e,width:t,loading:r,error:n})=>r?x.jsx("h2",{children:"Loading"}):n?x.jsxs(x.Fragment,{children:[x.jsx("h1",{children:n.message}),x.jsx("p",{children:JSON.stringify(n)})]}):x.jsx(x.Fragment,{children:e.length>0?x.jsx(IS,{children:e.map(i=>x.jsx(lL,{to:`/${i.id}`,isMobile:t<1200,children:x.jsx(MS,{invoice:i})},i.id))}):x.jsx(sL,{})}),cL=()=>{const e=av(Jv),{data:t,loading:r,error:n}=K4(_d);return{invoiceList:N.useMemo(()=>t?(t.allInvoices||[]).filter(a=>{const{status:s}=a,{draft:l,pending:u,paid:c}=e;return!!(!l&&!u&&!c||l&&u&&c||l&&s==="draft"||u&&s==="pending"||c&&s==="paid")}):[],[t,e]),loading:r,error:n}},fL=I.div`
+`,uL=({invoiceList:e,width:t,loading:r,error:n})=>r?x.jsx("h2",{children:"Loading"}):n?x.jsxs(x.Fragment,{children:[x.jsx("h1",{children:n.message}),x.jsx("p",{style:{maxWidth:"50%",alignSelf:"center"},children:JSON.stringify(n)})]}):x.jsx(x.Fragment,{children:e.length>0?x.jsx(IS,{children:e.map(i=>x.jsx(lL,{to:`/${i.id}`,isMobile:t<1200,children:x.jsx(MS,{invoice:i})},i.id))}):x.jsx(sL,{})}),cL=()=>{const e=av(Jv),{data:t,loading:r,error:n}=K4(_d);return{invoiceList:N.useMemo(()=>t?(t.allInvoices||[]).filter(a=>{const{status:s}=a,{draft:l,pending:u,paid:c}=e;return!!(!l&&!u&&!c||l&&u&&c||l&&s==="draft"||u&&s==="pending"||c&&s==="paid")}):[],[t,e]),loading:r,error:n}},fL=I.div`
   width: 100%;
   height: 100%;
   display: flex;
