@@ -43,7 +43,7 @@ export function serverConfig(app: Application) {
   if (NODE_ENV === "development") {
     app.use(
       cors({
-        origin: "http://localhost:5173",
+        origin: "http://localhost:*",
         methods: ["GET", "HEAD", "PATCH", "POST", "PUT", "DELETE"],
         // credentials: true,
       }),
