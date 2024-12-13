@@ -1,16 +1,6 @@
 import { test, expect } from "@playwright/test";
 
-// const maxAttempts = 12;
-
-// test.afterEach(async ({ page }) => {
-//   // Ensure cleanup after each test
-//   await page.goto(BASE_URL);
-//   await page.getByRole("button", { name: "Clear Invoices" }).click();
-// });
-
 test("Create and verify an invoice", async ({ page }) => {
-  const clientName = `TestClient_${Date.now()}`;
-
   await page.goto("/invoice-web-app/");
 
   await expect(page).toHaveTitle(/Frontend Mentor | Invoice app/);
@@ -20,6 +10,8 @@ test("Create and verify an invoice", async ({ page }) => {
   await expect(newInvoiceButton).toBeVisible({ timeout: 60000 });
   await expect(newInvoiceButton).toBeEnabled();
   await newInvoiceButton.click();
+
+  const clientName = `TestClient_${Date.now()}`;
 
   await page.fill('input[name="clientName"]', clientName);
   await page.fill('input[name="streetAddress"]', "1234 Elm Street");

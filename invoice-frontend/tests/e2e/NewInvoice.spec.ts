@@ -1,5 +1,5 @@
 import { test, expect } from "@playwright/test";
-// import { BASE_URL } from "../config";
+
 
 test.describe("New Invoice tab should open and contain correct labels", () => {
   test("New invoice page is rendered", async ({ page }) => {
