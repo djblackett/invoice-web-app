@@ -40,15 +40,16 @@ export function serverConfig(app: Application) {
 
   console.log(NODE_ENV);
 
-  if (NODE_ENV === "development") {
-    app.use(
-      cors({
-        origin: "http://localhost:*",
-        methods: ["GET", "HEAD", "PATCH", "POST", "PUT", "DELETE"],
-        // credentials: true,
-      }),
-    );
-  } else if (NODE_ENV === "production") {
+  // if (NODE_ENV === "development") {
+  //   app.use(
+  //     cors({
+  //       origin: "http://localhost:*",
+  //       methods: ["GET", "HEAD", "PATCH", "POST", "PUT", "DELETE"],
+  //       // credentials: true,
+  //     }),
+  //   );
+  app.options("*", cors()); // This will handle all OPTIONS requests
+  if (NODE_ENV === "production") {
     app.use(
       cors({
         origin: "https://djblackett.github.io", // GitHub Pages URL
@@ -57,12 +58,7 @@ export function serverConfig(app: Application) {
       }),
     );
   } else {
-    app.use(
-      cors({
-        origin: "*", // GitHub Pages URL
-        methods: "GET,HEAD,PUT,PATCH,POST,DELETE",
-      }),
-    );
+    app.use(cors());
   }
 
   // app.options("*", cors()); // This will handle all OPTIONS requests
