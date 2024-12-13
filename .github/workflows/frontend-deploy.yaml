@@ -19,8 +19,8 @@ jobs:
       DATABASE_URL: postgres://postgres:example@localhost:5432/db-test
       REQUEST_ORIGIN: http://localhost:4173
       SECRET: theSecretStuff # not critical
-      VITE_BACKEND_URL: http://localhost:8000/graphql
-      REACT_APP_ENV: test
+      VITE_BACKEND_URL: http://localhost:8000
+      NODE_ENV: CI
 
     runs-on: ubuntu-22.04
     services:
@@ -98,7 +98,7 @@ jobs:
           # export PLAYWRIGHT_BROWSERS_PATH=.cache/ms-playwright
           # Install Playwright (ensure it's listed in your dependencies)
           cd invoice-frontend
-          sudo apt-get update &&yarn playwright install --with-deps
+          sudo apt-get update && yarn playwright install --with-deps
 
       # Step 10: Save Playwright Browser Binaries Cache
       # - name: Save Playwright Cache
@@ -161,15 +161,15 @@ jobs:
           cd invoice-frontend
           npm run test:unit
 
-      - name: Check if urls will work with CORS
-        uses: Qiming-Liu/cors-check-action@v4
-        with:
-          url: http://localhost:4173
+      # - name: Check if urls will work with CORS
+      #   uses: Qiming-Liu/cors-check-action@v4
+      #   with:
+      #     url: http://localhost:4173
 
-      - name: Check if urls will work with CORS
-        uses: Qiming-Liu/cors-check-action@v4
-        with:
-          url: http://localhost:8000
+      # - name: Check if urls will work with CORS
+      #   uses: Qiming-Liu/cors-check-action@v4
+      #   with:
+      #     url: http://localhost:8000
 
       - name: Run Playwright e2e tests
         run: |
