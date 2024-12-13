@@ -8,7 +8,6 @@ export const SECRET = process.env.SECRET || "";
 export const PORT = Number(process.env.PORT) || 8000;
 export const NODE_ENV = process.env.NODE_ENV;
 export const DATABASE_URL = process.env.DATABASE_URL || "";
-let DB_URL: string;
 
 if (!SECRET) {
   throw new Error("Server env secret not set");
@@ -16,14 +15,6 @@ if (!SECRET) {
 
 if (!PORT) {
   throw new Error("Server env port not set");
-}
-
-if (NODE_ENV === "production") {
-  DB_URL = process.env.DB_URL || "";
-} else if (NODE_ENV === "test") {
-  DB_URL = process.env.DB_URL_TEST || "";
-} else {
-  DB_URL = process.env.DB_URL_DEV || "";
 }
 
 export const DB = {

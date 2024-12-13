@@ -160,6 +160,15 @@ jobs:
           cd invoice-backend
           npm run test:unit && npm run test:integration
 
+      - name: Backend health check
+        run: curl http://localhost:8000/health
+
+      - name: GraphQL health check
+        run: curl http://localhost:8000/graphql
+
+      - name: Backend health check
+        run: curl http://localhost:8000/
+
       - name: Run frontend unit tests
         run: |
           cd invoice-frontend

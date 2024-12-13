@@ -27,6 +27,11 @@ export const createApp = async () => {
       res.send("pong");
     });
 
+    app.get("/health", (_req: Request, res: Response) => {
+      console.log("someone pinged here");
+      res.send("Service is healthy");
+    });
+
     if (NODE_ENV === "production") {
       const limiter = rateLimit({
         windowMs: 15 * 60 * 1000, // 15 minutes
