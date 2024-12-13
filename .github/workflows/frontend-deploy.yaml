@@ -227,3 +227,5 @@ jobs:
           publish_dir: ./${{ env.FRONTEND_DIR }}/dist # Adjust this if your build output directory differs
           # If you want to deploy to a specific branch (e.g., gh-pages), you can specify:
           # publish_branch: gh-pages
+
+          # try 0.0.0.0 ???
