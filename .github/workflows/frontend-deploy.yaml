@@ -160,6 +160,11 @@ jobs:
           cd invoice-backend
           npm run test:unit && npm run test:integration
 
+      - name: Run backend server for e2e tests
+        run: |
+          cd invoice-backend
+          npm run test
+
       - name: Backend health check
         run: curl http://localhost:8000/health
 
