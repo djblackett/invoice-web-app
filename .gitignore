@@ -76,3 +76,10 @@ dist-ssr
 *.sw?
 .idea/compiler.xml
 invoice-backend/.env
+net.json
+network_logs.json
+trace.har
+videos/9dc2d2b3f969debe037daa405ceccf26.webm
+videos/4489c5ebe6daaed6e51cd769a157bbf3.webm
+videos/da79d212700396383a0b94a15f60324b.webm
+fullpage.png

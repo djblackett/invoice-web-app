@@ -51,7 +51,6 @@
 // import { chromium } from "@playwright/test";
 // import { Page } from "@playwright/test";
 import { expect, test } from "../config";
-import { BASE_URL } from "../config";
 
 test("should navigate to the page and interact with elements", async ({
   page,
