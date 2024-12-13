@@ -170,7 +170,20 @@ jobs:
         run: curl http://localhost:8000/health
 
       - name: GraphQL health check
-        run: curl http://localhost:8000/graphql
+        run: |
+          curl \
+          -X POST \
+          -H "Content-Type: application/json" \
+          -d '{"query":"{ __typename }"}' \
+          http://localhost:8000/graphql
+
+      - name: GraphQL health check
+        run: |
+          curl \
+          -X POST \
+          -H "Content-Type: application/json" \
+          -d '{"query":"{ __typename }"}' \
+          http://localhost:8000/
 
       - name: Backend health check
         run: curl http://localhost:8000/
