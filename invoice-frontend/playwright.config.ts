@@ -69,13 +69,13 @@ export default defineConfig({
   ],
 
   /* Run your local dev server before starting the tests */
-  webServer: {
-    command: process.env.CI
-      ? "npm run build && npm run preview && npx wait-on http://localhost:4173/invoice-web-app/"
-      : "npm run dev",
-    // url: process.env.CI
-    //   ? "http://localhost:4173/invoice-web-app"
-    //   : "http://localhost:5173/invoice-web-app",
-    reuseExistingServer: !process.env.CI,
-  },
+  // webServer: {
+  // command: process.env.CI
+  //   ? "npm run build && npm run preview && npx wait-on http://localhost:4173/invoice-web-app/"
+  //   : "npm run dev",
+  // url: process.env.CI
+  //   ? "http://localhost:4173/invoice-web-app"
+  //   : "http://localhost:5173/invoice-web-app",
+  //   reuseExistingServer: !process.env.CI,
+  // },
 });
