@@ -57,7 +57,12 @@ export function serverConfig(app: Application) {
       }),
     );
   } else {
-    app.use(cors());
+    app.use(
+      cors({
+        origin: "*", // GitHub Pages URL
+        methods: "GET,HEAD,PUT,PATCH,POST,DELETE",
+      }),
+    );
   }
 
   // app.options("*", cors()); // This will handle all OPTIONS requests
