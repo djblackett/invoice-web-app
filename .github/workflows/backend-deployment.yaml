@@ -4,8 +4,8 @@ on:
   push:
     branches:
       - main
-    paths:
-      - "invoice-backend/**" # Triggers on any changes within the backend directory
+    # paths:
+    #   - "invoice-backend/**" # Triggers on any changes within the backend directory
   pull_request:
     branches:
       - main
@@ -122,19 +122,20 @@ jobs:
     steps:
       - name: Checkout Code
         uses: actions/checkout@v4.2.2
-
-      - name: Install Fly.io CLI
-        run: |
-          curl -L https://fly.io/install.sh | sh
-          export PATH="$HOME/.fly/bin:$PATH"
-
-      - name: Authenticate Fly.io
+      - name: Deploy to fly
+        uses: superfly/flyctl-actions/setup-flyctl@master
+      - run: |
+          cd invoice-backend && flyctl deploy --remote-only
         env:
-          FLY_API_TOKEN: ${{ secrets.FLY_DEPLOY_TOKEN }} # must set this up still
-        working-directory: ${{ env.BACKEND_DIR }}
-        run: fly auth login --access-token $FLY_API_TOKEN
+          FLY_API_TOKEN: ${{ secrets.FLY_DEPLOY_TOKEN }}
 
-      - name: Deploy to Fly.io
-        working-directory: ${{ env.BACKEND_DIR }}
-        run: |
-          fly deploy --dockerfile Dockerfile --build-arg COMMIT_SHA=${{ github.sha }}
+    #   - name: Authenticate Fly.io
+    #     env:
+    #       FLY_API_TOKEN: ${{ secrets.FLY_DEPLOY_TOKEN }} # must set this up still
+    #     working-directory: ${{ env.BACKEND_DIR }}
+    #     run: fly auth login --access-token $FLY_API_TOKEN
+
+    #   - name: Deploy to Fly.io
+    #     working-directory: ${{ env.BACKEND_DIR }}
+    #     run: |
+    #       fly deploy --dockerfile Dockerfile --build-arg COMMIT_SHA=${{ github.sha }}
