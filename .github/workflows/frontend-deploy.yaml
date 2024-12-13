@@ -41,6 +41,10 @@ jobs:
           --health-retries=5
 
     steps:
+      - name: Check NODE_ENV
+        run: |
+          echo "NODE_ENV is: $NODE_ENV"
+
       - name: Collect Workflow Telemetry
         uses: catchpoint/workflow-telemetry-action@v2
 

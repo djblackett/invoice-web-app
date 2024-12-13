@@ -4,6 +4,8 @@ import { createServer } from "../../src/server"; // Adjust the path if necessary
 
 let app: any;
 
+console.log("NODE_ENV:", process.env.NODE_ENV);
+
 const invoices = [
   {
     id: "INV-0001",

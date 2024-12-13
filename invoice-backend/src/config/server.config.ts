@@ -39,6 +39,7 @@ export function serverConfig(app: Application) {
   );
 
   console.log(NODE_ENV);
+  console.log("NODE_ENV:", process.env.NODE_ENV);
 
   // if (NODE_ENV === "development") {
   //   app.use(
