@@ -161,6 +161,16 @@ jobs:
           cd invoice-frontend
           npm run test:unit
 
+      - name: Check if urls will work with CORS
+        uses: Qiming-Liu/cors-check-action@v4
+        with:
+          url: http://localhost:4173
+
+      - name: Check if urls will work with CORS
+        uses: Qiming-Liu/cors-check-action@v4
+        with:
+          url: http://localhost:8000
+
       - name: Run Playwright e2e tests
         run: |
           cd invoice-frontend
