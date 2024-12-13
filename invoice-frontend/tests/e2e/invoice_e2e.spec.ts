@@ -1,5 +1,4 @@
 import { test, expect } from "@playwright/test";
-import { BASE_URL } from "../config";
 
 // const maxAttempts = 12;
 
@@ -12,7 +11,7 @@ import { BASE_URL } from "../config";
 test("Create and verify an invoice", async ({ page }) => {
   const clientName = `TestClient_${Date.now()}`;
 
-  await page.goto(BASE_URL);
+  await page.goto("/invoice-web-app/");
 
   await expect(page).toHaveTitle(/Frontend Mentor | Invoice app/);
 

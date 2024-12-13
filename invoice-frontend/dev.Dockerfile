@@ -6,7 +6,7 @@ WORKDIR /usr/src/app
 COPY . .
 
 RUN npm install
-ENV VITE_BACKEND_URL="localhost:8000" REACT_APP_ENV="development"
+ENV VITE_BACKEND_URL="http://localhost:8000" REACT_APP_ENV="development"
 
 EXPOSE 5173
 
