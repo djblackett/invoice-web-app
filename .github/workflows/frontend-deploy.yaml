@@ -163,7 +163,8 @@ jobs:
       - name: Run backend server for e2e tests
         run: |
           cd invoice-backend
-          npm run test
+          npm run test & echo "Backend server running" &&
+          sleep 2
 
       - name: Backend health check
         run: curl http://localhost:8000/health
