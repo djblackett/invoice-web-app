@@ -67,7 +67,7 @@ test("should navigate to the page and interact with elements", async ({
 
   try {
     // Navigate to the base URL
-    await page.goto(BASE_URL);
+    await page.goto("/invoice-web-app");
 
     // Take a full-page screenshot
     await page.screenshot({ path: "fullpage.png", fullPage: true });

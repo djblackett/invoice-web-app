@@ -3,7 +3,7 @@ import fs from "fs";
 
 test("Save HAR file", async ({ context, page }) => {
   await context.tracing.start();
-  await page.goto("/");
+  await page.goto("/invoice-web-app");
   await context.tracing.stop({ path: "trace.har" });
 });
 
@@ -35,7 +35,7 @@ test("Capture and save network logs", async ({ page }) => {
   });
 
   // Navigate and perform actions
-  await page.goto("/");
+  await page.goto("/invoice-web-app");
 
   // Save logs to a file
   fs.writeFileSync("network_logs.json", JSON.stringify(logs, null, 2));

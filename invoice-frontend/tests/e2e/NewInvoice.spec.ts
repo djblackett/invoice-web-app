@@ -1,9 +1,9 @@
 import { test, expect } from "@playwright/test";
-import { BASE_URL } from "../config";
+// import { BASE_URL } from "../config";
 
 test.describe("New Invoice tab should open and contain correct labels", () => {
   test("New invoice page is rendered", async ({ page }) => {
-    await page.goto(BASE_URL);
+    await page.goto("/invoice-web-app");
     await page.getByTestId("newInvoiceButton").click();
 
     const newInvoicePage = page.getByTestId("newInvoicePage");
