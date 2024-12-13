@@ -49,7 +49,7 @@ export function serverConfig(app: Application) {
   //       // credentials: true,
   //     }),
   //   );
-  app.options("*", cors()); // This will handle all OPTIONS requests
+  // app.options("*", cors()); // This will handle all OPTIONS requests
   if (NODE_ENV === "production") {
     app.use(
       cors({
