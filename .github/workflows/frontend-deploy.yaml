@@ -172,6 +172,16 @@ jobs:
           path: invoice-frontend/playwright-report/
           retention-days: 30
 
+      # Save network logs as artifacts
+      - name: Upload network logs
+        if: always()
+        uses: actions/upload-artifact@v3
+        with:
+          name: network-logs
+          path: |
+            **/network_logs.json
+            **/trace.har
+
   build:
     runs-on: ubuntu-latest
     # needs: test
