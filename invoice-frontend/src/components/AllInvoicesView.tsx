@@ -30,7 +30,7 @@ interface AllInvoicesViewProps {
 const AllInvoicesView = ({ invoiceList, width, loading, error }: AllInvoicesViewProps) => {
 
   if (loading) return <h2>Loading</h2>;
-  if (error) return <h1>{error.message}</h1>;
+  if (error) return <><h1>{error.message}</h1><p>{JSON.stringify(error)}</p></>;
 
   return (
     <>
