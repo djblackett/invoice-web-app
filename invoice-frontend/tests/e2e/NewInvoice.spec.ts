@@ -3,7 +3,7 @@ import { test, expect } from "@playwright/test";
 
 test.describe("New Invoice tab should open and contain correct labels", () => {
   test("New invoice page is rendered", async ({ page }) => {
-    await page.goto("/invoice-web-app");
+    await page.goto("/invoice-web-app/");
     await page.getByTestId("newInvoiceButton").click();
 
     const newInvoicePage = page.getByTestId("newInvoicePage");
