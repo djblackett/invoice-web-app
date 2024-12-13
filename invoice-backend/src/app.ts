@@ -27,6 +27,7 @@ export const createApp = async () => {
       res.send("Service is healthy");
     });
 
+    // Rate limiter so I don't get spammed 
     if (NODE_ENV === "production") {
       const limiter = rateLimit({
         windowMs: 15 * 60 * 1000, // 15 minutes
