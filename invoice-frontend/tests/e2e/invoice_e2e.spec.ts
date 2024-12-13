@@ -1,7 +1,7 @@
 import { test, expect } from "@playwright/test";
 
 test("Create and verify an invoice", async ({ page }) => {
-  await page.goto("/invoice-web-app/");
+  await page.goto("/invoice-web-app/", { timeout: 5000 });
 
   await expect(page).toHaveTitle(/Frontend Mentor | Invoice app/);
 
