@@ -12,29 +12,8 @@ on:
       - dev
 
 jobs:
-  setup:
-    name: Setup and Cache
-    runs-on: ubuntu-latest
-    outputs:
-      cache-hit: ${{ steps.cache-deps.outputs.cache-hit }}
-    steps:
-      - name: Checkout Code
-        uses: actions/checkout@v4.2.2
-
-      - name: Cache Node Modules
-        id: cache-deps
-        uses: actions/cache@v4.2.0
-        with:
-          path: |
-            invoice-frontend/node_modules
-            invoice-backend/node_modules
-          key: ${{ runner.os }}-node-${{ hashFiles('**/package-lock.json') }}
-          restore-keys: |
-            ${{ runner.os }}-node-
-
   frontend:
     name: Frontend CI
-    needs: setup
     runs-on: ubuntu-latest
     steps:
       - name: Checkout Code
@@ -74,12 +53,12 @@ jobs:
           cd invoice-frontend
           npm run lint
 
-      - name: Run Tests
+      - name: Run Frontend Tests
         run: |
           cd invoice-frontend
           npm run test:unit
 
-      - name: Build Docker Image
+      - name: Build Frontend Docker Image
         run: |
           cd invoice-frontend
           docker build -t djblackett/invoice-frontend:${{ github.sha }} .
@@ -96,7 +75,6 @@ jobs:
 
   backend:
     name: Backend CI
-    needs: setup
     env:
       DATABASE_URL: postgres://postgres:example@localhost:5432/db-test
     runs-on: ubuntu-latest
