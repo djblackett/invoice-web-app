@@ -51,7 +51,6 @@ export async function createContext({
     const userService = container.get(UserService);
     const user = await userService.getUser(decodedToken.id);
     if (user) {
-       
       const userNoPassword: UserDTO = {
         id: user.id,
         name: user.name,
