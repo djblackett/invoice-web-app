@@ -1,16 +1,14 @@
-name: CI/CD Pipeline
+name: CI Code Quality Checks
 
 on:
   push:
     branches:
-      # - main
       - dev
       - "feature/**"
       - "release/**"
       - "hotfix/**"
   pull_request:
     branches:
-      - main
       - dev
 
 jobs:
@@ -45,20 +43,31 @@ jobs:
       - name: Set up Node.js
         uses: actions/setup-node@v4.1.0
         with:
-          node-version: "22.12.0"
+          node-version: "20.x"
 
-      - name: Restore Cache
+      - name: Enable Corepack and Install Yarn
+        run: |
+          corepack enable
+          corepack prepare yarn@1.22.22 --activate
+
+      - name: Restore Frontend Cache
         uses: actions/cache@v4.2.0
         with:
           path: invoice-frontend/node_modules
-          key: ${{ runner.os }}-node-${{ hashFiles('invoice-frontend/package-lock.json') }}
+          key: ${{ runner.os }}-frontend-yarn-${{ hashFiles('invoice-frontend/yarn.lock') }}
           restore-keys: |
-            ${{ runner.os }}-node-
+            ${{ runner.os }}-frontend-yarn-
 
-      - name: Install Dependencies
+      - name: Install Frontend Dependencies
         run: |
           cd invoice-frontend
-          npm install
+          yarn install --frozen-lockfile
+
+      - name: Save Frontend Cache
+        uses: actions/cache@v4.2.0
+        with:
+          path: invoice-frontend/node_modules
+          key: ${{ runner.os }}-frontend-yarn-${{ hashFiles('invoice-frontend/yarn.lock') }}
 
       - name: Lint
         run: |
@@ -114,7 +123,7 @@ jobs:
       - name: Set up Node.js
         uses: actions/setup-node@v4.1.0
         with:
-          node-version: "22.12.0"
+          node-version: "20.x"
 
       - name: Restore Cache
         uses: actions/cache@v4.2.0
@@ -124,10 +133,16 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-node-
 
-      - name: Install Dependencies
+      - name: Install Backend Dependencies
         run: |
           cd invoice-backend
-          npm install
+          yarn install --frozen-lockfile
+
+      - name: Save Backend Cache
+        uses: actions/cache@v4.2.0
+        with:
+          path: invoice-backend/node_modules
+          key: ${{ runner.os }}-backend-yarn-${{ hashFiles('invoice-backend/yarn.lock') }}
 
       - name: Wait for PostgreSQL to be Ready
         run: |
@@ -156,10 +171,15 @@ jobs:
           cd invoice-backend
           npm run prisma-generate && npm run prisma-push
 
-      - name: Run Tests
+      - name: Run Unit Tests
         run: |
           cd invoice-backend
-          npm run test:unit && npm run test:integration
+          npm run test:unit
+
+      - name: Run Integration Tests
+        run: |
+          cd invoice-backend
+          npm run test:integration
 
       - name: Build Docker Image
         run: |
@@ -175,28 +195,3 @@ jobs:
       - name: Push Backend Image
         run: |
           docker push djblackett/invoice-backend:${{ github.sha }}
-
-  deploy:
-    name: Deploy to Environment
-    needs: [frontend, backend]
-    runs-on: ubuntu-latest
-    if: |
-      github.ref == 'refs/heads/main' ||
-      startsWith(github.ref, 'refs/heads/release/')
-    steps:
-      - name: Checkout Code
-        uses: actions/checkout@v4.2.2
-
-      - name: Install Fly.io CLI
-        run: |
-          curl -L https://fly.io/install.sh | sh
-          export PATH="$HOME/.fly/bin:$PATH"
-
-      - name: Authenticate Fly.io
-        env:
-          FLY_API_TOKEN: ${{ secrets.FLY_API_TOKEN }}
-        run: fly auth login --access-token $FLY_API_TOKEN
-
-      - name: Deploy to Fly.io
-        run: |
-          fly deploy --dockerfile docker-compose.prod.yml --build-arg COMMIT_SHA=${{ github.sha }}

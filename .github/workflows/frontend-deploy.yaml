@@ -14,7 +14,7 @@ on:
 
 jobs:
   test:
-    name: Comprehensive test
+    name: Comprehensive testing - unit, integration, and e2e
     env:
       DATABASE_URL: postgres://postgres:example@localhost:5432/db-test
       REQUEST_ORIGIN: http://localhost:4173
