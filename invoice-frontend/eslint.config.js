@@ -24,12 +24,9 @@ export default [
   },
   { files: ["**/*.{js,mjs,cjs,ts,jsx,tsx}"] },
   { languageOptions: { globals: globals.browser } },
+  { extends: ["plugin:prettier/recommended"] },
   {
     rules: {
-      indent: ["warn", 2],
-      "linebreak-style": ["warn", "unix"],
-      quotes: ["warn", "double"],
-      semi: ["warn", "always"],
       "array-callback-return": "off",
       "consistent-return": "off",
       "react/react-in-jsx-scope": "off",
