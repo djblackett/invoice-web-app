@@ -12,12 +12,13 @@
     "lint": "eslint --config ./eslint.config.js .",
     "lint:fix": "eslint --config ./eslint.config.js --fix .",
     "lint:css": "stylelint './src/**/*.js'",
-    "format": "prettier-eslint --eslint-config-path ./eslint.config.js --write '**/*.ts*'",
+    "format": "prettier -c ./eslint.config.js --write '**/*.ts*'",
     "predeploy": "npm run build",
     "deploy": "gh-pages -d build"
   },
   "dependencies": {
     "@apollo/client": "^3.12.2",
+    "@eslint/js": "^9.17.0",
     "@hookform/resolvers": "^3.9.0",
     "@js-temporal/polyfill": "^0.4.4",
     "@reduxjs/toolkit": "^1.8.1",
