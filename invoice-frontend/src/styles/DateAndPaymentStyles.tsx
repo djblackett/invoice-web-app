@@ -1,13 +1,13 @@
 import styled, { css } from "styled-components";
 
 interface DateBox {
-    className?: string;
-    long?: boolean;
+  className?: string;
+  long?: boolean;
 }
 
 interface DateInputProps {
-    className?: string,
-    ref: React.ForwardedRef<unknown>
+  className?: string;
+  ref: React.ForwardedRef<unknown>;
 }
 
 export const CustomDateBox = styled.div<DateBox>`
@@ -21,7 +21,7 @@ export const CustomDateBox = styled.div<DateBox>`
   border-style: solid;
   padding: 0 20px 0 16px;
   margin-bottom: 1.5rem;
-  caret-color: #7C5DFA;
+  caret-color: #7c5dfa;
   outline: none;
   border-width: 1px;
 
@@ -30,7 +30,8 @@ export const CustomDateBox = styled.div<DateBox>`
   color: ${({ theme }) => theme.textPlain};
   background-color: ${({ theme }) => theme.inputBackgroundColor};
 
-  &:focus, &:hover {
+  &:focus,
+  &:hover {
     border-color: ${({ theme }) => theme.formFieldOutlineFocus};
   }
 
@@ -38,9 +39,11 @@ export const CustomDateBox = styled.div<DateBox>`
     padding: 0;
   }
 
-  ${props => props.long && css`
-    width: 100%;
-  `}
+  ${(props) =>
+    props.long &&
+    css`
+      width: 100%;
+    `}
 `;
 
 export const DateInput = styled.input<DateInputProps>`
@@ -56,7 +59,8 @@ export const DateInput = styled.input<DateInputProps>`
   touch-action: none;
   cursor: pointer;
 
-  &:focus, &:hover {
+  &:focus,
+  &:hover {
     border-color: ${({ theme }) => theme.formFieldOutlineFocus};
   }
 `;

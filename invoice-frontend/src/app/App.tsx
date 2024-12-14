@@ -1,4 +1,3 @@
-
 import { useLayoutEffect, useState } from "react";
 import "../styles/App.css";
 import styled, { ThemeProvider } from "styled-components";
@@ -10,7 +9,6 @@ import { lightTheme, darkTheme } from "../styles/Themes";
 import ViewInvoice from "../pages/ViewInvoice";
 import Layout from "../components/Layout";
 import AllInvoices from "../pages/AllInvoices";
-
 
 const Main = styled.div`
   height: 100%;
@@ -46,9 +44,9 @@ const Main = styled.div`
 
   .paid {
     background-color: rgba(51, 214, 159, 0.06);
-    color: #33D69F;
+    color: #33d69f;
     .circle {
-      background: #33D69F;
+      background: #33d69f;
     }
   }
 `;
@@ -59,7 +57,6 @@ loadErrorMessages();
 function App() {
   const [theme, setTheme] = useState("light");
 
-
   useLayoutEffect(() => {
     if (localStorage.getItem("theme") !== null) {
       const storedTheme = localStorage.getItem("theme");
@@ -67,13 +64,11 @@ function App() {
     }
   }, []);
 
-
   const themeToggler = () => {
     // eslint-disable-next-line @typescript-eslint/no-unused-expressions
     theme === "light" ? setTheme("dark") : setTheme("light");
     localStorage.setItem("theme", theme === "light" ? "dark" : "light");
   };
-
 
   const routes = [
     {
@@ -104,7 +99,5 @@ function App() {
     </ThemeProvider>
   );
 }
-
-
 
 export default App;

@@ -41,15 +41,15 @@ function MarkAsPaidButton({ invoice }: MarkPaidProps) {
     // refetchQueries: [{query: GET_INVOICE_BY_ID}],
     onError: (error) => {
       console.log(error.graphQLErrors[0].message);
-    }
+    },
   });
 
   const handleClick = async () => {
     if (invoice.status === "pending") {
       const response = await markAsPaid({
         variables: {
-          markAsPaidId: invoice.id
-        }
+          markAsPaidId: invoice.id,
+        },
       });
       if (response.data) {
         toast.success("💸 Invoice paid!", {
@@ -67,8 +67,15 @@ function MarkAsPaidButton({ invoice }: MarkPaidProps) {
   };
   return (
     <>
-      <Button onClick={handleClick} type="button">Mark as Paid</Button>
-      <ToastContainer style={{ marginTop: width > 1200 ? 0 : "72px", backgroundColor: theme.background }} />
+      <Button onClick={handleClick} type="button">
+        Mark as Paid
+      </Button>
+      <ToastContainer
+        style={{
+          marginTop: width > 1200 ? 0 : "72px",
+          backgroundColor: theme.background,
+        }}
+      />
     </>
   );
 }

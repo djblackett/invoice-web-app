@@ -4,18 +4,21 @@ import DeleteButton from "./buttons/DeleteButton";
 import CancelButton from "./buttons/CancelButton";
 import { useMutation } from "@apollo/client";
 import { REMOVE_INVOICE, ALL_INVOICES } from "../graphql/queries";
-import { ModalContainer, Confirm, ButtonContainer } from "../styles/DeleteModalStyles";
+import {
+  ModalContainer,
+  Confirm,
+  ButtonContainer,
+} from "../styles/DeleteModalStyles";
 import { DarkenScreen } from "../styles/editStyles";
 import { Description } from "../styles/FullInvoiceStyles";
 import { ToastContainer, toast, Theme } from "react-toastify";
 import { useTheme } from "styled-components";
 import useWindowWidth from "../hooks/useWindowWidth";
 
-
 export type DeleteModalProps = {
   isModalOpen: boolean;
   setIsModalOpen: React.Dispatch<React.SetStateAction<boolean>>;
-}
+};
 
 function DeleteModal({ isModalOpen, setIsModalOpen }: DeleteModalProps) {
   const colorMode = localStorage.getItem("theme");
@@ -23,7 +26,6 @@ function DeleteModal({ isModalOpen, setIsModalOpen }: DeleteModalProps) {
   const { id } = useParams<{ id: string }>();
   const width = useWindowWidth();
   const theme = useTheme();
-
 
   const [deleteInvoice] = useMutation(REMOVE_INVOICE, {
     refetchQueries: [{ query: ALL_INVOICES }],
@@ -48,8 +50,8 @@ function DeleteModal({ isModalOpen, setIsModalOpen }: DeleteModalProps) {
   const handleClick = async () => {
     await deleteInvoice({
       variables: {
-        removeInvoiceId: id
-      }
+        removeInvoiceId: id,
+      },
     });
   };
 
@@ -66,7 +68,12 @@ function DeleteModal({ isModalOpen, setIsModalOpen }: DeleteModalProps) {
         <ButtonContainer>
           <CancelButton handleClick={closeModal} text="Cancel" />
           <DeleteButton handleClick={handleClick} />
-          <ToastContainer style={{ marginTop: width > 1200 ? 0 : "72px", backgroundColor: theme.background }} />
+          <ToastContainer
+            style={{
+              marginTop: width > 1200 ? 0 : "72px",
+              backgroundColor: theme.background,
+            }}
+          />
         </ButtonContainer>
       </ModalContainer>
     </DarkenScreen>

@@ -3,18 +3,18 @@ import React from "react";
 import { describe, it, expect, vi } from "vitest";
 import useWindowWidth from "../../src/hooks/useWindowWidth";
 import { Invoice } from "../../src/types/types";
-import InvoiceToolbar, { InvoiceToolBarProps } from "../../src/components/invoice-components/InvoiceToolbar";
+import InvoiceToolbar, {
+  InvoiceToolBarProps,
+} from "../../src/components/invoice-components/InvoiceToolbar";
 import { NewInvoiceProvider } from "../../src/components/form-components/NewInvoiceContextProvider";
 import { ThemeProvider } from "styled-components";
 import { lightTheme } from "../../src/styles/Themes";
 import { ApolloClient, ApolloProvider, InMemoryCache } from "@apollo/client";
 
-
 // Mock useWindowWidth hook
 vi.mock("../src/hooks/useWindowWidth", () => ({
   default: vi.fn(), // Mocks the default export as a function
 }));
-
 
 // Sample Invoice data
 const sampleInvoice: Invoice = {
@@ -53,11 +53,21 @@ describe("InvoiceToolbar component", () => {
   const mockSetIsModalOpen = vi.fn();
 
   const setup = (props: InvoiceToolBarProps) =>
-    render(<ApolloProvider client={new ApolloClient({
-      cache: new InMemoryCache(),
-    })}><ThemeProvider theme={lightTheme}><NewInvoiceProvider><InvoiceToolbar {...props} /></NewInvoiceProvider></ThemeProvider></ApolloProvider>);
-
-
+    render(
+      <ApolloProvider
+        client={
+          new ApolloClient({
+            cache: new InMemoryCache(),
+          })
+        }
+      >
+        <ThemeProvider theme={lightTheme}>
+          <NewInvoiceProvider>
+            <InvoiceToolbar {...props} />
+          </NewInvoiceProvider>
+        </ThemeProvider>
+      </ApolloProvider>,
+    );
 
   it("renders the correct status based on invoice status", () => {
     setup({ invoice: sampleInvoice, setIsModalOpen: mockSetIsModalOpen });

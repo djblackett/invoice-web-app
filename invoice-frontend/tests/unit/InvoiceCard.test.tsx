@@ -1,7 +1,9 @@
 import { render, screen } from "@testing-library/react";
 import React from "react";
 import { describe, it, expect } from "vitest";
-import InvoiceCard, { InvoiceCardProps } from "../../src/components/invoice-components/InvoiceCard";
+import InvoiceCard, {
+  InvoiceCardProps,
+} from "../../src/components/invoice-components/InvoiceCard";
 import { Invoice } from "../../src/types/types";
 
 // Sample Invoice data
@@ -30,8 +32,8 @@ const sampleInvoice: Invoice = {
     {
       name: "Brand Guidelines",
       quantity: 1,
-      price: 1800.90,
-      total: 1800.90,
+      price: 1800.9,
+      total: 1800.9,
     },
   ],
   total: 1800.9,

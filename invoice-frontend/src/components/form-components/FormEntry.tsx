@@ -2,8 +2,6 @@ import React, { CSSProperties } from "react";
 import { OppositeWidthContainer } from "../../styles/FormEntryStyles";
 import { FormEntryContainer } from "./LongFormEntry";
 
-
-
 type FormEntryProps = {
   children: React.ReactNode;
   className: string;

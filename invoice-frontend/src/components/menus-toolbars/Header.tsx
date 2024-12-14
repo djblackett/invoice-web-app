@@ -12,7 +12,6 @@ const HeaderContainer = styled.div`
   z-index: 1000;
   position: fixed;
 
-
   @media (min-width: 1200px) {
     flex-direction: column;
     display: flex;
@@ -126,7 +125,7 @@ const sun = (
 type HeaderProps = {
   theme: string;
   themeToggler: () => void;
-}
+};
 
 function Header({ themeToggler, theme }: HeaderProps) {
   return (

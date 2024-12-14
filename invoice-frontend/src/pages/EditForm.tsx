@@ -5,7 +5,7 @@ import {
   BillText,
   DarkenScreen,
   EditTitle,
-  FormContainerDarkenModal
+  FormContainerDarkenModal,
 } from "../styles/editStyles";
 import CompanyFormInfo from "../components/form-components/CompanyFormInfo";
 import ClientFormInfo from "../components/form-components/ClientFormInfo";
@@ -18,15 +18,11 @@ import Description from "../components/form-components/Description";
 import { useNewInvoiceForm } from "../hooks/useNewInvoiceForm";
 import { useNewInvoiceContext } from "../components/form-components/NewInvoiceContextProvider";
 
-
 type EditFormProps = {
   invoice: Invoice;
 };
 
-function EditForm({
-  invoice
-}: EditFormProps) {
-
+function EditForm({ invoice }: EditFormProps) {
   const { editPageWidth, padding } = useResponsive();
   const { isNewInvoiceOpen } = useNewInvoiceContext();
   const { methods } = useNewInvoiceForm();
@@ -36,7 +32,9 @@ function EditForm({
   }
 
   return (
-    <DarkenScreen style={{ visibility: isNewInvoiceOpen ? "visible" : "hidden" }}>
+    <DarkenScreen
+      style={{ visibility: isNewInvoiceOpen ? "visible" : "hidden" }}
+    >
       <FormContainerDarkenModal
         style={{
           width: isNewInvoiceOpen ? `${editPageWidth}px` : 0,
@@ -51,22 +49,12 @@ function EditForm({
         <FormProvider {...methods}>
           <form style={{ display: "flex", flexDirection: "column" }}>
             <BillText>Bill From</BillText>
-            <CompanyFormInfo
-              invoice={invoice}
-            />
+            <CompanyFormInfo invoice={invoice} />
             <BillText>Bill To</BillText>
-            <ClientFormInfo
-              invoice={invoice}
-            />
-            <DateAndPayment
-              invoice={invoice}
-
-            />
+            <ClientFormInfo invoice={invoice} />
+            <DateAndPayment invoice={invoice} />
             <Description invoice={invoice} />
-            <EditFormItemList
-              invoice={invoice}
-              isEditOpen={isNewInvoiceOpen}
-            />
+            <EditFormItemList invoice={invoice} isEditOpen={isNewInvoiceOpen} />
             <FormErrorList isEditOpen={isNewInvoiceOpen} />
             <EditBottomMenu
               saveText="Save Changes"

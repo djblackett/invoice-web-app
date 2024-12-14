@@ -5,7 +5,6 @@ import { MenuContainer, Save } from "../../styles/NewInvoiceBottomMenuStyles";
 import { useNewInvoiceForm } from "../../hooks/useNewInvoiceForm";
 import { useNewInvoiceContext } from "../form-components/NewInvoiceContextProvider";
 
-
 type EditBottomMenuProps = {
   closeText: string;
   justifyCancel: string;
@@ -25,7 +24,6 @@ function EditBottomMenu({
     setIsNewInvoiceOpen(false);
     reset();
   };
-
 
   const { handleSubmit } = useFormContext();
   const { onSubmitUpdate } = useNewInvoiceForm();

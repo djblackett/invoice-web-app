@@ -2,24 +2,22 @@ import React, { createContext, FC, ReactNode, useState } from "react";
 import { FormType, Item } from "../../types/types";
 import { useForm, UseFormReturn } from "react-hook-form";
 
-
 interface AppContextType {
-    isDraft: boolean;
-    setIsDraft: React.Dispatch<React.SetStateAction<boolean>>;
-    startDate: Date | null;
-    setStartDate: React.Dispatch<React.SetStateAction<Date | null>>;
-    items: Item[];
-    setItems: React.Dispatch<React.SetStateAction<Item[]>>;
-    selectedPaymentOption: number;
-    setSelectedPaymentOption: React.Dispatch<React.SetStateAction<number>>;
-    isNewInvoiceOpen: boolean;
-    setIsNewInvoiceOpen: React.Dispatch<React.SetStateAction<boolean>>;
-    handlePaymentClick: () => void;
-    isPaymentOpen: boolean;
-    handleChangeSelectedOption: (option: number) => void;
-    methods: UseFormReturn<FormType>;
+  isDraft: boolean;
+  setIsDraft: React.Dispatch<React.SetStateAction<boolean>>;
+  startDate: Date | null;
+  setStartDate: React.Dispatch<React.SetStateAction<Date | null>>;
+  items: Item[];
+  setItems: React.Dispatch<React.SetStateAction<Item[]>>;
+  selectedPaymentOption: number;
+  setSelectedPaymentOption: React.Dispatch<React.SetStateAction<number>>;
+  isNewInvoiceOpen: boolean;
+  setIsNewInvoiceOpen: React.Dispatch<React.SetStateAction<boolean>>;
+  handlePaymentClick: () => void;
+  isPaymentOpen: boolean;
+  handleChangeSelectedOption: (option: number) => void;
+  methods: UseFormReturn<FormType>;
 }
-
 
 const AppContext = createContext<AppContextType | undefined>(undefined);
 
@@ -67,7 +65,7 @@ const NewInvoiceProvider: FC<{ children: ReactNode }> = ({ children }) => {
     handlePaymentClick,
     isPaymentOpen,
     handleChangeSelectedOption,
-    methods
+    methods,
   };
 
   return <AppContext.Provider value={value}>{children}</AppContext.Provider>;

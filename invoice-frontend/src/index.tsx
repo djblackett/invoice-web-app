@@ -17,13 +17,11 @@ import { createClient } from "graphql-ws";
 import store from "./app/store";
 import App from "./app/App";
 
-
 const VITE_BACKEND_URL = import.meta.env.VITE_BACKEND_URL || "";
 
 if (!VITE_BACKEND_URL) {
   throw new Error("Backend URL was not set during frontend build process");
 }
-
 
 const authLink = setContext((_, { headers }) => {
   const token = localStorage.getItem("library-user-token");
@@ -36,7 +34,9 @@ const authLink = setContext((_, { headers }) => {
 });
 
 const httpLink = createHttpLink({ uri: VITE_BACKEND_URL });
-const wsLink = new GraphQLWsLink(createClient({ url: "ws://" + VITE_BACKEND_URL }));
+const wsLink = new GraphQLWsLink(
+  createClient({ url: "ws://" + VITE_BACKEND_URL }),
+);
 
 const splitLink = split(
   ({ query }) => {
@@ -53,9 +53,8 @@ const splitLink = split(
 const client = new ApolloClient({
   cache: new InMemoryCache(),
   link: splitLink,
-  connectToDevTools: true
+  connectToDevTools: true,
 });
-
 
 const container = document.getElementById("root");
 
@@ -71,6 +70,6 @@ if (container) {
           </HashRouter>
         </Provider>
       </React.StrictMode>
-    </ApolloProvider>
+    </ApolloProvider>,
   );
 }

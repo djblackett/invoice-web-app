@@ -53,7 +53,7 @@ export const GoBack = styled.p`
   margin-left: 1rem;
 
   &:hover {
-    color: #7E88C3;
+    color: #7e88c3;
   }
 `;
 

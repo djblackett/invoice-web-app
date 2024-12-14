@@ -1,9 +1,14 @@
 import React, { useState, useEffect } from "react";
 import { SVG } from "../buttons/NewItemButton";
-import { Main, DropDownHeader, DropDownList, ListItem, ItemButton } from "../../styles/FormDropDownStyles";
+import {
+  Main,
+  DropDownHeader,
+  DropDownList,
+  ListItem,
+  ItemButton,
+} from "../../styles/FormDropDownStyles";
 import { useNewInvoiceContext } from "./NewInvoiceContextProvider";
 import { Invoice } from "src/types/types";
-
 
 const options = ["Net 1 Day", "Net 7 Days", "Net 14 Days", "Net 30 Days"];
 
@@ -24,11 +29,13 @@ interface PaymentTermsProps {
 }
 
 function PaymentTermsDropdown({ invoice }: PaymentTermsProps) {
-
-  const { setSelectedPaymentOption, selectedPaymentOption, isPaymentOpen, handleChangeSelectedOption, handlePaymentClick } = useNewInvoiceContext();
-
-
-
+  const {
+    setSelectedPaymentOption,
+    selectedPaymentOption,
+    isPaymentOpen,
+    handleChangeSelectedOption,
+    handlePaymentClick,
+  } = useNewInvoiceContext();
 
   const [selected, setSelected] = useState("Net 1 Day");
 
@@ -55,12 +62,9 @@ function PaymentTermsDropdown({ invoice }: PaymentTermsProps) {
     }
   }, [selectedPaymentOption, invoice]);
 
-
   return (
     <Main>
-      <DropDownHeader onClick={handlePaymentClick}
-        tabIndex={-1}
-      >
+      <DropDownHeader onClick={handlePaymentClick} tabIndex={-1}>
         <h2>{selected}</h2>
         <SVG>{arrowDown}</SVG>
       </DropDownHeader>

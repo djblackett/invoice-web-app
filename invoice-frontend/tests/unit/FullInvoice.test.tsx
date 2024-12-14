@@ -59,12 +59,20 @@ describe("FullInvoice Component", () => {
     expect(screen.getByText(sampleInvoice.description)).toBeInTheDocument();
 
     // Verify that the sender's address is displayed
-    expect(screen.getByText(sampleInvoice.senderAddress.street)).toBeInTheDocument();
-    expect(screen.getByText(sampleInvoice.senderAddress.city)).toBeInTheDocument();
-    expect(screen.getByText(sampleInvoice.senderAddress.postCode)).toBeInTheDocument();
+    expect(
+      screen.getByText(sampleInvoice.senderAddress.street),
+    ).toBeInTheDocument();
+    expect(
+      screen.getByText(sampleInvoice.senderAddress.city),
+    ).toBeInTheDocument();
+    expect(
+      screen.getByText(sampleInvoice.senderAddress.postCode),
+    ).toBeInTheDocument();
 
     // Verify that the country is displayed twice (once for sender and once for client)
-    expect(screen.getAllByText(sampleInvoice.senderAddress.country)).toHaveLength(2);
+    expect(
+      screen.getAllByText(sampleInvoice.senderAddress.country),
+    ).toHaveLength(2);
 
     // Verify that the invoice date is displayed correctly
     // const invoiceDate = convertedDate(sampleInvoice.createdAt);
@@ -78,10 +86,15 @@ describe("FullInvoice Component", () => {
     expect(screen.getByText(sampleInvoice.clientName)).toBeInTheDocument();
 
     // Verify that the client's address is displayed
-    expect(screen.getByText(sampleInvoice.clientAddress.street)).toBeInTheDocument();
-    expect(screen.getByText(sampleInvoice.clientAddress.city)).toBeInTheDocument();
-    expect(screen.getByText(sampleInvoice.clientAddress.postCode)).toBeInTheDocument();
-
+    expect(
+      screen.getByText(sampleInvoice.clientAddress.street),
+    ).toBeInTheDocument();
+    expect(
+      screen.getByText(sampleInvoice.clientAddress.city),
+    ).toBeInTheDocument();
+    expect(
+      screen.getByText(sampleInvoice.clientAddress.postCode),
+    ).toBeInTheDocument();
 
     // Verify that the client's email is displayed
     expect(screen.getByText(sampleInvoice.clientEmail)).toBeInTheDocument();

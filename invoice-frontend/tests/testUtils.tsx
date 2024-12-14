@@ -4,14 +4,10 @@ import { ThemeProvider } from "styled-components";
 import { lightTheme } from "../src/styles/Themes";
 import { MemoryRouter } from "react-router-dom";
 
-
 const AllTheProviders = ({ children }: { children: React.ReactNode }) => {
   return (
-
     <ThemeProvider theme={lightTheme}>
-      <MemoryRouter>
-        {children}
-      </MemoryRouter>
+      <MemoryRouter>{children}</MemoryRouter>
     </ThemeProvider>
   );
 };

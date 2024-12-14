@@ -1,7 +1,12 @@
 import { useFieldArray, SubmitHandler } from "react-hook-form";
 import { useEffect } from "react";
 import { useMutation } from "@apollo/client";
-import { ADD_INVOICE, ALL_INVOICES, EDIT_INVOICE, GET_INVOICE_BY_ID } from "../graphql/queries";
+import {
+  ADD_INVOICE,
+  ALL_INVOICES,
+  EDIT_INVOICE,
+  GET_INVOICE_BY_ID,
+} from "../graphql/queries";
 import { v4 as uuidv4 } from "uuid";
 import { createInvoiceObject } from "../utils/utilityFunctions";
 import { FormType } from "../types/types";
@@ -9,26 +14,20 @@ import { useNewInvoiceContext } from "../components/form-components/NewInvoiceCo
 import { flushSync } from "react-dom";
 import { useParams } from "react-router-dom";
 
-
 export const useNewInvoiceForm = () => {
   const { id } = useParams();
 
-  const { startDate,
+  const {
+    startDate,
     setIsDraft,
     setIsNewInvoiceOpen,
     selectedPaymentOption,
     setSelectedPaymentOption,
-    methods } = useNewInvoiceContext();
+    methods,
+  } = useNewInvoiceContext();
 
-  const {
-    control,
-    trigger,
-    reset,
-    watch,
-    setError,
-    clearErrors,
-    getValues,
-  } = methods;
+  const { control, trigger, reset, watch, setError, clearErrors, getValues } =
+    methods;
 
   const { replace } = useFieldArray({
     control,
@@ -61,7 +60,6 @@ export const useNewInvoiceForm = () => {
     },
   });
 
-
   const handleFormReset = () => {
     setSelectedPaymentOption(1);
     reset();
@@ -85,7 +83,11 @@ export const useNewInvoiceForm = () => {
 
     const isValid = await trigger();
     if (isValid) {
-      const newInvoice = createInvoiceObject(data, startDate, selectedPaymentOption);
+      const newInvoice = createInvoiceObject(
+        data,
+        startDate,
+        selectedPaymentOption,
+      );
 
       // Ensure quantity and price are numbers
       newInvoice.items = newInvoice.items.map((item) => ({
@@ -120,7 +122,11 @@ export const useNewInvoiceForm = () => {
       data.items = [{ id: "", name: "", quantity: 0, price: 0, total: 0 }];
     }
 
-    const newInvoice = createInvoiceObject(data, startDate, selectedPaymentOption);
+    const newInvoice = createInvoiceObject(
+      data,
+      startDate,
+      selectedPaymentOption,
+    );
 
     // todo - Determine if this is still relevant after refactoring
     // Ensure quantity and price are numbers
@@ -151,7 +157,11 @@ export const useNewInvoiceForm = () => {
     console.log("Submitting update");
     const isValid = await trigger();
     if (isValid) {
-      const newInvoice = createInvoiceObject(data, startDate, selectedPaymentOption);
+      const newInvoice = createInvoiceObject(
+        data,
+        startDate,
+        selectedPaymentOption,
+      );
       newInvoice.id = String(id);
       newInvoice.status = "pending";
       console.log(id);
