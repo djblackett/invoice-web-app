@@ -1,12 +1,14 @@
 FROM node:lts-alpine3.20 AS build
 ENV NODE_ENV=production
-RUN npm install -g npm@10.3.0
+
 
 WORKDIR /usr/src/app/
+RUN apk update && apk add openssl && apk add yarn
 
-COPY package*.json /usr/src/app/
+COPY package.json /usr/src/app/
+COPY yarn.lock /usr/src/app/
 
-RUN npm install && npm i -g @vercel/ncc
+RUN yarn install && yarn global add @vercel/ncc
 
 COPY . /usr/src/app/
 

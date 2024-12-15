@@ -1,13 +1,11 @@
-FROM node:20.11.1
+FROM node:22.11.0
 
 WORKDIR /usr/src/app/
 
 COPY --chown=node:node . .
 
-# ENV DEBUG=playground:*
-# add this line
-RUN apt-get update -y && apt-get install -y openssl
-RUN npm install
+RUN apt-get update -y && apt-get install -y openssl && apt-get install yarn -y
+RUN yarn install --frozen-lockfile
 
 EXPOSE 8000
 
