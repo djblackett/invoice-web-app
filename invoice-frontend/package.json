@@ -12,9 +12,7 @@
     "lint": "eslint --config ./eslint.config.js .",
     "lint:fix": "eslint --config ./eslint.config.js --fix .",
     "lint:css": "stylelint './src/**/*.{ts,tsx}'",
-    "format": "prettier --config ./prettier.config.js --write '**/*.ts*'",
-    "predeploy": "npm run build",
-    "deploy": "gh-pages -d build"
+    "format": "prettier --config ./prettier.config.js --write '**/*.ts*'"
   },
   "dependencies": {
     "@apollo/client": "^3.12.2",
