@@ -85,3 +85,5 @@ videos/da79d212700396383a0b94a15f60324b.webm
 fullpage.png
 invoice-frontend/playwright-report/index.html
 invoice-frontend/playwright-report/index.html
+invoice-frontend/.env.production
+invoice-frontend/.env.production
