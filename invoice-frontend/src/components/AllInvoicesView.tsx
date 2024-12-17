@@ -42,7 +42,7 @@ const AllInvoicesView = ({
         color="#7c5dfa"
         ariaLabel="grid-loading"
         radius="12.5"
-        wrapperStyle={{ margin: "20px", marginTop: "50px" }}
+        wrapperStyle={{ margin: "50px" }}
         wrapperClass="grid-wrapper"
       />
     );
