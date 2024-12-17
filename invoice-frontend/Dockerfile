@@ -11,10 +11,10 @@ RUN yarn install --frozen-lockfile
 
 COPY . .
 RUN rm -rf tests
-ENV VITE_BACKEND_URL=backend:8000
 
 RUN npm run build
 
+FROM nginx:1.27.3-alpine-slim
 
-FROM nginx
-COPY --from=build /usr/src/app/dist /usr/share/nginx/html
+RUN mkdir /usr/share/nginx/html/invoice-web-app
+COPY --from=build /usr/src/app/dist /usr/share/nginx/html/invoice-web-app
