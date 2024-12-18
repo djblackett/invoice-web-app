@@ -75,6 +75,7 @@ function AllInvoicesToolbar({ invoiceList }: AllInvoicesToolbarProps) {
           <FilterDropDown
             icon={arrowDownSVG}
             isOpen={isFilterOpen}
+            setIsFilterOpen={setIsFilterOpen}
             options={["Draft", "Pending", "Paid"]}
           />
         </FilterButton>

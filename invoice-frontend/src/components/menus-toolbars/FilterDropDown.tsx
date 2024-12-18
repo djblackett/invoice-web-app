@@ -5,6 +5,7 @@ import PropTypes from "prop-types";
 import CheckboxSelection from "./CheckboxSelection";
 import { changeFilter } from "../../features/invoices/filterSlice";
 import { StatusKey } from "../../types/types";
+import { ClickOutsideProvider } from "@shelf/react-outside-click";
 
 const Main = styled("div")`
   align-self: center;
@@ -95,13 +96,11 @@ const ListItem = styled.li.attrs({})`
   width: 100%;
   background-color: ${({ theme }) => theme.background};
 
-   &:hover {
-     .styledCheckbox {
-       border-color ${({ theme }) => theme.outline};
-  //box-shadow:0 0 1px 1px #102447;
-  //     border-radius: 3px;
-     }
-   }
+  &:hover {
+    .styledCheckbox {
+      border-color: ${({ theme }) => theme.outline};
+    }
+  }
 `;
 
 const ItemButton = styled.button`
@@ -119,12 +118,14 @@ const ItemButton = styled.button`
 type FilterDropDownProps = {
   icon: ReactElement;
   isOpen: boolean;
+  setIsFilterOpen: (isOpen: boolean) => void;
   options: string[];
 };
 
 export default function FilterDropDown({
   icon,
   isOpen,
+  setIsFilterOpen,
   options,
 }: FilterDropDownProps) {
   const dispatch = useDispatch();
@@ -135,21 +136,27 @@ export default function FilterDropDown({
     dispatch(changeFilter(lowerCaseOption));
   };
 
+  const closeFilter = () => {
+    setIsFilterOpen(false);
+  };
+
   return (
     <Main>
       <DropDownContainer data-testid="filterDropDown">
         <DropDownHeader>{icon}</DropDownHeader>
-        <DropDownListContainer style={{ height: isOpen ? "130px" : 0 }}>
-          <DropDownList data-testid="draft-filter">
-            {options.map((option: string) => (
-              <ListItem key={`${option}-li`} onClick={clickCallback(option)}>
-                <ItemButton>
-                  <CheckboxSelection option={option} />
-                </ItemButton>
-              </ListItem>
-            ))}
-          </DropDownList>
-        </DropDownListContainer>
+        <ClickOutsideProvider onOutsideClick={closeFilter}>
+          <DropDownListContainer style={{ height: isOpen ? "130px" : 0 }}>
+            <DropDownList data-testid="draft-filter">
+              {options.map((option: string) => (
+                <ListItem key={`${option}-li`} onClick={clickCallback(option)}>
+                  <ItemButton>
+                    <CheckboxSelection option={option} />
+                  </ItemButton>
+                </ListItem>
+              ))}
+            </DropDownList>
+          </DropDownListContainer>
+        </ClickOutsideProvider>
       </DropDownContainer>
     </Main>
   );

@@ -711,6 +711,11 @@
   resolved "https://registry.yarnpkg.com/@rollup/rollup-win32-x64-msvc/-/rollup-win32-x64-msvc-4.28.1.tgz#4dff5c4259ebe6c5b4a8f2c5bc3829b7a8447ff0"
   integrity sha512-ZvK2jBafvttJjoIdKm/Q/Bh7IJ1Ose9IBOwpOXcOvW3ikGTQGmKDgxTC6oCAzW6PynbkKP8+um1du81XJHZ0JA==
 
+"@shelf/react-outside-click@^0.1.4":
+  version "0.1.4"
+  resolved "https://registry.yarnpkg.com/@shelf/react-outside-click/-/react-outside-click-0.1.4.tgz#70bcd263b0e9aa490ab4633d014f6f467771638e"
+  integrity sha512-kQQCnL18sXOnKVlRdSIKnNMfMj3ucUQfBVKbqQddM/Z3RGTUYjGCqFP9QzYawbLPDiNqERspZK0SkrXMW8VQiA==
+
 "@sideway/address@^4.1.5":
   version "4.1.5"
   resolved "https://registry.npmjs.org/@sideway/address/-/address-4.1.5.tgz"
