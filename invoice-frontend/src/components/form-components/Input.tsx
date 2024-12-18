@@ -29,6 +29,7 @@ export const InputStyles = styled.input`
 
 type InputProps = {
   width: number;
+  type?: string;
 };
 
 function Input({ width }: InputProps) {

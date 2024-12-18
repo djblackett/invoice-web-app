@@ -22,14 +22,20 @@ export const Form = styled.form`
 export const Label = styled.label`
   margin-bottom: 5px;
   font-weight: bold;
+  color: ${({ theme }) => theme.textPlain};
+  font-family: ${({ theme }) => theme.font};
 `;
 
 export const Input = styled.input`
-  padding: 10px;
-  margin-bottom: 15px;
-  border: 1px solid #ddd;
   border-radius: 4px;
   font-size: 16px;
+  color: ${({ theme }) => theme.textPlain};
+  background-color: ${({ theme }) => theme.editButton};
+  border-color: ${({ theme }) => theme.formFieldOutline};
+  border-width: 1px;
+  padding: 17px 20px 16px 20px;
+  margin-bottom: 1.5rem;
+  font-family: ${({ theme }) => theme.font};
 `;
 
 export const Button = styled.button`

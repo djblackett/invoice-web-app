@@ -11,6 +11,7 @@ import {
 import { useMutation } from "@apollo/client";
 import { LOGIN } from "src/graphql/user-queries";
 import { DarkenScreen } from "src/styles/editStyles";
+import { ClickOutsideProvider } from "@shelf/react-outside-click";
 
 type LoginFormProps = {
   isLoginOpen: boolean;
@@ -43,64 +44,65 @@ const LoginForm = ({
   // Handler for form submission
   const handleSubmit = async (e: SyntheticEvent) => {
     e.preventDefault(); // Prevent default form submission behavior
-    try {
-      await login({
-        variables: {
-          username: username.trim(),
-          password: password.trim(),
-        },
-      });
+
+    const result = await login({
+      variables: {
+        username: username.trim(),
+        password: password.trim(),
+      },
+    });
+    if (result.data) {
       setIsLoginOpen(false);
-    } catch {
-      // The error is already handled in the onError option of useMutation
-      console.log("An error occurred while logging in");
+      // todo - do other login stuff
     }
   };
 
   if (isLoginOpen) {
     return (
-      <DarkenScreen onClick={toggleLogin}>
-        <Container>
-          <h1>Login</h1>
-          <Form onSubmit={handleSubmit}>
-            {/* Username Field */}
-            <Label htmlFor="username">Username:</Label>
-            <Input
-              type="text"
-              id="username"
-              name="username"
-              value={username}
-              onChange={(e) => setUsername(e.target.value)}
-              required
-              placeholder="Enter your username"
-            />
+      <DarkenScreen>
+        <ClickOutsideProvider onOutsideClick={toggleLogin}>
+          <Container>
+            <h1>Login</h1>
+            <Form onSubmit={handleSubmit}>
+              {/* Username Field */}
+              <Label htmlFor="username">Username:</Label>
+              <Input
+                type="text"
+                id="username"
+                name="username"
+                value={username}
+                onChange={(e) => setUsername(e.target.value)}
+                required
+                placeholder="Enter your username"
+              />
 
-            {/* Password Field */}
-            <Label htmlFor="password">Password:</Label>
-            <Input
-              type="password"
-              id="password"
-              name="password"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              required
-              placeholder="Enter your password"
-            />
+              {/* Password Field */}
+              <Label htmlFor="password">Password:</Label>
+              <Input
+                type="password"
+                id="password"
+                name="password"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                required
+                placeholder="Enter your password"
+              />
 
-            {/* Submit Button */}
-            <Button type="submit" disabled={loading}>
-              {loading ? "Logging in..." : "Login"}
-            </Button>
+              {/* Submit Button */}
+              <Button type="submit" disabled={loading}>
+                {loading ? "Logging in..." : "Login"}
+              </Button>
 
-            {/* Error Message */}
-            {error && <ErrorMessage>{error.message}</ErrorMessage>}
+              {/* Error Message */}
+              {error && <ErrorMessage>{error.message}</ErrorMessage>}
 
-            {/* Success Message */}
-            {data && data.login && (
-              <SuccessMessage>Welcome, {data.login.username}!</SuccessMessage>
-            )}
-          </Form>
-        </Container>
+              {/* Success Message */}
+              {data && data.login && (
+                <SuccessMessage>Welcome, {data.login.username}!</SuccessMessage>
+              )}
+            </Form>
+          </Container>
+        </ClickOutsideProvider>
       </DarkenScreen>
     );
   }
