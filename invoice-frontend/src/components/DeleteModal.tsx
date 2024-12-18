@@ -57,6 +57,8 @@ function DeleteModal({ isModalOpen, setIsModalOpen }: DeleteModalProps) {
 
   const closeModal = () => setIsModalOpen(false);
 
+  // todo - fix hardcoded id#
+
   return (
     <DarkenScreen style={{ display: isModalOpen ? "flex" : "none" }}>
       <ModalContainer>
