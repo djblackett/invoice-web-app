@@ -8,7 +8,7 @@ import {
 } from "../constants/types";
 import bcrypt from "bcrypt";
 import { IUserRepo } from "../repositories/userRepo";
-import { validateUserCreate, validateUserList } from "../utils";
+import { validateUserCreate, validateUserList } from "../utils/utils";
 import { SECRET } from "../config/server.config";
 import jwt from "jsonwebtoken";
 import {

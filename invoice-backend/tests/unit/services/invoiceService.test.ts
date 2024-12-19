@@ -4,7 +4,7 @@ import { describe, expect, beforeEach } from "vitest";
 import { mockDeep, mockReset } from "vitest-mock-extended";
 import { IInvoiceRepo } from "../../../src/repositories/InvoiceRepo";
 import { Invoice } from "../../../src/constants/types";
-import * as InvoiceUtils from "../../../src/utils";
+import * as InvoiceUtils from "../../../src/utils/utils";
 import { ValidationException } from "../../../src/config/exception.config";
 
 // Mock utility functions
