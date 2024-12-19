@@ -70,9 +70,9 @@ if (container) {
           <Auth0Provider
             domain="dev-n4e4qk7s3kbzusrs.us.auth0.com"
             clientId="loNmHPxISIwdG530C4nTgEP5lWFVusZW"
+            useRefreshTokens={true}
             authorizationParams={{
               redirect_uri: window.location.origin,
-              // audience: "http://localhost/graphql", // move to ENV var
             }}
           >
             <ApolloProvider client={client}>
