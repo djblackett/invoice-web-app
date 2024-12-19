@@ -52,10 +52,17 @@ const LoginForm = ({
       },
     });
     if (result.data) {
-      setIsLoginOpen(false);
+      setTimeout(() => {
+        setIsLoginOpen(false);
+      }, 3000);
+
       // todo - do other login stuff
     }
   };
+
+  if (error) {
+    console.log(error);
+  }
 
   if (isLoginOpen) {
     return (
@@ -94,11 +101,18 @@ const LoginForm = ({
               </Button>
 
               {/* Error Message */}
-              {error && <ErrorMessage>{error.message}</ErrorMessage>}
+              {error && (
+                <ErrorMessage>
+                  {error.message}: <br />
+                  Incorrect username or password
+                </ErrorMessage>
+              )}
 
               {/* Success Message */}
               {data && data.login && (
-                <SuccessMessage>Welcome, {data.login.username}!</SuccessMessage>
+                <SuccessMessage>
+                  Welcome, {data.login.user.username}!
+                </SuccessMessage>
               )}
             </Form>
           </Container>

@@ -1,3 +1,4 @@
+import { useAuth0 } from "@auth0/auth0-react";
 import { useState } from "react";
 import LoginForm from "src/login/LoginForm";
 import styled from "styled-components";
@@ -136,6 +137,16 @@ function Header({ themeToggler, theme }: HeaderProps) {
     setIsLoginOpen(!isLoginOpen);
   };
 
+  const { loginWithRedirect, user, logout, loginWithPopup, isAuthenticated } =
+    useAuth0();
+
+  const logoutWithRedirect = () =>
+    logout({
+      logoutParams: {
+        returnTo: window.location.origin,
+      },
+    });
+
   return (
     <HeaderContainer>
       <Logo>
@@ -153,12 +164,13 @@ function Header({ themeToggler, theme }: HeaderProps) {
             alt="user avatar"
             style={{ borderRadius: "50%", height: "32px", width: "32px" }}
           />
-          <button onClick={toggleLogin}>Login</button>
-          <LoginForm
-            isLoginOpen={isLoginOpen}
-            setIsLoginOpen={setIsLoginOpen}
-            toggleLogin={toggleLogin}
-          />
+
+          {!isAuthenticated && (
+            <button onClick={() => loginWithRedirect()}>Login</button>
+          )}
+          {isAuthenticated && (
+            <button onClick={() => logoutWithRedirect()}>Logout</button>
+          )}
         </AvatarBox>
       </DarkModeProfileContainer>
     </HeaderContainer>

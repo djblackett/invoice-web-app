@@ -7,6 +7,7 @@ import { AllInvoicesContainer } from "../styles/AllInvoicesStyles";
 import { NewInvoiceProvider } from "../components/form-components/NewInvoiceContextProvider";
 import { useMutation } from "@apollo/client";
 import { ALL_INVOICES, DELETE_ALL_INVOICES } from "src/graphql/queries";
+import { useAuth0 } from "@auth0/auth0-react";
 
 function AllInvoices() {
   const width = useWindowWidth();
@@ -20,12 +21,15 @@ function AllInvoices() {
     removeInvoices();
   };
 
+  const { isAuthenticated, user } = useAuth0();
+
   return (
     <AllInvoicesContainer>
       <NewInvoiceProvider>
         <MemoizedAllInvoicesToolbar invoiceList={invoiceList} />
         <NewInvoice />
       </NewInvoiceProvider>
+      {isAuthenticated && <h1>Welcome {user?.email}</h1>}
       <AllInvoicesView
         invoiceList={invoiceList}
         width={width}
