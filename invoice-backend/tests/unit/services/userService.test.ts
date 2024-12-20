@@ -6,7 +6,7 @@ import { IUserRepo } from "../../../src/repositories/userRepo";
 import { UserService } from "../../../src/services/user.service";
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
-import { vi, Mock } from "vitest";
+import { vi, Mock, beforeEach, describe, expect, it } from "vitest";
 import { InternalServerException } from "../../../src/config/exception.config";
 
 let userRepoMock: MockProxy<IUserRepo>;

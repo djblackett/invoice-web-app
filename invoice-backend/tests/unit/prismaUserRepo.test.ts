@@ -1,5 +1,5 @@
 import "reflect-metadata";
-import { describe, expect, test, vi } from "vitest";
+import { beforeEach, describe, expect, test, vi } from "vitest";
 import prisma from "../../libs/__mocks__/prisma";
 import { DatabaseConnectionMock } from "./database.connection.mock";
 import { IDatabaseConnection } from "../../src/database/database.connection";

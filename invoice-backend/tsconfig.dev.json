@@ -6,5 +6,5 @@
   "compilerOptions": {
     "noEmit": false,
   },
-  "types":   "vitest/globals"
+  "types":   ["vitest/globals"]
 }
