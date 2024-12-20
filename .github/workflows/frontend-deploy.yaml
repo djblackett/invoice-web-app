@@ -147,7 +147,7 @@ jobs:
       - name: Run backend server for e2e tests
         run: |
           cd invoice-backend
-          npm run test & echo "Backend server running" &&
+          npm run start:test & echo "Backend server running" &&
           sleep 2
 
       - name: GraphQL health check
