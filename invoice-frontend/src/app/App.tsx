@@ -9,6 +9,19 @@ import { lightTheme, darkTheme } from "../styles/Themes";
 import ViewInvoice from "../pages/ViewInvoice";
 import Layout from "../components/Layout";
 import AllInvoices from "../pages/AllInvoices";
+import {
+  createHttpLink,
+  split,
+  ApolloClient,
+  InMemoryCache,
+  ApolloProvider,
+} from "@apollo/client";
+import { setContext } from "@apollo/client/link/context";
+import { GraphQLWsLink } from "@apollo/client/link/subscriptions";
+import { getMainDefinition } from "@apollo/client/utilities";
+import { createClient } from "graphql-ws";
+// import { getAccessTokenSilently } from "src/utils/auth";
+import { useAuth0 } from "@auth0/auth0-react";
 
 const Main = styled.div`
   height: 100%;
@@ -56,6 +69,46 @@ loadErrorMessages();
 
 function App() {
   const [theme, setTheme] = useState("light");
+  const { getAccessTokenSilently } = useAuth0();
+
+  const VITE_BACKEND_URL = import.meta.env.VITE_BACKEND_URL || "";
+
+  if (!VITE_BACKEND_URL) {
+    throw new Error("Backend URL was not set during frontend build process");
+  }
+
+  const authLink = setContext(async (_, { headers }) => {
+    const token = await getAccessTokenSilently();
+    return {
+      headers: {
+        ...headers,
+        ...(token ? { authorization: `Bearer ${token}` } : {}),
+      },
+    };
+  });
+
+  const httpLink = createHttpLink({ uri: VITE_BACKEND_URL });
+  const wsLink = new GraphQLWsLink(
+    createClient({ url: "ws://" + VITE_BACKEND_URL }),
+  );
+
+  const splitLink = split(
+    ({ query }) => {
+      const definition = getMainDefinition(query);
+      return (
+        definition.kind === "OperationDefinition" &&
+        definition.operation === "subscription"
+      );
+    },
+    wsLink,
+    authLink.concat(httpLink),
+  );
+
+  const client = new ApolloClient({
+    cache: new InMemoryCache(),
+    link: splitLink,
+    connectToDevTools: true,
+  });
 
   useLayoutEffect(() => {
     if (localStorage.getItem("theme") !== null) {
@@ -87,16 +140,38 @@ function App() {
     },
   ];
 
+  //  const routes = [
+  //    {
+  //      path: "/",
+  //      // index: true,
+  //      element: <Layout />,
+  //      children: [
+  //        {
+  //          path: "invoices/",
+  //          element: <AllInvoices />,
+  //          children: [
+  //            {
+  //              path: ":id",
+  //              element: <ViewInvoice />,
+  //            },
+  //          ],
+  //        },
+  //      ],
+  //    },
+  //  ];
+
   const element = useRoutes(routes);
 
   return (
-    <ThemeProvider theme={theme === "light" ? lightTheme : darkTheme}>
-      <GlobalStyles />
-      <Main id="container">
-        <Header themeToggler={themeToggler} theme={theme} />
-        {element}
-      </Main>
-    </ThemeProvider>
+    <ApolloProvider client={client}>
+      <ThemeProvider theme={theme === "light" ? lightTheme : darkTheme}>
+        <GlobalStyles />
+        <Main id="container">
+          <Header themeToggler={themeToggler} theme={theme} />
+          {element}
+        </Main>
+      </ThemeProvider>
+    </ApolloProvider>
   );
 }
 

@@ -1,6 +1,5 @@
 import { useAuth0 } from "@auth0/auth0-react";
 import { useState } from "react";
-import LoginForm from "src/login/LoginForm";
 import styled from "styled-components";
 
 const HeaderContainer = styled.div`
@@ -140,6 +139,10 @@ function Header({ themeToggler, theme }: HeaderProps) {
   const { loginWithRedirect, user, logout, loginWithPopup, isAuthenticated } =
     useAuth0();
 
+  if (user) {
+    console.log(user);
+  }
+
   const logoutWithRedirect = () =>
     logout({
       logoutParams: {
@@ -160,9 +163,14 @@ function Header({ themeToggler, theme }: HeaderProps) {
 
         <AvatarBox>
           <img
-            src={`${import.meta.env.BASE_URL}assets/image-avatar.jpg`}
+            src={
+              user?.picture
+                ? user.picture
+                : `${import.meta.env.BASE_URL}assets/image-avatar.jpg`
+            }
             alt="user avatar"
             style={{ borderRadius: "50%", height: "32px", width: "32px" }}
+            referrerPolicy="no-referrer"
           />
 
           {!isAuthenticated && (
