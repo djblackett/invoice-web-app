@@ -90,7 +90,6 @@ function AllInvoices() {
           />
         </>
       )}
-
       {/* Clear button below is for debugging the empty invoices page */}
       {/* <button onClick={clearInvoices}>Clear Invoices</button> */}
     </AllInvoicesContainer>
