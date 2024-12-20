@@ -1,3 +1,5 @@
+import { useAuth0 } from "@auth0/auth0-react";
+import { useState } from "react";
 import styled from "styled-components";
 
 const HeaderContainer = styled.div`
@@ -68,7 +70,8 @@ const AvatarBox = styled.div`
   height: 100%;
   width: 80px;
   display: flex;
-  justify-content: center;
+  flex-direction: column;
+  justify-content: space-around;
   align-items: center;
   border-left: 1px solid #494e6e;
 
@@ -128,6 +131,25 @@ type HeaderProps = {
 };
 
 function Header({ themeToggler, theme }: HeaderProps) {
+  const [isLoginOpen, setIsLoginOpen] = useState(false);
+  const toggleLogin = () => {
+    setIsLoginOpen(!isLoginOpen);
+  };
+
+  const { loginWithRedirect, user, logout, loginWithPopup, isAuthenticated } =
+    useAuth0();
+
+  if (user) {
+    console.log(user);
+  }
+
+  const logoutWithRedirect = () =>
+    logout({
+      logoutParams: {
+        returnTo: window.location.origin,
+      },
+    });
+
   return (
     <HeaderContainer>
       <Logo>
@@ -141,10 +163,22 @@ function Header({ themeToggler, theme }: HeaderProps) {
 
         <AvatarBox>
           <img
-            src={`${import.meta.env.BASE_URL}assets/image-avatar.jpg`}
+            src={
+              user?.picture
+                ? user.picture
+                : `${import.meta.env.BASE_URL}assets/image-avatar.jpg`
+            }
             alt="user avatar"
             style={{ borderRadius: "50%", height: "32px", width: "32px" }}
+            referrerPolicy="no-referrer"
           />
+
+          {!isAuthenticated && (
+            <button onClick={() => loginWithRedirect()}>Login</button>
+          )}
+          {isAuthenticated && (
+            <button onClick={() => logoutWithRedirect()}>Logout</button>
+          )}
         </AvatarBox>
       </DarkModeProfileContainer>
     </HeaderContainer>

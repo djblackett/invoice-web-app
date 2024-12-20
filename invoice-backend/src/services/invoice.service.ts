@@ -1,5 +1,5 @@
 import { Invoice } from "../constants/types";
-import { validateInvoiceData, validateInvoiceList } from "../utils";
+import { validateInvoiceData, validateInvoiceList } from "../utils/utils";
 import { inject, injectable } from "inversify";
 import { IInvoiceRepo } from "../repositories/InvoiceRepo";
 import TYPES from "../constants/identifiers";

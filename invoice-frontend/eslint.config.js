@@ -25,6 +25,9 @@ export default [
   },
   { files: ["**/*.{js,mjs,cjs,ts,jsx,tsx}"] },
   { languageOptions: { globals: globals.browser } },
+  pluginJs.configs.recommended,
+  ...tseslint.configs.recommended,
+  eslintPluginPrettierRecommended,
   {
     rules: {
       "array-callback-return": "off",
@@ -36,11 +39,8 @@ export default [
       "no-param-reassign": "off",
       "react/require-default-props": "off",
       "react-hooks/exhaustive-deps": "off",
-      "@typescript-eslint/no-unused-vars": "off",
+      "@typescript-eslint/no-unused-vars": ["off"],
       "no-unsafe-return": "off",
     },
   },
-  pluginJs.configs.recommended,
-  ...tseslint.configs.recommended,
-  eslintPluginPrettierRecommended,
 ];

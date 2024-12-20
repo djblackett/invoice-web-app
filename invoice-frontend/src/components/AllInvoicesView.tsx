@@ -10,7 +10,7 @@ interface StyledLinkProps extends LinkProps {
   isMobile: boolean;
 }
 
-const StyledLink = styled(Link) <StyledLinkProps>`
+const StyledLink = styled(Link)<StyledLinkProps>`
   width: ${(props) => (props.isMobile ? "100%" : "50%")};
   min-width: ${(props) => (props.isMobile ? "auto" : "730px")};
   text-decoration: none;

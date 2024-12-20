@@ -76,8 +76,9 @@ export function getUserResolvers(userService: UserService) {
         }
       },
 
-      login: async (_root: unknown, args: LoginArgs) => {
+      login: async (_root: unknown, args: LoginArgs, { user }: any) => {
         try {
+          const username = await user;
           const loginResponse = await userService.login(
             args.username,
             args.password,

@@ -14,6 +14,7 @@ import { Description } from "../styles/FullInvoiceStyles";
 import { ToastContainer, toast, Theme } from "react-toastify";
 import { useTheme } from "styled-components";
 import useWindowWidth from "../hooks/useWindowWidth";
+import { ClickOutsideProvider } from "@shelf/react-outside-click";
 
 export type DeleteModalProps = {
   isModalOpen: boolean;
@@ -57,25 +58,29 @@ function DeleteModal({ isModalOpen, setIsModalOpen }: DeleteModalProps) {
 
   const closeModal = () => setIsModalOpen(false);
 
+  // todo - fix hardcoded id#
+
   return (
     <DarkenScreen style={{ display: isModalOpen ? "flex" : "none" }}>
-      <ModalContainer>
-        <Confirm>Confirm Deletion</Confirm>
-        <Description>
-          Are you sure you want to delete invoice #XM9141? This action cannot be
-          undone.
-        </Description>
-        <ButtonContainer>
-          <CancelButton handleClick={closeModal} text="Cancel" />
-          <DeleteButton handleClick={handleClick} />
-          <ToastContainer
-            style={{
-              marginTop: width > 1200 ? 0 : "72px",
-              backgroundColor: theme.background,
-            }}
-          />
-        </ButtonContainer>
-      </ModalContainer>
+      <ClickOutsideProvider onOutsideClick={closeModal}>
+        <ModalContainer>
+          <Confirm>Confirm Deletion</Confirm>
+          <Description>
+            Are you sure you want to delete invoice #XM9141? This action cannot
+            be undone.
+          </Description>
+          <ButtonContainer>
+            <CancelButton handleClick={closeModal} text="Cancel" />
+            <DeleteButton handleClick={handleClick} />
+            <ToastContainer
+              style={{
+                marginTop: width > 1200 ? 0 : "72px",
+                backgroundColor: theme.background,
+              }}
+            />
+          </ButtonContainer>
+        </ModalContainer>
+      </ClickOutsideProvider>
     </DarkenScreen>
   );
 }

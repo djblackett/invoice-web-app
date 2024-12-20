@@ -1,27 +1,35 @@
-// import { setContext } from "@apollo/client/link/context";
 // import {
-//   ApolloClient,
 //   createHttpLink,
-//   InMemoryCache,
 //   split,
+//   ApolloClient,
+//   InMemoryCache,
 // } from "@apollo/client";
+// import { setContext } from "@apollo/client/link/context";
 // import { GraphQLWsLink } from "@apollo/client/link/subscriptions";
-// import { createClient } from "graphql-ws";
 // import { getMainDefinition } from "@apollo/client/utilities";
+// import { createClient } from "graphql-ws";
+// import { getAccessTokenSilently } from "src/utils/auth";
 
-// const authLink = setContext((_, { headers }) => {
-//   const token = localStorage.getItem("library-user-token");
+// const VITE_BACKEND_URL = import.meta.env.VITE_BACKEND_URL || "";
+
+// if (!VITE_BACKEND_URL) {
+//   throw new Error("Backend URL was not set during frontend build process");
+// }
+
+// const authLink = setContext(async (_, { headers }) => {
+//   const token = await getAccessTokenSilently();
 //   return {
 //     headers: {
 //       ...headers,
-//       authorization: token ? `Bearer ${token}` : null,
+//       ...(token ? { authorization: `Bearer ${token}` } : {}),
 //     },
 //   };
 // });
 
-// const httpLink = createHttpLink({ uri: "http://localhost:8000/graphql" });
-
-// const wsLink = new GraphQLWsLink(createClient({ url: "ws://localhost:8000" }));
+// const httpLink = createHttpLink({ uri: VITE_BACKEND_URL });
+// const wsLink = new GraphQLWsLink(
+//   createClient({ url: "ws://" + VITE_BACKEND_URL }),
+// );
 
 // const splitLink = split(
 //   ({ query }) => {
