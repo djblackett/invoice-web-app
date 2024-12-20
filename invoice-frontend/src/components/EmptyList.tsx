@@ -58,7 +58,6 @@ const Description = styled.p`
   }
 `;
 
-
 function EmptyList() {
   return (
     <EmptyListContainer>

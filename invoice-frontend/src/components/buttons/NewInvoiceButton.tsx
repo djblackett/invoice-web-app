@@ -1,9 +1,8 @@
 import styled from "styled-components";
 import { WhiteCircle, NewText } from "../../styles/AllInvoicesToolbarStyles";
 
-
 const PrimaryButton = styled.div`
-   border-radius: 24px;
+  border-radius: 24px;
   background-color: #7c5dfa;
   height: 44px;
   width: 90px;
@@ -42,10 +41,18 @@ interface NewInvoiceButtonProps {
   handleClick: () => void;
 }
 function NewInvoiceButton({ handleClick }: NewInvoiceButtonProps) {
-  return <PrimaryButton onClick={handleClick} data-testid="newInvoiceButton" aria-label="Create a new invoice"><WhiteCircle>{plusSign}</WhiteCircle>
-    <NewText>
-      New <span className="largeScreenText">Invoice</span>
-    </NewText></PrimaryButton>;
+  return (
+    <PrimaryButton
+      onClick={handleClick}
+      data-testid="newInvoiceButton"
+      aria-label="Create a new invoice"
+    >
+      <WhiteCircle>{plusSign}</WhiteCircle>
+      <NewText>
+        New <span className="largeScreenText">Invoice</span>
+      </NewText>
+    </PrimaryButton>
+  );
 }
 
 export default NewInvoiceButton;

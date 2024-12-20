@@ -51,7 +51,7 @@ jobs:
       - name: Lint
         run: |
           cd invoice-frontend
-          npm run lint
+          npm run lint:fix
 
       - name: Run Frontend Tests
         run: |
@@ -142,7 +142,7 @@ jobs:
       - name: Lint
         run: |
           cd invoice-backend
-          npm run lint
+          npm run lint:fix
 
       - name: Initialize Prisma
         run: |

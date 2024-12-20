@@ -5,7 +5,7 @@ export const ListContainer = styled.div`
   width: 100%;
   border-radius: 8px;
   grid-template-rows: auto;
-  background-color: ${({theme}) => theme.formBackground};
+  background-color: ${({ theme }) => theme.formBackground};
 `;
 
 export const ItemsHeader = styled.div`
@@ -14,7 +14,7 @@ export const ItemsHeader = styled.div`
   @media (min-width: 600px) {
     display: grid;
     grid-template: 1fr / 220px 62px 116px 61px 49px;
-    color: ${({theme}) => theme.newItemText};
+    color: ${({ theme }) => theme.newItemText};
     margin-top: 1rem;
     padding-left: 0;
     border-radius: 8px 8px 0 0;
@@ -23,7 +23,7 @@ export const ItemsHeader = styled.div`
 `;
 
 export const Col = styled.p`
-  color: ${({theme}) => theme.newItemText};
+  color: ${({ theme }) => theme.newItemText};
   width: fit-content;
   margin: 0;
   padding: 0;
@@ -47,7 +47,7 @@ export const ItemsContainer = styled.div`
   width: 100%;
   height: fit-content;
   border-radius: 8px 8px 0 0;
-  background-color: ${({theme}) => theme.formBackground};
+  background-color: ${({ theme }) => theme.formBackground};
   padding: 0;
   transition: all 250ms ease-in-out;
 
@@ -64,7 +64,7 @@ export const ItemTitle = styled.h1`
   line-height: 32px;
   /* identical to box height, or 178% */
   letter-spacing: -0.375px;
-  color: ${({theme}) => theme.greyText};
+  color: ${({ theme }) => theme.greyText};
   padding: 0;
   margin-top: 1rem;
   margin-bottom: 1rem;

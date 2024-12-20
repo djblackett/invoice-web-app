@@ -1,7 +1,12 @@
 import PropTypes from "prop-types";
 import { useFormContext } from "react-hook-form";
 import CancelButton from "../buttons/CancelButton";
-import { MenuContainer, Save, SaveAndDraftContainer, SaveDraft } from "../../styles/NewInvoiceBottomMenuStyles";
+import {
+  MenuContainer,
+  Save,
+  SaveAndDraftContainer,
+  SaveDraft,
+} from "../../styles/NewInvoiceBottomMenuStyles";
 import { useNewInvoiceContext } from "../form-components/NewInvoiceContextProvider";
 import { useNewInvoiceForm } from "../../hooks/useNewInvoiceForm";
 
@@ -14,24 +19,17 @@ function NewInvoiceBottomMenu({
   closeText,
   justifyCancel,
 }: NewInvoiceBoottemMenuProps) {
-
   const { clearErrors, reset, handleSubmit } = useFormContext();
 
-  const {
-    setIsNewInvoiceOpen,
-  } = useNewInvoiceContext();
+  const { setIsNewInvoiceOpen } = useNewInvoiceContext();
 
-  const {
-    onSubmit,
-    onSubmitDraft
-  } = useNewInvoiceForm();
+  const { onSubmit, onSubmitDraft } = useNewInvoiceForm();
 
   const closeMenu = () => {
     clearErrors();
     setIsNewInvoiceOpen(false);
     reset();
   };
-
 
   return (
     <MenuContainer>
@@ -41,12 +39,12 @@ function NewInvoiceBottomMenu({
         justifySelf={justifyCancel || ""}
       />
       <SaveAndDraftContainer>
-        <SaveDraft type="button" value="Save as draft" onClick={onSubmitDraft} />
-        <Save
+        <SaveDraft
           type="button"
-          value="Save"
-          onClick={handleSubmit(onSubmit)}
+          value="Save as draft"
+          onClick={onSubmitDraft}
         />
+        <Save type="button" value="Save" onClick={handleSubmit(onSubmit)} />
       </SaveAndDraftContainer>
     </MenuContainer>
   );

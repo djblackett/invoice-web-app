@@ -14,19 +14,18 @@ import {
   QuantityPriceContainer,
   SmallBoxContainer,
   SVG,
-  Total
+  Total,
 } from "../../styles/editFormItemStyles";
 import useWindowWidth from "../../hooks/useWindowWidth";
 import { Item } from "../../types/types";
 
 type EditFormItemProps = {
-    item: Item;
-    items: Item[];
-    setItems: React.Dispatch<React.SetStateAction<Item[]>>;
-}
+  item: Item;
+  items: Item[];
+  setItems: React.Dispatch<React.SetStateAction<Item[]>>;
+};
 
 function EditFormItem({ item, items, setItems }: EditFormItemProps) {
-
   const methods = useFormContext();
   const { submitCount } = methods.formState;
   const [name] = useState(item.name);
@@ -37,7 +36,12 @@ function EditFormItem({ item, items, setItems }: EditFormItemProps) {
   const theme = useTheme();
 
   const updateItem = () => {
-    const newItem = { ...item, price: Number(price), total: Number(quantity) * Number(price), quantity: Number(quantity) };
+    const newItem = {
+      ...item,
+      price: Number(price),
+      total: Number(quantity) * Number(price),
+      quantity: Number(quantity),
+    };
     const items2 = [...items];
     const index = items.indexOf(item);
     items2.splice(index, 1, newItem);
@@ -78,28 +82,50 @@ function EditFormItem({ item, items, setItems }: EditFormItemProps) {
     <ItemContainer>
       <Box style={{ width: "100%", marginBottom: "1.5rem" }}>
         <Col1 style={{ marginBottom: "1rem" }}>Item Name</Col1>
-        <ItemName name="name" onChange={handleChange} value={name} style={{ border: (submitCount > 0 && (name === "" || undefined)) ? "1px solid #EC5757" : `1px solid ${theme.formFieldOutline}` }} />
+        <ItemName
+          name="name"
+          onChange={handleChange}
+          value={name}
+          style={{
+            border:
+              submitCount > 0 && (name === "" || undefined)
+                ? "1px solid #EC5757"
+                : `1px solid ${theme.formFieldOutline}`,
+          }}
+        />
       </Box>
       <SmallBoxContainer>
         <Box>
           <Col style={{ marginBottom: "0.625rem" }}>Qty.</Col>
           <Quantity
             onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
-              setQuantity((v) => (e.target.validity.valid ? e.target.value : v))}
+              setQuantity((v) => (e.target.validity.valid ? e.target.value : v))
+            }
             value={quantity}
           />
         </Box>
         <Box>
           <Col style={{ marginBottom: "0.625rem" }}>Price</Col>
-          <Price name="price" onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
-            setPrice((v) => (e.target.validity.valid ? e.target.value : v))}
-          value={price}
-          style={{ borderColor: isTotalValid || !(submitCount > 0 && price.length === 0) ? "" : "#EC5757" }}
+          <Price
+            name="price"
+            onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
+              setPrice((v) => (e.target.validity.valid ? e.target.value : v))
+            }
+            value={price}
+            style={{
+              borderColor:
+                isTotalValid || !(submitCount > 0 && price.length === 0)
+                  ? ""
+                  : "#EC5757",
+            }}
           />
         </Box>
         <Box>
           <Col style={{ marginBottom: "0.625rem" }}>Total</Col>
-          <Total onChange={handleChange} style={{ color: isTotalValid ? "" : "#EC5757" }}>
+          <Total
+            onChange={handleChange}
+            style={{ color: isTotalValid ? "" : "#EC5757" }}
+          >
             {total}
           </Total>
         </Box>
@@ -128,15 +154,28 @@ function EditFormItem({ item, items, setItems }: EditFormItemProps) {
               name="quantity"
               type="text"
               onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
-                setQuantity((v) => (e.target.validity.valid ? e.target.value : v))}
+                setQuantity((v) =>
+                  e.target.validity.valid ? e.target.value : v,
+                )
+              }
               value={quantity}
-              style={{ borderColor: (submitCount > 0 && quantity.length === 0) ? "#EC5757" : "" }}
+              style={{
+                borderColor:
+                  submitCount > 0 && quantity.length === 0 ? "#EC5757" : "",
+              }}
             />
-            <Price name="price"
+            <Price
+              name="price"
               type="text"
               onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
-                setPrice((v) => (e.target.validity.valid ? e.target.value : v))}
-              style={{ borderColor: isTotalValid && !(submitCount > 0 && price.length === 0) ? "" : "#EC5757" }}
+                setPrice((v) => (e.target.validity.valid ? e.target.value : v))
+              }
+              style={{
+                borderColor:
+                  isTotalValid && !(submitCount > 0 && price.length === 0)
+                    ? ""
+                    : "#EC5757",
+              }}
               value={price}
             />
           </QuantityPriceContainer>
@@ -144,7 +183,6 @@ function EditFormItem({ item, items, setItems }: EditFormItemProps) {
       )}
     </ItemContainer>
   );
-
 }
 
 export default EditFormItem;

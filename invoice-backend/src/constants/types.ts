@@ -128,8 +128,13 @@ export interface ContextArgs {
   connection?: GraphQLWSContext;
 }
 
+type Username = {
+  username: string | null;
+};
+
 export interface QueryContext extends BaseContext {
   user?: ReturnedUser;
+  username?: string | null;
   connection?: GraphQLWSContext;
 }
 

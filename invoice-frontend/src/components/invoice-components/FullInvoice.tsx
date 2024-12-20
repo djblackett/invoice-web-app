@@ -4,18 +4,24 @@ import { Invoice } from "../../types/types";
 import { convertedDate } from "../../utils/utilityFunctions";
 import {
   Address,
-  AddressEntry, BottomEntry,
+  AddressEntry,
+  BottomEntry,
   Card,
-  Description, EmbeddedAddress, GenericInvoiceEntry,
+  Description,
+  EmbeddedAddress,
+  GenericInvoiceEntry,
   IdAndDescription,
-  IDNumber, InfoGrid, NamePlusAddress, TopEntry,
-  TopRow
+  IDNumber,
+  InfoGrid,
+  NamePlusAddress,
+  TopEntry,
+  TopRow,
 } from "../../styles/FullInvoiceStyles";
 
 export type FullInvoiceProps = {
   invoice: Invoice;
   loading: boolean;
-}
+};
 
 function FullInvoice({ invoice, loading }: FullInvoiceProps) {
   const width = useWindowWidth();
@@ -72,6 +78,5 @@ function FullInvoice({ invoice, loading }: FullInvoiceProps) {
     </Card>
   );
 }
-
 
 export default FullInvoice;

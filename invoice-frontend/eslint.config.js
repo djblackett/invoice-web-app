@@ -2,6 +2,7 @@ import globals from "globals";
 import pluginJs from "@eslint/js";
 import tseslint from "typescript-eslint";
 import pluginReact from "eslint-plugin-react";
+import eslintPluginPrettierRecommended from "eslint-plugin-prettier/recommended";
 
 /** @type {import('eslint').Linter.Config[]} */
 export default [
@@ -24,12 +25,11 @@ export default [
   },
   { files: ["**/*.{js,mjs,cjs,ts,jsx,tsx}"] },
   { languageOptions: { globals: globals.browser } },
+  pluginJs.configs.recommended,
+  ...tseslint.configs.recommended,
+  eslintPluginPrettierRecommended,
   {
     rules: {
-      indent: ["warn", 2],
-      "linebreak-style": ["warn", "unix"],
-      quotes: ["warn", "double"],
-      semi: ["warn", "always"],
       "array-callback-return": "off",
       "consistent-return": "off",
       "react/react-in-jsx-scope": "off",
@@ -39,10 +39,8 @@ export default [
       "no-param-reassign": "off",
       "react/require-default-props": "off",
       "react-hooks/exhaustive-deps": "off",
-      "@typescript-eslint/no-unused-vars": "off",
+      "@typescript-eslint/no-unused-vars": ["off"],
       "no-unsafe-return": "off",
     },
   },
-  pluginJs.configs.recommended,
-  ...tseslint.configs.recommended,
 ];

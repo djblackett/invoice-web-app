@@ -55,4 +55,3 @@ export const darkTheme = {
   paymentTermsBackground: "#252945",
   paymentOptionBorder: "#1E2139",
 };
-

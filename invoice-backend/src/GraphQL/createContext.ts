@@ -1,11 +1,68 @@
 /* eslint-disable @typescript-eslint/no-unused-expressions */
-import jwt from "jsonwebtoken";
+import jwt, {
+  JwtHeader,
+  JwtPayload,
+  SigningKeyCallback,
+  VerifyErrors,
+  VerifyOptions,
+} from "jsonwebtoken";
+import jwksClient from "jwks-rsa";
 import { ContextArgs, QueryContext, UserDTO } from "../constants/types";
-import container from "../config/inversify.config";
-import { SECRET } from "../config/server.config";
-import { UserService } from "../services/user.service";
 
 const DEBUG = false;
+
+const client = jwksClient({
+  jwksUri: "dev-n4e4qk7s3kbzusrs.us.auth0.com/.well-known/jwks.json",
+});
+
+function getKey(header: JwtHeader, cb: SigningKeyCallback) {
+  client.getSigningKey(header.kid, function (err, key) {
+    const signingKey = key?.getPublicKey();
+    cb(null, signingKey);
+  });
+}
+
+const options: VerifyOptions = {
+  audience: "loNmHPxISIwdG530C4nTgEP5lWFVusZW",
+  issuer: "dev-n4e4qk7s3kbzusrs.us.auth0.com",
+  algorithms: ["RS256"],
+};
+
+function verifyTokenAndGetEmail(
+  token: string,
+  options: VerifyOptions,
+): Promise<string> {
+  return new Promise<string>((resolve, reject) => {
+    console.log(token);
+    jwt.verify(
+      token,
+      getKey,
+      options,
+      (err: VerifyErrors | null, decoded: string | JwtPayload | undefined) => {
+        if (err) {
+          return reject(err);
+        }
+
+        // Ensure decoded is an object (JwtPayload) and has an email property
+        if (
+          typeof decoded === "object" &&
+          decoded !== null &&
+          "email" in decoded
+        ) {
+          const email = (decoded as JwtPayload).email;
+
+          if (typeof email === "string") {
+            return resolve(email);
+          } else {
+            return reject(new Error("Email claim is not a string"));
+          }
+        } else {
+          return reject(new Error("Decoded token does not contain email"));
+        }
+      },
+    );
+  });
+}
 
 export async function createContext({
   req,
@@ -18,52 +75,21 @@ export async function createContext({
   }
 
   // This is a regular request
-  DEBUG && console.log("regular request");
-  DEBUG && console.log("no connection");
+  // DEBUG && console.log("regular request");
+  // DEBUG && console.log("no connection");
 
-  DEBUG && console.log("Regular request, checking authorization header...");
-  const auth = req?.headers.authorization;
-  // console.log("auth", auth);
-
-  if (!auth) {
-    DEBUG && console.log("No authorization header, returning early.");
-    return {};
-  }
-
-  if (!auth.startsWith("Bearer ")) {
-    DEBUG && console.log("Invalid authorization header, returning early.");
-    return {};
-  }
-
-  if (!SECRET) {
-    throw new Error("No secret set");
-  }
-
+  // DEBUG && console.log("Regular request, checking authorization header...");
+  const authHeader = req?.headers.authorization;
   try {
-    const authToken = auth.split(" ")[1];
-    const decodedToken = jwt.verify(authToken, SECRET);
-
-    if (typeof decodedToken === "string") {
-      DEBUG && console.log(decodedToken);
-      return {};
+    if (authHeader && authHeader.startsWith("Bearer")) {
+      const token = authHeader.split(" ")[1];
+      const username = await verifyTokenAndGetEmail(token, options);
+      return { username };
+    } else {
+      return { username: null };
     }
-
-    const userService = container.get(UserService);
-    const user = await userService.getUser(decodedToken.id);
-    if (user) {
-       
-      const userNoPassword: UserDTO = {
-        id: user.id,
-        name: user.name,
-        username: user.username,
-      };
-      // return { user: userNoPassword };
-      return {};
-    }
-    return {};
-  } catch (error: any) {
-    DEBUG && console.error("JWT verification failed", error);
-    throw new Error(`JWT verification failed: ${error.message}`);
+  } catch (e) {
+    console.error("error:", e);
+    return { username: null };
   }
 }
-console.log("After createContext");

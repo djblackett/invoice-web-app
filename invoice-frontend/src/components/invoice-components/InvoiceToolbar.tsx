@@ -57,11 +57,7 @@ export type InvoiceToolBarProps = {
   setIsModalOpen: React.Dispatch<React.SetStateAction<boolean>>;
 };
 
-function InvoiceToolbar({
-  invoice,
-  setIsModalOpen,
-}: InvoiceToolBarProps) {
-
+function InvoiceToolbar({ invoice, setIsModalOpen }: InvoiceToolBarProps) {
   const openModal = () => setIsModalOpen(true);
 
   const invoiceStatus = useMemo(() => {
@@ -90,10 +86,7 @@ function InvoiceToolbar({
         <StatusText>Status</StatusText>
         {invoiceStatus}
       </StatusContainer>
-      <ToolbarButtons
-        invoice={invoice}
-        openModal={openModal}
-      />
+      <ToolbarButtons invoice={invoice} openModal={openModal} />
     </Toolbar>
   );
 }

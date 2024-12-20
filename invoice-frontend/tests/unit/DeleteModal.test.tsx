@@ -1,7 +1,9 @@
 import { describe, it, expect, vi, afterEach } from "vitest";
 import { render, screen, fireEvent, waitFor } from "../testUtils";
 import { MockedProvider } from "@apollo/client/testing";
-import DeleteModal, { DeleteModalProps } from "../../src/components/DeleteModal";
+import DeleteModal, {
+  DeleteModalProps,
+} from "../../src/components/DeleteModal";
 import { REMOVE_INVOICE, ALL_INVOICES } from "../../src/graphql/queries";
 import { ThemeProvider } from "styled-components";
 import { lightTheme } from "../../src/styles/Themes";
@@ -44,17 +46,15 @@ describe("DeleteModal", () => {
   it("renders correctly when modal is open", () => {
     render(
       <MockedProvider mocks={mocks} addTypename={false}>
-
         <DeleteModal {...defaultProps} />
-
-      </MockedProvider>
+      </MockedProvider>,
     );
 
     expect(screen.getByText("Confirm Deletion")).toBeInTheDocument();
     expect(
       screen.getByText(
-        "Are you sure you want to delete invoice #XM9141? This action cannot be undone."
-      )
+        "Are you sure you want to delete invoice #XM9141? This action cannot be undone.",
+      ),
     ).toBeInTheDocument();
     expect(screen.getByText("Cancel")).toBeInTheDocument();
   });
@@ -63,13 +63,12 @@ describe("DeleteModal", () => {
     render(
       <MockedProvider mocks={mocks} addTypename={false}>
         <DeleteModal {...defaultProps} />
-      </MockedProvider>
+      </MockedProvider>,
     );
 
     fireEvent.click(screen.getByText("Cancel"));
     expect(defaultProps.setIsModalOpen).toHaveBeenCalledWith(false);
   });
-
 
   it("displays error message when deleteInvoice mutation fails", async () => {
     const errorMocks = [
@@ -85,12 +84,12 @@ describe("DeleteModal", () => {
     render(
       <MockedProvider mocks={errorMocks} addTypename={false}>
         <DeleteModal {...defaultProps} />
-      </MockedProvider>
+      </MockedProvider>,
     );
 
     fireEvent.click(screen.getByText("Delete"));
     await waitFor(() =>
-      expect(screen.getByText("An error occurred!")).toBeInTheDocument()
+      expect(screen.getByText("An error occurred!")).toBeInTheDocument(),
     );
   });
 
@@ -98,11 +97,9 @@ describe("DeleteModal", () => {
     render(
       <MockedProvider mocks={mocks} addTypename={false}>
         <ThemeProvider theme={lightTheme}>
-
           <DeleteModal {...defaultProps} isModalOpen={false} />
-
         </ThemeProvider>
-      </MockedProvider>
+      </MockedProvider>,
     );
 
     expect(screen.queryByText("Confirm Deletion")).not.toBeVisible();

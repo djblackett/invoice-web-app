@@ -1,7 +1,6 @@
 FROM node:20.13.1-bookworm-slim AS build
 ENV NODE_ENV=production
 
-
 RUN apt-get update -y && apt-get install -y openssl && apt-get install yarn -y
 
 WORKDIR /usr/src/app/

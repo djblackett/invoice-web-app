@@ -41,22 +41,19 @@ type ToolbarButtonsProps = {
   openModal: () => void;
 };
 
-function ToolbarButtons({
-  invoice,
-  openModal,
-}: ToolbarButtonsProps) {
-
-  const { isNewInvoiceOpen, setIsNewInvoiceOpen
-  } = useNewInvoiceContext();
+function ToolbarButtons({ invoice, openModal }: ToolbarButtonsProps) {
+  const { isNewInvoiceOpen, setIsNewInvoiceOpen } = useNewInvoiceContext();
 
   const openEditInvoice = () => {
     setIsNewInvoiceOpen(true);
   };
 
-
   return (
     <ButtonsContainer>
-      <EditButton toggleEditTab={openEditInvoice} isEditOpen={isNewInvoiceOpen} />
+      <EditButton
+        toggleEditTab={openEditInvoice}
+        isEditOpen={isNewInvoiceOpen}
+      />
       <DeleteButton handleClick={openModal} />
       <MarkAsPaidButton invoice={invoice} />
     </ButtonsContainer>

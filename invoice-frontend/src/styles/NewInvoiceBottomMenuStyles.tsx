@@ -11,7 +11,7 @@ export const MenuContainer = styled.div`
   margin-top: 2.6rem;
   margin-bottom: 4rem;
   align-self: center;
-  transform: scale(.90);
+  transform: scale(0.9);
 
   @media (min-width: 325px) {
     justify-content: space-between;
@@ -76,8 +76,6 @@ export const Save = styled(NewInvoiceButton)`
     width: 150px;
   }
 `;
-
-
 
 export const SaveAndDraftContainer = styled.div`
   display: contents;

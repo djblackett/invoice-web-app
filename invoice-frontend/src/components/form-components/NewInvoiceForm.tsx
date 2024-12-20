@@ -10,19 +10,14 @@ import Description from "./Description";
 import { useNewInvoiceForm } from "../../hooks/useNewInvoiceForm";
 import { useNewInvoiceContext } from "./NewInvoiceContextProvider";
 
-
 export default function NewInvoiceForm() {
-
   const { methods } = useNewInvoiceForm();
 
-  const {
-    isNewInvoiceOpen,
-  } = useNewInvoiceContext();
+  const { isNewInvoiceOpen } = useNewInvoiceContext();
 
   return (
     <FormProvider {...methods}>
       <form>
-
         <BillText>Bill From</BillText>
         <CompanyFormInfo />
         <BillText>Bill To</BillText>
@@ -34,10 +29,7 @@ export default function NewInvoiceForm() {
         <EditFormItemList />
 
         <FormErrorList isEditOpen={isNewInvoiceOpen} />
-        <NewInvoiceBottomMenu
-          closeText="Discard"
-          justifyCancel="flex-start"
-        />
+        <NewInvoiceBottomMenu closeText="Discard" justifyCancel="flex-start" />
       </form>
     </FormProvider>
   );

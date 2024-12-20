@@ -5,7 +5,6 @@ services:
       dockerfile: dev.Dockerfile
     environment:
       - VITE_BACKEND_URL=http://localhost/graphql
-      - REACT_APP_ENV=development
     ports:
       - "5173:5173"
     networks:

@@ -6,7 +6,7 @@ import {
   ErrorTextInline,
   Label,
   StreetAddressInput,
-  Input
+  Input,
 } from "../../styles/editStyles";
 import AddressBox from "./AddressBox";
 import LongFormEntry from "./LongFormEntry";
@@ -14,15 +14,11 @@ import useWindowWidth from "../../hooks/useWindowWidth";
 import { Invoice } from "../../types/types";
 import { useNewInvoiceContext } from "./NewInvoiceContextProvider";
 
-
 type ClientFormInfoProps = {
   invoice?: Invoice;
 };
 
-export default function ClientFormInfo({
-  invoice,
-}: ClientFormInfoProps) {
-
+export default function ClientFormInfo({ invoice }: ClientFormInfoProps) {
   const width = useWindowWidth();
   const {
     formState: { errors },
@@ -34,7 +30,8 @@ export default function ClientFormInfo({
   const clientCountry = (
     <LongFormEntry
       style={{ width: width < 768 ? "100%" : "" }}
-      className="client-country">
+      className="client-country"
+    >
       <Label
         htmlFor="clientCountry"
         style={{ color: errors.clientCountry ? "#EC5757" : "" }}
@@ -86,14 +83,20 @@ export default function ClientFormInfo({
           Client&apos;s Email
         </Label>
         {errors.clientEmail?.type === "pattern" && (
-          <ErrorTextInline style={{ position: "absolute", top: "-8px" }}>Invalid email</ErrorTextInline>
+          <ErrorTextInline style={{ position: "absolute", top: "-8px" }}>
+            Invalid email
+          </ErrorTextInline>
         )}
         <Input
           $long
           style={{ border: errors.clientEmail ? "1px solid #EC5757" : "" }}
           type="text"
           defaultValue={invoice ? invoice.clientEmail : ""}
-          {...register("clientEmail", { required: !isDraft, pattern: /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/ })}
+          {...register("clientEmail", {
+            required: !isDraft,
+            pattern:
+              /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/,
+          })}
         />
       </LongFormEntry>
 
@@ -127,7 +130,11 @@ export default function ClientFormInfo({
             }}
             type="text"
             defaultValue={invoice ? invoice.clientAddress.city : ""}
-            {...register("clientCity", { required: !isDraft, pattern: /[\w ]*/i, maxLength: 30 })}
+            {...register("clientCity", {
+              required: !isDraft,
+              pattern: /[\w ]*/i,
+              maxLength: 30,
+            })}
           />
         </FormEntry>
 
@@ -144,7 +151,12 @@ export default function ClientFormInfo({
             }}
             type="text"
             defaultValue={invoice ? invoice.clientAddress.postCode : ""}
-            {...register("clientPostalCode", { required: !isDraft, pattern: /^\w+[\w ]+$/i, maxLength: 10, minLength: 5 })}
+            {...register("clientPostalCode", {
+              required: !isDraft,
+              pattern: /^\w+[\w ]+$/i,
+              maxLength: 10,
+              minLength: 5,
+            })}
           />
         </FormEntry>
 

@@ -7,7 +7,6 @@ const ListContainer = styled.div`
   display: grid;
   width: 100%;
   border-radius: 8px;
-
 `;
 
 const AmountDue = styled.div`
@@ -109,7 +108,6 @@ type ItemListProps = {
 };
 
 function ItemList({ invoice }: ItemListProps) {
-
   if (invoice) {
     return (
       <ListContainer>
@@ -120,9 +118,13 @@ function ItemList({ invoice }: ItemListProps) {
           <Col>Total</Col>
         </ItemsHeader>
         <ItemsContainer>
-          {invoice && invoice?.items?.map((item) => (
-            <InvoiceItem item={item} key={`itemList-${item?.id || ++count}`} />
-          ))}
+          {invoice &&
+            invoice?.items?.map((item) => (
+              <InvoiceItem
+                item={item}
+                key={`itemList-${item?.id || ++count}`}
+              />
+            ))}
         </ItemsContainer>
         <AmountDue>
           <AmountDueTitle>

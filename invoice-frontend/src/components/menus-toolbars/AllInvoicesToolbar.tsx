@@ -4,7 +4,16 @@ import FilterDropDown from "./FilterDropDown";
 import { selectFilter } from "../../features/invoices/filterSlice";
 import useWindowWidth from "../../hooks/useWindowWidth";
 import { Invoice } from "../../types/types";
-import { GridContainer, TitleBox, Title, InvoicesLeft, ControlBox, FilterButton, Filter, arrowDownSVG } from "../../styles/AllInvoicesToolbarStyles";
+import {
+  GridContainer,
+  TitleBox,
+  Title,
+  InvoicesLeft,
+  ControlBox,
+  FilterButton,
+  Filter,
+  arrowDownSVG,
+} from "../../styles/AllInvoicesToolbarStyles";
 import NewInvoiceButton from "../buttons/NewInvoiceButton";
 import { useNewInvoiceContext } from "../form-components/NewInvoiceContextProvider";
 
@@ -12,9 +21,7 @@ type AllInvoicesToolbarProps = {
   invoiceList: Invoice[];
 };
 
-function AllInvoicesToolbar({
-  invoiceList,
-}: AllInvoicesToolbarProps) {
+function AllInvoicesToolbar({ invoiceList }: AllInvoicesToolbarProps) {
   const [isFilterOpen, setIsFilterOpen] = useState(false);
   const [filterText, setFilterText] = useState("total");
   const width = useWindowWidth();
@@ -57,13 +64,18 @@ function AllInvoicesToolbar({
         </InvoicesLeft>
       </TitleBox>
       <ControlBox>
-        <FilterButton onClick={toggling} data-testid="filterButton" aria-label="Filter invoices by status">
+        <FilterButton
+          onClick={toggling}
+          data-testid="filterButton"
+          aria-label="Filter invoices by status"
+        >
           <Filter>
             Filter <span className="wideScreenText">by status</span>
           </Filter>
           <FilterDropDown
             icon={arrowDownSVG}
             isOpen={isFilterOpen}
+            setIsFilterOpen={setIsFilterOpen}
             options={["Draft", "Pending", "Paid"]}
           />
         </FilterButton>

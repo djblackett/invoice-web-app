@@ -1,12 +1,14 @@
 FROM node:22.11.0
-RUN npm install -g npm@10.3.0
+
+RUN corepack enable && \
+    corepack prepare yarn@1.22.22 --activate
 
 WORKDIR /usr/src/app
 
 COPY . .
 
-RUN npm install
-ENV VITE_BACKEND_URL="http://localhost:8000" REACT_APP_ENV="development"
+RUN yarn install
+ENV VITE_BACKEND_URL="http://localhost:8000"
 
 EXPOSE 5173
 

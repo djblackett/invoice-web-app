@@ -1,4 +1,4 @@
-import { ValidationException } from "./config/exception.config";
+import { ValidationException } from "../config/exception.config";
 import {
   CreateUserDTO,
   invoiceListZod,
@@ -8,7 +8,7 @@ import {
   UserDTO,
   UserEntity,
   userZod,
-} from "./constants/types";
+} from "../constants/types";
 
 export const validateInvoiceData = (inputs: unknown) => {
   const validationResult = invoiceZod.safeParse(inputs);

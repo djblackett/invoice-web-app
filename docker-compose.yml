@@ -4,17 +4,34 @@ services:
       context: invoice-frontend
       dockerfile: Dockerfile
     environment:
-      VITE_BACKEND_URL: http://localhost/graphql
-      REACT_APP_ENV: production
-    ports:
-      - "80:80"
+      VITE_BACKEND_URL: http://frontend.localhost/api/graphql
     networks:
       - my_network
-    volumes:
-      - ./nginx.conf:/etc/nginx/nginx.conf
     depends_on:
       backend:
         condition: service_started
+    labels:
+      - "traefik.http.routers.frontend.rule=Host(`frontend.localhost`)"
+      - "traefik.http.services.frontend.loadbalancer.server.port=80"
+    volumes:
+      - ./nginx.conf:/etc/nginx/nginx.conf
+
+  traefik:
+    image: traefik:3.2.3
+    command:
+      - "--api.insecure=true" # Enable the Traefik dashboard (for testing)
+      - "--providers.docker=true" # Enable Docker provider for service discovery
+      - "--entrypoints.web.address=:80" # Define HTTP entrypoint
+    ports:
+      - "80:80"       # Public HTTP port
+      - "8080:8080"   # Traefik dashboard port
+    networks:
+      - my_network
+    volumes:
+      - "/var/run/docker.sock:/var/run/docker.sock" # Allow Traefik to communicate with the Docker socket
+    labels:
+      - "traefik.http.routers.api.rule=Host(`traefik.localhost`)"
+      - "traefik.http.services.api.loadbalancer.server.port=8080"
 
 
   backend:
@@ -24,7 +41,7 @@ services:
     environment:
       - NODE_ENV=production
       - PORT=8000
-      - REQUEST_ORIGIN=http://frontend
+      - REQUEST_ORIGIN=http://frontend.localhost
       - SECRET=Secret
       - DATABASE_URL=postgres://postgres:example@db:5432/db
     networks:
@@ -32,6 +49,9 @@ services:
     depends_on:
       db:
         condition: service_healthy
+    labels:
+      - "traefik.http.routers.backend.rule=Host(`frontend.localhost`) && PathPrefix(`/api`)"
+      - "traefik.http.services.backend.loadbalancer.server.port=8000"
 
   db:
     image: postgres:16.1
@@ -41,7 +61,7 @@ services:
       PGUSER: postgres
       POSTGRES_USER: postgres
     ports:
-      - ":5432"
+      - "5432:5432"
     networks:
       - my_network
     volumes:

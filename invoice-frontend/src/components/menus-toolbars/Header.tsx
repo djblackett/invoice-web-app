@@ -1,3 +1,7 @@
+import { useAuth0 } from "@auth0/auth0-react";
+import { motion } from "framer-motion";
+import { useState } from "react";
+import { Link } from "react-router-dom";
 import styled from "styled-components";
 
 const HeaderContainer = styled.div`
@@ -11,7 +15,6 @@ const HeaderContainer = styled.div`
   background: ${({ theme }) => theme.headerBackground};
   z-index: 1000;
   position: fixed;
-
 
   @media (min-width: 1200px) {
     flex-direction: column;
@@ -69,9 +72,12 @@ const AvatarBox = styled.div`
   height: 100%;
   width: 80px;
   display: flex;
+  flex-direction: column;
   justify-content: center;
   align-items: center;
   border-left: 1px solid #494e6e;
+  /* padding-top: 5px;
+  padding-bottom: 5px; */
 
   @media (min-width: 1200px) {
     border-left: initial;
@@ -87,6 +93,31 @@ const DarkLightBox = styled.div`
   justify-content: center;
   align-items: center;
   cursor: pointer;
+`;
+
+export const LoginLogoutButton = styled(motion.button)`
+  background-color: ${({ theme }) => theme.newButton};
+  border-radius: 24px;
+  /* padding: 5px 16px 6px 16px; */
+  /* padding: 16px 24px 17px 24px; */
+  color: white;
+  border: none;
+  cursor: pointer;
+  font-weight: 700;
+  font-size: 12px;
+  line-height: 15px;
+  margin-bottom: 0.25rem;
+  /* identical to box height, or 125% */
+  width: 90px;
+  height: 44px;
+  letter-spacing: -0.25px;
+  white-space: nowrap;
+  scale: 1;
+  /* box-shadow: ; */
+
+  &:hover {
+    background-color: ${({ theme }) => theme.newButtonHover};
+  }
 `;
 
 const moon = (
@@ -126,15 +157,54 @@ const sun = (
 type HeaderProps = {
   theme: string;
   themeToggler: () => void;
-}
+};
 
 function Header({ themeToggler, theme }: HeaderProps) {
+  const [isLoginOpen, setIsLoginOpen] = useState(false);
+  const toggleLogin = () => {
+    setIsLoginOpen(!isLoginOpen);
+  };
+
+  const { loginWithRedirect, user, logout, loginWithPopup, isAuthenticated } =
+    useAuth0();
+
+  if (user) {
+    console.log(user);
+  }
+
+  const logoutWithRedirect = () =>
+    logout({
+      logoutParams: {
+        returnTo: window.location.origin,
+      },
+    });
+
   return (
     <HeaderContainer>
       <Logo>
-        <BottomColorBoxForLogo />
-        {logo}
+        <Link
+          to={"/"}
+          style={{
+            width: "100%",
+            height: "100%",
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+          }}
+        >
+          <BottomColorBoxForLogo />
+          {logo}
+        </Link>
       </Logo>
+
+      {isAuthenticated && (
+        <LoginLogoutButton
+          onClick={() => logoutWithRedirect()}
+          whileTap={{ scale: 0.85 }}
+        >
+          Logout
+        </LoginLogoutButton>
+      )}
       <DarkModeProfileContainer>
         <DarkLightBox onClick={themeToggler}>
           {theme === "light" ? moon : sun}
@@ -142,10 +212,28 @@ function Header({ themeToggler, theme }: HeaderProps) {
 
         <AvatarBox>
           <img
-            src={`${import.meta.env.BASE_URL}assets/image-avatar.jpg`}
+            src={
+              user?.picture
+                ? user.picture
+                : `${import.meta.env.BASE_URL}assets/image-avatar.jpg`
+            }
             alt="user avatar"
-            style={{ borderRadius: "50%", height: "32px", width: "32px" }}
+            style={{
+              borderRadius: "50%",
+              height: "48px",
+              width: "48px",
+            }}
+            referrerPolicy="no-referrer"
           />
+
+          {/* {isAuthenticated && (
+            <LoginLogoutButton
+              onClick={() => logoutWithRedirect()}
+              whileTap={{ scale: 0.85 }}
+            >
+              Logout
+            </LoginLogoutButton> */}
+          {/* )} */}
         </AvatarBox>
       </DarkModeProfileContainer>
     </HeaderContainer>

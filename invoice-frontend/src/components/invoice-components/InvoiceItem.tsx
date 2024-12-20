@@ -34,7 +34,6 @@ const ItemContainer = styled.div`
   }
 `;
 
-
 const ItemName = styled.p`
   white-space: nowrap;
   justify-self: start;
@@ -105,7 +104,7 @@ const MobileQuantityPrice = styled.p`
   /* identical to box height, or 125% */
   letter-spacing: -0.25px;
   color: ${({ theme }) => theme.greyText};
-  
+
   @media (min-width: 768px) {
     display: none;
   }
@@ -126,7 +125,6 @@ export type ItemProps = {
 };
 
 function InvoiceItem({ item }: ItemProps) {
-
   return (
     <ItemContainer>
       <MobileHelperContainer>
@@ -147,6 +145,5 @@ function InvoiceItem({ item }: ItemProps) {
 export default InvoiceItem;
 
 InvoiceItem.propTypes = {
-   
   item: PropTypes.object.isRequired,
 };

@@ -1,14 +1,13 @@
 FROM node:22.11.0
 
 WORKDIR /usr/src/app/
+RUN apt-get update -y && apt-get install -y openssl && apt install yarn -y
 
-COPY . .
+COPY package.json /usr/src/app/
+COPY yarn.lock /usr/src/app/
 
-RUN npm install -g npm@10.3.0
-RUN apt-get update -y && apt-get install -y openssl
-RUN npm install
+RUN yarn install --frozen-lockfile
 
 EXPOSE 8000
-
 
 CMD ["npm", "run", "dev"]

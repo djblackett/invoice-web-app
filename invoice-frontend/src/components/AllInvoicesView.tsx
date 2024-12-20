@@ -4,13 +4,13 @@ import InvoiceGrid from "./invoice-components/InvoiceGrid";
 import InvoiceCard from "./invoice-components/InvoiceCard";
 import EmptyList from "./EmptyList";
 import { Invoice } from "../types/types";
-
+import { Grid } from "react-loader-spinner";
 
 interface StyledLinkProps extends LinkProps {
   isMobile: boolean;
 }
 
-const StyledLink = styled(Link) <StyledLinkProps>`
+const StyledLink = styled(Link)<StyledLinkProps>`
   width: ${(props) => (props.isMobile ? "100%" : "50%")};
   min-width: ${(props) => (props.isMobile ? "auto" : "730px")};
   text-decoration: none;
@@ -27,10 +27,35 @@ interface AllInvoicesViewProps {
   // scrollToTop: () => void;
 }
 
-const AllInvoicesView = ({ invoiceList, width, loading, error }: AllInvoicesViewProps) => {
-
-  if (loading) return <h2>Loading</h2>;
-  if (error) return <><h1>{error.message}</h1><p style={{ maxWidth: "50%", alignSelf: "center" }}>{JSON.stringify(error)}</p></>;
+const AllInvoicesView = ({
+  invoiceList,
+  width,
+  loading,
+  error,
+}: AllInvoicesViewProps) => {
+  if (loading) {
+    return (
+      <Grid
+        visible={true}
+        height="80"
+        width="80"
+        color="#7c5dfa"
+        ariaLabel="grid-loading"
+        radius="12.5"
+        wrapperStyle={{ margin: "50px" }}
+        wrapperClass="grid-wrapper"
+      />
+    );
+  }
+  if (error)
+    return (
+      <>
+        <h1>{error.message}</h1>
+        <p style={{ maxWidth: "50%", alignSelf: "center" }}>
+          {JSON.stringify(error)}
+        </p>
+      </>
+    );
 
   return (
     <>

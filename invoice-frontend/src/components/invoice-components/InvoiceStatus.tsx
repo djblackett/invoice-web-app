@@ -10,11 +10,10 @@ const InvoiceStatusBox = styled.div`
   justify-content: center;
   align-items: center;
   justify-self: end;
-  
+
   @media (min-width: 600px) {
     justify-self: start;
   }
-
 `;
 
 const TextCircleBox = styled.div`
@@ -52,8 +51,8 @@ function InvoiceStatus({ text, statusType }: InvoiceStatusProps) {
   return (
     <InvoiceStatusBox className={statusType}>
       <TextCircleBox>
-        <Circle className="circle"/>
-        <StatusText >{text}</StatusText>
+        <Circle className="circle" />
+        <StatusText>{text}</StatusText>
       </TextCircleBox>
     </InvoiceStatusBox>
   );
