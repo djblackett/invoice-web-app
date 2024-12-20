@@ -1,7 +1,5 @@
-import globals from "globals";
 import pluginJs from "@eslint/js";
 import tseslint from "typescript-eslint";
-import { vitest } from "vitest";
 
 /** @type {import('eslint').Linter.Config[]} */
 export default [
@@ -18,7 +16,7 @@ export default [
       "src/generated",
     ],
   },
-  { languageOptions: { globals: vitest } },
+  { languageOptions: {} },
   pluginJs.configs.recommended,
   ...tseslint.configs.recommended,
   {
