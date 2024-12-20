@@ -119,7 +119,7 @@ function SlowTextAnimation({ text }: TextAnimationProps) {
           animate={{ opacity: 1 }}
           transition={{
             duration: 0.25,
-            delay: i / 10,
+            delay: i / 20,
           }}
           key={i}
         >
