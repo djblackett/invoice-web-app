@@ -28,7 +28,7 @@ services:
         condition: service_healthy
     ports:
       - "8000:8000"
-    command: sh -c "npx prisma@5.22 generate && npx prisma@5.22 db push && npm run test"
+    command: sh -c "npx prisma@5.22 generate && npx prisma@5.22 db push && npm run start:test"
     environment:
       - NODE_ENV=test
       - PORT=8000
