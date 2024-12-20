@@ -6,8 +6,10 @@ import useInvoices from "../hooks/useInvoices";
 import { AllInvoicesContainer } from "../styles/AllInvoicesStyles";
 import { NewInvoiceProvider } from "../components/form-components/NewInvoiceContextProvider";
 import { useAuth0 } from "@auth0/auth0-react";
-import { motion } from "framer-motion";
 import styled from "styled-components";
+import { LoginLogoutButton } from "src/components/menus-toolbars/Header";
+import TextAnimation from "src/components/text/AnimatedText";
+import { SlidingComponent } from "src/components/buttons/AnimatedButton";
 
 const FadeOutText = styled.span`
   font-size: x-large;
@@ -36,7 +38,7 @@ function AllInvoices() {
   //   removeInvoices();
   // };
 
-  const { isAuthenticated, user, isLoading } = useAuth0();
+  const { isAuthenticated, user, isLoading, loginWithRedirect } = useAuth0();
 
   if (isLoading) {
     return <h1>Loading</h1>;
@@ -46,8 +48,31 @@ function AllInvoices() {
     <AllInvoicesContainer>
       {!isAuthenticated && (
         <>
-          <TextAnimation text={text} />{" "}
-          {/* <SlowTextAnimation text={text2} className="click-here" /> */}
+          <TextAnimation text={text} />
+          <SlidingComponent
+            initial={{ x: "-100%", opacity: 0 }} // Start off-screen to the left
+            animate={{ x: 0, opacity: 1 }} // Animate to original position
+            transition={{
+              type: "spring",
+              stiffness: 100,
+              duration: 0.5,
+              delay: 1,
+            }} // Customize the animation
+            style={{
+              padding: "10px 20px",
+              fontSize: "16px",
+              position: "fixed", // Fixed position to stay relative to the viewport
+              top: "48%", // Adjust as needed
+              left: "48%", // Start from the left
+            }}
+          >
+            <LoginLogoutButton
+              whileTap={{ scale: 0.85 }}
+              onClick={() => loginWithRedirect()}
+            >
+              Login
+            </LoginLogoutButton>
+          </SlidingComponent>
         </>
       )}
       {isAuthenticated && (
@@ -73,59 +98,3 @@ function AllInvoices() {
 }
 
 export default AllInvoices;
-
-const AnimatedText = styled.div`
-  font-family: sans-serif;
-  font-size: 60px;
-  font-weight: 800;
-  letter-spacing: -1px;
-  line-height: 1.2;
-  text-align: center;
-  margin: 100px 0 40px;
-  color: ${({ theme }) => theme.text};
-`;
-
-type TextAnimationProps = {
-  text: string;
-  className?: string;
-};
-
-function TextAnimation({ text }: TextAnimationProps) {
-  return (
-    <AnimatedText className="text-animation">
-      {text.split(" ").map((el, i) => (
-        <motion.span
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{
-            duration: 0.25,
-            delay: i / 6,
-          }}
-          key={i}
-        >
-          {el}{" "}
-        </motion.span>
-      ))}
-    </AnimatedText>
-  );
-}
-
-function SlowTextAnimation({ text }: TextAnimationProps) {
-  return (
-    <AnimatedText className="text-animation">
-      {text.split("").map((el, i) => (
-        <motion.span
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{
-            duration: 0.25,
-            delay: i / 10,
-          }}
-          key={i}
-        >
-          {el}{" "}
-        </motion.span>
-      ))}
-    </AnimatedText>
-  );
-}

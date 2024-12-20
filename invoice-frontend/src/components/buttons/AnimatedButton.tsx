@@ -1,4 +1,5 @@
 import { motion } from "framer-motion";
+import styled from "styled-components";
 
 // .App {
 //   font-family: sans-serif;
@@ -15,6 +16,13 @@ import { motion } from "framer-motion";
 //   border: none;
 //   color: #fafbfc;
 // }
+
+export const SlidingComponent = styled(motion.div)`
+  justify-self: center;
+  align-self: center;
+  height: fit-content;
+  width: fit-content;
+`;
 
 function AnimatedButton() {
   return <motion.button whileTap={{ scale: 0.85 }}>Login</motion.button>;
