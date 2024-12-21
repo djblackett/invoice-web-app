@@ -163,14 +163,14 @@ jobs:
           cd invoice-frontend
           npm run test:unit
 
-      - name: Run frontend server for e2e tests
-        run: |
-          cd invoice-frontend
-          npm run build && npm run preview &
-          sleep 1
+      # - name: Run frontend server for e2e tests
+      #   run: |
+      #     cd invoice-frontend
+      #     npm run build && npm run preview &
+      #     sleep 1
 
-      - name: Wait for frontend
-        run: npx wait-on http://localhost:4173/invoice-web-app/
+      # - name: Wait for frontend
+      #   run: npx wait-on http://localhost:4173/invoice-web-app/
 
       # - name: Run Playwright e2e tests
       #   run: |

@@ -12,6 +12,8 @@ const container = document.getElementById("root");
 export const VITE_REDIRECT_URI =
   process.env.VITE_REDIRECT_URI || window.location.origin;
 
+console.log("VITE_REDIRECT_URI:", VITE_REDIRECT_URI);
+
 if (container) {
   const root = createRoot(container);
 

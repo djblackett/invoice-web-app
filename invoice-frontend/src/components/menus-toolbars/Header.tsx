@@ -173,6 +173,7 @@ function Header({ themeToggler, theme }: HeaderProps) {
     console.log(user);
   }
 
+  console.log("VITE_REDIRECT_URI:", VITE_REDIRECT_URI);
   const logoutWithRedirect = () =>
     logout({
       logoutParams: {
