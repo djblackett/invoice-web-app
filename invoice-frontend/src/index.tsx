@@ -9,6 +9,9 @@ import { Auth0Provider } from "@auth0/auth0-react";
 
 const container = document.getElementById("root");
 
+const VITE_REDIRECT_URI =
+  process.env.VITE_REDIRECT_URI || window.location.origin;
+
 if (container) {
   const root = createRoot(container);
 
@@ -21,7 +24,7 @@ if (container) {
             clientId="loNmHPxISIwdG530C4nTgEP5lWFVusZW"
             // useRefreshTokens={true}
             authorizationParams={{
-              redirect_uri: window.location.origin, // + "/invoice-web-app/invoices/",
+              redirect_uri: VITE_REDIRECT_URI, // + "/invoice-web-app/invoices/",
             }}
           >
             <App />

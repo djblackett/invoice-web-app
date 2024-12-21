@@ -198,6 +198,7 @@ jobs:
     needs: test
     env:
       VITE_BACKEND_URL: https://${{ secrets.VITE_BACKEND_URL}} # Currently points to backend server on Fly.io
+      # VITE_REDIRECT_URI:
       FRONTEND_DIR: invoice-frontend
     steps:
       - name: Checkout repository
@@ -219,7 +220,7 @@ jobs:
 
       - name: Build the project
         working-directory: ${{ env.FRONTEND_DIR }}
-        run: npm run build
+        run: VITE_REDIRECT_URI=https://djblackett.github.io/invoice-web-app/ npm run build
 
       - name: Deploy to GitHub Pages
         uses: peaceiris/actions-gh-pages@v4.0.0
