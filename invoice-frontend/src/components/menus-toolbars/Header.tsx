@@ -2,6 +2,7 @@ import { useAuth0 } from "@auth0/auth0-react";
 import { motion } from "framer-motion";
 import { useState } from "react";
 import { Link } from "react-router-dom";
+import { VITE_REDIRECT_URI } from "src";
 import styled from "styled-components";
 
 const HeaderContainer = styled.div`
@@ -175,7 +176,7 @@ function Header({ themeToggler, theme }: HeaderProps) {
   const logoutWithRedirect = () =>
     logout({
       logoutParams: {
-        returnTo: window.location.origin,
+        returnTo: VITE_REDIRECT_URI,
       },
     });
 
@@ -209,7 +210,6 @@ function Header({ themeToggler, theme }: HeaderProps) {
         <DarkLightBox onClick={themeToggler}>
           {theme === "light" ? moon : sun}
         </DarkLightBox>
-
         <AvatarBox>
           <img
             src={
@@ -225,15 +225,6 @@ function Header({ themeToggler, theme }: HeaderProps) {
             }}
             referrerPolicy="no-referrer"
           />
-
-          {/* {isAuthenticated && (
-            <LoginLogoutButton
-              onClick={() => logoutWithRedirect()}
-              whileTap={{ scale: 0.85 }}
-            >
-              Logout
-            </LoginLogoutButton> */}
-          {/* )} */}
         </AvatarBox>
       </DarkModeProfileContainer>
     </HeaderContainer>
