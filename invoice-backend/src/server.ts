@@ -20,6 +20,7 @@ import { createContext } from "./GraphQL/createContext";
 export const createServer = async () => {
   try {
     const app = await createApp();
+
     const httpServer = http.createServer(app);
     const wsServer = new WebSocketServer({
       server: httpServer,
@@ -49,9 +50,9 @@ export const createServer = async () => {
         },
         NODE_ENV === "production"
           ? ApolloServerPluginLandingPageProductionDefault({
-            graphRef: "my-graph-id@my-graph-variant",
-            footer: false,
-          })
+              graphRef: "my-graph-id@my-graph-variant",
+              footer: false,
+            })
           : ApolloServerPluginLandingPageLocalDefault({ footer: false }),
       ],
     });
