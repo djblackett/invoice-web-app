@@ -57,13 +57,6 @@ function AllInvoices() {
               stiffness: 100,
               duration: 0.5,
               delay: 1,
-            }} // Customize the animation
-            style={{
-              padding: "10px 20px",
-              fontSize: "16px",
-              position: "fixed", // Fixed position to stay relative to the viewport
-              top: "48%", // Adjust as needed
-              left: "48%", // Start from the left
             }}
           >
             <LoginLogoutButton
@@ -81,7 +74,7 @@ function AllInvoices() {
             <MemoizedAllInvoicesToolbar invoiceList={invoiceList} />
             <NewInvoice />
           </NewInvoiceProvider>
-          <h1>Welcome {user?.email}</h1>
+          <h1 style={{ textAlign: "center" }}>Welcome {user?.email}</h1>
           <AllInvoicesView
             invoiceList={invoiceList}
             width={width}

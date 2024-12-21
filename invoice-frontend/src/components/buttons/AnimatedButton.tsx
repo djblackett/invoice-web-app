@@ -6,6 +6,12 @@ export const SlidingComponent = styled(motion.div)`
   align-self: center;
   height: fit-content;
   width: fit-content;
+  padding: "10px 20px";
+  font-size: "16px";
+  position: "fixed";
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%);
 `;
 
 function AnimatedButton() {

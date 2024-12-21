@@ -1,6 +1,5 @@
 import { useAuth0 } from "@auth0/auth0-react";
 import { motion } from "framer-motion";
-import { useState } from "react";
 import { Link } from "react-router-dom";
 import { VITE_REDIRECT_URI } from "src";
 import styled from "styled-components";
@@ -121,6 +120,10 @@ export const LoginLogoutButton = styled(motion.button)`
   }
 `;
 
+const LogoutButton = styled(LoginLogoutButton)`
+  justify-self: start;
+`;
+
 const moon = (
   <svg width="20" height="20" xmlns="http://www.w3.org/2000/svg">
     <path
@@ -161,13 +164,7 @@ type HeaderProps = {
 };
 
 function Header({ themeToggler, theme }: HeaderProps) {
-  const [isLoginOpen, setIsLoginOpen] = useState(false);
-  const toggleLogin = () => {
-    setIsLoginOpen(!isLoginOpen);
-  };
-
-  const { loginWithRedirect, user, logout, loginWithPopup, isAuthenticated } =
-    useAuth0();
+  const { user, logout, isAuthenticated } = useAuth0();
 
   if (user) {
     console.log(user);
@@ -200,12 +197,12 @@ function Header({ themeToggler, theme }: HeaderProps) {
       </Logo>
 
       {isAuthenticated && (
-        <LoginLogoutButton
+        <LogoutButton
           onClick={() => logoutWithRedirect()}
           whileTap={{ scale: 0.85 }}
         >
           Logout
-        </LoginLogoutButton>
+        </LogoutButton>
       )}
       <DarkModeProfileContainer>
         <DarkLightBox onClick={themeToggler}>

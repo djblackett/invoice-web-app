@@ -78,7 +78,10 @@ function App() {
   }
 
   const authLink = setContext(async (_, { headers }) => {
-    const token = await getAccessTokenSilently();
+    const options = {
+      authorizationParams: { audience: "https://invoice-web-app/" }, // todo - make an env var for this
+    };
+    const token = await getAccessTokenSilently(options);
     return {
       headers: {
         ...headers,
