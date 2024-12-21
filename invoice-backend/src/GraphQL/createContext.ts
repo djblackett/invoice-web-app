@@ -8,6 +8,7 @@ import jwt, {
 import jwksClient, { SigningKey } from "jwks-rsa";
 import { ContextArgs, QueryContext, UserDTO } from "../constants/types";
 import { promisify } from "util";
+import { sign } from "crypto";
 
 const DEBUG = false;
 
@@ -15,19 +16,30 @@ const client = jwksClient({
   jwksUri: "https://dev-n4e4qk7s3kbzusrs.us.auth0.com/.well-known/jwks.json",
 });
 
-// Promisify the getSigningKey function
-const getSigningKeyAsync = promisify(client.getSigningKey);
-
-async function getSigningKey(header: JwtHeader): Promise<string> {
-  try {
-    const key: SigningKey | undefined = await getSigningKeyAsync(header.kid);
-    if (key) {
-      return key.getPublicKey();
-    }
-    throw new Error("Unable to retrieve signing key: Not found");
-  } catch (err: any) {
-    throw new Error(`Unable to retrieve signing key: ${err.message}`);
-  }
+/**
+ * Promisified function to retrieve the signing key as a string.
+ * @param kid - The Key ID from the JWT header.
+ * @returns A promise that resolves to the public key string.
+ */
+function getSigningKeyAsync(kid: string): Promise<string> {
+  return new Promise((resolve, reject) => {
+    client.getSigningKey(
+      kid,
+      (err: Error | null, key: SigningKey | undefined) => {
+        if (err) {
+          console.error("Error fetching signing key:", err);
+          return reject(err);
+        }
+        if (!key) {
+          const error = new Error("Signing key not found");
+          console.error(error);
+          return reject(error);
+        }
+        const signingKey = key.getPublicKey();
+        resolve(signingKey);
+      },
+    );
+  });
 }
 
 const options: VerifyOptions = {
@@ -36,7 +48,12 @@ const options: VerifyOptions = {
   algorithms: ["RS256"],
 };
 
-// Function to verify token and extract email
+/**
+ * Verifies a JWT and extracts the user's email from a custom namespaced claim.
+ * @param token - The JWT string to verify.
+ * @param options - Verification options including audience, issuer, and algorithms.
+ * @returns A promise that resolves to the user's email.
+ */
 async function verifyTokenAndGetEmail(
   token: string,
   options: VerifyOptions,
@@ -44,25 +61,38 @@ async function verifyTokenAndGetEmail(
   try {
     console.log("Verifying token:", token);
 
-    // Decode the token to get the header
+    // Define the namespace used for custom claims
+    const namespace = "https://invoice-web-app.com/";
+
+    // Decode the token to extract the header
     const decoded = jwt.decode(token, { complete: true });
-    if (!decoded || typeof decoded !== "object") {
+    if (!decoded || typeof decoded !== "object" || !decoded.header) {
       throw new Error("Invalid token");
     }
 
     const header = decoded.header as JwtHeader;
 
-    // Retrieve the signing key
-    const signingKey = await getSigningKey(header);
+    if (!header.kid) {
+      throw new Error("Invalid Token: no header.kid");
+    }
 
-    // Verify the token
+    // Retrieve the signing key as a string
+    const signingKey = await getSigningKeyAsync(header.kid);
+
+    // Verify the token's signature and claims
     const payload = jwt.verify(token, signingKey, options) as JwtPayload;
 
     console.log("Decoded payload:", payload);
 
-    // Extract the email
-    if (payload.email && typeof payload.email === "string") {
-      return payload.email;
+    // Construct the fully qualified claim name
+    const emailClaim = `${namespace}email`;
+
+    // Extract the email from the custom claim
+    const email = payload[emailClaim];
+
+    if (email && typeof email === "string") {
+      console.log("Extracted Email:", email);
+      return email;
     } else {
       throw new Error("Email claim is missing or invalid");
     }
