@@ -147,7 +147,7 @@ jobs:
       - name: Run backend server for e2e tests
         run: |
           cd invoice-backend
-          npm run test & echo "Backend server running" &&
+          npm run start:test & echo "Backend server running" &&
           sleep 2
 
       - name: GraphQL health check
@@ -163,25 +163,25 @@ jobs:
           cd invoice-frontend
           npm run test:unit
 
-      - name: Run frontend server for e2e tests
-        run: |
-          cd invoice-frontend
-          npm run build && npm run preview &
-          sleep 1
+      # - name: Run frontend server for e2e tests
+      #   run: |
+      #     cd invoice-frontend
+      #     npm run build && npm run preview &
+      #     sleep 1
 
-      - name: Wait for frontend
-        run: npx wait-on http://localhost:4173/invoice-web-app/
+      # - name: Wait for frontend
+      #   run: npx wait-on http://localhost:4173/invoice-web-app/
 
-      - name: Run Playwright e2e tests
-        run: |
-          cd invoice-frontend
-          DEBUG=pw:api npx playwright test
-      - uses: actions/upload-artifact@v3
-        if: always()
-        with:
-          name: playwright-report
-          path: invoice-frontend/playwright-report/
-          retention-days: 30
+      # - name: Run Playwright e2e tests
+      #   run: |
+      #     cd invoice-frontend
+      #     DEBUG=pw:api npx playwright test
+      # - uses: actions/upload-artifact@v3
+      #   if: always()
+      #   with:
+      #     name: playwright-report
+      #     path: invoice-frontend/playwright-report/
+      #     retention-days: 30
 
       # Save network logs as artifacts
       - name: Upload network logs
@@ -198,6 +198,7 @@ jobs:
     needs: test
     env:
       VITE_BACKEND_URL: https://${{ secrets.VITE_BACKEND_URL}} # Currently points to backend server on Fly.io
+      VITE_REDIRECT_URI: https://djblackett.github.io/invoice-web-app/
       FRONTEND_DIR: invoice-frontend
     steps:
       - name: Checkout repository

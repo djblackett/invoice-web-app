@@ -5,6 +5,7 @@ import {
   Invoice,
   InvoiceCreateArgs,
   MarkAsPaidArgs,
+  QueryContext,
 } from "../constants/types";
 import { PubSub } from "graphql-subscriptions";
 import { NotFoundException } from "../config/exception.config";
@@ -15,8 +16,14 @@ export function getInvoiceResolvers(
 ) {
   return {
     Query: {
-      allInvoices: async () => {
+      allInvoices: async (
+        _root: never,
+        _parent: never,
+        context: QueryContext,
+      ) => {
         try {
+          console.log("Context:", context);
+          console.log("Context:", JSON.stringify(context));
           const result = await invoiceService.getInvoices();
           return result;
         } catch (error) {
