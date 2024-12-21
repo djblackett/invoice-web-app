@@ -10,7 +10,7 @@ import { Auth0Provider } from "@auth0/auth0-react";
 const container = document.getElementById("root");
 
 export const VITE_REDIRECT_URI =
-  process.env.VITE_REDIRECT_URI || window.location.origin;
+  import.meta.env.VITE_REDIRECT_URI || window.location.origin;
 
 console.log("VITE_REDIRECT_URI:", VITE_REDIRECT_URI);
 
