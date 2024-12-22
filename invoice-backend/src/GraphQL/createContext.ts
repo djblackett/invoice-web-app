@@ -1,14 +1,6 @@
-import jwt, {
-  JwtHeader,
-  JwtPayload,
-  SigningKeyCallback,
-  VerifyErrors,
-  VerifyOptions,
-} from "jsonwebtoken";
+import jwt, { JwtHeader, JwtPayload, VerifyOptions } from "jsonwebtoken";
 import jwksClient, { SigningKey } from "jwks-rsa";
 import { ContextArgs, QueryContext, UserDTO } from "../constants/types";
-import { promisify } from "util";
-import { sign } from "crypto";
 
 const DEBUG = false;
 

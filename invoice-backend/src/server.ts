@@ -16,12 +16,23 @@ import container from "./config/inversify.config";
 import { NODE_ENV } from "./config/server.config";
 import { expressMiddleware } from "@apollo/server/express4";
 import { createContext } from "./GraphQL/createContext";
+import path from "path";
+import fs from "fs";
+import https from "https";
 
 export const createServer = async () => {
   try {
     const app = await createApp();
 
-    const httpServer = http.createServer(app);
+    const sslOptions = {
+      key: fs.readFileSync(
+        path.join(__dirname, "../certs", "localhost-key.pem"),
+      ),
+      cert: fs.readFileSync(path.join(__dirname, "../certs", "localhost.pem")),
+    };
+
+    const httpServer = https.createServer(sslOptions, app);
+    // const httpServer = http.createServer(app);
     const wsServer = new WebSocketServer({
       server: httpServer,
       path: "/",
