@@ -21,18 +21,21 @@ if (container) {
   root.render(
     <React.StrictMode>
       <Provider store={store}>
-        <HashRouter>
-          <Auth0Provider
-            domain="dev-n4e4qk7s3kbzusrs.us.auth0.com"
-            clientId="loNmHPxISIwdG530C4nTgEP5lWFVusZW"
-            // useRefreshTokens={true}
-            authorizationParams={{
-              redirect_uri: VITE_REDIRECT_URI,
-            }}
-          >
+        <Auth0Provider
+          domain="dev-n4e4qk7s3kbzusrs.us.auth0.com"
+          clientId="loNmHPxISIwdG530C4nTgEP5lWFVusZW"
+          cacheLocation="localstorage" // Optional: Ensures tokens persist across refreshes
+          useRefreshTokens // Optional: Improves token handling
+          authorizationParams={{
+            redirect_uri: VITE_REDIRECT_URI,
+            scope: "openid profile email offline_access", // Include offline_access
+            audience: "https://invoice-web-app/",
+          }}
+        >
+          <HashRouter>
             <App />
-          </Auth0Provider>
-        </HashRouter>
+          </HashRouter>
+        </Auth0Provider>
       </Provider>
     </React.StrictMode>,
   );

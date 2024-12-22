@@ -4,7 +4,7 @@ services:
       context: invoice-frontend
       dockerfile: dev.Dockerfile
     environment:
-      - VITE_BACKEND_URL=http://localhost/graphql
+      - VITE_BACKEND_URL=https://localhost/graphql
     ports:
       - "5173:5173"
     networks:

@@ -71,15 +71,20 @@ function App() {
   const [theme, setTheme] = useState("light");
   const { getAccessTokenSilently } = useAuth0();
 
-  const VITE_BACKEND_URL = import.meta.env.VITE_BACKEND_URL || "";
+  // const VITE_BACKEND_URL = import.meta.env.VITE_BACKEND_URL || "";
+  const VITE_BACKEND_URL = "https://localhost:8000";
 
+  console.log("VITE_BACKEND_URL", VITE_BACKEND_URL);
   if (!VITE_BACKEND_URL) {
     throw new Error("Backend URL was not set during frontend build process");
   }
 
   const authLink = setContext(async (_, { headers }) => {
     const options = {
-      authorizationParams: { audience: "https://invoice-web-app/" }, // todo - make an env var for this
+      authorizationParams: {
+        audience: "https://invoice-web-app/",
+        scope: "openid profile email offline_access",
+      }, // todo - make an env var for this
     };
     const token = await getAccessTokenSilently(options);
     return {

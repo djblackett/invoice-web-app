@@ -87,3 +87,7 @@ invoice-frontend/playwright-report/index.html
 invoice-frontend/playwright-report/index.html
 invoice-frontend/.env.production
 invoice-frontend/.env.production
+
+certs
+*/certs
+*/**/certs
