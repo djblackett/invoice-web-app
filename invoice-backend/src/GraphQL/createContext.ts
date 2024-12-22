@@ -62,7 +62,7 @@ async function verifyTokenAndGetEmail(
     console.log("Verifying token:", token);
 
     // Define the namespace used for custom claims
-    const namespace = "https://invoice-web-app.com/";
+    const namespace = "invoice-web-app/";
 
     // Decode the token to extract the header
     const decoded = jwt.decode(token, { complete: true });
