@@ -76,8 +76,8 @@ const AvatarBox = styled.div`
   justify-content: center;
   align-items: center;
   border-left: 1px solid #494e6e;
-  /* padding-top: 5px;
-  padding-bottom: 5px; */
+  padding-top: 5px;
+  padding-bottom: 5px;
 
   @media (min-width: 1200px) {
     border-left: initial;

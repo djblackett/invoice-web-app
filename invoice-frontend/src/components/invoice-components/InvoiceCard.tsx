@@ -3,8 +3,9 @@ import { useMemo } from "react";
 import InvoiceStatus from "./InvoiceStatus";
 import { getMoney } from "../../utils/utilityFunctions";
 import { Invoice } from "../../types/types";
+import { motion } from "framer-motion";
 
-const Card = styled.div`
+const Card = styled(motion.div)`
   height: 134px;
   width: 100%;
   background-color: ${({ theme }) => theme.background};
@@ -151,7 +152,7 @@ function InvoiceCard({ invoice }: InvoiceCardProps) {
   };
 
   return (
-    <Card>
+    <Card whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
       <IDNumber>
         <span style={{ color: "#7E88C3" }}>#</span>
         {invoice.id.substring(0, 6)}

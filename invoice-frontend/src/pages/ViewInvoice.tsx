@@ -52,6 +52,7 @@ function ViewInvoice() {
         <DeleteModal
           setIsModalOpen={setIsModalOpen}
           isModalOpen={isModalOpen}
+          invoice={invoice}
         />
       </NewInvoiceProvider>
     </ViewContainer>

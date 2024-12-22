@@ -37,8 +37,6 @@ function MarkAsPaidButton({ invoice }: MarkPaidProps) {
   const theme = useTheme();
 
   const [markAsPaid] = useMutation(MARK_AS_PAID, {
-    // todo - is this necessary?
-    // refetchQueries: [{query: GET_INVOICE_BY_ID}],
     onError: (error) => {
       console.log(error.graphQLErrors[0].message);
     },
@@ -63,6 +61,17 @@ function MarkAsPaidButton({ invoice }: MarkPaidProps) {
           theme: (colorMode as Theme) || undefined,
         });
       }
+    } else {
+      toast.error("Cannot mark drafts as paid", {
+        position: "top-right",
+        autoClose: 1000,
+        hideProgressBar: true,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: false,
+        progress: undefined,
+        theme: (colorMode as Theme) || undefined,
+      });
     }
   };
   return (

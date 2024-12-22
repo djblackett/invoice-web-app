@@ -1,8 +1,9 @@
 import styled from "styled-components";
 import PropTypes from "prop-types";
 import React from "react";
+import { motion } from "framer-motion";
 
-const FlexContainer = styled.div`
+const FlexContainer = styled(motion.div)`
   display: flex;
   flex-direction: column;
   width: 100%;
@@ -26,7 +27,18 @@ export type InvoiceGridProps = {
 };
 
 function InvoiceGrid({ children }: InvoiceGridProps) {
-  return <FlexContainer>{children}</FlexContainer>;
+  return (
+    <FlexContainer
+      initial={{ opacity: 0, scale: 0 }}
+      animate={{ opacity: 1, scale: 1 }}
+      transition={{
+        duration: 0.4,
+        scale: { type: "spring", visualDuration: 0.4, bounce: 0.5 },
+      }}
+    >
+      {children}
+    </FlexContainer>
+  );
 }
 
 InvoiceGrid.propTypes = {

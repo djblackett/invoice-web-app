@@ -15,13 +15,19 @@ import { ToastContainer, toast, Theme } from "react-toastify";
 import { useTheme } from "styled-components";
 import useWindowWidth from "../hooks/useWindowWidth";
 import { ClickOutsideProvider } from "@shelf/react-outside-click";
+import { Invoice } from "src/types/types";
 
 export type DeleteModalProps = {
   isModalOpen: boolean;
   setIsModalOpen: React.Dispatch<React.SetStateAction<boolean>>;
+  invoice: Invoice;
 };
 
-function DeleteModal({ isModalOpen, setIsModalOpen }: DeleteModalProps) {
+function DeleteModal({
+  isModalOpen,
+  setIsModalOpen,
+  invoice,
+}: DeleteModalProps) {
   const colorMode = localStorage.getItem("theme");
   const navigate = useNavigate();
   const { id } = useParams<{ id: string }>();
@@ -58,16 +64,14 @@ function DeleteModal({ isModalOpen, setIsModalOpen }: DeleteModalProps) {
 
   const closeModal = () => setIsModalOpen(false);
 
-  // todo - fix hardcoded id#
-
   return (
     <DarkenScreen style={{ display: isModalOpen ? "flex" : "none" }}>
       <ClickOutsideProvider onOutsideClick={closeModal}>
         <ModalContainer>
           <Confirm>Confirm Deletion</Confirm>
           <Description>
-            Are you sure you want to delete invoice #XM9141? This action cannot
-            be undone.
+            {`Are you sure you want to delete invoice #${invoice.id}? This action cannot
+            be undone.`}
           </Description>
           <ButtonContainer>
             <CancelButton handleClick={closeModal} text="Cancel" />
