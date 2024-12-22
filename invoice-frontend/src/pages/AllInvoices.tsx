@@ -10,17 +10,48 @@ import styled from "styled-components";
 import { LoginLogoutButton } from "src/components/menus-toolbars/Header";
 import TextAnimation from "src/components/text/AnimatedText";
 import { SlidingComponent } from "src/components/buttons/AnimatedButton";
+import { useEffect, useState } from "react";
 
-const FadeOutText = styled.span`
+const FadeOutText = styled.h1`
   font-size: x-large;
+  margin: 8px;
+  padding: 0;
   font-weight: 700;
   opacity: 1;
-  transition: all 2 2 2;
+  transition: all 1s ease-in;
+  text-align: center;
+  /* overflow: hidden; */
+
+  @media (min-width: 1200px) {
+    /* padding-right: 48px;
+    padding-left: 48px; */
+    /* margin-bottom: 16px; */
+  }
 `;
 
+type FadeOutProps = {
+  username: string | undefined;
+  className: string;
+};
+
 // todo - make welcome text fade out
-const FadeOut = () => {
-  return <FadeOutText>Welcome {user?.email}</FadeOutText>;
+const FadeOut = ({ username, className }: FadeOutProps) => {
+  const [height, setHeight] = useState("32px");
+  const [opacity, setOpacity] = useState(1);
+  useEffect(() => {
+    setTimeout(() => {
+      // setHeight("0px");
+      setOpacity(0);
+    }, 3000);
+  }, []);
+  return (
+    <FadeOutText
+      className={className}
+      style={{ height: height, opacity: opacity }}
+    >
+      Welcome {username}
+    </FadeOutText>
+  );
 };
 
 function AllInvoices() {
@@ -74,7 +105,7 @@ function AllInvoices() {
             <MemoizedAllInvoicesToolbar invoiceList={invoiceList} />
             <NewInvoice />
           </NewInvoiceProvider>
-          <h1 style={{ textAlign: "center" }}>Welcome {user?.email}</h1>
+          <FadeOut className="welcome-text" username={user?.email}></FadeOut>
           <AllInvoicesView
             invoiceList={invoiceList}
             width={width}

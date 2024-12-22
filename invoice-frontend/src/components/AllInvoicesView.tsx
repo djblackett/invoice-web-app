@@ -5,6 +5,7 @@ import InvoiceCard from "./invoice-components/InvoiceCard";
 import EmptyList from "./EmptyList";
 import { Invoice } from "../types/types";
 import { Grid } from "react-loader-spinner";
+import { memo } from "react";
 
 interface StyledLinkProps extends LinkProps {
   isMobile: boolean;
@@ -78,4 +79,4 @@ const AllInvoicesView = ({
   );
 };
 
-export default AllInvoicesView;
+export default memo(AllInvoicesView);

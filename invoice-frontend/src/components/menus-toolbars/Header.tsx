@@ -95,6 +95,19 @@ const DarkLightBox = styled.div`
   cursor: pointer;
 `;
 
+const LogoLogoutContainer = styled.div`
+  display: flex;
+  flex-direction: row;
+  height: 100%;
+  align-items: center;
+
+  @media (min-width: 1200px) {
+    flex-direction: column;
+    width: 100%;
+    justify-content: space-between;
+  }
+`;
+
 export const LoginLogoutButton = styled(motion.button)`
   background-color: ${({ theme }) => theme.newButton};
   border-radius: 24px;
@@ -106,7 +119,7 @@ export const LoginLogoutButton = styled(motion.button)`
   font-weight: 700;
   font-size: 12px;
   line-height: 15px;
-  margin-bottom: 0.25rem;
+  margin-bottom: 0;
   /* identical to box height, or 125% */
   width: 90px;
   height: 44px;
@@ -115,6 +128,10 @@ export const LoginLogoutButton = styled(motion.button)`
   scale: 1;
   /* box-shadow: ; */
 
+  @media (min-width: 1200px) {
+    margin-bottom: 0.25rem;
+  }
+
   &:hover {
     background-color: ${({ theme }) => theme.newButtonHover};
   }
@@ -122,6 +139,10 @@ export const LoginLogoutButton = styled(motion.button)`
 
 const LogoutButton = styled(LoginLogoutButton)`
   justify-self: start;
+  margin-left: 16px;
+  @media (min-width: 1200px) {
+    margin-left: 0;
+  }
 `;
 
 const moon = (
@@ -180,30 +201,32 @@ function Header({ themeToggler, theme }: HeaderProps) {
 
   return (
     <HeaderContainer>
-      <Logo>
-        <Link
-          to={"/"}
-          style={{
-            width: "100%",
-            height: "100%",
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "center",
-          }}
-        >
-          <BottomColorBoxForLogo />
-          {logo}
-        </Link>
-      </Logo>
+      <LogoLogoutContainer>
+        <Logo>
+          <Link
+            to={"/"}
+            style={{
+              width: "100%",
+              height: "100%",
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+            }}
+          >
+            <BottomColorBoxForLogo />
+            {logo}
+          </Link>
+        </Logo>
 
-      {isAuthenticated && (
-        <LogoutButton
-          onClick={() => logoutWithRedirect()}
-          whileTap={{ scale: 0.85 }}
-        >
-          Logout
-        </LogoutButton>
-      )}
+        {isAuthenticated && (
+          <LogoutButton
+            onClick={() => logoutWithRedirect()}
+            whileTap={{ scale: 0.85 }}
+          >
+            Logout
+          </LogoutButton>
+        )}
+      </LogoLogoutContainer>
       <DarkModeProfileContainer>
         <DarkLightBox onClick={themeToggler}>
           {theme === "light" ? moon : sun}

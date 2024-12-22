@@ -32,8 +32,8 @@ function AllInvoicesToolbar({ invoiceList }: AllInvoicesToolbarProps) {
     setIsNewInvoiceOpen(true);
   };
 
-  const toggling = () => {
-    setIsFilterOpen(!isFilterOpen);
+  const openFilter = () => {
+    if (!isFilterOpen) setIsFilterOpen(true);
   };
 
   const filter = useSelector(selectFilter);
@@ -65,7 +65,7 @@ function AllInvoicesToolbar({ invoiceList }: AllInvoicesToolbarProps) {
       </TitleBox>
       <ControlBox>
         <FilterButton
-          onClick={toggling}
+          onClick={openFilter}
           data-testid="filterButton"
           aria-label="Filter invoices by status"
         >
