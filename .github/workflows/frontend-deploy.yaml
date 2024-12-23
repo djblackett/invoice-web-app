@@ -4,8 +4,8 @@ on:
   push:
     branches:
       - main
-    paths:
-      - "invoice-frontend/**" # Triggers on any changes within the frontend directory
+    # paths:
+    #   - "invoice-frontend/**" # Triggers on any changes within the frontend directory
   pull_request:
     branches:
       - main
