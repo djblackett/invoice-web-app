@@ -72,6 +72,7 @@ jobs:
 
       - name: Generate HTTPS certificates
         run: |
+          mkdir certs && cd certs && \
           mkcert localhost
           # This will generate localhost.pem and localhost-key.pem
 
@@ -156,12 +157,12 @@ jobs:
       - name: Run backend tests (unit and integration)
         run: |
           cd invoice-backend
-          npm run test:unit && npm run test:integration --cert localhost.pem --key localhost-key.pem
+          npm run test:unit && npm run test:integration --cert ../certs/localhost.pem --key ../certs/localhost-key.pem
 
       - name: Run backend server for e2e tests
         run: |
           cd invoice-backend
-          npm run start:test --cert localhost.pem --key localhost-key.pem & echo "Backend server running" &&
+          npm run start:test --cert ../certs/localhost.pem --key ../certs/localhost-key.pem & echo "Backend server running" &&
           sleep 2
 
       - name: GraphQL health check
