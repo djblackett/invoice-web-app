@@ -43,23 +43,3 @@ function TextAnimation({ text }: TextAnimationProps) {
 }
 
 export default TextAnimation;
-
-function SlowTextAnimation({ text }: TextAnimationProps) {
-  return (
-    <AnimatedText className="text-animation">
-      {text.split("").map((el, i) => (
-        <motion.span
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{
-            duration: 0.25,
-            delay: i / 10,
-          }}
-          key={i}
-        >
-          {el}{" "}
-        </motion.span>
-      ))}
-    </AnimatedText>
-  );
-}
