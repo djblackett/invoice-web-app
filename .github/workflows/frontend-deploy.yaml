@@ -21,7 +21,7 @@ jobs:
       SECRET: theSecretStuff # not critical - only for ephemeral testing env
       VITE_BACKEND_URL: https://localhost:8000
       NODE_ENV: CI
-      CERT_DIR: "../../certs/"
+      CERT_DIR: "../certs/"
 
     runs-on: ubuntu-22.04
     services:
@@ -73,7 +73,7 @@ jobs:
 
       - name: Generate HTTPS certificates
         run: |
-          mkdir certs && cd certs && \
+          cd invoice-backend && mkdir certs && cd certs && \
           mkcert localhost
           # This will generate localhost.pem and localhost-key.pem
 
