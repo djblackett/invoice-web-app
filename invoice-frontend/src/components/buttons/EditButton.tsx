@@ -1,12 +1,13 @@
 import styled from "styled-components";
 import Proptypes from "prop-types";
-import React from "react";
+import React, { forwardRef } from "react";
 
 const Button = styled.button`
   background-color: ${({ theme }) => theme.editButton};
   border-radius: 24px;
   padding: 16px 24px 17px 24px;
   color: ${({ theme }) => theme.greyText};
+  /* outline: auto; */
   border: none;
   cursor: pointer;
   font-weight: 700;
@@ -19,20 +20,33 @@ const Button = styled.button`
   &:hover {
     background-color: ${({ theme }) => theme.editButtonHover};
   }
+
+  &:focus {
+    border: 2px solid rgb(18, 22, 243);
+    /* background-color: aquamarine; */
+  }
 `;
 
 type EditButtonProps = {
   isEditOpen: boolean;
   toggleEditTab: React.Dispatch<React.SetStateAction<boolean>>;
+  // editButton: React.MutableRefObject<HTMLButtonElement | null>;
 };
 
-function EditButton({ toggleEditTab, isEditOpen }: EditButtonProps) {
-  const handleClick = () => {
-    toggleEditTab(!isEditOpen);
-  };
-  return <Button onClick={handleClick}>Edit</Button>;
-}
+const EditButton = forwardRef(
+  ({ toggleEditTab, isEditOpen }: EditButtonProps, ref) => {
+    const handleClick = () => {
+      toggleEditTab(!isEditOpen);
+    };
+    return (
+      <Button onClick={handleClick} ref={ref}>
+        Edit
+      </Button>
+    );
+  },
+);
 
+EditButton.displayName = "EditButton";
 export default EditButton;
 
 EditButton.propTypes = {

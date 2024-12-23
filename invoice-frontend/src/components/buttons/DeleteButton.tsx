@@ -1,5 +1,6 @@
 import styled from "styled-components";
 import PropTypes from "prop-types";
+import { SyntheticEvent } from "react";
 
 const Button = styled.button`
   background-color: #ec5757;
@@ -21,7 +22,7 @@ const Button = styled.button`
 `;
 
 type DeleteProps = {
-  handleClick: () => void;
+  handleClick: (e: SyntheticEvent) => void;
 };
 
 function DeleteButton({ handleClick }: DeleteProps) {

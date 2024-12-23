@@ -1,5 +1,5 @@
 import styled from "styled-components";
-import React, { useMemo } from "react";
+import React, { SyntheticEvent, useMemo } from "react";
 import useWindowWidth from "../../hooks/useWindowWidth";
 import ToolbarButtons from "../menus-toolbars/ToolbarButtons";
 import InvoiceStatus from "./InvoiceStatus";
@@ -58,8 +58,10 @@ export type InvoiceToolBarProps = {
 };
 
 function InvoiceToolbar({ invoice, setIsModalOpen }: InvoiceToolBarProps) {
-  const openModal = () => setIsModalOpen(true);
-
+  const openModal = (e: SyntheticEvent) => {
+    e.preventDefault();
+    setIsModalOpen(true);
+  };
   const invoiceStatus = useMemo(() => {
     if (invoice.status === "paid") {
       return <InvoiceStatus statusType="paid" text="Paid" />;

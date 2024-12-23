@@ -5,6 +5,7 @@ import DeleteButton from "../buttons/DeleteButton";
 import MarkAsPaidButton from "../buttons/MarkAsPaidButton";
 import { Invoice } from "../../types/types";
 import { useNewInvoiceContext } from "../form-components/NewInvoiceContextProvider";
+import { SyntheticEvent, useRef } from "react";
 
 const ButtonsContainer = styled.div`
   display: flex;
@@ -38,7 +39,7 @@ const ButtonsContainer = styled.div`
 
 type ToolbarButtonsProps = {
   invoice: Invoice;
-  openModal: () => void;
+  openModal: (e: SyntheticEvent) => void;
 };
 
 function ToolbarButtons({ invoice, openModal }: ToolbarButtonsProps) {
@@ -48,14 +49,17 @@ function ToolbarButtons({ invoice, openModal }: ToolbarButtonsProps) {
     setIsNewInvoiceOpen(true);
   };
 
+  const editButtonRef = useRef<HTMLButtonElement | null>(null);
+
   return (
     <ButtonsContainer>
       <EditButton
         toggleEditTab={openEditInvoice}
         isEditOpen={isNewInvoiceOpen}
+        ref={editButtonRef}
       />
       <DeleteButton handleClick={openModal} />
-      <MarkAsPaidButton invoice={invoice} />
+      <MarkAsPaidButton invoice={invoice} editButtonRef={editButtonRef} />
     </ButtonsContainer>
   );
 }

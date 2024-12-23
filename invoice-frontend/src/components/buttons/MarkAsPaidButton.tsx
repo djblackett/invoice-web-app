@@ -5,6 +5,7 @@ import useWindowWidth from "../../hooks/useWindowWidth";
 import { Invoice } from "../../types/types";
 import { useMutation } from "@apollo/client";
 import { MARK_AS_PAID } from "../../graphql/queries";
+import { MutableRefObject } from "react";
 
 const Button = styled.button`
   background-color: ${({ theme }) => theme.newButton};
@@ -29,9 +30,10 @@ const Button = styled.button`
 
 type MarkPaidProps = {
   invoice: Invoice;
+  editButtonRef: MutableRefObject<HTMLButtonElement | null>;
 };
 
-function MarkAsPaidButton({ invoice }: MarkPaidProps) {
+function MarkAsPaidButton({ invoice, editButtonRef }: MarkPaidProps) {
   const colorMode = localStorage.getItem("theme");
   const width = useWindowWidth();
   const theme = useTheme();
@@ -62,6 +64,11 @@ function MarkAsPaidButton({ invoice }: MarkPaidProps) {
         });
       }
     } else {
+      if (editButtonRef.current) {
+        editButtonRef.current.focus();
+        console.log("ref:", editButtonRef.current);
+      }
+
       toast.error("Cannot mark drafts as paid", {
         position: "top-right",
         autoClose: 1000,
@@ -82,7 +89,7 @@ function MarkAsPaidButton({ invoice }: MarkPaidProps) {
       <ToastContainer
         style={{
           marginTop: width > 1200 ? 0 : "72px",
-          backgroundColor: theme.background,
+          backgroundColor: "transparent", // theme.background,
         }}
       />
     </>
