@@ -1,4 +1,4 @@
-import styled, { useTheme } from "styled-components";
+import styled from "styled-components";
 import { ToastContainer, toast, Theme } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import useWindowWidth from "../../hooks/useWindowWidth";
@@ -36,7 +36,6 @@ type MarkPaidProps = {
 function MarkAsPaidButton({ invoice, editButtonRef }: MarkPaidProps) {
   const colorMode = localStorage.getItem("theme");
   const width = useWindowWidth();
-  const theme = useTheme();
 
   const [markAsPaid] = useMutation(MARK_AS_PAID, {
     onError: (error) => {
