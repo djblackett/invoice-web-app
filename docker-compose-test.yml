@@ -6,7 +6,7 @@ services:
     depends_on:
       - backend-test
     environment:
-      - VITE_BACKEND_URL=http://localhost:8000/graphql
+      - VITE_BACKEND_URL=https://localhost:8000/graphql
     ports:
       - "5173:5173"
     networks:
@@ -14,7 +14,7 @@ services:
     volumes:
       - ./invoice-frontend:/usr/src/app/
     healthcheck:
-      test: ["CMD", "curl", "-f", "http://localhost:5173"]
+      test: ["CMD", "curl", "-f", "https://localhost:5173"]
       interval: 30s
       timeout: 10s
       retries: 3
@@ -32,7 +32,7 @@ services:
     environment:
       - NODE_ENV=test
       - PORT=8000
-      - REQUEST_ORIGIN=http://localhost:5173
+      - REQUEST_ORIGIN=https://localhost:5173
       - SECRET=theSecretStuff
       - DATABASE_URL=postgres://postgres:example@db-test:5432/db-test?schema=public&connect_timeout=300
     networks:

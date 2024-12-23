@@ -1,6 +1,7 @@
 import request from "supertest-graphql";
 import { gql } from "graphql-tag";
 import { createServer } from "../../src/server"; // Adjust the path if necessary
+import { describe, beforeAll, afterAll, beforeEach, it, expect } from "vitest";
 
 let app: any;
 

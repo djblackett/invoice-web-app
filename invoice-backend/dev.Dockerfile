@@ -1,4 +1,4 @@
-FROM node:22.11.0
+FROM node:20.9.0
 
 WORKDIR /usr/src/app/
 RUN apt-get update -y && apt-get install -y openssl && apt install yarn -y

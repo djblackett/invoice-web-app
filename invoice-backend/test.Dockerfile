@@ -1,4 +1,4 @@
-FROM node:22.11.0
+FROM node:20.9.0
 
 WORKDIR /usr/src/app/
 
@@ -9,4 +9,4 @@ RUN yarn install --frozen-lockfile
 
 EXPOSE 8000
 
-CMD ["npm", "run", "test"]
+CMD ["npm", "run", "start:test"]
