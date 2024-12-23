@@ -5,17 +5,17 @@
   "main": "src/index.ts",
   "scripts": {
     "test:unit": "vitest ./tests/unit",
-    "test:integration": "DATABASE_URL=postgres://postgres:example@localhost:5432/db-test vitest ./tests/integration",
+    "test:integration": "DATABASE_URL=postgres://postgres:example@localhost:5432/db-test CERT_DIR='../certs/' vitest ./tests/integration",
     "coverage": "vitest run --coverage",
     "build": "tsc -p tsconfig.build.json",
     "build:slim": "npm run prisma-generate && ncc build ./src/index.ts -o dist -t",
-    "dev": "NODE_ENV=development ts-node-dev --loader ts-node/esm src/index.ts",
+    "dev": "NODE_ENV=development CERT_DIR='../certs/' ts-node-dev --loader ts-node/esm src/index.ts",
     "prod": "NODE_ENV=production ts-node-dev src/index.ts",
     "lint": "eslint .",
     "lint:fix": "eslint . --fix",
     "format": "prettier --write .",
     "start": "NODE_ENV=production node dist/src/index.js",
-    "start:test": "NODE_ENV=test ts-node-dev --loader ts-node/esm src/index.ts",
+    "start:test": "NODE_ENV=test CERT_DIR='../certs/' ts-node-dev --loader ts-node/esm src/index.ts",
     "generate": "graphql-codegen",
     "codegen": "graphql-codegen --config codegen.ts",
     "prisma-generate": "npx prisma@5.22.0 generate",
@@ -69,6 +69,7 @@
     "cors": "^2.8.5",
     "dotenv": "^16.3.1",
     "express": "^4.21.2",
+    "express-oauth2-jwt-bearer": "1.6.0",
     "express-rate-limit": "^7.4.1",
     "graphql": "^16.9.0",
     "graphql-subscriptions": "^2.0.0",
@@ -87,7 +88,7 @@
     "winston": "3.3.1",
     "winston-express": "0.1.1",
     "ws": "^8.13.0",
-    "zod": "^3.23.8",
-    "express-oauth2-jwt-bearer": "1.6.0"
+    "yargs": "^17.7.2",
+    "zod": "^3.23.8"
   }
 }

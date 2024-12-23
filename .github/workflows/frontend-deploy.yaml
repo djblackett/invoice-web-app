@@ -157,12 +157,12 @@ jobs:
       - name: Run backend tests (unit and integration)
         run: |
           cd invoice-backend
-          npm run test:unit && npm run test:integration
+          npm run test:unit && CERT_DIR='../certs/' npm run test:integration
 
       - name: Run backend server for e2e tests
         run: |
           cd invoice-backend
-          npm run start:test --cert ../certs/localhost.pem --key ../certs/localhost-key.pem & echo "Backend server running" &&
+          CERT_DIR='../certs/' npm run start:test & echo "Backend server running" &&
           sleep 2
 
       - name: GraphQL health check
@@ -178,7 +178,7 @@ jobs:
           cd invoice-frontend
           npm run test:unit
 
-      # - name: Run frontend server for e2e tests
+      # - name: Run frontend server for e2e tests`
       #   run: |
       #     cd invoice-frontend
       #     npm run build && npm run preview &

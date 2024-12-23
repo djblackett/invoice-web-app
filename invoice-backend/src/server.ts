@@ -13,7 +13,7 @@ import { makeExecutableSchema } from "@graphql-tools/schema";
 import typeDefs from "./GraphQL/typeDefs";
 import InvoiceController from "./controllers/invoice.controller";
 import container from "./config/inversify.config";
-import { NODE_ENV } from "./config/server.config";
+import { CERT_DIR, NODE_ENV } from "./config/server.config";
 import { expressMiddleware } from "@apollo/server/express4";
 import { createContext } from "./GraphQL/createContext";
 import path from "path";
@@ -24,60 +24,64 @@ export const createServer = async () => {
   try {
     const app = await createApp();
 
-    const sslOptions = {
-      key: fs.readFileSync(
-        path.join(__dirname, "../certs", "localhost-key.pem"),
-      ),
-      cert: fs.readFileSync(path.join(__dirname, "../certs", "localhost.pem")),
-    };
+    if (CERT_DIR) {
+      const sslOptions = {
+        key: fs.readFileSync(
+          path.join(__dirname, CERT_DIR, "localhost-key.pem"),
+        ),
+        cert: fs.readFileSync(path.join(__dirname, CERT_DIR, "localhost.pem")),
+      };
 
-    const httpServer = https.createServer(sslOptions, app);
-    // const httpServer = http.createServer(app);
-    const wsServer = new WebSocketServer({
-      server: httpServer,
-      path: "/",
-    });
+      const httpServer = https.createServer(sslOptions, app);
+      // const httpServer = http.createServer(app);
+      const wsServer = new WebSocketServer({
+        server: httpServer,
+        path: "/",
+      });
 
-    const controller = container.get(InvoiceController);
-    const resolvers = controller.resolvers;
-    const schema = makeExecutableSchema({ typeDefs, resolvers });
+      const controller = container.get(InvoiceController);
+      const resolvers = controller.resolvers;
+      const schema = makeExecutableSchema({ typeDefs, resolvers });
 
-    const serverCleanup = useServer({ schema }, wsServer);
+      const serverCleanup = useServer({ schema }, wsServer);
 
-    const server = new ApolloServer<MyContext>({
-      schema,
-      introspection: true,
-      status400ForVariableCoercionErrors: true,
-      plugins: [
-        ApolloServerPluginDrainHttpServer({ httpServer }),
-        {
-          async serverWillStart() {
-            return {
-              async drainServer() {
-                await serverCleanup.dispose();
-              },
-            };
+      const server = new ApolloServer<MyContext>({
+        schema,
+        introspection: true,
+        status400ForVariableCoercionErrors: true,
+        plugins: [
+          ApolloServerPluginDrainHttpServer({ httpServer }),
+          {
+            async serverWillStart() {
+              return {
+                async drainServer() {
+                  await serverCleanup.dispose();
+                },
+              };
+            },
           },
-        },
-        NODE_ENV === "production"
-          ? ApolloServerPluginLandingPageProductionDefault({
-              graphRef: "my-graph-id@my-graph-variant",
-              footer: false,
-            })
-          : ApolloServerPluginLandingPageLocalDefault({ footer: false }),
-      ],
-    });
+          NODE_ENV === "production"
+            ? ApolloServerPluginLandingPageProductionDefault({
+                graphRef: "my-graph-id@my-graph-variant",
+                footer: false,
+              })
+            : ApolloServerPluginLandingPageLocalDefault({ footer: false }),
+        ],
+      });
 
-    await server.start();
+      await server.start();
 
-    app.use(
-      expressMiddleware(server, {
-        context: async ({ req, connection }: ContextArgs) =>
-          await createContext({ req, connection }),
-      }),
-    );
+      app.use(
+        expressMiddleware(server, {
+          context: async ({ req, connection }: ContextArgs) =>
+            await createContext({ req, connection }),
+        }),
+      );
 
-    return [app, httpServer];
+      return [app, httpServer];
+    } else {
+      throw new Error("Set certificate dir");
+    }
   } catch (error) {
     console.error("Server startup error:", error);
     process.exit(1);

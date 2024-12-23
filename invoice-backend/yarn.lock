@@ -3538,7 +3538,7 @@ dezalgo@^1.0.4:
     asap "^2.0.0"
     wrappy "1"
 
-"diagnostics@github:DABH/diagnostics#master":
+diagnostics@DABH/diagnostics#master:
   version "2.0.3"
   resolved "https://codeload.github.com/DABH/diagnostics/tar.gz/dd61ee65d0a2d4c93d9a4acbddb926b4071de296"
   dependencies:
@@ -7202,7 +7202,7 @@ yargs@^15.3.1:
     y18n "^4.0.0"
     yargs-parser "^18.1.2"
 
-yargs@^17.0.0:
+yargs@^17.0.0, yargs@^17.7.2:
   version "17.7.2"
   resolved "https://registry.yarnpkg.com/yargs/-/yargs-17.7.2.tgz#991df39aca675a192b816e1e0363f9d75d2aa269"
   integrity sha512-7dSzzRQ++CKnNI/krKnYRV7JKKPUXMEh61soaHKg9mrWEhzFWhFnxPxGl+69cD1Ou63C13NUPCnmIcrvqCuM6w==
