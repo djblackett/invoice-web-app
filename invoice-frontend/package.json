@@ -4,11 +4,11 @@
   "private": true,
   "type": "module",
   "scripts": {
-    "dev": "VITE_BACKEND_URL=http://localhost:8000 vite",
+    "dev": "VITE_BACKEND_URL=https://localhost:8000 vite",
     "build": "vite build",
     "preview": "vite preview",
     "test:unit": "tsc -p tsconfig.dev.json && vitest tests/unit",
-    "test:e2e": "VITE_BACKEND_URL=http://localhost:8000/graphql playwright test",
+    "test:e2e": "VITE_BACKEND_URL=https://localhost:8000/graphql playwright test",
     "lint": "eslint --config ./eslint.config.js .",
     "lint:fix": "eslint --config ./eslint.config.js --fix .",
     "lint:css": "stylelint './src/**/*.{ts,tsx}'",

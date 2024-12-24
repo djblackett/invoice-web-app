@@ -7,7 +7,7 @@ COPY package.json /usr/src/app/
 COPY yarn.lock /usr/src/app/
 RUN yarn install --forzen-lockfile && npx playwright install --with-deps
 
-ENV VITE_BACKEND_URL="http://localhost:8000"
+ENV VITE_BACKEND_URL="https://localhost:8000"
 
 EXPOSE 5173
 

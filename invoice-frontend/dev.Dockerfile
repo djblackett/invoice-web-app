@@ -8,7 +8,7 @@ WORKDIR /usr/src/app
 COPY . .
 
 RUN yarn install
-ENV VITE_BACKEND_URL="http://localhost:8000"
+ENV VITE_BACKEND_URL="https://localhost:8000"
 
 EXPOSE 5173
 

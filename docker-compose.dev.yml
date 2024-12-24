@@ -26,7 +26,7 @@ services:
     environment:
       - NODE_ENV=development
       - PORT=8000
-      - REQUEST_ORIGIN=http://localhost
+      - REQUEST_ORIGIN=https://localhost
       - SECRET=theSecretStuff
       - DATABASE_URL=postgres://postgres:example@db-dev:5432/db-dev?schema=public&connect_timout=300
     networks:
