@@ -11,9 +11,7 @@ import {
 } from "../styles/DeleteModalStyles";
 import { DarkenScreen } from "../styles/editStyles";
 import { Description } from "../styles/FullInvoiceStyles";
-import { ToastContainer, toast, Theme } from "react-toastify";
-import { useTheme } from "styled-components";
-import useWindowWidth from "../hooks/useWindowWidth";
+import { toast, Theme } from "react-toastify";
 import { ClickOutsideProvider } from "@shelf/react-outside-click";
 import { Invoice } from "src/types/types";
 
@@ -31,8 +29,6 @@ function DeleteModal({
   const colorMode = localStorage.getItem("theme");
   const navigate = useNavigate();
   const { id } = useParams<{ id: string }>();
-  const width = useWindowWidth();
-  const theme = useTheme();
 
   const [deleteInvoice] = useMutation(REMOVE_INVOICE, {
     refetchQueries: [{ query: ALL_INVOICES }],
@@ -76,12 +72,6 @@ function DeleteModal({
           <ButtonContainer>
             <CancelButton handleClick={closeModal} text="Cancel" />
             <DeleteButton handleClick={handleClick} />
-            <ToastContainer
-              style={{
-                marginTop: width > 1200 ? 0 : "72px",
-                backgroundColor: theme.background,
-              }}
-            />
           </ButtonContainer>
         </ModalContainer>
       </ClickOutsideProvider>

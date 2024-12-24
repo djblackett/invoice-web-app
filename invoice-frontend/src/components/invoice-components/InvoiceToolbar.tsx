@@ -4,21 +4,20 @@ import useWindowWidth from "../../hooks/useWindowWidth";
 import ToolbarButtons from "../menus-toolbars/ToolbarButtons";
 import InvoiceStatus from "./InvoiceStatus";
 import { Invoice } from "../../types/types";
+import { toast } from "react-toastify";
 
 const Toolbar = styled.div`
   height: 88px;
-
   display: contents;
   flex-direction: column;
   justify-content: space-between;
   align-items: center;
-
+  box-shadow: 0 10px 10px -10px rgba(72, 84, 159, 0.100397);
   width: 100%;
   z-index: 1;
 
   @media (min-width: 600px) {
     display: flex;
-
     flex-direction: row;
     background-color: ${({ theme }) => theme.background};
     border-radius: 8px;
@@ -27,8 +26,6 @@ const Toolbar = styled.div`
   @media (min-width: 1200px) {
     max-width: 730px;
   }
-
-  box-shadow: 0 10px 10px -10px rgba(72, 84, 159, 0.100397);
 `;
 
 const StatusContainer = styled.div`
@@ -60,6 +57,7 @@ export type InvoiceToolBarProps = {
 function InvoiceToolbar({ invoice, setIsModalOpen }: InvoiceToolBarProps) {
   const openModal = (e: SyntheticEvent) => {
     e.preventDefault();
+    toast.clearWaitingQueue();
     setIsModalOpen(true);
   };
   const invoiceStatus = useMemo(() => {

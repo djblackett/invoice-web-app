@@ -5,7 +5,7 @@ import useWindowWidth from "../../hooks/useWindowWidth";
 import { Invoice } from "../../types/types";
 import { useMutation } from "@apollo/client";
 import { MARK_AS_PAID } from "../../graphql/queries";
-import { MutableRefObject } from "react";
+import { MutableRefObject, SyntheticEvent } from "react";
 
 const Button = styled.button`
   background-color: ${({ theme }) => theme.newButton};
@@ -43,7 +43,9 @@ function MarkAsPaidButton({ invoice, editButtonRef }: MarkPaidProps) {
     },
   });
 
-  const handleClick = async () => {
+  const handleClick = async (e: SyntheticEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
     if (invoice.status === "pending") {
       const response = await markAsPaid({
         variables: {
