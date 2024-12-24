@@ -233,6 +233,20 @@ jobs:
           corepack enable
           corepack prepare yarn@1.22.22 --activate
 
+      - name: Set up mkcert
+        run: |
+          sudo apt-get update
+          sudo apt-get install libnss3-tools
+          wget -O mkcert https://github.com/FiloSottile/mkcert/releases/download/v1.4.3/mkcert-v1.4.3-linux-amd64
+          chmod +x mkcert
+          sudo mv mkcert /usr/local/bin/
+          mkcert -install
+
+      - name: create certs
+        working-directory: ${{ env.FRONTEND_DIR }}
+        run: |
+          mkdir certs && cd certs && \
+          mkcert localhost
       - name: Install dependencies
         working-directory: ${{ env.FRONTEND_DIR }}
         run: yarn install --frozen-lockfile
