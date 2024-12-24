@@ -37,6 +37,7 @@ describe("DeleteModal", () => {
   const defaultProps: DeleteModalProps = {
     isModalOpen: true,
     setIsModalOpen: vi.fn(),
+    invoice: { id: "1" },
   };
 
   afterEach(() => {
@@ -52,9 +53,7 @@ describe("DeleteModal", () => {
 
     expect(screen.getByText("Confirm Deletion")).toBeInTheDocument();
     expect(
-      screen.getByText(
-        "Are you sure you want to delete invoice #XM9141? This action cannot be undone.",
-      ),
+      screen.getByText(/Are you sure you want to delete invoice/),
     ).toBeInTheDocument();
     expect(screen.getByText("Cancel")).toBeInTheDocument();
   });
