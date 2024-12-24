@@ -22,6 +22,8 @@ import { getMainDefinition } from "@apollo/client/utilities";
 import { createClient } from "graphql-ws";
 // import { getAccessTokenSilently } from "src/utils/auth";
 import { useAuth0 } from "@auth0/auth0-react";
+import { ToastContainer } from "react-toastify";
+import useWindowWidth from "src/hooks/useWindowWidth";
 
 const Main = styled.div`
   height: 100%;
@@ -131,6 +133,8 @@ function App() {
     localStorage.setItem("theme", theme === "light" ? "dark" : "light");
   };
 
+  const width = useWindowWidth();
+
   const routes = [
     {
       path: "/",
@@ -176,6 +180,12 @@ function App() {
         <GlobalStyles />
         <Main id="container">
           <Header themeToggler={themeToggler} theme={theme} />
+          <ToastContainer
+            style={{
+              marginTop: width > 1200 ? 0 : "72px",
+              backgroundColor: "transparent", // theme.background,
+            }}
+          />
           {element}
         </Main>
       </ThemeProvider>

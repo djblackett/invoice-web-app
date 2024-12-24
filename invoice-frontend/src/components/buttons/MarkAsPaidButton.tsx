@@ -35,7 +35,6 @@ type MarkPaidProps = {
 
 function MarkAsPaidButton({ invoice, editButtonRef }: MarkPaidProps) {
   const colorMode = localStorage.getItem("theme");
-  const width = useWindowWidth();
 
   const [markAsPaid] = useMutation(MARK_AS_PAID, {
     onError: (error) => {
@@ -44,8 +43,6 @@ function MarkAsPaidButton({ invoice, editButtonRef }: MarkPaidProps) {
   });
 
   const handleClick = async (e: SyntheticEvent) => {
-    e.preventDefault();
-    e.stopPropagation();
     if (invoice.status === "pending") {
       const response = await markAsPaid({
         variables: {
@@ -87,12 +84,6 @@ function MarkAsPaidButton({ invoice, editButtonRef }: MarkPaidProps) {
       <Button onClick={handleClick} type="button">
         Mark as Paid
       </Button>
-      <ToastContainer
-        style={{
-          marginTop: width > 1200 ? 0 : "72px",
-          backgroundColor: "transparent", // theme.background,
-        }}
-      />
     </>
   );
 }
