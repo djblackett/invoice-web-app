@@ -247,6 +247,7 @@ jobs:
         run: |
           mkdir certs && cd certs && \
           mkcert localhost
+
       - name: Install dependencies
         working-directory: ${{ env.FRONTEND_DIR }}
         run: yarn install --frozen-lockfile

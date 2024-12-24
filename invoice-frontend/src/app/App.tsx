@@ -71,8 +71,8 @@ function App() {
   const [theme, setTheme] = useState("light");
   const { getAccessTokenSilently } = useAuth0();
 
-  // const VITE_BACKEND_URL = import.meta.env.VITE_BACKEND_URL || "";
-  const VITE_BACKEND_URL = "https://localhost:8000";
+  const VITE_BACKEND_URL = import.meta.env.VITE_BACKEND_URL || "";
+  // const VITE_BACKEND_URL = "https://localhost:8000";
 
   console.log("VITE_BACKEND_URL", VITE_BACKEND_URL);
   if (!VITE_BACKEND_URL) {
