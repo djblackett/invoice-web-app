@@ -16,6 +16,7 @@ const Main = styled("div")`
   cursor: pointer;
   margin-left: 0;
   position: relative;
+  pointer-events: auto;
 
   @media (min-width: 325px) {
     margin-left: 8px;

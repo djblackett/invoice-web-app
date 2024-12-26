@@ -68,6 +68,7 @@ function AllInvoicesToolbar({ invoiceList }: AllInvoicesToolbarProps) {
           onClick={openFilter}
           data-testid="filterButton"
           aria-label="Filter invoices by status"
+          style={{ pointerEvents: isFilterOpen ? "none" : "auto" }}
         >
           <Filter>
             Filter <span className="wideScreenText">by status</span>
