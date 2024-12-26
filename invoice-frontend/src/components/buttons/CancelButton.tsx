@@ -15,6 +15,7 @@ const Button = styled.button`
   /* identical to box height, or 125% */
   letter-spacing: -0.25px;
   scale: 0.9;
+  flex-shrink: 2;
 
   @media (min-width: 325px) {
     scale: none;

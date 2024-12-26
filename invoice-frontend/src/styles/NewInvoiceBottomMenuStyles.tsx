@@ -57,6 +57,8 @@ export const SaveDraft = styled(NewInvoiceButton)`
   color: #888eb0;
   margin-right: 8px;
   width: 133px;
+  padding-left: 16px;
+  padding-right: 16px;
 
   &:hover {
     background-color: #0c0e16;
