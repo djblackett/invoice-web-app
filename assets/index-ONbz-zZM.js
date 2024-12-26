@@ -1087,6 +1087,7 @@ In order to be iterable, non-array objects must have a [Symbol.iterator]() metho
   /* identical to box height, or 125% */
   letter-spacing: -0.25px;
   scale: 0.9;
+  flex-shrink: 2;
 
   @media (min-width: 325px) {
     scale: none;
@@ -1149,6 +1150,8 @@ In order to be iterable, non-array objects must have a [Symbol.iterator]() metho
   color: #888eb0;
   margin-right: 8px;
   width: 133px;
+  padding-left: 16px;
+  padding-right: 16px;
 
   &:hover {
     background-color: #0c0e16;
@@ -2063,6 +2066,7 @@ In order to be iterable, non-array objects must have a [Symbol.iterator]() metho
   cursor: pointer;
   margin-left: 0;
   position: relative;
+  pointer-events: auto;
 
   @media (min-width: 325px) {
     margin-left: 8px;
@@ -2330,7 +2334,7 @@ In order to be iterable, non-array objects must have a [Symbol.iterator]() metho
 
   @media (min-width: 1200px) {
   }
-`,JH=b.jsx("svg",{width:"11",height:"11",xmlns:"http://www.w3.org/2000/svg",children:b.jsx("path",{d:"M6.313 10.023v-3.71h3.71v-2.58h-3.71V.023h-2.58v3.71H.023v2.58h3.71v3.71z",fill:"#7C5DFA",fillRule:"nonzero"})});function eK({handleClick:e}){return b.jsxs(ZH,{onClick:e,"data-testid":"newInvoiceButton","aria-label":"Create a new invoice",children:[b.jsx(HH,{children:JH}),b.jsxs(KH,{children:["New ",b.jsx("span",{className:"largeScreenText",children:"Invoice"})]})]})}function tK({invoiceList:e}){const[t,n]=_.useState(!1),[r,i]=_.useState("total"),o=go(),{setIsNewInvoiceOpen:a}=kn(),s=()=>{a(!0)},l=()=>{t||n(!0)},u=Dy(qy);_.useEffect(()=>{u.pending&&!u.draft&&!u.paid?i("pending"):!u.pending&&u.draft&&!u.paid?i("draft"):!u.pending&&!u.draft&&u.paid?i("paid"):i("total")},[u]);const c=o<768?"No ":"no ";return b.jsxs(BH,{children:[b.jsxs(UH,{children:[b.jsx(WH,{"data-testid":"invoicesTitle",children:"Invoices"}),b.jsxs(YH,{children:[b.jsx("span",{className:"wideScreenText",children:"There are "}),e.length||c," ",b.jsxs("span",{className:"wideScreenText",children:[" ",r," "]}),"invoices"]})]}),b.jsxs(qH,{children:[b.jsxs(XH,{onClick:l,"data-testid":"filterButton","aria-label":"Filter invoices by status",children:[b.jsxs(GH,{children:["Filter ",b.jsx("span",{className:"wideScreenText",children:"by status"})]}),b.jsx(H6,{icon:QH,isOpen:t,setIsFilterOpen:n,options:["Draft","Pending","Paid"]})]}),b.jsx(eK,{handleClick:s,"data-testid":"newInvoiceButton"})]})]})}const nK=O.memo(tK);function K6({closeText:e,justifyCancel:t}){const{clearErrors:n,reset:r,handleSubmit:i}=Yr(),{setIsNewInvoiceOpen:o}=kn(),{onSubmit:a,onSubmitDraft:s}=fh(),l=()=>{n(),o(!1),r()};return b.jsxs(Z_,{children:[b.jsx(dh,{handleClick:l,text:e,justifySelf:t||""}),b.jsxs(NY,{children:[b.jsx(AY,{type:"button",value:"Save as draft",onClick:s}),b.jsx(e6,{type:"button",value:"Save",onClick:i(a)})]})]})}K6.propTypes={closeText:kt.string.isRequired,justifyCancel:kt.string};function rK(){const{methods:e}=fh(),{isNewInvoiceOpen:t}=kn();return b.jsx(h_,{...e,children:b.jsxs("form",{children:[b.jsx(Xf,{children:"Bill From"}),b.jsx(s6,{}),b.jsx(Xf,{children:"Bill To"}),b.jsx(l6,{}),b.jsx(j6,{}),b.jsx(z6,{}),b.jsx($6,{}),b.jsx(Mw,{isEditOpen:t}),b.jsx(K6,{closeText:"Discard",justifyCancel:"flex-start"})]})})}function iK(){const{editPageWidth:e,padding:t}=V6(),{items:n,setItems:r,isNewInvoiceOpen:i}=kn();return _.useLayoutEffect(()=>{const o=n.map(a=>({...a,id:Vf()}));r(o)},[]),b.jsx(bw,{style:{visibility:i?"visible":"hidden"},children:b.jsxs(r6,{style:{width:i?`${e}px`:"0px",padding:t},"data-testid":"newInvoicePage",children:[b.jsx(n6,{children:"New Invoice"}),b.jsx(rK,{})]})})}const oK=N(Zs.div)`
+`,JH=b.jsx("svg",{width:"11",height:"11",xmlns:"http://www.w3.org/2000/svg",children:b.jsx("path",{d:"M6.313 10.023v-3.71h3.71v-2.58h-3.71V.023h-2.58v3.71H.023v2.58h3.71v3.71z",fill:"#7C5DFA",fillRule:"nonzero"})});function eK({handleClick:e}){return b.jsxs(ZH,{onClick:e,"data-testid":"newInvoiceButton","aria-label":"Create a new invoice",children:[b.jsx(HH,{children:JH}),b.jsxs(KH,{children:["New ",b.jsx("span",{className:"largeScreenText",children:"Invoice"})]})]})}function tK({invoiceList:e}){const[t,n]=_.useState(!1),[r,i]=_.useState("total"),o=go(),{setIsNewInvoiceOpen:a}=kn(),s=()=>{a(!0)},l=()=>{t||n(!0)},u=Dy(qy);_.useEffect(()=>{u.pending&&!u.draft&&!u.paid?i("pending"):!u.pending&&u.draft&&!u.paid?i("draft"):!u.pending&&!u.draft&&u.paid?i("paid"):i("total")},[u]);const c=o<768?"No ":"no ";return b.jsxs(BH,{children:[b.jsxs(UH,{children:[b.jsx(WH,{"data-testid":"invoicesTitle",children:"Invoices"}),b.jsxs(YH,{children:[b.jsx("span",{className:"wideScreenText",children:"There are "}),e.length||c," ",b.jsxs("span",{className:"wideScreenText",children:[" ",r," "]}),"invoices"]})]}),b.jsxs(qH,{children:[b.jsxs(XH,{onClick:l,"data-testid":"filterButton","aria-label":"Filter invoices by status",style:{pointerEvents:t?"none":"auto"},children:[b.jsxs(GH,{children:["Filter ",b.jsx("span",{className:"wideScreenText",children:"by status"})]}),b.jsx(H6,{icon:QH,isOpen:t,setIsFilterOpen:n,options:["Draft","Pending","Paid"]})]}),b.jsx(eK,{handleClick:s,"data-testid":"newInvoiceButton"})]})]})}const nK=O.memo(tK);function K6({closeText:e,justifyCancel:t}){const{clearErrors:n,reset:r,handleSubmit:i}=Yr(),{setIsNewInvoiceOpen:o}=kn(),{onSubmit:a,onSubmitDraft:s}=fh(),l=()=>{n(),o(!1),r()};return b.jsxs(Z_,{children:[b.jsx(dh,{handleClick:l,text:e,justifySelf:t||""}),b.jsxs(NY,{children:[b.jsx(AY,{type:"button",value:"Save as draft",onClick:s}),b.jsx(e6,{type:"button",value:"Save",onClick:i(a)})]})]})}K6.propTypes={closeText:kt.string.isRequired,justifyCancel:kt.string};function rK(){const{methods:e}=fh(),{isNewInvoiceOpen:t}=kn();return b.jsx(h_,{...e,children:b.jsxs("form",{children:[b.jsx(Xf,{children:"Bill From"}),b.jsx(s6,{}),b.jsx(Xf,{children:"Bill To"}),b.jsx(l6,{}),b.jsx(j6,{}),b.jsx(z6,{}),b.jsx($6,{}),b.jsx(Mw,{isEditOpen:t}),b.jsx(K6,{closeText:"Discard",justifyCancel:"flex-start"})]})})}function iK(){const{editPageWidth:e,padding:t}=V6(),{items:n,setItems:r,isNewInvoiceOpen:i}=kn();return _.useLayoutEffect(()=>{const o=n.map(a=>({...a,id:Vf()}));r(o)},[]),b.jsx(bw,{style:{visibility:i?"visible":"hidden"},children:b.jsxs(r6,{style:{width:i?`${e}px`:"0px",padding:t},"data-testid":"newInvoicePage",children:[b.jsx(n6,{children:"New Invoice"}),b.jsx(rK,{})]})})}const oK=N(Zs.div)`
   display: flex;
   flex-direction: column;
   width: 100%;
