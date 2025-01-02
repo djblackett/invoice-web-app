@@ -100,6 +100,21 @@ jobs:
           cd invoice-backend
           npm run prisma-generate && npm run prisma-push
 
+      - name: Set up mkcert
+        run: |
+          sudo apt-get update
+          sudo apt-get install libnss3-tools
+          wget -O mkcert https://github.com/FiloSottile/mkcert/releases/download/v1.4.3/mkcert-v1.4.3-linux-amd64
+          chmod +x mkcert
+          sudo mv mkcert /usr/local/bin/
+          mkcert -install
+
+      - name: Generate HTTPS certificates
+        run: |
+          cd invoice-backend && mkdir certs && cd certs && \
+          mkcert localhost
+          # This will generate localhost.pem and localhost-key.pem
+
       - name: Run backend unit tests
         run: |
           cd invoice-backend
