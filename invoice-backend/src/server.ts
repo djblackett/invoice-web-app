@@ -23,8 +23,8 @@ import https from "https";
 export const createServer = async () => {
   try {
     const app = await createApp();
-
-    if (CERT_DIR) {
+    let httpServer;
+    if (CERT_DIR && NODE_ENV !== "production") {
       const sslOptions = {
         key: fs.readFileSync(
           path.join(__dirname, CERT_DIR, "localhost-key.pem"),
@@ -32,56 +32,56 @@ export const createServer = async () => {
         cert: fs.readFileSync(path.join(__dirname, CERT_DIR, "localhost.pem")),
       };
 
-      const httpServer = https.createServer(sslOptions, app);
-      // const httpServer = http.createServer(app);
-      const wsServer = new WebSocketServer({
-        server: httpServer,
-        path: "/",
-      });
-
-      const controller = container.get(InvoiceController);
-      const resolvers = controller.resolvers;
-      const schema = makeExecutableSchema({ typeDefs, resolvers });
-
-      const serverCleanup = useServer({ schema }, wsServer);
-
-      const server = new ApolloServer<MyContext>({
-        schema,
-        introspection: true,
-        status400ForVariableCoercionErrors: true,
-        plugins: [
-          ApolloServerPluginDrainHttpServer({ httpServer }),
-          {
-            async serverWillStart() {
-              return {
-                async drainServer() {
-                  await serverCleanup.dispose();
-                },
-              };
-            },
-          },
-          NODE_ENV === "production"
-            ? ApolloServerPluginLandingPageProductionDefault({
-              graphRef: "my-graph-id@my-graph-variant",
-              footer: false,
-            })
-            : ApolloServerPluginLandingPageLocalDefault({ footer: false }),
-        ],
-      });
-
-      await server.start();
-
-      app.use(
-        expressMiddleware(server, {
-          context: async ({ req, connection }: ContextArgs) =>
-            await createContext({ req, connection }),
-        }),
-      );
-
-      return [app, httpServer];
+      httpServer = https.createServer(sslOptions, app);
     } else {
-      throw new Error("Set certificate dir");
+      httpServer = http.createServer(app);
     }
+    const wsServer = new WebSocketServer({
+      server: httpServer,
+      path: "/",
+    });
+
+    const controller = container.get(InvoiceController);
+    const resolvers = controller.resolvers;
+    const schema = makeExecutableSchema({ typeDefs, resolvers });
+
+    const serverCleanup = useServer({ schema }, wsServer);
+
+    const server = new ApolloServer<MyContext>({
+      schema,
+      introspection: true,
+      status400ForVariableCoercionErrors: true,
+      plugins: [
+        ApolloServerPluginDrainHttpServer({ httpServer }),
+        {
+          async serverWillStart() {
+            return {
+              async drainServer() {
+                await serverCleanup.dispose();
+              },
+            };
+          },
+        },
+        NODE_ENV === "production"
+          ? ApolloServerPluginLandingPageProductionDefault({
+            graphRef: "my-graph-id@my-graph-variant",
+            footer: false,
+          })
+          : ApolloServerPluginLandingPageLocalDefault({ footer: false }),
+      ],
+    });
+
+    await server.start();
+
+    app.use(
+      expressMiddleware(server, {
+        context: async ({ req, connection }: ContextArgs) =>
+          await createContext({ req, connection }),
+      }),
+    );
+
+    return [app, httpServer];
+    
   } catch (error) {
     console.error("Server startup error:", error);
     process.exit(1);
