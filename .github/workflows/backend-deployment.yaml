@@ -6,11 +6,13 @@ on:
       - main
     paths:
       - "invoice-backend/**" # Triggers on any changes within the backend directory
+      - ".github/workflows/backend-deployment.yaml" # Triggers on PRs that modify the workflow file
   pull_request:
     branches:
       - main
     paths:
       - "invoice-backend/**" # Triggers on PRs that modify the backend directory
+      - ".github/workflows/backend-deployment.yaml" # Triggers on PRs that modify the workflow file
 
 jobs:
   test:
