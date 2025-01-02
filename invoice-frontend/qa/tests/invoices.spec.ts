@@ -25,15 +25,12 @@ test("should navigate to login page", async ({ invoiceMainPage }) => {
   // await invoiceMainPage.page
   //   .getByRole("button", { name: "Continue", exact: true })
   //   .click();
-
   // await invoiceMainPage.page.waitForURL(
   //   "https://localhost:5173/invoice-web-app/",
   // );
   // await invoiceMainPage.page.waitForLoadState("networkidle");
-
   // const button = await invoiceMainPage.page.getByTestId("newInvoiceButton");
   // .waitFor({ state: "attached", timeout: 5000 });
-
   // await expect(button).toBeVisible({ timeout: 5000 });
 });
 
