@@ -10,11 +10,11 @@ export const NODE_ENV = process.env.NODE_ENV;
 export const DATABASE_URL = process.env.DATABASE_URL || "";
 export const CERT_DIR = process.env.CERT_DIR;
 
-if (!CERT_DIR) {
-  throw new Error("Certificate directory not set");
-}
+// if (!CERT_DIR) {
+//   throw new Error("Certificate directory not set");
+// }
 
-console.log("CERT_DIR", CERT_DIR);
+// console.log("CERT_DIR", CERT_DIR);
 
 if (!SECRET) {
   throw new Error("Server env secret not set");
