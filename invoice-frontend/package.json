@@ -21,6 +21,7 @@
     "@js-temporal/polyfill": "^0.4.4",
     "@reduxjs/toolkit": "^1.8.1",
     "@shelf/react-outside-click": "^0.1.4",
+    "dotenv": "^16.4.7",
     "framer-motion": "^11.15.0",
     "graphql": "^16.9.0",
     "graphql-ws": "^5.14.2",
@@ -58,6 +59,7 @@
     "@testing-library/react": "^13.2.0",
     "@testing-library/user-event": "^14.1.1",
     "@types/node": "^22.10.2",
+    "@types/node-fetch": "^2.6.12",
     "@types/react": "^18.3.3",
     "@types/react-datepicker": "^4.19.2",
     "@types/react-dom": "^18.3.0",
@@ -74,6 +76,7 @@
     "eslint-plugin-testing-library": "7.1.1",
     "eslint-plugin-vitest": "^0.5.4",
     "globals": "^15.13.0",
+    "node-fetch": "^3.3.2",
     "prettier": "3.4.2",
     "prettier-eslint": "^16.3.0",
     "stylelint": "^16.11.0",
@@ -87,5 +90,6 @@
     "vitest": "2.1.8",
     "vitest-mock-extended": "^2.0.2",
     "wait-on": "^8.0.1"
-  }
+  },
+  "packageManager": "yarn@4.6.0"
 }

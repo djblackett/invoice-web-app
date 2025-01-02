@@ -1,4 +1,23 @@
 import { defineConfig, devices } from "@playwright/test";
+import fs from "fs";
+import path from "path";
+import { fileURLToPath } from "url";
+import dotenv from "dotenv";
+
+dotenv.config();
+
+// Define __dirname in ES Modules
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+
+let authToken;
+try {
+  const filePath = path.join(__dirname, "authToken.json");
+  authToken = JSON.parse(fs.readFileSync(filePath, "utf-8")).token;
+} catch (error) {
+  console.error("Failed to read token:", error.message);
+  process.exit(1); // Exit process if token read fails
+}
 
 /**
  * Read environment variables from file.
@@ -10,9 +29,10 @@ import { defineConfig, devices } from "@playwright/test";
  * See https://playwright.dev/docs/test-configuration.
  */
 export default defineConfig({
-  testDir: "./tests/e2e",
+  // testDir: "qa", //"./tests/e2e",
   testMatch: "**/*.spec.ts",
   timeout: 30 * 1000,
+  globalSetup: "./global-setup",
   /* Run tests in files in parallel */
   // fullyParallel: true,
   /* Fail the build on CI if you accidentally left test.only in the source code. */
@@ -27,23 +47,39 @@ export default defineConfig({
   use: {
     /* Base URL to use in actions like `await page.goto('/')`. */
     baseURL: process.env.CI
-      ? "http://localhost:4173/invoice-web-app"
-      : "http://localhost:5173/invoice-web-app",
+      ? "https://localhost:4173/invoice-web-app/"
+      : "https://localhost:5173/invoice-web-app/",
     video: "on",
     /* Collect trace when retrying the failed test. See https://playwright.dev/docs/trace-viewer */
     trace: "on-first-retry",
+    // ignoreHTTPSErrors: true,
+    storageState: "state.json",
+    extraHTTPHeaders: {
+      Authorization: `Bearer ${authToken}`, // Attach the token to every request
+    },
   },
 
   /* Configure projects for major browsers */
   projects: [
-    // {
-    //   name: "chromium",
-    //   use: { ...devices["Desktop Chrome"] },
-    // },
     {
-      name: "firefox",
-      use: { ...devices["Desktop Firefox"] },
+      name: "chromium",
+      use: {
+        ...devices["Desktop Chrome"],
+        // ignoreHTTPSErrors: true,
+        launchOptions: {
+          args: ["--ignore-certificate-errors"],
+        },
+      },
     },
+    // {
+    //   name: "firefox",
+    //   use: {
+    //     ...devices["Desktop Firefox"],
+    //     launchOptions: {
+    //       args: ["--ignore-certificate-errors"],
+    //     },
+    //   },
+    // },
     // {
     //   name: "webkit",
     //   use: { ...devices["Desktop Safari"] },

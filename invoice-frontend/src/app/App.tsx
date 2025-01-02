@@ -1,4 +1,4 @@
-import { useLayoutEffect, useState } from "react";
+import { useEffect, useLayoutEffect, useState } from "react";
 import "../styles/App.css";
 import styled, { ThemeProvider } from "styled-components";
 import { useRoutes } from "react-router-dom";
@@ -71,7 +71,8 @@ loadErrorMessages();
 
 function App() {
   const [theme, setTheme] = useState("light");
-  const { getAccessTokenSilently } = useAuth0();
+  const { getAccessTokenSilently, isAuthenticated, loginWithRedirect } =
+    useAuth0();
 
   const VITE_BACKEND_URL = import.meta.env.VITE_BACKEND_URL || "";
   // const VITE_BACKEND_URL = "https://localhost:8000";
@@ -80,6 +81,25 @@ function App() {
   if (!VITE_BACKEND_URL) {
     throw new Error("Backend URL was not set during frontend build process");
   }
+
+  // useEffect(() => {
+  //   const syncAuthState = async () => {
+  //     const token = localStorage.getItem("authToken");
+
+  //     if (token && !isAuthenticated) {
+  //       try {
+  //         // Attempt to sync the Auth0 state silently
+  //         await getAccessTokenSilently({ ignoreCache: true });
+  //       } catch (error) {
+  //         console.error("Silent auth failed:", error);
+  //         // Redirect to login to reauthenticate
+  //         await loginWithRedirect();
+  //       }
+  //     }
+  //   };
+
+  //   syncAuthState();
+  // }, [isAuthenticated, getAccessTokenSilently, loginWithRedirect]);
 
   const authLink = setContext(async (_, { headers }) => {
     const options = {

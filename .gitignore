@@ -91,3 +91,9 @@ invoice-frontend/.env.production
 certs
 */certs
 */**/certs
+
+authToken.json
+invoice-frontend/state.json
+invoice-frontend/playwright-report/index.html
+state.json
+invoice-frontend/playwright-report/index.html

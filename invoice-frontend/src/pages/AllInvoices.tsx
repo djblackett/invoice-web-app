@@ -59,7 +59,7 @@ function AllInvoices() {
   const { invoiceList, loading, error } = useInvoices();
 
   const text = "Please login to view your invoices";
-  const text2 = "Click here...";
+  // const text2 = "Click here...";
 
   // const [removeInvoices] = useMutation(DELETE_ALL_INVOICES, {
   //   refetchQueries: [{ query: ALL_INVOICES }],
@@ -71,15 +71,15 @@ function AllInvoices() {
 
   const { isAuthenticated, user, isLoading, loginWithRedirect } = useAuth0();
 
-  if (isLoading) {
-    return <h1>Loading</h1>;
-  }
+  // if (isLoading) {
+  //   return <h1>Loading</h1>;
+  // }
 
   return (
     <AllInvoicesContainer>
       {!isAuthenticated && (
         <>
-          <TextAnimation text={text} />
+          <TextAnimation text={text} data-testid="welcome-text" />
           <SlidingComponent
             initial={{ x: "-100%", opacity: 0 }} // Start off-screen to the left
             animate={{ x: 0, opacity: 1 }} // Animate to original position
@@ -93,6 +93,7 @@ function AllInvoices() {
             <LoginLogoutButton
               whileTap={{ scale: 0.85 }}
               onClick={() => loginWithRedirect()}
+              data-testid="login-button"
             >
               Login
             </LoginLogoutButton>
@@ -102,7 +103,10 @@ function AllInvoices() {
       {isAuthenticated && (
         <>
           <NewInvoiceProvider>
-            <MemoizedAllInvoicesToolbar invoiceList={invoiceList} />
+            <MemoizedAllInvoicesToolbar
+              invoiceList={invoiceList}
+              data-testid="invoices-toolbar"
+            />
             <NewInvoice />
           </NewInvoiceProvider>
           <FadeOut className="welcome-text" username={user?.email}></FadeOut>
