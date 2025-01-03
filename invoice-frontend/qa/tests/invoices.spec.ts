@@ -48,6 +48,7 @@ test.skip("should change theme button to dark mode", async ({
   invoiceMainPage,
 }) => {
   await invoiceMainPage.header.clickThemeButton();
+  const sun = await invoiceMainPage.page.getByTestId("sun").locator("path");
 
-  expect(await invoiceMainPage.header.themeButton).toBe(true);
+  expect(sun).toBeVisible();
 });
