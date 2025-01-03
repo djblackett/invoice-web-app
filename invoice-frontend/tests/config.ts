@@ -1,6 +1,6 @@
 export const BASE_URL = process.env.CI
-  ? "http://localhost:4173/invoice-web-app/"
-  : "http://localhost:5173/invoice-web-app/";
+  ? "https://localhost:4173/invoice-web-app/"
+  : "https://localhost:5173/invoice-web-app/";
 
 import { test as base, expect } from "@playwright/test";
 

@@ -72,9 +72,16 @@ const globalSetup = async ({ config }) => {
     .getByRole("button", { name: "Continue", exact: true })
     .click();
 
-  await invoiceMainPage.page.waitForURL(
-    "https://localhost:5173/invoice-web-app/",
-  );
+  if (process.env.CI) {
+    await invoiceMainPage.page.waitForURL(
+      "https://localhost:4173/invoice-web-app/",
+    );
+  } else {
+    await invoiceMainPage.page.waitForURL(
+      "https://localhost:5173/invoice-web-app/",
+    );
+  }
+
   await invoiceMainPage.page.waitForLoadState("networkidle");
   await context.storageState({ path: "state.json" });
 
