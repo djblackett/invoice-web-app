@@ -72,7 +72,7 @@ const globalSetup = async ({ config }) => {
     .getByRole("button", { name: "Continue", exact: true })
     .click();
 
-  if (process.env.CI) {
+  if (process.env.NODE_ENV === "CI") {
     await invoiceMainPage.page.waitForURL(
       "https://localhost:4173/invoice-web-app/",
     );

@@ -5,7 +5,11 @@ test("Create a new invoice", async ({ page }) => {
   const newInvoiceForm = new NewInvoiceForm(page);
 
   // Navigate to the invoice page if not already there
-  await page.goto("https://localhost:5173/invoice-web-app/");
+  await page.goto(
+    process.env.NODE_ENV === "CI"
+      ? "https://localhost:4173/invoice-web-app/"
+      : "https://localhost:5173/invoice-web-app/",
+  );
 
   // Click the "New Invoice" button
   await newInvoiceForm.clickNewInvoiceButton();
