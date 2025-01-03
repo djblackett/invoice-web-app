@@ -63,7 +63,9 @@ const globalSetup = async ({ config }) => {
   const invoiceMainPage = new InvoiceMainPage(page);
   await invoiceMainPage.gotoPage();
   await invoiceMainPage.welcomePage.clickLoginButton();
-  await invoiceMainPage.page.getByLabel("Link to the Auth0 website").waitFor();
+  await invoiceMainPage.page
+    .getByLabel("Link to the Auth0 website")
+    .waitFor({ state: "visible" });
   await invoiceMainPage.page
     .getByLabel("Email address")
     .fill("djabusiness89@gmail.com");
