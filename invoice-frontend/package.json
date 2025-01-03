@@ -8,11 +8,12 @@
     "build": "vite build",
     "preview": "vite preview",
     "test:unit": "tsc -p tsconfig.dev.json && vitest tests/unit",
-    "test:e2e": "VITE_BACKEND_URL=https://localhost:8000/graphql playwright test",
+    "test:e2e": "VITE_BACKEND_URL=https://localhost:8000/graphql playwright test --config=playwright.config.ts",
     "lint": "eslint --config ./eslint.config.js .",
     "lint:fix": "eslint --config ./eslint.config.js --fix .",
     "lint:css": "stylelint './src/**/*.{ts,tsx}'",
-    "format": "prettier --config ./prettier.config.js --write '**/*.ts*'"
+    "format": "prettier --config ./prettier.config.js --write '**/*.ts*'",
+    "codegen": "VITE_BACKEND_URL=https://localhost:8000/graphql playwright codegen https://localhost:5173/invoice-web-app/"
   },
   "dependencies": {
     "@apollo/client": "^3.12.2",

@@ -10,14 +10,14 @@ dotenv.config();
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
-let authToken;
-try {
-  const filePath = path.join(__dirname, "authToken.json");
-  authToken = JSON.parse(fs.readFileSync(filePath, "utf-8")).token;
-} catch (error) {
-  console.error("Failed to read token:", error.message);
-  process.exit(1); // Exit process if token read fails
-}
+// let authToken;
+// try {
+//   const filePath = path.join(__dirname, "authToken.json");
+//   authToken = JSON.parse(fs.readFileSync(filePath, "utf-8")).token;
+// } catch (error) {
+//   console.error("Failed to read token:", error.message);
+//   process.exit(1); // Exit process if token read fails
+// }
 
 /**
  * Read environment variables from file.
@@ -53,10 +53,10 @@ export default defineConfig({
     /* Collect trace when retrying the failed test. See https://playwright.dev/docs/trace-viewer */
     trace: "on-first-retry",
     // ignoreHTTPSErrors: true,
-    storageState: "state.json",
-    extraHTTPHeaders: {
-      Authorization: `Bearer ${authToken}`, // Attach the token to every request
-    },
+    storageState: path.resolve(__dirname, "state.json"),
+    // extraHTTPHeaders: {
+    //   Authorization: `Bearer ${authToken}`, // Attach the token to every request
+    // },
   },
 
   /* Configure projects for major browsers */
