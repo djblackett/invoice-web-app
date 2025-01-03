@@ -14,6 +14,10 @@ export class InvoiceMainPage extends BasePage {
   }
 
   async gotoPage() {
-    await this.navigateTo("https://localhost:5173/invoice-web-app/");
+    await this.navigateTo(
+      process.env.CI
+        ? "https://localhost:4173/invoice-web-app/"
+        : "https://localhost:5173/invoice-web-app/",
+    );
   }
 }
