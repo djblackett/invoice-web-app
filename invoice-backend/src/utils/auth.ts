@@ -1,5 +1,3 @@
-// src/utils/auth.ts
-
 // import { AuthenticationError } from "@apollo/server";
 import { QueryContext } from "../constants/types";
 

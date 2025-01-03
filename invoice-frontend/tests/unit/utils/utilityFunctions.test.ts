@@ -6,7 +6,7 @@ import {
   convertDateToString,
   convertStringToDate,
   createInvoiceObject,
-} from "../../src/utils/utilityFunctions";
+} from "../../../src/utils/utilityFunctions";
 import { FieldValues } from "react-hook-form";
 import { parse } from "date-fns";
 

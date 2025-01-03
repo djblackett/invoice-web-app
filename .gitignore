@@ -97,3 +97,5 @@ invoice-frontend/state.json
 invoice-frontend/playwright-report/index.html
 state.json
 invoice-frontend/playwright-report/index.html
+replace-assets.sh
+invoice-frontend/playwright-report/index.html

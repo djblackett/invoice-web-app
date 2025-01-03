@@ -8,13 +8,7 @@ export const SECRET = process.env.SECRET || "";
 export const PORT = Number(process.env.PORT) || 8000;
 export const NODE_ENV = process.env.NODE_ENV;
 export const DATABASE_URL = process.env.DATABASE_URL || "";
-export const CERT_DIR = process.env.CERT_DIR;
-
-// if (!CERT_DIR) {
-//   throw new Error("Certificate directory not set");
-// }
-
-// console.log("CERT_DIR", CERT_DIR);
+export const CERT_DIR = process.env.CERT_DIR || "";
 
 if (!SECRET) {
   throw new Error("Server env secret not set");
@@ -35,9 +29,6 @@ export function serverConfig(app: Application) {
       extended: true,
     }),
   );
-
-  console.log(NODE_ENV);
-  console.log("NODE_ENV:", process.env.NODE_ENV);
 
   if (NODE_ENV === "production") {
     app.use(
