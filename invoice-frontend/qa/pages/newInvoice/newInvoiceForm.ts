@@ -1,6 +1,9 @@
 import { Page, Locator } from "@playwright/test";
+import InvoiceItem from "./InvoiceItem";
 
 export class NewInvoiceForm {
+  page: Page;
+  readonly billFromText: Locator;
   readonly newInvoiceButton: Locator; // technically should be in parent page
   readonly streetAddress: Locator;
   readonly city: Locator;
@@ -21,8 +24,12 @@ export class NewInvoiceForm {
   readonly itemPrice: Locator;
   readonly saveButton: Locator;
   readonly saveAsDraftButton: Locator;
+  readonly discardButton: Locator;
+  readonly itemsContainer: Locator;
 
   constructor(page: Page) {
+    this.page = page;
+    this.billFromText = page.getByText("Bill From");
     this.newInvoiceButton = page
       .getByTestId("newInvoiceButton")
       .getByText("Invoice");
@@ -50,6 +57,12 @@ export class NewInvoiceForm {
       name: "Save as Draft",
       exact: true,
     });
+    this.discardButton = page.getByRole("button", { name: "Discard" });
+    this.itemsContainer = page.locator('[data-testid="items-container"]');
+  }
+
+  async getBillFromText() {
+    return this.billFromText;
   }
 
   async clickNewInvoiceButton() {
@@ -100,8 +113,31 @@ export class NewInvoiceForm {
     await this.invoiceDate.click();
   }
 
+  /**
+   * Selects a specific date from the date picker.
+   * @param dateText The visible text of the date to select (e.g., 'Thursday, January 30th, 2025')
+   */
+  async selectInvoiceDate(dateText: string) {
+    await this.getDatePickerOption(dateText).click();
+  }
+
+  async fillDate(date: string) {
+    await this.invoiceDate.fill(date);
+  }
+
+  /**
+   * Helper method to get a specific date option.
+   * Adjust the locator as per your date picker implementation.
+   * @param dateText The text of the date option to select
+   */
+  private getDatePickerOption(dateText: string): Locator {
+    return this.page.getByRole("option", { name: `Choose ${dateText}` });
+  }
+
   async selectPaymentTerms(paymentTerms: string) {
-    await this.paymentTerms.click();
+    // Update the locator to match the payment term text
+    const paymentTermOption = this.page.locator(`text=${paymentTerms}`);
+    await paymentTermOption.click({ force: true });
   }
 
   async fillProjectDescription(projectDescription: string) {
@@ -124,6 +160,43 @@ export class NewInvoiceForm {
     await this.itemPrice.fill(itemPrice.toString());
   }
 
+  /**
+   * Adds a new item with the provided details.
+   * @param description Description of the item
+   * @param quantity Quantity of the item
+   * @param price Price of the item
+   */
+
+  async addItem(
+    description: string,
+    quantity: number,
+    price: number,
+  ): Promise<void> {
+    try {
+      await this.clickAddItemButton();
+
+      const newItemLocator = this.itemsContainer
+        .locator('[data-testid="invoice-item"]')
+        .last();
+      await newItemLocator.waitFor({ state: "visible", timeout: 5000 });
+
+      const newItem = new InvoiceItem(newItemLocator);
+      await newItem.fillDescription(description);
+      await newItem.fillQuantity(quantity);
+      await newItem.fillPrice(price);
+    } catch (error) {
+      throw new Error(`Failed to add item "${description}": ${error}`);
+    }
+  }
+
+  async addMultipleItems(
+    items: { description: string; quantity: number; price: number }[],
+  ): Promise<void> {
+    for (const item of items) {
+      await this.addItem(item.description, item.quantity, item.price);
+    }
+  }
+
   async clickSaveButton() {
     await this.saveButton.click();
   }
@@ -131,15 +204,14 @@ export class NewInvoiceForm {
   async clickSaveAsDraftButton() {
     await this.saveAsDraftButton.click();
   }
+
+  async clickDiscardButton() {
+    await this.discardButton.click();
+  }
 }
 
 /*
-await page.locator('input[name="streetAddress"]').click();
   await page.locator('input[name="streetAddress"]').click();
-  await page.locator('input[name="streetAddress"]').fill('1234 ');
-  await page.locator('input[name="streetAddress"]').press('Shift+CapsLock');
-  await page.locator('input[name="streetAddress"]').fill('1234 mAIN');
-  await page.locator('input[name="streetAddress"]').press('CapsLock');
   await page.locator('input[name="streetAddress"]').fill('1234 Main Street');
   await page.locator('input[name="city"]').click();
   await page.locator('input[name="city"]').fill('Halifax');

@@ -222,7 +222,7 @@ export default function InputFormItem1({
     <>
       <ul style={{ listStyle: "none", marginLeft: "0", paddingLeft: 0 }}>
         {fields.map((item, index) => (
-          <li key={item.id}>
+          <li key={item.id} data-testid="invoice-item">
             <div>
               {width < 600 && mobileRender(index)}
               {width >= 600 && tabletAndDesktopRender(index)}

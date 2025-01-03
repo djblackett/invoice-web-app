@@ -21,7 +21,7 @@ function EditFormItemList({
 }: EditFormItemListProps) {
   const { isDraft } = useNewInvoiceContext();
   return (
-    <ListContainer>
+    <ListContainer data-testid="items-container">
       <ItemTitle>Item List</ItemTitle>
       <ItemsHeader>
         <Col1>Item Name</Col1>
