@@ -63,7 +63,7 @@ const globalSetup = async ({ config }) => {
   const invoiceMainPage = new InvoiceMainPage(page);
   await invoiceMainPage.gotoPage();
   await invoiceMainPage.welcomePage.clickLoginButton();
-  await invoiceMainPage.page.waitForLoadState("networkidle");
+
   await invoiceMainPage.page
     .getByLabel("Email address")
     .fill("djabusiness89@gmail.com");
