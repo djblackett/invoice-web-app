@@ -78,6 +78,17 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@axe-core/playwright@npm:^4.10.1":
+  version: 4.10.1
+  resolution: "@axe-core/playwright@npm:4.10.1"
+  dependencies:
+    axe-core: "npm:~4.10.2"
+  peerDependencies:
+    playwright-core: ">= 1.0.0"
+  checksum: 10c0/d6ca04bfb4d8d01238f2c3b9899a806da4975e847ed017ee03fe147226f55b3c94d21ee6e59a4419708a1c581176f4b3f18fb76f27b2c23ec5dd8405f4d383a0
+  languageName: node
+  linkType: hard
+
 "@babel/code-frame@npm:^7.0.0, @babel/code-frame@npm:^7.10.4, @babel/code-frame@npm:^7.25.9, @babel/code-frame@npm:^7.26.0, @babel/code-frame@npm:^7.26.2":
   version: 7.26.2
   resolution: "@babel/code-frame@npm:7.26.2"
@@ -1983,6 +1994,13 @@ __metadata:
   dependencies:
     possible-typed-array-names: "npm:^1.0.0"
   checksum: 10c0/d07226ef4f87daa01bd0fe80f8f310982e345f372926da2e5296aecc25c41cab440916bbaa4c5e1034b453af3392f67df5961124e4b586df1e99793a1374bdb2
+  languageName: node
+  linkType: hard
+
+"axe-core@npm:~4.10.2":
+  version: 4.10.2
+  resolution: "axe-core@npm:4.10.2"
+  checksum: 10c0/0e20169077de96946a547fce0df39d9aeebe0077f9d3eeff4896518b96fde857f80b98f0d4279274a7178791744dd5a54bb4f322de45b4f561ffa2586ff9a09d
   languageName: node
   linkType: hard
 
@@ -3965,6 +3983,7 @@ __metadata:
   dependencies:
     "@apollo/client": "npm:^3.12.2"
     "@auth0/auth0-react": "npm:^2.2.4"
+    "@axe-core/playwright": "npm:^4.10.1"
     "@eslint/js": "npm:^9.17.0"
     "@hookform/resolvers": "npm:^3.9.0"
     "@js-temporal/polyfill": "npm:^0.4.4"

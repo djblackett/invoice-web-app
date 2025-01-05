@@ -199,7 +199,6 @@ export const Box = styled.div`
 
 export const TotalBox = styled(Box)`
   text-align: right;
-  align-items: flex-end;
   @media (min-width: 325px) {
     align-items: flex-start;
     text-align: initial;

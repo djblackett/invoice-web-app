@@ -3,7 +3,7 @@ import {
   Col,
   Col1,
   ItemsContainer,
-  ItemsHeader,
+  ItemsHeaderStyled,
   ItemTitle,
   ListContainer,
 } from "../../styles/EditFormItemListStyles";
@@ -23,12 +23,7 @@ function EditFormItemList({
   return (
     <ListContainer data-testid="items-container">
       <ItemTitle>Item List</ItemTitle>
-      <ItemsHeader>
-        <Col1>Item Name</Col1>
-        <Col1>Qty.</Col1>
-        <Col1>Price</Col1>
-        <Col>Total</Col>
-      </ItemsHeader>
+      <ItemsHeader className="desktop-only-label" />
       <ItemsContainer>
         <InputFormItem1
           isDraft={isDraft}
@@ -41,3 +36,17 @@ function EditFormItemList({
 }
 
 export default EditFormItemList;
+
+interface ItemsHeaderProps {
+  className?: string;
+}
+export const ItemsHeader = ({ className }: ItemsHeaderProps) => {
+  return (
+    <ItemsHeaderStyled className={className}>
+      <Col1>Item Name</Col1>
+      <Col1>Qty.</Col1>
+      <Col1>Price</Col1>
+      <Col>Total</Col>
+    </ItemsHeaderStyled>
+  );
+};

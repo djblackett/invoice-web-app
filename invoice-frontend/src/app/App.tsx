@@ -1,4 +1,4 @@
-import { useEffect, useLayoutEffect, useState } from "react";
+import { useLayoutEffect, useState } from "react";
 import "../styles/App.css";
 import styled, { ThemeProvider } from "styled-components";
 import { useRoutes } from "react-router-dom";
@@ -20,12 +20,11 @@ import { setContext } from "@apollo/client/link/context";
 import { GraphQLWsLink } from "@apollo/client/link/subscriptions";
 import { getMainDefinition } from "@apollo/client/utilities";
 import { createClient } from "graphql-ws";
-// import { getAccessTokenSilently } from "src/utils/auth";
 import { useAuth0 } from "@auth0/auth0-react";
 import { ToastContainer } from "react-toastify";
 import useWindowWidth from "src/hooks/useWindowWidth";
 
-const Main = styled.div`
+const Main = styled.main`
   height: 100%;
   width: 100%;
   min-height: 100vh;
@@ -71,35 +70,13 @@ loadErrorMessages();
 
 function App() {
   const [theme, setTheme] = useState("light");
-  const { getAccessTokenSilently, isAuthenticated, loginWithRedirect } =
-    useAuth0();
+  const { getAccessTokenSilently } = useAuth0();
 
   const VITE_BACKEND_URL = import.meta.env.VITE_BACKEND_URL || "";
-  // const VITE_BACKEND_URL = "https://localhost:8000";
 
-  console.log("VITE_BACKEND_URL", VITE_BACKEND_URL);
   if (!VITE_BACKEND_URL) {
     throw new Error("Backend URL was not set during frontend build process");
   }
-
-  // useEffect(() => {
-  //   const syncAuthState = async () => {
-  //     const token = localStorage.getItem("authToken");
-
-  //     if (token && !isAuthenticated) {
-  //       try {
-  //         // Attempt to sync the Auth0 state silently
-  //         await getAccessTokenSilently({ ignoreCache: true });
-  //       } catch (error) {
-  //         console.error("Silent auth failed:", error);
-  //         // Redirect to login to reauthenticate
-  //         await loginWithRedirect();
-  //       }
-  //     }
-  //   };
-
-  //   syncAuthState();
-  // }, [isAuthenticated, getAccessTokenSilently, loginWithRedirect]);
 
   const authLink = setContext(async (_, { headers }) => {
     const options = {
@@ -148,8 +125,11 @@ function App() {
   }, []);
 
   const themeToggler = () => {
-    // eslint-disable-next-line @typescript-eslint/no-unused-expressions
-    theme === "light" ? setTheme("dark") : setTheme("light");
+    if (theme === "light") {
+      setTheme("dark");
+    } else {
+      setTheme("light");
+    }
     localStorage.setItem("theme", theme === "light" ? "dark" : "light");
   };
 

@@ -8,9 +8,8 @@ export const ListContainer = styled.div`
   background-color: ${({ theme }) => theme.formBackground};
 `;
 
-export const ItemsHeader = styled.div`
+export const ItemsHeaderStyled = styled.div`
   display: none;
-
   @media (min-width: 600px) {
     display: grid;
     grid-template: 1fr / 220px 62px 116px 61px 49px;
@@ -22,7 +21,7 @@ export const ItemsHeader = styled.div`
   }
 `;
 
-export const Col = styled.p`
+export const Col = styled.label`
   color: ${({ theme }) => theme.newItemText};
   width: fit-content;
   margin: 0;
@@ -35,10 +34,22 @@ export const Col = styled.p`
   /* identical to box height, or 164% */
   letter-spacing: -0.229167px;
   justify-self: center;
+
+  @media (min-width: 600px) {
+    &.mobile-only-label {
+      display: none;
+    }
+  }
 `;
 
 export const Col1 = styled(Col)`
   justify-self: start;
+
+  @media (min-width: 600px) {
+    &.mobile-only-label {
+      display: none;
+    }
+  }
 `;
 
 export const ItemsContainer = styled.div`
