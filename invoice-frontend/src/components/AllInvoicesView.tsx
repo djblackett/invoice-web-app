@@ -25,7 +25,6 @@ interface AllInvoicesViewProps {
   width: number;
   loading: boolean;
   error?: Error;
-  // scrollToTop: () => void;
 }
 
 const AllInvoicesView = ({
@@ -65,7 +64,7 @@ const AllInvoicesView = ({
           {invoiceList.map((invoice) => (
             <StyledLink
               key={invoice.id}
-              to={`/${invoice.id}`}
+              to={`/invoices/${invoice.id}`}
               isMobile={width < 1200}
             >
               <InvoiceCard invoice={invoice} />

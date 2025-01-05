@@ -2,10 +2,10 @@ import { useAuth0 } from "@auth0/auth0-react";
 import { SlidingComponent } from "src/components/buttons/AnimatedButton";
 import { LoginLogoutButton } from "src/components/menus-toolbars/Header";
 import TextAnimation from "src/components/text/AnimatedText";
-import { text } from "stream/consumers";
 
 const Login = () => {
   const { isAuthenticated, loginWithRedirect } = useAuth0();
+  const text = "Please login to view your invoices";
   return (
     <>
       {!isAuthenticated && (

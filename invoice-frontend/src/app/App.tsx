@@ -23,6 +23,8 @@ import { createClient } from "graphql-ws";
 import { useAuth0 } from "@auth0/auth0-react";
 import { ToastContainer } from "react-toastify";
 import useWindowWidth from "src/hooks/useWindowWidth";
+import Login from "src/pages/Login";
+import path from "path";
 
 const Main = styled.main`
   height: 100%;
@@ -142,11 +144,24 @@ function App() {
       children: [
         {
           index: true,
+          element: <Login />,
+        },
+        {
+          path: "login",
+          element: <Login />,
+        },
+        {
+          path: "invoices",
           element: <AllInvoices />,
         },
         {
-          path: ":id",
+          path: "invoices/:id", // "/invoices/:id"
           element: <ViewInvoice />,
+        },
+        // Optionally, add a catch-all route for 404
+        {
+          path: "*",
+          element: <div>404 Not Found</div>,
         },
       ],
     },
@@ -187,6 +202,7 @@ function App() {
             }}
           />
           {element}
+          {/* <AllInvoices /> */}
         </Main>
       </ThemeProvider>
     </ApolloProvider>

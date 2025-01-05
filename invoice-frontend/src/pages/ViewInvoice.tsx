@@ -28,7 +28,7 @@ function ViewInvoice() {
   const invoice = data?.getInvoiceById;
 
   const goBack = () => {
-    navigate("/");
+    navigate("/invoices");
   };
 
   if (loading) {
