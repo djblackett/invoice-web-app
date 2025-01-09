@@ -3,6 +3,7 @@
   "version": "0.1.0",
   "private": true,
   "type": "module",
+  "homepage": "https://djblackett.github.io/invoice-web-app/",
   "scripts": {
     "dev": "VITE_BACKEND_URL=https://localhost:8000 vite",
     "build": "vite build",
