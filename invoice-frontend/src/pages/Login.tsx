@@ -5,8 +5,12 @@ import { LoginLogoutButton } from "src/components/menus-toolbars/Header";
 import TextAnimation from "src/components/text/AnimatedText";
 
 const Login = () => {
-  const { isAuthenticated, loginWithRedirect } = useAuth0();
+  const { isAuthenticated, isLoading, loginWithRedirect } = useAuth0();
   const text = "Please login to view your invoices";
+
+  if (isLoading) {
+    return <h1>Loading</h1>;
+  }
 
   if (isAuthenticated) {
     return <Navigate to="/invoices" replace />;
