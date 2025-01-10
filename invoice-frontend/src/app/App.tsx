@@ -1,7 +1,7 @@
 import { useLayoutEffect, useState } from "react";
 import "../styles/App.css";
 import styled, { ThemeProvider } from "styled-components";
-import { useRoutes } from "react-router-dom";
+import { Navigate, Route, Routes, useRoutes } from "react-router-dom";
 import { loadDevMessages, loadErrorMessages } from "@apollo/client/dev";
 import Header from "../components/menus-toolbars/Header";
 import GlobalStyles from "../styles/GlobalStyles";
@@ -24,7 +24,9 @@ import { useAuth0 } from "@auth0/auth0-react";
 import { ToastContainer } from "react-toastify";
 import useWindowWidth from "src/hooks/useWindowWidth";
 import Login from "src/pages/Login";
-import path from "path";
+import NotFound from "src/pages/NotFound";
+import ProtectedRoute from "src/ProtectedRoute";
+import WelcomePage from "src/pages/WelcomePage";
 
 const Main = styled.main`
   height: 100%;
@@ -144,7 +146,7 @@ function App() {
       children: [
         {
           index: true,
-          element: <Login />,
+          element: <WelcomePage />,
         },
         {
           path: "login",
@@ -152,15 +154,23 @@ function App() {
         },
         {
           path: "invoices",
-          element: <AllInvoices />,
+          element: (
+            <ProtectedRoute>
+              <AllInvoices />
+            </ProtectedRoute>
+          ),
         },
         {
           path: "invoices/:id", // "/invoices/:id"
-          element: <ViewInvoice />,
+          element: (
+            <ProtectedRoute>
+              <ViewInvoice />
+            </ProtectedRoute>
+          ),
         },
         // Optionally, add a catch-all route for 404
         {
-          path: "*",
+          path: "/*",
           element: <div>404 Not Found</div>,
         },
       ],
@@ -201,6 +211,7 @@ function App() {
               backgroundColor: "transparent", // theme.background,
             }}
           />
+          {/* <Layout /> */}
           {element}
           {/* <AllInvoices /> */}
         </Main>

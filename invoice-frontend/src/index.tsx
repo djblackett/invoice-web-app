@@ -1,7 +1,7 @@
 import React from "react";
 import { createRoot } from "react-dom/client";
 import { Provider } from "react-redux";
-import { BrowserRouter, HashRouter } from "react-router-dom";
+import { HashRouter } from "react-router-dom";
 import "./styles/index.css";
 import store from "./app/store";
 import App from "./app/App";
@@ -27,14 +27,15 @@ if (container) {
           cacheLocation="localstorage" // Optional: Ensures tokens persist across refreshes
           useRefreshTokens // Optional: Improves token handling
           authorizationParams={{
-            redirect_uri: VITE_REDIRECT_URI + "invoices",
+            redirect_uri: VITE_REDIRECT_URI + "#/invoices",
             scope: "openid profile email offline_access", // Include offline_access
             audience: "https://invoice-web-app/",
           }}
         >
-          <BrowserRouter basename="/invoice-web-app">
+          {/* <HashRouter basename="/invoice-web-app/"> */}
+          <HashRouter>
             <App />
-          </BrowserRouter>
+          </HashRouter>
         </Auth0Provider>
       </Provider>
     </React.StrictMode>,
