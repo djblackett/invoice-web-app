@@ -30,9 +30,7 @@ export class NewInvoiceForm {
   constructor(page: Page) {
     this.page = page;
     this.billFromText = page.getByText("Bill From");
-    this.newInvoiceButton = page
-      .getByTestId("newInvoiceButton")
-      .getByText("Invoice");
+    this.newInvoiceButton = page.getByTestId("newInvoiceButton");
     this.streetAddress = page.locator('input[name="streetAddress"]');
     this.city = page.locator('input[name="city"]');
     this.postalCode = page.locator('input[name="postalCode"]');

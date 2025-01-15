@@ -8,8 +8,9 @@ test("Create a new invoice", async ({ page }) => {
   await page.goto(
     process.env.NODE_ENV === "CI"
       ? "https://localhost:4173/invoice-web-app/"
-      : "https://localhost:5173/invoice-web-app/",
+      : "https://localhost:5173/invoice-web-app/#/invoices",
   );
+  await page.waitForLoadState("networkidle");
 
   // Click the "New Invoice" button
   await newInvoiceForm.clickNewInvoiceButton();

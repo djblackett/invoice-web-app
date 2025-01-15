@@ -1,17 +1,14 @@
 import { expect, test } from "../fixtures/base";
 // import "@testing-library/jest-dom";
+
+test.use({ storageState: { cookies: [], origins: [] } });
+
 test("should display welcome message", async ({ invoiceMainPage }) => {
-  //   const welcomeTextLocator = await invoiceMainPage.welcomePage.getWelcomeText();
-  //   await welcomeTextLocator.waitFor({ state: "attached", timeout: 5000 });
-  //   const welcomeText = await welcomeTextLocator.textContent();
-  //   console.log("Welcome text:", welcomeText);
-  // await expect(invoiceMainPage.welcomePage.getWelcomeText()).toBeVisible();
-  //   (
-  //     "Please login to view your invoices",
-  //   );
-  //   //toContain(
-  //     "Please login to view your invoices",
-  //   );
+  const welcomeTextLocator = await invoiceMainPage.welcomePage.getWelcomeText();
+  await expect(welcomeTextLocator).toHaveText(
+    "Please login to view your invoices",
+    { timeout: 5000 },
+  );
 });
 
 test("should navigate to home page", async ({ invoiceMainPage }) => {
@@ -24,11 +21,10 @@ test("avatar should be visible", async ({ invoiceMainPage }) => {
   await expect(invoiceMainPage.header.avatar).toBeVisible();
 });
 
-test.skip("should change theme button to dark mode", async ({
-  invoiceMainPage,
-}) => {
+test("should change theme button to dark mode", async ({ invoiceMainPage }) => {
   await invoiceMainPage.header.clickThemeButton();
-  const sun = await invoiceMainPage.page.getByTestId("sun").locator("path");
+  await invoiceMainPage.page.waitForTimeout(1000);
+  const sun = invoiceMainPage.page.getByTestId("sun").locator("path");
 
-  expect(sun).toBeVisible();
+  await expect(sun).toBeVisible();
 });

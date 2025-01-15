@@ -30,25 +30,28 @@ export class InvoiceMainPage extends BasePage {
       // .disableRules("page-has-heading-one")
       .analyze();
 
-    if (accessibilityScanResults.violations.length > 0) {
-      const formattedViolations = accessibilityScanResults.violations
-        .map((violation, index) => {
-          const nodes = violation.nodes
-            .map((node) => node.target.join(", "))
-            .join(", ");
-          return `
-          ${index + 1}. **${violation.id}** (${violation.impact})
-             - **Description:** ${violation.description}
-             - **Help:** ${violation.help} (${violation.helpUrl})
-             - **Affected Elements:** ${nodes}
-          `;
-        })
-        .join("\n");
+    accessibilityScanResults.violations.forEach((violation) => {
+      console.log(violation.description);
+    });
 
-      throw new Error(
-        `Accessibility violations found:\n${formattedViolations}`,
-      );
-      // expect(accessibilityScanResults.violations).toEqual([]);
-    }
+    // if (accessibilityScanResults.violations.length > 0) {
+    //   const formattedViolations = accessibilityScanResults.violations
+    //     .map((violation, index) => {
+    //       const nodes = violation.nodes
+    //         .map((node) => node.target.join(", "))
+    //         .join(", ");
+    //       return `
+    //       ${index + 1}. **${violation.id}** (${violation.impact})
+    //          - **Description:** ${violation.description}
+    //          - **Help:** ${violation.help} (${violation.helpUrl})
+    //          - **Affected Elements:** ${nodes}
+    //       `;
+    //     })
+    //     .join("\n");
+
+    //   throw new Error(
+    //     `Accessibility violations found:\n${formattedViolations}`,
+    // );
+    expect(accessibilityScanResults.violations).toEqual([]);
   }
 }
