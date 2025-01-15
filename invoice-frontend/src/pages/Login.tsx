@@ -19,7 +19,7 @@ const Login = () => {
     <>
       {!isAuthenticated && (
         <>
-          <TextAnimation text={text} data-testid="welcome-text" />
+          <TextAnimation text={text} testId="welcome-text" />
           <SlidingComponent
             initial={{ x: "-100%", opacity: 0 }} // Start off-screen to the left
             animate={{ x: 0, opacity: 1 }} // Animate to original position

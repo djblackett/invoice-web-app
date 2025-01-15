@@ -20,11 +20,12 @@ const AnimatedText = styled.div`
 type TextAnimationProps = {
   text: string;
   className?: string;
+  testId: string;
 };
 
-function TextAnimation({ text }: TextAnimationProps) {
+function TextAnimation({ text, testId }: TextAnimationProps) {
   return (
-    <AnimatedText className="text-animation">
+    <AnimatedText className="text-animation" data-testid={testId}>
       {text.split(" ").map((el, i) => (
         <motion.span
           initial={{ opacity: 0 }}

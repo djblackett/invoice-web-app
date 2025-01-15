@@ -80,10 +80,7 @@ function AllInvoicesToolbar({ invoiceList }: AllInvoicesToolbarProps) {
             options={["Draft", "Pending", "Paid"]}
           />
         </FilterButton>
-        <NewInvoiceButton
-          handleClick={openNewInvoice}
-          data-testid="newInvoiceButton"
-        />
+        <NewInvoiceButton handleClick={openNewInvoice} />
       </ControlBox>
     </GridContainer>
   );
