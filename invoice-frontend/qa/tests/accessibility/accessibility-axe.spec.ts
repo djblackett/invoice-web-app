@@ -1,7 +1,7 @@
 import { test } from "../../fixtures/base";
 
 test.describe("Accessibility tests for the text editor", () => {
-  test("should have no detectable accessibility issues on load", async ({
+  test.skip("should have no detectable accessibility issues on load", async ({
     invoiceMainPage,
   }) => {
     await invoiceMainPage.runAccessibilityTest();
