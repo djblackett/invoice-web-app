@@ -208,6 +208,45 @@ export class NewInvoiceForm {
   }
 }
 
+export async function createExampleInvoice(newInvoiceForm: NewInvoiceForm) {
+  // Click the "New Invoice" button
+  await newInvoiceForm.clickNewInvoiceButton();
+
+  // Fill in the invoice details
+  await newInvoiceForm.fillStreetAddress("1234 Main Street");
+  await newInvoiceForm.fillCity("Halifax");
+  await newInvoiceForm.fillPostalCode("B2L7D9");
+  await newInvoiceForm.fillCountry("Canada");
+
+  // Fill in client details
+  await newInvoiceForm.fillClientName("Jack Sparrow");
+  await newInvoiceForm.fillClientEmail("sparrow-jack@piratemail.yoho");
+  await newInvoiceForm.fillClientStreetAddress("23 Rusty Bucket Lane");
+  await newInvoiceForm.fillClientCity("OpenSea");
+  await newInvoiceForm.fillClientPostalCode("H0H0H0");
+  await newInvoiceForm.fillClientCountry("Canada");
+
+  // Select invoice date
+  await newInvoiceForm.clickInvoiceDate();
+  await newInvoiceForm.selectInvoiceDate("Thursday, January 30th,");
+  await newInvoiceForm.fillDate("2025-01-30");
+
+  // Select payment terms
+  await newInvoiceForm.selectPaymentTerms("Net 14 Days");
+
+  // Fill project description
+  await newInvoiceForm.fillProjectDescription("Purchase treasure maps");
+
+  // Add first item
+  await newInvoiceForm.addItem("Large Treasure Map", 3, 199.96);
+
+  // Add second item
+  await newInvoiceForm.addItem("Extra Large Treasure Map", 1, 99.99); // Example values
+
+  // Save the invoice
+  await newInvoiceForm.clickSaveButton();
+}
+
 /*
   await page.locator('input[name="streetAddress"]').click();
   await page.locator('input[name="streetAddress"]').fill('1234 Main Street');

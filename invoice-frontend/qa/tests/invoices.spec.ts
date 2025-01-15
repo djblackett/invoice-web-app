@@ -28,3 +28,18 @@ test("should change theme button to dark mode", async ({ invoiceMainPage }) => {
 
   await expect(sun).toBeVisible();
 });
+
+test("should change theme back to light mode after 2 clicks", async ({
+  invoiceMainPage,
+}) => {
+  await invoiceMainPage.header.clickThemeButton();
+  await invoiceMainPage.header.clickThemeButton();
+  await invoiceMainPage.page.waitForTimeout(1000);
+  const moon = invoiceMainPage.page.getByTestId("moon").locator("path");
+
+  await expect(moon).toBeVisible();
+});
+
+test("should display login button", async ({ invoiceMainPage }) => {
+  await expect(invoiceMainPage.welcomePage.loginButton).toBeVisible();
+});
