@@ -17,7 +17,9 @@ const globalSetup = async ({ config }) => {
   await invoiceMainPage.gotoPage();
 
   await invoiceMainPage.page.waitForURL(
-    "https://localhost:5173/invoice-web-app/#/login",
+    process.env.NODE_ENV === "CI"
+      ? "https://localhost:4173/invoice-web-app/#/login"
+      : "https://localhost:5173/invoice-web-app/#/login",
   );
   await invoiceMainPage.welcomePage.clickLoginButton();
 
