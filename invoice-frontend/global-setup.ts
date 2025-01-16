@@ -22,6 +22,7 @@ const globalSetup = async ({ config }) => {
       : "https://localhost:5173/invoice-web-app/#/login",
   );
   await invoiceMainPage.welcomePage.clickLoginButton();
+  await invoiceMainPage.page.waitForLoadState("networkidle");
 
   await invoiceMainPage.page.getByLabel("Email address").fill(TEST_LOGIN);
   await invoiceMainPage.page.getByLabel("Password").fill(TEST_PASSWORD);
@@ -30,11 +31,11 @@ const globalSetup = async ({ config }) => {
     .click();
 
   // may be needed for CI - tbd
-  if (process.env.NODE_ENV === "CI") {
-    await invoiceMainPage.page.waitForURL(
-      "https://localhost:4173/invoice-web-app/#/invoices",
-    );
-  }
+  // if (process.env.NODE_ENV === "CI") {
+  //   await invoiceMainPage.page.waitForURL(
+  //     "https://localhost:4173/invoice-web-app/#/invoices",
+  //   );
+  // }
 
   await invoiceMainPage.page.waitForLoadState("networkidle");
   await context.storageState({ path: "state.json" });
