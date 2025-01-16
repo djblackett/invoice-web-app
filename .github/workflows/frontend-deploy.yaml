@@ -24,6 +24,8 @@ jobs:
       VITE_BACKEND_URL: https://localhost:8000
       NODE_ENV: CI
       CERT_DIR: "../certs/"
+      LOGIN: 
+      PASSWORD:
 
     runs-on: ubuntu-22.04
     services:
@@ -184,30 +186,30 @@ jobs:
           cd invoice-frontend
           npm run test:unit
 
-      # - name: Run frontend server for e2e tests`
-      #   run: |
-      #     cd invoice-frontend
-      #     npm run build && npm run preview &
-      #     sleep 1
+      - name: Run frontend server for e2e tests`
+        run: |
+          cd invoice-frontend
+          npm run build && npm run preview &
+          sleep 1
 
-      # - name: Wait for frontend
-      #   run: npx wait-on https://localhost:4173/invoice-web-app/
+      - name: Wait for frontend
+        run: npx wait-on https://localhost:4173/invoice-web-app/
 
-      # - name: Run Playwright e2e tests
-      #   run: |
-      #     cd invoice-frontend
-      #     DEBUG=pw:api npx playwright test
-      # - uses: actions/upload-artifact@v3
-      #   if: always()
-      #   with:
-      #     name: playwright-report
-      #     path: invoice-frontend/playwright-report/
-      #     retention-days: 30
+      - name: Run Playwright e2e tests
+        run: |
+          cd invoice-frontend
+          DEBUG=pw:api npx playwright test
+      - uses: actions/upload-artifact@v3
+        if: always()
+        with:
+          name: playwright-report
+          path: invoice-frontend/playwright-report/
+          retention-days: 30
 
       # Save network logs as artifacts
       - name: Upload network logs
         if: always()
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: network-logs
           path: |

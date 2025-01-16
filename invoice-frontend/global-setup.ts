@@ -3,8 +3,8 @@ import { InvoiceMainPage } from "./qa/pages/invoices/invoice-main-page";
 import { chromium } from "@playwright/test";
 dotenv.config();
 
-const LOGIN = process.env.LOGIN || "";
-const PASSWORD = process.env.PASSWORD || "";
+const TEST_LOGIN = process.env.LOGIN || "";
+const TEST_PASSWORD = process.env.PASSWORD || "";
 
 const globalSetup = async ({ config }) => {
   const browser = await chromium.launch();
@@ -21,8 +21,8 @@ const globalSetup = async ({ config }) => {
   );
   await invoiceMainPage.welcomePage.clickLoginButton();
 
-  await invoiceMainPage.page.getByLabel("Email address").fill(LOGIN);
-  await invoiceMainPage.page.getByLabel("Password").fill(PASSWORD);
+  await invoiceMainPage.page.getByLabel("Email address").fill(TEST_LOGIN);
+  await invoiceMainPage.page.getByLabel("Password").fill(TEST_PASSWORD);
   await invoiceMainPage.page
     .getByRole("button", { name: "Continue", exact: true })
     .click();
