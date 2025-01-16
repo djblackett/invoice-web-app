@@ -1,7 +1,6 @@
 import styled from "styled-components";
-import { ToastContainer, toast, Theme } from "react-toastify";
+import { toast, Theme } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
-import useWindowWidth from "../../hooks/useWindowWidth";
 import { Invoice } from "../../types/types";
 import { useMutation } from "@apollo/client";
 import { MARK_AS_PAID } from "../../graphql/queries";
@@ -81,7 +80,7 @@ function MarkAsPaidButton({ invoice, editButtonRef }: MarkPaidProps) {
   };
   return (
     <>
-      <Button onClick={handleClick} type="button">
+      <Button onClick={handleClick} type="button" data-testid="mark-as-paid">
         Mark as Paid
       </Button>
     </>

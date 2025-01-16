@@ -14,7 +14,7 @@
     "lint:fix": "eslint --config ./eslint.config.js --fix .",
     "lint:css": "stylelint './src/**/*.{ts,tsx}'",
     "format": "prettier --config ./prettier.config.js --write '**/*.ts*'",
-    "codegen": "VITE_BACKEND_URL=https://localhost:8000/graphql playwright codegen https://localhost:5173/invoice-web-app/"
+    "codegen": "VITE_BACKEND_URL=https://localhost:8000/graphql playwright codegen https://localhost:5173/invoice-web-app/ --ignore-https-errors"
   },
   "dependencies": {
     "@apollo/client": "^3.12.2",
