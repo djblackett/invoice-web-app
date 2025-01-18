@@ -5,10 +5,14 @@ RUN corepack enable && \
 
 WORKDIR /usr/src/app
 
+# Install Playwright and its dependencies
+RUN yarn add --dev @playwright/test
+RUN npx playwright install --with-deps
+
 COPY . .
 
 RUN yarn install
-ENV VITE_BACKEND_URL="https://localhost:8000"
+ENV VITE_BACKEND_URL="https://backend-dev:8000"
 
 EXPOSE 5173
 

@@ -23,11 +23,10 @@ export const createApp = async () => {
     const app = inversifyServer.build();
 
     app.get("/health", (_req: Request, res: Response) => {
-      console.log("someone pinged here");
-      res.send("Service is healthy");
+      res.status(200).send("OK");
     });
 
-    // Rate limiter so I don't get spammed 
+    // Rate limiter so I don't get spammed
     if (NODE_ENV === "production") {
       const limiter = rateLimit({
         windowMs: 15 * 60 * 1000, // 15 minutes
