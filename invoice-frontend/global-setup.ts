@@ -1,10 +1,20 @@
 import dotenv from "dotenv";
 import { InvoiceMainPage } from "./qa/pages/invoices/invoice-main-page";
 import { chromium } from "@playwright/test";
+
 dotenv.config();
 
-const TEST_LOGIN = process.env.LOGIN || "";
-const TEST_PASSWORD = process.env.PASSWORD || "";
+const TEST_LOGIN = process.env.TEST_LOGIN;
+const TEST_PASSWORD = process.env.TEST_PASSWORD;
+export const TEST_BASE_URL = process.env.TEST_BASE_URL || "";
+
+if (!TEST_LOGIN || !TEST_PASSWORD) {
+  throw new Error("Please provide login and password");
+}
+
+if (!TEST_BASE_URL) {
+  throw new Error("Please provide TEST_BASE_URL");
+}
 
 const globalSetup = async ({ config }) => {
   const browser = await chromium.launch();
@@ -16,11 +26,7 @@ const globalSetup = async ({ config }) => {
   const invoiceMainPage = new InvoiceMainPage(page);
   await invoiceMainPage.gotoPage();
 
-  await invoiceMainPage.page.waitForURL(
-    process.env.NODE_ENV === "CI"
-      ? "https://localhost:4173/invoice-web-app/#/login"
-      : "https://localhost:5173/invoice-web-app/#/login",
-  );
+  await invoiceMainPage.page.waitForURL(`${TEST_BASE_URL}#/login`);
   await invoiceMainPage.welcomePage.clickLoginButton();
   await invoiceMainPage.page.waitForLoadState("networkidle");
 
@@ -30,13 +36,6 @@ const globalSetup = async ({ config }) => {
   await invoiceMainPage.page
     .getByRole("button", { name: "Continue", exact: true })
     .click();
-
-  // may be needed for CI - tbd
-  // if (process.env.NODE_ENV === "CI") {
-  //   await invoiceMainPage.page.waitForURL(
-  //     "https://localhost:4173/invoice-web-app/#/invoices",
-  //   );
-  // }
 
   await invoiceMainPage.page.waitForLoadState("networkidle");
   await context.storageState({ path: "state.json" });

@@ -1,4 +1,5 @@
 import { Page, Locator } from "@playwright/test";
+import { TEST_BASE_URL } from "../../../global-setup";
 
 export class WelcomePage {
   private readonly page: Page;
@@ -12,7 +13,7 @@ export class WelcomePage {
   }
 
   async navigateTo() {
-    await this.page.goto("https://localhost:5173/invoices/");
+    await this.page.goto(TEST_BASE_URL);
   }
 
   async getWelcomeText() {

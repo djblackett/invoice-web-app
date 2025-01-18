@@ -3,6 +3,7 @@ import BasePage from "../base/base-page";
 import { WelcomePage } from "./welcome-page";
 import { Header } from "./header";
 import AxeBuilder from "@axe-core/playwright";
+import { TEST_BASE_URL } from "../../../global-setup";
 
 export class InvoiceMainPage extends BasePage {
   readonly welcomePage: WelcomePage;
@@ -15,11 +16,7 @@ export class InvoiceMainPage extends BasePage {
   }
 
   async gotoPage() {
-    await this.navigateTo(
-      process.env.NODE_ENV === "CI"
-        ? "https://localhost:4173/invoice-web-app/"
-        : "https://localhost:5173/invoice-web-app/",
-    );
+    await this.navigateTo(TEST_BASE_URL);
   }
 
   public async runAccessibilityTest(): Promise<void> {

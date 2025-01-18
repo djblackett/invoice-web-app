@@ -2,7 +2,7 @@
 // import { chromium } from "@playwright/test";
 // import { Page } from "@playwright/test";
 
-import { expect, test } from "../config";
+import { expect, test } from "../fixtures/base";
 
 test("should navigate to the page and interact with elements", async ({
   page,

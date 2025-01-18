@@ -4,17 +4,15 @@ import {
   NewInvoiceForm,
 } from "../pages/newInvoice/newInvoiceForm";
 
+import { TEST_BASE_URL } from "../../global-setup";
+
 test("Should create a new invoice and be visible in invoices list", async ({
   page,
 }) => {
   const newInvoiceForm = new NewInvoiceForm(page);
 
   // Navigate to the invoice page if not already there
-  await page.goto(
-    process.env.NODE_ENV === "CI"
-      ? "https://localhost:4173/invoice-web-app/"
-      : "https://localhost:5173/invoice-web-app/#/invoices",
-  );
+  await page.goto(`${TEST_BASE_URL}#/invoices`);
   await page.waitForLoadState("networkidle");
 
   await createExampleInvoice(newInvoiceForm);

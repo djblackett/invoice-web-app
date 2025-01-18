@@ -1,8 +1,8 @@
 import { defineConfig, devices } from "@playwright/test";
-import fs from "fs";
 import path from "path";
 import { fileURLToPath } from "url";
 import dotenv from "dotenv";
+import { TEST_BASE_URL } from "./global-setup";
 
 dotenv.config();
 
@@ -46,9 +46,7 @@ export default defineConfig({
   /* Shared settings for all the projects below. See https://playwright.dev/docs/api/class-testoptions. */
   use: {
     /* Base URL to use in actions like `await page.goto('/')`. */
-    baseURL: process.env.CI
-      ? "https://localhost:4173/invoice-web-app/"
-      : "https://localhost:5173/invoice-web-app/",
+    baseURL: TEST_BASE_URL,
     video: "on",
     /* Collect trace when retrying the failed test. See https://playwright.dev/docs/trace-viewer */
     trace: "on-first-retry",

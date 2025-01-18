@@ -1,6 +1,6 @@
 import { expect, test } from "../fixtures/base";
-// import "@testing-library/jest-dom";
 
+// Testing the unauthenticated welcome page
 test.use({ storageState: { cookies: [], origins: [] } });
 
 test("should display welcome message", async ({ invoiceMainPage }) => {

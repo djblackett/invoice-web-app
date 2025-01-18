@@ -1,9 +1,11 @@
+import path from "path";
 import { expect, test } from "../fixtures/base";
 import {
   createExampleInvoice,
   NewInvoiceForm,
 } from "../pages/newInvoice/newInvoiceForm";
 import { chromium } from "@playwright/test";
+import { TEST_BASE_URL } from "../../global-setup";
 
 test.beforeEach(async () => {
   const browser = await chromium.launch();
@@ -11,7 +13,8 @@ test.beforeEach(async () => {
     ignoreHTTPSErrors: true,
   });
   const page = await context.newPage();
-  await page.goto("https://localhost:5173/invoice-web-app/");
+
+  await page.goto(TEST_BASE_URL);
   const newInvoiceForm = new NewInvoiceForm(page);
   await createExampleInvoice(newInvoiceForm);
 });
