@@ -24,8 +24,8 @@ jobs:
       VITE_BACKEND_URL: https://localhost:8000
       NODE_ENV: CI
       CERT_DIR: "../certs/"
-      LOGIN: 
-      PASSWORD:
+      TEST_LOGIN: ${{ secrets.TEST_LOGIN }}
+      TEST_PASSWORD: ${{ secrets.TEST_PASSWORD }}
 
     runs-on: ubuntu-22.04
     services:
