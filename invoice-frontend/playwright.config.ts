@@ -10,21 +10,6 @@ dotenv.config();
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
-// let authToken;
-// try {
-//   const filePath = path.join(__dirname, "authToken.json");
-//   authToken = JSON.parse(fs.readFileSync(filePath, "utf-8")).token;
-// } catch (error) {
-//   console.error("Failed to read token:", error.message);
-//   process.exit(1); // Exit process if token read fails
-// }
-
-/**
- * Read environment variables from file.
- * https://github.com/motdotla/dotenv
- */
-// require("dotenv").config();
-
 /**
  * See https://playwright.dev/docs/test-configuration.
  */
@@ -34,7 +19,7 @@ export default defineConfig({
   timeout: 30 * 1000,
   globalSetup: "./global-setup",
   /* Run tests in files in parallel */
-  // fullyParallel: true,
+  fullyParallel: false,
   /* Fail the build on CI if you accidentally left test.only in the source code. */
   forbidOnly: !!process.env.CI,
   /* Retry on CI only */
@@ -52,9 +37,6 @@ export default defineConfig({
     trace: "on-first-retry",
     // ignoreHTTPSErrors: true,
     storageState: path.resolve(__dirname, "state.json"),
-    // extraHTTPHeaders: {
-    //   Authorization: `Bearer ${authToken}`, // Attach the token to every request
-    // },
   },
 
   /* Configure projects for major browsers */
@@ -63,7 +45,6 @@ export default defineConfig({
       name: "chromium",
       use: {
         ...devices["Desktop Chrome"],
-        // ignoreHTTPSErrors: true,
         launchOptions: {
           args: ["--ignore-certificate-errors"],
         },
@@ -80,7 +61,12 @@ export default defineConfig({
     // },
     // {
     //   name: "webkit",
-    //   use: { ...devices["Desktop Safari"] },
+    //   use: {
+    //     ...devices["Desktop Safari"],
+    //     launchOptions: {
+    //       args: ["--ignore-certificate-errors"],
+    //     },
+    //   },
     // },
     /* Test against mobile viewports. */
     // {
@@ -93,23 +79,24 @@ export default defineConfig({
     // },
     /* Test against branded browsers. */
     // {
-    //   name: 'Microsoft Edge',
-    //   use: { ...devices['Desktop Edge'], channel: 'msedge' },
+    //   name: "Microsoft Edge",
+    //   use: {
+    //     ...devices["Desktop Edge"],
+    //     channel: "msedge",
+    //     launchOptions: {
+    //       args: ["--ignore-certificate-errors"],
+    //     },
+    //   },
     // },
     // {
-    //   name: 'Google Chrome',
-    //   use: { ...devices['Desktop Chrome'], channel: 'chrome' },
+    //   name: "Google Chrome",
+    //   use: {
+    //     ...devices["Desktop Chrome"],
+    //     channel: "chrome",
+    //     launchOptions: {
+    //       args: ["--ignore-certificate-errors"],
+    //     },
+    //   },
     // },
   ],
-
-  /* Run your local dev server before starting the tests */
-  // webServer: {
-  // command: process.env.CI
-  //   ? "npm run build && npm run preview && npx wait-on http://localhost:4173/invoice-web-app/"
-  //   : "npm run dev",
-  // url: process.env.CI
-  //   ? "http://localhost:4173/invoice-web-app"
-  //   : "http://localhost:5173/invoice-web-app",
-  //   reuseExistingServer: !process.env.CI,
-  // },
 });

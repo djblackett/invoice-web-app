@@ -99,3 +99,4 @@ state.json
 invoice-frontend/playwright-report/index.html
 replace-assets.sh
 invoice-frontend/playwright-report/index.html
+invoice-frontend/before-login-screenshot.png
