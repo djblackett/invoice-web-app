@@ -30,7 +30,10 @@ const globalSetup = async ({ config }) => {
   await invoiceMainPage.welcomePage.clickLoginButton();
   await invoiceMainPage.page.waitForLoadState("networkidle");
 
-  await page.screenshot({ path: "before-login-screenshot.png" });
+  if (process.env.NODE_ENV === "CI") {
+    await page.screenshot({ path: "before-login-screenshot.png" });
+  }
+
   await invoiceMainPage.page.getByLabel("Email address").fill(TEST_LOGIN);
   await invoiceMainPage.page.getByLabel("Password").fill(TEST_PASSWORD);
   await invoiceMainPage.page

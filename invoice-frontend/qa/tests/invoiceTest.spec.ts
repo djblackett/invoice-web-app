@@ -12,7 +12,8 @@ test("should navigate to the page and interact with elements", async ({
     await page.goto("/invoice-web-app/");
 
     // Take a full-page screenshot
-    await page.screenshot({ path: "fullpage.png", fullPage: true });
+
+    // await page.screenshot({ path: "fullpage.png", fullPage: true });
 
     // Locate and verify visibility of the button
     const button = page.getByTestId("newInvoiceButton");

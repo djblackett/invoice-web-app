@@ -30,7 +30,7 @@ export default defineConfig({
       ],
       all: true, // Collect coverage for all files, not just the ones tested
       thresholds: {
-        statements: 80, // Example threshold
+        statements: 80,
         branches: 80,
         functions: 80,
         lines: 80,
