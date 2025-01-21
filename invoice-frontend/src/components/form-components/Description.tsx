@@ -1,4 +1,4 @@
-import { Label, Input } from "../../styles/editStyles";
+import { Label, Input } from "../../styles/editPageStyles";
 import LongFormEntry from "./LongFormEntry";
 import { Invoice } from "../../types/types";
 import { useFormContext } from "react-hook-form";

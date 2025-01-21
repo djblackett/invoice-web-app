@@ -6,7 +6,7 @@ import {
   DarkenScreen,
   EditTitle,
   FormContainerDarkenModal,
-} from "../styles/editStyles";
+} from "../styles/editPageStyles";
 import CompanyFormInfo from "../components/form-components/CompanyFormInfo";
 import ClientFormInfo from "../components/form-components/ClientFormInfo";
 import DateAndPayment from "../components/form-components/DateAndPayment";

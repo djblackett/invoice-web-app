@@ -6,7 +6,7 @@ import {
   CountryInput,
   Label,
   StreetAddressInput,
-} from "../../styles/editStyles";
+} from "../../styles/editPageStyles";
 import AddressBox from "./AddressBox";
 import LongFormEntry from "./LongFormEntry";
 import useWindowWidth from "../../hooks/useWindowWidth";

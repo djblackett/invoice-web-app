@@ -4,7 +4,7 @@ import {
   DarkenScreen,
   EditTitle,
   FormContainerDarkenModal,
-} from "../styles/editStyles";
+} from "../styles/editPageStyles";
 import { useResponsive } from "../hooks/useResponsive";
 import { useNewInvoiceContext } from "../components/form-components/NewInvoiceContextProvider";
 

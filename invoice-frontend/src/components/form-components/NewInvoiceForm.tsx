@@ -1,5 +1,5 @@
 import { FormProvider } from "react-hook-form";
-import { BillText } from "../../styles/editStyles";
+import { BillText } from "../../styles/editPageStyles";
 import CompanyFormInfo from "./CompanyFormInfo";
 import DateAndPayment from "./DateAndPayment";
 import EditFormItemList from "./EditFormItemList";

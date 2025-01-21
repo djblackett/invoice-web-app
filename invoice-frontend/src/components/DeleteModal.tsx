@@ -9,7 +9,7 @@ import {
   Confirm,
   ButtonContainer,
 } from "../styles/DeleteModalStyles";
-import { DarkenScreen } from "../styles/editStyles";
+import { DarkenScreen } from "../styles/editPageStyles";
 import { Description } from "../styles/FullInvoiceStyles";
 import { toast, Theme } from "react-toastify";
 import { ClickOutsideProvider } from "@shelf/react-outside-click";

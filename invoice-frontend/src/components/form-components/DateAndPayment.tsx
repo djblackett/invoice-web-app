@@ -2,7 +2,7 @@ import DatePicker from "react-datepicker";
 import { forwardRef, useEffect } from "react";
 import PaymentTermsDropdown from "./FormDropDown";
 import FormEntry from "./FormEntry";
-import { DateAndPaymentContainer, Label } from "../../styles/editStyles";
+import { DateAndPaymentContainer, Label } from "../../styles/editPageStyles";
 import { CustomDateBox, DateInput } from "../../styles/DateAndPaymentStyles";
 import { Invoice } from "src/types/types";
 import { useNewInvoiceContext } from "./NewInvoiceContextProvider";
