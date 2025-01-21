@@ -10,6 +10,7 @@ import { NewInvoiceProvider } from "../../src/components/form-components/NewInvo
 import { ThemeProvider } from "styled-components";
 import { lightTheme } from "../../src/styles/Themes";
 import { ApolloClient, ApolloProvider, InMemoryCache } from "@apollo/client";
+import "@testing-library/jest-dom";
 
 // Mock useWindowWidth hook
 vi.mock("../src/hooks/useWindowWidth", () => ({

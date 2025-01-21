@@ -8,6 +8,7 @@ import { REMOVE_INVOICE, ALL_INVOICES } from "../../src/graphql/queries";
 import { ThemeProvider } from "styled-components";
 import { lightTheme } from "../../src/styles/Themes";
 import React from "react";
+import "@testing-library/jest-dom";
 
 const mocks = [
   {

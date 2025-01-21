@@ -19,6 +19,15 @@ interface AppContextType {
   methods: UseFormReturn<FormType>;
 }
 
+interface InitialState {
+  isDraft?: boolean;
+  startDate?: Date | null;
+  items?: Item[];
+  selectedPaymentOption?: number;
+  isNewInvoiceOpen?: boolean;
+  isPaymentOpen?: boolean;
+}
+
 const AppContext = createContext<AppContextType | undefined>(undefined);
 
 function useNewInvoiceContext() {
@@ -29,41 +38,59 @@ function useNewInvoiceContext() {
   return context;
 }
 
-const NewInvoiceProvider: FC<{ children: ReactNode }> = ({ children }) => {
-  const [isDraft, setIsDraft] = useState(false);
-  const [startDate, setStartDate] = useState(null);
-  const [items, setItems] = useState<Item[]>([]);
-  const [selectedPaymentOption, setSelectedPaymentOption] = useState(1);
-  const [isNewInvoiceOpen, setIsNewInvoiceOpen] = useState(false);
-  const [isPaymentOpen, setIsPaymentOpen] = useState(false);
+interface NewInvoiceProviderProps {
+  children: ReactNode;
+  initialState?: InitialState;
+}
+
+const NewInvoiceProvider: FC<NewInvoiceProviderProps> = ({
+  children,
+  initialState = {},
+}) => {
+  const {
+    isDraft = false,
+    startDate = null,
+    items = [],
+    selectedPaymentOption = 1,
+    isNewInvoiceOpen = false,
+    isPaymentOpen = false,
+  } = initialState;
+
+  const [isDraftState, setIsDraft] = useState<boolean>(isDraft);
+  const [startDateState, setStartDate] = useState<Date | null>(startDate);
+  const [itemsState, setItems] = useState<Item[]>(items);
+  const [selectedPaymentOptionState, setSelectedPaymentOption] =
+    useState<number>(selectedPaymentOption);
+  const [isNewInvoiceOpenState, setIsNewInvoiceOpen] =
+    useState<boolean>(isNewInvoiceOpen);
+  const [isPaymentOpenState, setIsPaymentOpen] =
+    useState<boolean>(isPaymentOpen);
 
   const handlePaymentClick = () => {
-    setIsPaymentOpen(!isPaymentOpen);
+    setIsPaymentOpen(!isPaymentOpenState);
   };
 
-  // Handle payment option change
   const handleChangeSelectedOption = (option: number) => {
     setSelectedPaymentOption(option);
   };
 
-  // Initialize the form
   const methods = useForm<FormType>({
     mode: "onChange",
   });
 
-  const value = {
-    isDraft,
-    setIsDraft,
-    startDate,
-    setStartDate,
-    items,
-    setItems,
-    selectedPaymentOption,
-    setSelectedPaymentOption,
-    isNewInvoiceOpen,
-    setIsNewInvoiceOpen,
+  const value: AppContextType = {
+    isDraft: isDraftState,
+    setIsDraft: setIsDraft,
+    startDate: startDateState,
+    setStartDate: setStartDate,
+    items: itemsState,
+    setItems: setItems,
+    selectedPaymentOption: selectedPaymentOptionState,
+    setSelectedPaymentOption: setSelectedPaymentOption,
+    isNewInvoiceOpen: isNewInvoiceOpenState,
+    setIsNewInvoiceOpen: setIsNewInvoiceOpen,
     handlePaymentClick,
-    isPaymentOpen,
+    isPaymentOpen: isPaymentOpenState,
     handleChangeSelectedOption,
     methods,
   };

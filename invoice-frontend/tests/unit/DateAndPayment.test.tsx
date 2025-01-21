@@ -1,8 +1,7 @@
 /* eslint-disable @typescript-eslint/ban-ts-comment */
-
 import { render, screen } from "../testUtils";
-import DateAndPayment from "../../src/components/form-components/DateAndPayment";
-import { useNewInvoiceContext } from "../../src/components/form-components/NewInvoiceContextProvider";
+import DateAndPayment from "@/components/form-components/DateAndPayment";
+import { useNewInvoiceContext } from "@/components/form-components/NewInvoiceContextProvider";
 import {
   afterEach,
   beforeEach,
@@ -14,12 +13,12 @@ import {
 } from "vitest";
 
 // Mock the context provider
-vi.mock("../src/components/form-components/NewInvoiceContextProvider", () => ({
+vi.mock("@/components/form-components/NewInvoiceContextProvider", () => ({
   useNewInvoiceContext: vi.fn(),
 }));
 
 // Mock the utility function
-vi.mock("src/utils/utilityFunctions", () => ({
+vi.mock("@/utils/utilityFunctions", () => ({
   convertStringToDate: vi.fn(),
 }));
 
@@ -45,9 +44,7 @@ describe("DateAndPayment", () => {
 
   it.skip("renders DateAndPayment component", () => {
     render(<DateAndPayment />);
-    // @ts-ignore
     expect(screen.getByText(/Invoice Date/i)).toBeInTheDocument();
-    // @ts-ignore
     expect(screen.getByText(/Payment Terms/i)).toBeInTheDocument();
   });
 });
