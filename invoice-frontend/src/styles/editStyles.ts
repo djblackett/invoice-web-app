@@ -134,7 +134,6 @@ export const ErrorList = styled.ul`
   list-style: none;
   padding: 0;
   margin: 0;
-  //transition: height 300ms ease-in-out; // nice idea but complicated to implement
 
   &:first-of-type {
     margin-top: 2rem;

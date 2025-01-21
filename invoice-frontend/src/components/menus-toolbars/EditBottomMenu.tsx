@@ -4,6 +4,7 @@ import CancelButton from "../buttons/CancelButton";
 import { MenuContainer, Save } from "../../styles/NewInvoiceBottomMenuStyles";
 import { useNewInvoiceForm } from "../../hooks/useNewInvoiceForm";
 import { useNewInvoiceContext } from "../form-components/NewInvoiceContextProvider";
+import { FormType } from "@/types/types";
 
 type EditBottomMenuProps = {
   closeText: string;
@@ -25,7 +26,7 @@ function EditBottomMenu({
     reset();
   };
 
-  const { handleSubmit } = useFormContext();
+  const { handleSubmit } = useFormContext<FormType>();
   const { onSubmitUpdate } = useNewInvoiceForm();
 
   return (

@@ -100,18 +100,15 @@ export const ListItem = styled.li`
   flex-direction: column;
   align-items: center;
   justify-content: center;
-
   list-style: none;
   height: 48px;
   width: 100%;
   border-color: ${({ theme }) => theme.formFieldOutline};
   cursor: pointer;
   border-bottom: 1px solid ${({ theme }) => theme.paymentOptionBorder};
-  //border-bottom: 1px solid #979797;
 `;
 
 export const ItemButton = styled.button`
-  //position: absolute;
   height: 100%;
   width: 100%;
   background-color: ${({ theme }) => theme.paymentTermsBackground};
@@ -125,10 +122,6 @@ export const ItemButton = styled.button`
   letter-spacing: -0.25px;
   color: ${({ theme }) => theme.textPlain};
   padding: 0.5rem;
-
-  &:first-child {
-    //padding-top: 0.8em;
-  }
 
   &:last-child {
     border: none;

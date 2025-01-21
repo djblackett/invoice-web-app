@@ -111,8 +111,6 @@ const LogoLogoutContainer = styled.div`
 export const LoginLogoutButton = styled(motion.button)`
   background-color: ${({ theme }) => theme.newButton};
   border-radius: 24px;
-  /* padding: 5px 16px 6px 16px; */
-  /* padding: 16px 24px 17px 24px; */
   color: white;
   border: none;
   cursor: pointer;
@@ -126,7 +124,6 @@ export const LoginLogoutButton = styled(motion.button)`
   letter-spacing: -0.25px;
   white-space: nowrap;
   scale: 1;
-  /* box-shadow: ; */
 
   @media (min-width: 1200px) {
     margin-bottom: 0.25rem;

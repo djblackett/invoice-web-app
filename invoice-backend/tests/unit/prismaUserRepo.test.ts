@@ -122,7 +122,6 @@ describe("createUser", () => {
 
 describe("loginUser", () => {
   test("should return user by username", async () => {
-    // todo - why is this type conversion necessary?
     prisma.user.findUniqueOrThrow.mockResolvedValue(mockLoggedInUser as User);
 
     const user = await userRepo.findUserByUsername("johndoe");

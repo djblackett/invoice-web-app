@@ -8,7 +8,6 @@ export const MenuContainer = styled.div`
   flex-direction: row;
   align-items: center;
   justify-content: flex-end;
-  //margin-top: 2.6rem;
   margin-bottom: 4rem;
 
   @media (min-width: 768px) {
@@ -22,7 +21,6 @@ export const NewInvoiceButton = styled.input`
   background-color: #7c5dfa;
   border: none;
   height: 44px;
-  //width: 90px;
   display: inline;
   align-items: center;
   justify-content: center;

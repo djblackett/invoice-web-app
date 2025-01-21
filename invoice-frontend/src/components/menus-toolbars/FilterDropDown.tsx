@@ -1,7 +1,6 @@
-import React, { ReactElement, SyntheticEvent } from "react";
+import { ReactElement, SyntheticEvent } from "react";
 import styled from "styled-components";
 import { useDispatch } from "react-redux";
-import PropTypes from "prop-types";
 import CheckboxSelection from "./CheckboxSelection";
 import { changeFilter } from "../../features/invoices/filterSlice";
 import { StatusKey } from "../../types/types";
@@ -162,11 +161,3 @@ export default function FilterDropDown({
     </Main>
   );
 }
-
-FilterDropDown.propTypes = {
-  // icon: PropTypes.object,
-  // handleClick: PropTypes.func,
-  isOpen: PropTypes.bool.isRequired,
-  // options: PropTypes.array.isRequired,
-  // onClickOutside: PropTypes.func,
-};

@@ -22,12 +22,9 @@ export default function NewInvoiceForm() {
         <CompanyFormInfo />
         <BillText>Bill To</BillText>
         <ClientFormInfo />
-
         <DateAndPayment />
-
         <Description />
         <EditFormItemList />
-
         <FormErrorList isEditOpen={isNewInvoiceOpen} />
         <NewInvoiceBottomMenu closeText="Discard" justifyCancel="flex-start" />
       </form>

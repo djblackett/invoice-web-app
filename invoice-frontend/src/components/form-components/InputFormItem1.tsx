@@ -25,6 +25,7 @@ type InputFormItemProps = {
   isEditOpen: boolean;
 };
 
+// todo - can I make this simpler?
 export default function InputFormItem1({
   isDraft,
   invoice,
@@ -238,5 +239,4 @@ export default function InputFormItem1({
 InputFormItem1.propTypes = {
   isDraft: PropTypes.bool.isRequired,
   isEditOpen: PropTypes.bool,
-  // invoice: PropTypes.instanceOf(Invoice)
 };

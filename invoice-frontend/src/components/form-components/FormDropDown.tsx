@@ -68,7 +68,6 @@ function PaymentTermsDropdown({ invoice }: PaymentTermsProps) {
         <h2>{selected}</h2>
         <SVG>{arrowDown}</SVG>
       </DropDownHeader>
-
       <DropDownList
         style={{ height: isPaymentOpen ? "192px" : 0 }}
         data-testid="dropDownList"

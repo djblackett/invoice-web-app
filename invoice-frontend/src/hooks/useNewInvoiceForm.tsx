@@ -130,11 +130,11 @@ export const useNewInvoiceForm = () => {
 
     // todo - Determine if this is still relevant after refactoring
     // Ensure quantity and price are numbers
-    newInvoice.items = newInvoice.items.map((item) => ({
-      ...item,
-      quantity: Number(item.quantity) || 0,
-      price: Number(item.price) || 0,
-    }));
+    // newInvoice.items = newInvoice.items.map((item) => ({
+    //   ...item,
+    //   quantity: Number(item.quantity) || 0,
+    //   price: Number(item.price) || 0,
+    // }));
 
     newInvoice.status = "draft";
 

@@ -9,7 +9,7 @@ type FormEntryProps = {
   style?: CSSProperties;
 };
 
-// todo double check the mobile layout here
+// todo - double check the mobile layout here
 function FormEntry({
   className,
   isLongOnMobile,

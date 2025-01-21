@@ -41,7 +41,7 @@ function MarkAsPaidButton({ invoice, editButtonRef }: MarkPaidProps) {
     },
   });
 
-  const handleClick = async (e: SyntheticEvent) => {
+  const handleClick = async () => {
     if (invoice.status === "pending") {
       const response = await markAsPaid({
         variables: {

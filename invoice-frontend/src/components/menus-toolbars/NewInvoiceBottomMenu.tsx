@@ -31,6 +31,7 @@ function NewInvoiceBottomMenu({
     reset();
   };
 
+  // todo - revisit this and fix types
   return (
     <MenuContainer>
       <CancelButton

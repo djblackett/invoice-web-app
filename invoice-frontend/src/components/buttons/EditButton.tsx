@@ -7,7 +7,6 @@ const Button = styled.button`
   border-radius: 24px;
   padding: 16px 24px 17px 24px;
   color: ${({ theme }) => theme.greyText};
-  /* outline: auto; */
   border: none;
   cursor: pointer;
   font-weight: 700;
@@ -23,18 +22,16 @@ const Button = styled.button`
 
   &:focus {
     border: 2px solid rgb(18, 22, 243);
-    /* background-color: aquamarine; */
   }
 `;
 
 type EditButtonProps = {
   isEditOpen: boolean;
   toggleEditTab: React.Dispatch<React.SetStateAction<boolean>>;
-  // editButton: React.MutableRefObject<HTMLButtonElement | null>;
 };
 
-const EditButton = forwardRef(
-  ({ toggleEditTab, isEditOpen }: EditButtonProps, ref) => {
+const EditButton = forwardRef<HTMLButtonElement, EditButtonProps>(
+  ({ toggleEditTab, isEditOpen }, ref) => {
     const handleClick = () => {
       toggleEditTab(!isEditOpen);
     };

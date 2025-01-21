@@ -18,6 +18,9 @@ console.log("VITE_REDIRECT_URI:", VITE_REDIRECT_URI);
 if (container) {
   const root = createRoot(container);
 
+  {
+    /* todo - use env vars here */
+  }
   root.render(
     <React.StrictMode>
       <Provider store={store}>

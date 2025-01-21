@@ -183,30 +183,6 @@ export const CREATE_USER = gql`
   }
 `;
 
-// export const ALL_INVOICES = gql`
-//   query allInvoices {
-//       senderAddress {
-//           ...SenderInfo
-//       }
-//       clientAddress {
-//           ...ClientInfo,
-//       }
-//       clientEmail,
-//       clientName,
-//       createdAt,
-//       description,
-//       id,
-//       items,
-//       paymentDue,
-//       paymentTerms,
-//       status,
-//       total
-//   }
-//   ${SENDER_INFO}
-//   ${CLIENT_INFO}
-//
-// `;
-
 export const ALL_INVOICES = gql`
   query allInvoices {
     allInvoices {

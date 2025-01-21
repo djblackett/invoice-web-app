@@ -33,8 +33,6 @@ const Input = styled.input<InputProps>`
   height: 48px;
   border-radius: 4px;
   border: 1px solid ${({ theme }) => theme.formFieldOutline};
-  //border-style: solid;
-  //border-width: 1px;
   outline: none;
   padding: 17px 20px 16px 20px;
   margin-bottom: 1.5rem;
@@ -159,15 +157,8 @@ export const MobileQuantityPrice = styled.p`
 `;
 
 export const MobileHelperContainer = styled.div`
-  //display: flex;
-  //flex-direction: column;
-  //justify-content: center;
   display: grid;
   grid-template: 1fr / 220px 62px 116px 61px 49px;
-
-  //@media (min-width: 600px) {
-  //display: contents;
-  //}
 `;
 export const SVG = styled.svg`
   width: 13px;

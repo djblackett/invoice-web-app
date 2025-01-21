@@ -1,5 +1,5 @@
 import styled from "styled-components";
-import { WhiteCircle, NewText } from "../../styles/AllInvoicesToolbarStyles";
+import { WhiteCircle, NewText } from "@/styles/AllInvoicesToolbarStyles";
 
 const PrimaryButton = styled.div`
   border-radius: 24px;

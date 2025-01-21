@@ -12,11 +12,6 @@ import { createClient } from "graphql-ws";
 import { getMainDefinition } from "@apollo/client/utilities";
 import { loadDevMessages, loadErrorMessages } from "@apollo/client/dev";
 
-/**
- * Custom hook to initialize and provide an Apollo Client instance.
- *
- * @returns {ApolloClient} The initialized Apollo Client.
- */
 const useGraphQLClient = () => {
   const VITE_BACKEND_URL = import.meta.env.VITE_BACKEND_URL || "";
 
@@ -82,8 +77,7 @@ const useGraphQLClient = () => {
       cache: new InMemoryCache(),
       connectToDevTools: process.env.NODE_ENV !== "production",
     });
-  }, []); // Empty dependency array ensures this runs once
-
+  }, []);
   return client;
 };
 

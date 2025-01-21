@@ -1,5 +1,3 @@
-import { useLayoutEffect } from "react";
-import { v4 as uuidv4 } from "uuid";
 import NewInvoiceForm from "../components/form-components/NewInvoiceForm";
 import "../styles/react-datepicker.css";
 import {
@@ -13,14 +11,7 @@ import { useNewInvoiceContext } from "../components/form-components/NewInvoiceCo
 function NewInvoice() {
   const { editPageWidth, padding } = useResponsive();
 
-  const { items, setItems, isNewInvoiceOpen } = useNewInvoiceContext();
-
-  // todo - only necessary for testing local test data without item ids
-  // todo - remove later
-  useLayoutEffect(() => {
-    const newItems = items.map((item) => ({ ...item, id: uuidv4() }));
-    setItems(newItems);
-  }, []);
+  const { isNewInvoiceOpen } = useNewInvoiceContext();
 
   // DarkenScreen appears when newInvoice tab is open
   return (

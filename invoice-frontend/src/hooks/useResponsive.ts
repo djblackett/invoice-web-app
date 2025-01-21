@@ -25,7 +25,7 @@ export const useResponsive = () => {
     };
 
     window.addEventListener("resize", updateSize);
-    updateSize(); // Initial call
+    updateSize();
     return () => window.removeEventListener("resize", updateSize);
   }, []);
 
