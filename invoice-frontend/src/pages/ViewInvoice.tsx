@@ -13,7 +13,7 @@ import {
 } from "../styles/ViewInvoiceStyles";
 import { NewInvoiceProvider } from "../components/form-components/NewInvoiceContextProvider";
 import { useQuery } from "@apollo/client";
-import { GET_INVOICE_BY_ID } from "../graphql/queries";
+import { GET_INVOICE_BY_ID } from "../graphql/invoice.queries";
 
 function ViewInvoice() {
   const navigate = useNavigate();

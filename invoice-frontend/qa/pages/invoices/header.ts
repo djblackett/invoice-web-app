@@ -6,12 +6,10 @@ export class Header {
   readonly themeButton: Locator;
   readonly avatar: Locator;
 
-  // todo - what to do with conditional rendering of the theme icon? moon or sun
   constructor(page: Page) {
     this.logo = page.getByTestId("logo");
     this.logoutButton = page.getByTestId("logout-button");
     this.themeButton = page.getByTestId("dark-mode-button");
-
     this.avatar = page.getByTestId("avatar");
   }
 

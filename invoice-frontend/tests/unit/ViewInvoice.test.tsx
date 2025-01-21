@@ -2,7 +2,7 @@ import { render, screen, fireEvent, waitFor } from "@testing-library/react";
 import { MockedProvider } from "@apollo/client/testing";
 import { MemoryRouter, Route, Routes } from "react-router-dom";
 import ViewInvoice from "../../src/pages/ViewInvoice";
-import { GET_INVOICE_BY_ID } from "../../src/graphql/queries";
+import { GET_INVOICE_BY_ID } from "../../src/graphql/invoice.queries";
 import { describe, it, expect, vi } from "vitest";
 
 const navigate = vi.fn();

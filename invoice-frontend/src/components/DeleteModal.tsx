@@ -3,7 +3,7 @@ import React from "react";
 import DeleteButton from "./buttons/DeleteButton";
 import CancelButton from "./buttons/CancelButton";
 import { useMutation } from "@apollo/client";
-import { REMOVE_INVOICE, ALL_INVOICES } from "../graphql/queries";
+import { REMOVE_INVOICE, ALL_INVOICES } from "../graphql/invoice.queries";
 import {
   ModalContainer,
   Confirm,

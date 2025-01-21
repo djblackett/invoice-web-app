@@ -1,4 +1,4 @@
-import InputFormItem1 from "./InputFormItem1";
+import InputFormItem from "./InputFormItem";
 import {
   ItemsContainer,
   ItemTitle,
@@ -23,7 +23,7 @@ function EditFormItemList({
       <ItemTitle>Item List</ItemTitle>
       <ItemsHeader className="desktop-only-label" />
       <ItemsContainer>
-        <InputFormItem1
+        <InputFormItem
           isDraft={isDraft}
           invoice={invoice}
           isEditOpen={isEditOpen}

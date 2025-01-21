@@ -3,8 +3,8 @@ import { toast, Theme } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { Invoice } from "../../types/types";
 import { useMutation } from "@apollo/client";
-import { MARK_AS_PAID } from "../../graphql/queries";
-import { MutableRefObject, SyntheticEvent } from "react";
+import { MARK_AS_PAID } from "../../graphql/invoice.queries";
+import { MutableRefObject } from "react";
 
 const Button = styled.button`
   background-color: ${({ theme }) => theme.newButton};

@@ -24,7 +24,6 @@ type FadeOutProps = {
   className: string;
 };
 
-// todo - make welcome text fade out
 const FadeOut = ({ username, className }: FadeOutProps) => {
   const [height] = useState("32px");
   const [opacity, setOpacity] = useState(1);

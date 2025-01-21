@@ -26,7 +26,7 @@ type InputFormItemProps = {
 };
 
 // todo - can I make this simpler?
-export default function InputFormItem1({
+export default function InputFormItem({
   isDraft,
   invoice,
   isEditOpen,
@@ -236,7 +236,7 @@ export default function InputFormItem1({
   );
 }
 
-InputFormItem1.propTypes = {
+InputFormItem.propTypes = {
   isDraft: PropTypes.bool.isRequired,
   isEditOpen: PropTypes.bool,
 };

@@ -6,7 +6,7 @@ import {
   ALL_INVOICES,
   EDIT_INVOICE,
   GET_INVOICE_BY_ID,
-} from "../graphql/queries";
+} from "../graphql/invoice.queries";
 import { v4 as uuidv4 } from "uuid";
 import { createInvoiceObject } from "../utils/utilityFunctions";
 import { FormType } from "../types/types";

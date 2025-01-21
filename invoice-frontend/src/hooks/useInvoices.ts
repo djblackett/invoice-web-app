@@ -1,6 +1,6 @@
 import { useQuery } from "@apollo/client";
 import { useSelector } from "react-redux";
-import { ALL_INVOICES } from "../graphql/queries";
+import { ALL_INVOICES } from "../graphql/invoice.queries";
 import { selectFilter } from "../features/invoices/filterSlice";
 import { useMemo } from "react";
 import { StatusKey } from "../types/types";
