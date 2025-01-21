@@ -105,6 +105,7 @@ describe("FullInvoice Component", () => {
 
   it("displays loading indicator when loading is true", () => {
     // Render the component with loading set to true
+    // @ts-expect-error - We are intentionally passing null to test the loading state
     render(<FullInvoice invoice={null} loading={true} />);
 
     // Verify that the loading indicator is displayed
