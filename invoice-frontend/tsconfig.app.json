@@ -39,6 +39,9 @@
     "tests/unit/EditForm.test.tsx",
     "tests/unit/Login.test.tsx",
     "tests/unit/useApolloClient.test.ts",
-    "tests/unit/ViewInvoice.test.tsx"
+    "tests/unit/ViewInvoice.test.tsx",
+    "tests/unit/NotFound.test.tsx",
+    "tests/unit/EmptyList.test.tsx",
+    "tests/unit/WelcomePage.test.tsx"
   ]
 }
