@@ -32,7 +32,6 @@ if (container) {
             audience: "https://invoice-web-app/",
           }}
         >
-          {/* <HashRouter basename="/invoice-web-app/"> */}
           <HashRouter>
             <App />
           </HashRouter>

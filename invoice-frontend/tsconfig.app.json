@@ -21,17 +21,24 @@
     "noFallthroughCasesInSwitch": true,
     "allowSyntheticDefaultImports": true,
 
-    "types": ["node", "@testing-library/jest-dom"],
+    "types": ["node", "@testing-library/jest-dom", "vitest"],
     "baseUrl": "./",
     "paths": {
-      "testUtils": ["./tests/testUtils"]
+      "testUtils": ["./tests/testUtils"],
+      "@/*": ["src/*"]
     }
   },
   "include": [
     "src",
-    "tests/setupTests.ts",
+    "tests/setup.ts",
     "vite.config.ts",
     "tests/unit/DateAndPayment.test.tsx",
-    "tests/utils/utilityFunctions.test.ts"
+    "tests/utils/utilityFunctions.test.ts",
+    "tests/unit/App.test.tsx",
+    "tests/unit/AllInvoices.test.tsx",
+    "tests/unit/EditForm.test.tsx",
+    "tests/unit/Login.test.tsx",
+    "tests/unit/useApolloClient.test.ts",
+    "tests/unit/ViewInvoice.test.tsx"
   ]
 }
