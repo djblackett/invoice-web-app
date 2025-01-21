@@ -1,7 +1,7 @@
 import { useAuth0 } from "@auth0/auth0-react";
 import { motion } from "framer-motion";
 import { Link } from "react-router-dom";
-import { VITE_REDIRECT_URI } from "src";
+import { VITE_REDIRECT_URI } from "@/index";
 import styled from "styled-components";
 
 const HeaderContainer = styled.div`
@@ -210,7 +210,7 @@ function Header({ themeToggler, theme }: HeaderProps) {
     });
 
   return (
-    <HeaderContainer>
+    <HeaderContainer role="banner" data-testid="header">
       <LogoLogoutContainer>
         <Logo data-testid="logo">
           <Link

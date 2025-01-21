@@ -111,7 +111,7 @@ export default function ClientFormInfo({ invoice }: ClientFormInfoProps) {
           style={{
             border: errors.clientStreetAddress ? "1px solid #EC5757" : "",
           }}
-          defaultValue={invoice ? invoice.clientAddress.street : ""}
+          defaultValue={invoice ? invoice?.clientAddress?.street : ""}
           {...register("clientStreetAddress", { required: !isDraft })}
         />
       </LongFormEntry>
@@ -129,7 +129,7 @@ export default function ClientFormInfo({ invoice }: ClientFormInfoProps) {
               border: errors.clientCity ? "1px solid #EC5757" : "",
             }}
             type="text"
-            defaultValue={invoice ? invoice.clientAddress.city : ""}
+            defaultValue={invoice ? invoice?.clientAddress?.city : ""}
             {...register("clientCity", {
               required: !isDraft,
               pattern: /[\w ]*/i,
@@ -150,7 +150,7 @@ export default function ClientFormInfo({ invoice }: ClientFormInfoProps) {
               border: errors.clientPostalCode ? "1px solid #EC5757" : "",
             }}
             type="text"
-            defaultValue={invoice ? invoice.clientAddress.postCode : ""}
+            defaultValue={invoice ? invoice?.clientAddress?.postCode : ""}
             {...register("clientPostalCode", {
               required: !isDraft,
               pattern: /^\w+[\w ]+$/i,

@@ -1,8 +1,8 @@
 import { useAuth0 } from "@auth0/auth0-react";
 import { Navigate } from "react-router-dom";
-import { SlidingComponent } from "src/components/buttons/AnimatedButton";
-import { LoginLogoutButton } from "src/components/menus-toolbars/Header";
-import TextAnimation from "src/components/text/AnimatedText";
+import { SlidingComponent } from "@/components/buttons/AnimatedButton";
+import { LoginLogoutButton } from "@/components/menus-toolbars/Header";
+import TextAnimation from "@/components/text/AnimatedText";
 
 const Login = () => {
   const { isAuthenticated, isLoading, loginWithRedirect } = useAuth0();

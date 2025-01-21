@@ -36,6 +36,7 @@ function EditForm({ invoice }: EditFormProps) {
       style={{ visibility: isNewInvoiceOpen ? "visible" : "hidden" }}
     >
       <FormContainerDarkenModal
+        data-testid="editInvoiceModal"
         style={{
           width: isNewInvoiceOpen ? `${editPageWidth}px` : 0,
           padding: isNewInvoiceOpen ? padding : 0,

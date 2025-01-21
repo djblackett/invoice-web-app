@@ -52,7 +52,7 @@ function CompanyFormInfo({ invoice }: CompanyFormInfoProps) {
           border: errors?.country ? "1px solid #EC5757" : "",
           width: width < 768 ? "100%" : "",
         }}
-        defaultValue={invoice ? invoice.senderAddress.country : ""}
+        defaultValue={invoice ? invoice?.senderAddress?.country : ""}
         {...register("country", {
           required: !isDraft,
           pattern: /^[A-Za-z0-9 ]+$/i,
@@ -74,7 +74,7 @@ function CompanyFormInfo({ invoice }: CompanyFormInfoProps) {
         </Label>
         <StreetAddressInput
           style={{ border: errors?.streetAddress ? "1px solid #EC5757" : "" }}
-          defaultValue={invoice ? invoice.senderAddress.street : ""}
+          defaultValue={invoice ? invoice?.senderAddress?.street : ""}
           {...register("streetAddress", {
             required: !isDraft,
             pattern: /^[A-Za-z0-9 ]+$/i,
@@ -93,7 +93,7 @@ function CompanyFormInfo({ invoice }: CompanyFormInfoProps) {
             </Label>
             <AddressDetailInput
               style={{ border: errors?.city ? "1px solid #EC5757" : "" }}
-              defaultValue={invoice ? invoice.senderAddress.city : ""}
+              defaultValue={invoice ? invoice?.senderAddress?.city : ""}
               type="text"
               {...register("city", {
                 required: !isDraft,
@@ -116,7 +116,7 @@ function CompanyFormInfo({ invoice }: CompanyFormInfoProps) {
             <AddressDetailInput
               style={{ border: errors?.postalCode ? "1px solid #EC5757" : "" }}
               type="text"
-              defaultValue={invoice ? invoice.senderAddress.postCode : ""}
+              defaultValue={invoice ? invoice?.senderAddress?.postCode : ""}
               {...register("postalCode", {
                 required: !isDraft,
                 pattern: /^\w+[\w ]+$/i,

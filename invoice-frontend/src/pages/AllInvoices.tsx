@@ -26,7 +26,7 @@ type FadeOutProps = {
 
 // todo - make welcome text fade out
 const FadeOut = ({ username, className }: FadeOutProps) => {
-  const [height, setHeight] = useState("32px");
+  const [height] = useState("32px");
   const [opacity, setOpacity] = useState(1);
   useEffect(() => {
     setTimeout(() => {
@@ -46,14 +46,6 @@ const FadeOut = ({ username, className }: FadeOutProps) => {
 function AllInvoices() {
   const width = useWindowWidth();
   const { invoiceList, loading, error } = useInvoices();
-
-  // const [removeInvoices] = useMutation(DELETE_ALL_INVOICES, {
-  //   refetchQueries: [{ query: ALL_INVOICES }],
-  // });
-
-  // const clearInvoices = () => {
-  //   removeInvoices();
-  // };
 
   const { isAuthenticated, user, isLoading } = useAuth0();
 

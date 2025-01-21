@@ -5,8 +5,8 @@ import FormEntry from "./FormEntry";
 import { DateAndPaymentContainer, Label } from "../../styles/editStyles";
 import { CustomDateBox, DateInput } from "../../styles/DateAndPaymentStyles";
 import { Invoice } from "src/types/types";
-import { convertStringToDate } from "src/utils/utilityFunctions";
 import { useNewInvoiceContext } from "./NewInvoiceContextProvider";
+import { convertStringToDate } from "@/utils/utilityFunctions";
 
 type DateAndPaymentProps = {
   invoice?: Invoice;
