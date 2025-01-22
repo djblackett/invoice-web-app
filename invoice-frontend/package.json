@@ -12,6 +12,7 @@
     "preview": "vite preview",
     "test:unit": "tsc -p tsconfig.dev.json && vitest tests/unit",
     "test:e2e": "VITE_BACKEND_URL=https://localhost:8000/graphql playwright test --config=playwright.config.ts",
+    "test:container": "VITE_BACKEND_URL=https://backend-test:8000/graphql vite",
     "test:e2e:docker": "cd ../ && VITE_BACKEND_URL=https://backend-dev:8000/graphql docker compose -f docker-compose.dev.yml create playwright-e2e && VITE_BACKEND_URL=https://backend-dev:8000/graphql docker compose -f docker-compose.dev.yml start playwright-e2e",
     "lint": "eslint --config ./eslint.config.js .",
     "lint:fix": "eslint --config ./eslint.config.js --fix .",

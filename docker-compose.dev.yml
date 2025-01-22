@@ -1,4 +1,5 @@
 services:
+
   frontend-dev:
     build:
       context: invoice-frontend
@@ -29,7 +30,7 @@ services:
     restart: unless-stopped
     ports:
       - "8000:8000"
-    command: sh -c "npx prisma@5.22.0 generate && npx prisma db push && DATABASE_URL=postgresql://postgres:example@db-dev:5432/db-dev?schema=public npm run dev"
+    command: sh -c "npx prisma@5.22.0 generate && npx prisma@5.22 db push && DATABASE_URL=postgresql://postgres:example@db-dev:5432/db-dev?schema=public npm run dev"
     environment:
       - NODE_ENV=development
       - PORT=8000
@@ -78,55 +79,46 @@ services:
     networks:
       - my_network_dev
 
-  proxy-dev:
-    image: nginx:1.25.2
-    hostname: proxy-dev
-    container_name: proxy-dev
-    depends_on:
-      backend-dev:
-        condition: service_started
-      frontend-dev:
-        condition: service_started
-    tty: true
-    stdin_open: true
-    volumes:
-      - ./nginx.dev.conf:/etc/nginx/nginx.conf
-    ports:
-      - "80:80"
-    networks:
-      - my_network_dev
+  # proxy-dev:
+  #   image: nginx:1.25.2
+  #   hostname: proxy-dev
+  #   container_name: proxy-dev
+  #   depends_on:
+  #     backend-dev:
+  #       condition: service_started
+  #     frontend-dev:
+  #       condition: service_started
+  #   tty: true
+  #   stdin_open: true
+  #   volumes:
+  #     - ./nginx.dev.conf:/etc/nginx/nginx.conf
+  #   ports:
+  #     - "80:80"
+  #   networks:
+  #     - my_network_dev
 
   playwright-e2e:
-    # depends_on:
-      # frontend-dev:
-      #   condition: service_healthy
-      # backend-dev:
-      #   condition: service_healthy
+    depends_on:
+      frontend-dev:
+        condition: service_healthy
+      backend-dev:
+        condition: service_healthy
 
     image: mcr.microsoft.com/playwright:v1.49.1-noble
     container_name: playwright-e2e
     working_dir: /app
+    user: pwuser
     ports:
       - "9323:9323"
     volumes:
-      # # Mount the current directory (host) to /app (container)
-      # - ./invoice-frontend/qa:/app/qa
-      # - ./invoice-frontend/.env:/app/.env
-      # # Optionally, mount the Playwright config if needed
-      # - ./invoice-frontend/playwright.config.ts:/app/playwright.config.ts
-      # - ./invoice-frontend/global-setup.ts:/app/global-setup.ts
-      # # Mount node_modules if needed to use host's modules
-      # - ./invoice-frontend/node_modules:/app/node_modules
       - ./invoice-frontend:/app
     entrypoint: ["npx", "playwright", "test"]
     env_file:
       - invoice-frontend/.env
     environment:
-      # Pass necessary environment variables
       NODE_ENV: development
       TEST_ENV: local
       TEST_BASE_URL: https://frontend-dev:5173/invoice-web-app/
-      VITE_BACKEND_URL: https://backend-dev/graphql
     networks:
       - my_network_dev
     # Allow interactive runs (e.g., debugging or watching tests)

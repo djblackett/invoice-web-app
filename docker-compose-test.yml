@@ -4,9 +4,11 @@ services:
       context: invoice-frontend
       dockerfile: dev.Dockerfile
     depends_on:
-      - backend-test
+      backend-test:
+        condition: service_started
+    command: npm run test:container
     environment:
-      - VITE_BACKEND_URL=https://localhost:8000/graphql
+      - VITE_BACKEND_URL=https://backend-test:8000/graphql
     ports:
       - "5173:5173"
     networks:
@@ -14,7 +16,7 @@ services:
     volumes:
       - ./invoice-frontend:/usr/src/app/
     healthcheck:
-      test: ["CMD", "curl", "-f", "https://localhost:5173"]
+      test: ["CMD", "curl", "-f", "-k", "https://localhost:5173"]
       interval: 30s
       timeout: 10s
       retries: 3
@@ -25,20 +27,30 @@ services:
       dockerfile: dev.Dockerfile
     depends_on:
       db-test:
-        condition: service_healthy
+        condition: service_started
+    restart: unless-stopped
     ports:
       - "8000:8000"
-    command: sh -c "npx prisma@5.22 generate && npx prisma@5.22 db push && npm run start:test"
+    command: |
+      sh -c "npx prisma@5.22.0 generate && \
+      npx prisma@5.22 db push && \
+      DATABASE_URL=postgresql://postgres:example@db-test:5432/db-test?schema=public npm run start:test"
     environment:
       - NODE_ENV=test
       - PORT=8000
-      - REQUEST_ORIGIN=https://localhost:5173
+      - REQUEST_ORIGIN=https://frontend-test:5173
       - SECRET=theSecretStuff
       - DATABASE_URL=postgres://postgres:example@db-test:5432/db-test?schema=public&connect_timeout=300
     networks:
       - my_network_test
     volumes:
       - ./invoice-backend:/usr/src/app/
+    healthcheck:
+      test: ["CMD", "curl", "-f", "-k", "https://localhost:8000/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 30s
 
   db-test:
     image: postgres:16.1
@@ -62,21 +74,32 @@ services:
       timeout: 5s
       retries: 5
 
-  # proxy-test:
-  #   image: nginx:1.25.2
-  #   hostname: proxy-test
-  #   container_name: proxy-test
-  #   depends_on:
-  #     backend-test:
-  #       condition: service_started
-  #     frontend-test:
-  #       condition: service_started
-  #   volumes:
-  #     - ./nginx.test.conf:/etc/nginx/nginx.conf
-  #   ports:
-  #     - "80:80"
-  #   networks:
-  #     - my_network_test
+  playwright-e2e:
+    image: mcr.microsoft.com/playwright:v1.49.1-noble
+    depends_on:
+      frontend-test:
+        condition: service_healthy
+      backend-test:
+        condition: service_healthy
+    container_name: playwright-e2e
+    working_dir: /app
+    user: pwuser
+    ports:
+      - "9323:9323"
+    volumes:
+      - ./invoice-frontend:/app
+    entrypoint: ["npx", "playwright", "test"]
+    env_file:
+      - invoice-frontend/.env
+    environment:
+      NODE_ENV: CI
+      TEST_ENV: local
+      TEST_BASE_URL: https://frontend-test:5173/invoice-web-app/
+    networks:
+    - my_network_test
+  # Allow interactive runs (e.g., debugging or watching tests)
+    stdin_open: true
+    tty: true
 
 
 networks:
