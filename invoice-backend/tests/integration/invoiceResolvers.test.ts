@@ -1,6 +1,6 @@
 import request from "supertest-graphql";
 import { gql } from "graphql-tag";
-import { createServer } from "../../src/server"; // Adjust the path if necessary
+import { createServer } from "../../src/server";
 import { describe, beforeAll, afterAll, beforeEach, it, expect } from "vitest";
 
 let app: any;
@@ -40,7 +40,6 @@ const invoices = [
     ],
     total: 1000,
   },
-  // Add more invoices if needed
 ];
 
 async function createInvoices() {
@@ -147,7 +146,7 @@ describe("Invoice Resolvers Integration Tests", () => {
       `)
       .expectNoErrors();
 
-    expect(data.allInvoices).toHaveLength(invoices.length);
+    expect((data as any).allInvoices).toHaveLength(invoices.length);
   });
 
   it("should return empty array when no invoices exist", async () => {
@@ -173,8 +172,8 @@ describe("Invoice Resolvers Integration Tests", () => {
       `)
       .expectNoErrors();
 
-    expect(data.allInvoices).toEqual([]);
-    expect(data.allInvoices).toHaveLength(0);
+    expect((data as any).allInvoices).toEqual([]);
+    expect((data as any).allInvoices).toHaveLength(0);
   });
 
   it("should return an invoice by id", async () => {
@@ -192,8 +191,10 @@ describe("Invoice Resolvers Integration Tests", () => {
       .variables({ id: invoiceId })
       .expectNoErrors();
 
-    expect(data.getInvoiceById.id).toBe(invoiceId);
-    expect(data.getInvoiceById.clientName).toBe(invoices[0].clientName);
+    expect((data as any).getInvoiceById.id).toBe(invoiceId);
+    expect((data as any).getInvoiceById.clientName).toBe(
+      invoices[0].clientName,
+    );
   });
 
   it("should return error when invoice not found", async () => {
@@ -211,8 +212,8 @@ describe("Invoice Resolvers Integration Tests", () => {
       .variables({ id: invalidId });
 
     expect(response.errors).toBeDefined();
-    expect(response.errors[0].message).toBe("Invoice not found");
-    expect(response.errors[0].extensions.code).toBe("NOT_FOUND");
+    expect(response.errors![0].message).toBe("Invoice not found");
+    expect(response.errors![0].extensions.code).toBe("NOT_FOUND");
   });
 
   it("should add a new invoice", async () => {
@@ -287,8 +288,8 @@ describe("Invoice Resolvers Integration Tests", () => {
       .variables(newInvoice)
       .expectNoErrors();
 
-    expect(data.addInvoice.id).toBe(newInvoice.id);
-    expect(data.addInvoice.clientName).toBe(newInvoice.clientName);
+    expect((data as any).addInvoice.id).toBe(newInvoice.id);
+    expect((data as any).addInvoice.clientName).toBe(newInvoice.clientName);
   });
 
   it("should edit an existing invoice", async () => {
@@ -336,8 +337,8 @@ describe("Invoice Resolvers Integration Tests", () => {
       .variables(updatedData)
       .expectNoErrors();
 
-    expect(data.editInvoice.id).toBe(invoiceId);
-    expect(data.editInvoice.clientName).toBe(updatedData.clientName);
+    expect((data as any).editInvoice.id).toBe(invoiceId);
+    expect((data as any).editInvoice.clientName).toBe(updatedData.clientName);
   });
 
   it("should remove an invoice", async () => {
@@ -365,8 +366,8 @@ describe("Invoice Resolvers Integration Tests", () => {
       .variables({ id: invoiceId });
 
     expect(response.errors).toBeDefined();
-    expect(response.errors[0].message).toBe("Invoice not found");
-    expect(response.errors[0].extensions.code).toBe("NOT_FOUND");
+    expect(response.errors![0].message).toBe("Invoice not found");
+    expect(response.errors![0].extensions.code).toBe("NOT_FOUND");
     // expect(ids).not.toContain(invoiceId);
   });
 
@@ -385,7 +386,7 @@ describe("Invoice Resolvers Integration Tests", () => {
       .variables({ id: invoiceId })
       .expectNoErrors();
 
-    expect(data.markAsPaid.id).toBe(invoiceId);
-    expect(data.markAsPaid.status).toBe("paid");
+    expect((data as any).markAsPaid.id).toBe(invoiceId);
+    expect((data as any).markAsPaid.status).toBe("paid");
   });
 });

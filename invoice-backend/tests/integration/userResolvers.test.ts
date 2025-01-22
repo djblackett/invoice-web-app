@@ -1,7 +1,15 @@
 import request from "supertest-graphql";
 import { gql } from "graphql-tag";
 import { createServer } from "../../src/server";
-import { describe, beforeAll, afterAll, beforeEach, afterEach, it, expect } from "vitest";
+import {
+  describe,
+  beforeAll,
+  afterAll,
+  beforeEach,
+  afterEach,
+  it,
+  expect,
+} from "vitest";
 
 let app: any;
 
@@ -85,9 +93,7 @@ describe("Integration Tests", () => {
   });
 
   it("should return a list of 10 users", async () => {
-    const {
-      data: { allUsers },
-    } = await request(app)
+    const { data } = await request(app)
       .query(gql`
         query AllUsers {
           allUsers {
@@ -97,8 +103,8 @@ describe("Integration Tests", () => {
         }
       `)
       .expectNoErrors();
-    console.log(allUsers);
-    expect(allUsers).toHaveLength(10);
+    console.log((data as any).allUsers);
+    expect((data as any).allUsers).toHaveLength(10);
   });
 
   it("should return empty array when no users exist", async () => {
@@ -119,7 +125,7 @@ describe("Integration Tests", () => {
       }
     `);
 
-    const usersArray = response.data.allUsers;
+    const usersArray = (response as any).data.allUsers;
     expect(usersArray).toBeDefined();
     expect(usersArray).toEqual([]);
     expect(usersArray).toHaveLength(0);
@@ -128,7 +134,7 @@ describe("Integration Tests", () => {
   it("should return a user by id", async () => {
     const {
       data: { allUsers },
-    } = await request(app)
+    } = (await request(app)
       .query(gql`
         query AllUsers {
           allUsers {
@@ -137,11 +143,17 @@ describe("Integration Tests", () => {
           }
         }
       `)
-      .expectNoErrors();
+      .expectNoErrors()) as {
+      data: {
+        allUsers: { id: number; username: string }[];
+      };
+    };
 
     const userId = allUsers[0].id;
 
-    const { data } = await request(app)
+    const {
+      data: { getUserById },
+    } = (await request(app)
       .query(gql`
         query GetUserById($id: Int!) {
           getUserById(id: $id) {
@@ -151,10 +163,13 @@ describe("Integration Tests", () => {
         }
       `)
       .variables({ id: userId })
-      .expectNoErrors();
-    console.log(data);
+      .expectNoErrors()) as {
+      data: {
+        getUserById: { id: number; username: string };
+      };
+    };
 
-    expect(data.getUserById.id).toBe(userId);
+    expect(getUserById.id).toBe(userId);
   });
 
   it("should return null for a non-existent user ID", async () => {
@@ -171,7 +186,7 @@ describe("Integration Tests", () => {
       `)
       .variables({ id: invalidUserId });
 
-    expect(data.getUserById).toBeNull();
+    expect((data as any).getUserById).toBeNull();
   });
 
   it("should create a new user", async () => {
@@ -197,8 +212,8 @@ describe("Integration Tests", () => {
       .variables(newUser)
       .expectNoErrors();
 
-    expect(data.createUser.username).toBe(newUser.username);
-    expect(data.createUser.id).toBeDefined();
+    expect((data as any).createUser.username).toBe(newUser.username);
+    expect((data as any).createUser.id).toBeDefined();
   });
 
   it("should return an error when required fields are missing in createUser", async () => {
@@ -223,8 +238,8 @@ describe("Integration Tests", () => {
       .variables(incompleteUser);
 
     expect(response.errors).toBeDefined();
-    expect(response.errors[0].message).toContain(
-      "Variable \"$username\" of required type \"String!\" was not provided.",
+    expect(response.errors![0].message).toContain(
+      'Variable "$username" of required type "String!" was not provided.',
     );
   });
 
@@ -263,7 +278,7 @@ describe("Integration Tests", () => {
       .variables(credentials)
       .expectNoErrors();
 
-    const token = data.login.token;
+    const token = (data as any).login.token;
     expect(token).toBeDefined();
     expect(typeof token).toBe("string");
   });
@@ -285,8 +300,8 @@ describe("Integration Tests", () => {
       .variables(invalidCredentials);
 
     expect(response.errors).toBeDefined();
-    expect(response.errors[0].message).toBe("Invalid username or password");
-    expect(response.errors[0].extensions.code).toBe("UNAUTHENTICATED");
+    expect(response.errors![0].message).toBe("Invalid username or password");
+    expect(response.errors![0].extensions.code).toBe("UNAUTHENTICATED");
   });
 
   it("should delete all users", async () => {
@@ -300,7 +315,7 @@ describe("Integration Tests", () => {
       `)
       .expectNoErrors();
 
-    expect(data.deleteUsers.acknowledged).toBe(true);
+    expect((data as any).deleteUsers.acknowledged).toBe(true);
 
     // Verify that all users are deleted
     const { data: allUsersData } = await request(app)
@@ -314,6 +329,6 @@ describe("Integration Tests", () => {
       `)
       .expectNoErrors();
 
-    expect(allUsersData.allUsers).toHaveLength(0);
+    expect((allUsersData as any).allUsers).toHaveLength(0);
   });
 });
