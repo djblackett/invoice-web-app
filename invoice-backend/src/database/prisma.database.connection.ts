@@ -3,15 +3,6 @@ import { PrismaClient } from "@prisma/client";
 import { IDatabaseConnection } from "./database.connection";
 import { DB } from "../config/server.config";
 
-console.log("DB.url", DB.url);
-
-// Load environment variables based on environment
-const environment = process.env.NODE_ENV || "development";
-// dotenv.config({ path: `.env.${environment}` });
-
-// Optionally override DATABASE_URL programmatically
-process.env.DATABASE_URL = process.env.DATABASE_URL || environment;
-
 @injectable()
 export class DatabaseConnection implements IDatabaseConnection {
   static prisma = new PrismaClient({
@@ -28,7 +19,7 @@ export class DatabaseConnection implements IDatabaseConnection {
     },
   });
 
-  constructor() {} //
+  constructor() {}
 
   public getDatabase() {
     return DatabaseConnection.prisma;

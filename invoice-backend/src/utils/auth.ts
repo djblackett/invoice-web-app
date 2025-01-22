@@ -1,4 +1,3 @@
-// import { AuthenticationError } from "@apollo/server";
 import { QueryContext } from "../constants/types";
 
 /**

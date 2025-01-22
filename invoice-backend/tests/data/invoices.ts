@@ -1,4 +1,4 @@
-import { Invoice } from "../constants/types";
+import { Invoice } from "../../src/constants/types";
 
 const data: Invoice[] = [
   {

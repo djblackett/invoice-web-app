@@ -24,6 +24,5 @@ export function getResolvers(
     Subscription: {
       ...invoiceResolvers.Subscription,
     },
-    // Add any additional resolver mappings or custom scalar resolvers here
   };
 }

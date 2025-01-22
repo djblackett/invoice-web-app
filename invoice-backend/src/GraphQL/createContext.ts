@@ -2,8 +2,6 @@ import jwt, { JwtHeader, JwtPayload, VerifyOptions } from "jsonwebtoken";
 import jwksClient, { SigningKey } from "jwks-rsa";
 import { ContextArgs, QueryContext, UserDTO } from "../constants/types";
 
-const DEBUG = false;
-
 const client = jwksClient({
   jwksUri: "https://dev-n4e4qk7s3kbzusrs.us.auth0.com/.well-known/jwks.json",
 });
@@ -13,6 +11,7 @@ const client = jwksClient({
  * @param kid - The Key ID from the JWT header.
  * @returns A promise that resolves to the public key string.
  */
+
 function getSigningKeyAsync(kid: string): Promise<string> {
   return new Promise((resolve, reject) => {
     client.getSigningKey(
@@ -100,15 +99,8 @@ export async function createContext({
 }: ContextArgs): Promise<QueryContext> {
   if (connection) {
     // This is a subscription request
-
     return { connection };
   }
-
-  // This is a regular request
-  // DEBUG && console.log("regular request");
-  // DEBUG && console.log("no connection");
-
-  // DEBUG && console.log("Regular request, checking authorization header...");
   const authHeader = req?.headers.authorization;
   try {
     if (authHeader && authHeader.startsWith("Bearer ")) {

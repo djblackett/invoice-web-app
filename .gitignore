@@ -68,6 +68,7 @@ dist-ssr
 .vscode/*
 !.vscode/extensions.json
 *.idea
+.idea/*
 .DS_Store
 *.suo
 *.ntvs*
@@ -100,3 +101,8 @@ invoice-frontend/playwright-report/index.html
 replace-assets.sh
 invoice-frontend/playwright-report/index.html
 invoice-frontend/before-login-screenshot.png
+invoice-frontend/src/styles/css-modules
+
+README-frontend-mentor.md
+README-template.md
+.idea
