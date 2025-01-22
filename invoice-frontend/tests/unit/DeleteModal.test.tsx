@@ -4,7 +4,10 @@ import { MockedProvider } from "@apollo/client/testing";
 import DeleteModal, {
   DeleteModalProps,
 } from "../../src/components/DeleteModal";
-import { REMOVE_INVOICE, ALL_INVOICES } from "../../src/graphql/queries";
+import {
+  REMOVE_INVOICE,
+  ALL_INVOICES,
+} from "../../src/graphql/invoice.queries";
 import { ThemeProvider } from "styled-components";
 import { lightTheme } from "../../src/styles/Themes";
 import React from "react";
