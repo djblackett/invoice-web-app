@@ -18,6 +18,10 @@ export const FormContainerDarkenModal = styled.div`
   transition-property: all;
   transition-duration: 250ms;
   transition-timing-function: ease-in-out;
+  -webkit-transform: translateZ(
+    0
+  ); // Force GPU acceleration in Chrome to reduce choppiness
+  transform: translateZ(0);
   overflow-x: hidden;
   filter: drop-shadow(2px 2px 2px bottom);
   align-self: flex-start;
