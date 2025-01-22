@@ -22,6 +22,12 @@ test.beforeEach(async () => {
 test("Should mark invoice as paid", async ({ invoiceMainPage }) => {
   await invoiceMainPage.gotoPage();
 
+  if (process.env.NODE_ENV === "CI") {
+    await invoiceMainPage.page.screenshot({
+      path: "before-clicking-invoice.png",
+    });
+  }
+
   await invoiceMainPage.page.getByText("Jack Sparrow").click();
   await invoiceMainPage.page.getByTestId("mark-as-paid").click();
   await invoiceMainPage.page.waitForTimeout(2000);

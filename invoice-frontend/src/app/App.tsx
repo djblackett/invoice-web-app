@@ -1,5 +1,4 @@
 import { useEffect, useState } from "react";
-import "../styles/App.css";
 import { ThemeProvider } from "styled-components";
 import { useRoutes } from "react-router-dom";
 import Header from "../components/menus-toolbars/Header";
