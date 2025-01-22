@@ -1,19 +1,19 @@
+import { useEffect } from "react";
 import DatePicker from "react-datepicker";
-import { forwardRef, useEffect } from "react";
 import PaymentTermsDropdown from "./FormDropDown";
 import FormEntry from "./FormEntry";
 import { DateAndPaymentContainer, Label } from "../../styles/editPageStyles";
-import { CustomDateBox, DateInput } from "../../styles/DateAndPaymentStyles";
 import { Invoice } from "src/types/types";
 import { useNewInvoiceContext } from "./NewInvoiceContextProvider";
 import { convertStringToDate } from "@/utils/utilityFunctions";
+import CustomInputWrapper from "./LazyCustomInputWrapper";
 
 type DateAndPaymentProps = {
   invoice?: Invoice;
 };
 
 // todo - fix this component and clean it up
-const dateIcon = (
+export const dateIcon = (
   <svg width="16" height="16" xmlns="http://www.w3.org/2000/svg">
     <path
       d="M14 2h-.667V.667A.667.667 0 0012.667 0H12a.667.667 0 00-.667.667V2H4.667V.667A.667.667 0 004 0h-.667a.667.667 0 00-.666.667V2H2C.897 2 0 2.897 0 4v10c0 1.103.897 2 2 2h12c1.103 0 2-.897 2-2V4c0-1.103-.897-2-2-2zm.667 12c0 .367-.3.667-.667.667H2A.668.668 0 011.333 14V6.693h13.334V14z"
@@ -23,28 +23,6 @@ const dateIcon = (
     />
   </svg>
 );
-
-type CustomInputProps = {
-  onClick?: () => never;
-  value?: never;
-  onChange?: (value: string) => void;
-};
-
-const ExampleCustomInput = forwardRef(
-  ({ value, onClick }: CustomInputProps, ref) => {
-    return (
-      <CustomDateBox
-        className="custom-input"
-        onClick={onClick}
-        style={{ cursor: "pointer" }}
-      >
-        <DateInput ref={ref} defaultValue={value} data-testid="invoiceDate" />
-        {dateIcon}
-      </CustomDateBox>
-    );
-  },
-);
-ExampleCustomInput.displayName = "CustomDateInputObj";
 
 function DateAndPayment({ invoice }: DateAndPaymentProps) {
   const { startDate, setStartDate } = useNewInvoiceContext();
@@ -85,7 +63,7 @@ function DateAndPayment({ invoice }: DateAndPaymentProps) {
         <Label htmlFor="invoiceDate">Invoice Date</Label>
         <DatePicker
           fixedHeight={true}
-          customInput={<ExampleCustomInput />}
+          customInput={<CustomInputWrapper />}
           selected={startDate}
           onChange={handleChange}
           onChangeRaw={(event) => handleChangeRaw(event.target.value)}

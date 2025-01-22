@@ -1,9 +1,6 @@
-import { useState } from "react";
+import { Suspense, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import InvoiceToolbar from "../components/invoice-components/InvoiceToolbar";
-import FullInvoice from "../components/invoice-components/FullInvoice";
-import EditForm from "./EditForm";
-import DeleteModal from "../components/DeleteModal";
 import {
   arrowLeft,
   GoBack,
@@ -14,6 +11,13 @@ import {
 import { NewInvoiceProvider } from "../components/form-components/NewInvoiceContextProvider";
 import { useQuery } from "@apollo/client";
 import { GET_INVOICE_BY_ID } from "../graphql/invoice.queries";
+import React from "react";
+
+const EditForm = React.lazy(() => import("./EditForm"));
+const DeleteModal = React.lazy(() => import("../components/DeleteModal"));
+const FullInvoice = React.lazy(
+  () => import("../components/invoice-components/FullInvoice"),
+);
 
 function ViewInvoice() {
   const navigate = useNavigate();
@@ -42,18 +46,24 @@ function ViewInvoice() {
   return (
     <ViewContainer>
       <NewInvoiceProvider>
-        <EditForm invoice={invoice} />
+        <Suspense fallback={<div>Loading...</div>}>
+          <EditForm invoice={invoice} />
+        </Suspense>
         <GoBackButton onClick={goBack}>
           <Icon>{arrowLeft}</Icon>
           <GoBack>Go back</GoBack>
         </GoBackButton>
         <InvoiceToolbar invoice={invoice} setIsModalOpen={setIsModalOpen} />
-        <FullInvoice invoice={invoice} loading={loading} />
-        <DeleteModal
-          setIsModalOpen={setIsModalOpen}
-          isModalOpen={isModalOpen}
-          invoice={invoice}
-        />
+        <Suspense fallback={<div>Loading...</div>}>
+          <FullInvoice invoice={invoice} loading={loading} />
+        </Suspense>
+        <Suspense fallback={<div>Loading...</div>}>
+          <DeleteModal
+            setIsModalOpen={setIsModalOpen}
+            isModalOpen={isModalOpen}
+            invoice={invoice}
+          />
+        </Suspense>
       </NewInvoiceProvider>
     </ViewContainer>
   );

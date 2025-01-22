@@ -1,6 +1,5 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, Suspense } from "react";
 import { useSelector } from "react-redux";
-import FilterDropDown from "./FilterDropDown";
 import { selectFilter } from "../../features/invoices/filterSlice";
 import useWindowWidth from "../../hooks/useWindowWidth";
 import { Invoice } from "../../types/types";
@@ -16,6 +15,8 @@ import {
 } from "../../styles/AllInvoicesToolbarStyles";
 import NewInvoiceButton from "../buttons/NewInvoiceButton";
 import { useNewInvoiceContext } from "../form-components/NewInvoiceContextProvider";
+
+const FilterDropDown = React.lazy(() => import("./FilterDropDown"));
 
 type AllInvoicesToolbarProps = {
   invoiceList: Invoice[];
@@ -73,12 +74,14 @@ function AllInvoicesToolbar({ invoiceList }: AllInvoicesToolbarProps) {
           <Filter>
             Filter <span className="wideScreenText">by status</span>
           </Filter>
-          <FilterDropDown
-            icon={arrowDownSVG}
-            isOpen={isFilterOpen}
-            setIsFilterOpen={setIsFilterOpen}
-            options={["Draft", "Pending", "Paid"]}
-          />
+          <Suspense fallback={<div>Loading...</div>}>
+            <FilterDropDown
+              icon={arrowDownSVG}
+              isOpen={isFilterOpen}
+              setIsFilterOpen={setIsFilterOpen}
+              options={["Draft", "Pending", "Paid"]}
+            />
+          </Suspense>
         </FilterButton>
         <NewInvoiceButton handleClick={openNewInvoice} />
       </ControlBox>

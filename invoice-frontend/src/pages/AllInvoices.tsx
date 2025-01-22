@@ -1,5 +1,4 @@
 import { MemoizedAllInvoicesToolbar } from "../components/menus-toolbars/AllInvoicesToolbar";
-import NewInvoice from "./NewInvoice";
 import useWindowWidth from "../hooks/useWindowWidth";
 import AllInvoicesView from "../components/AllInvoicesView";
 import useInvoices from "../hooks/useInvoices";
@@ -7,8 +6,10 @@ import { AllInvoicesContainer } from "../styles/AllInvoicesStyles";
 import { NewInvoiceProvider } from "../components/form-components/NewInvoiceContextProvider";
 import { useAuth0 } from "@auth0/auth0-react";
 import styled from "styled-components";
-import { useEffect, useState } from "react";
+import { Suspense, useEffect, useState } from "react";
+import React from "react";
 
+const NewInvoice = React.lazy(() => import("./NewInvoice"));
 const FadeOutText = styled.h1`
   font-size: x-large;
   margin: 8px;
@@ -63,7 +64,9 @@ function AllInvoices() {
               invoiceList={invoiceList}
               data-testid="invoices-toolbar"
             />
-            <NewInvoice />
+            <Suspense fallback={<div>Loading...</div>}>
+              <NewInvoice />
+            </Suspense>
           </NewInvoiceProvider>
           <FadeOut className="welcome-text" username={user?.email}></FadeOut>
           <AllInvoicesView

@@ -4,10 +4,15 @@ import react from "@vitejs/plugin-react";
 import tsconfigPaths from "vite-tsconfig-paths";
 import path from "path";
 import fs from "fs";
+import { visualizer } from "rollup-plugin-visualizer";
 
 // https://vitejs.dev/config/
 export default defineConfig({
-  plugins: [react(), tsconfigPaths()],
+  plugins: [
+    react(),
+    tsconfigPaths(),
+    visualizer({ open: true, filename: "bundle-visualization.html" }),
+  ],
   base: "/invoice-web-app/",
   server: {
     host: "0.0.0.0",
@@ -22,5 +27,10 @@ export default defineConfig({
       ),
       cert: fs.readFileSync(path.resolve(__dirname, "./certs/localhost.pem")),
     },
+  },
+  build: {
+    outDir: "dist",
+    emptyOutDir: true,
+    cssCodeSplit: true,
   },
 });

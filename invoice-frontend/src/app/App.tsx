@@ -1,19 +1,20 @@
-import { useEffect, useState } from "react";
+import React, { Suspense, useEffect, useState } from "react";
 import { ThemeProvider } from "styled-components";
 import { useRoutes } from "react-router-dom";
 import Header from "../components/menus-toolbars/Header";
 import GlobalStyles from "../styles/GlobalStyles";
 import { lightTheme, darkTheme } from "../styles/Themes";
-import ViewInvoice from "../pages/ViewInvoice";
 import Layout from "../components/Layout";
-import AllInvoices from "../pages/AllInvoices";
 import { ApolloProvider } from "@apollo/client";
 import useWindowWidth from "@/hooks/useWindowWidth";
-import Login from "@/pages/Login";
-import ProtectedRoute from "@/ProtectedRoute";
-import WelcomePage from "@/pages/WelcomePage";
 import useGraphQLClient from "@/hooks/useApolloClient";
 import { Main, StyledToastContainer } from "@/styles/AppStyles";
+
+const WelcomePage = React.lazy(() => import("@/pages/WelcomePage"));
+const ProtectedRoute = React.lazy(() => import("@/ProtectedRoute"));
+const AllInvoices = React.lazy(() => import("@/pages/AllInvoices"));
+const ViewInvoice = React.lazy(() => import("@/pages/ViewInvoice"));
+const Login = React.lazy(() => import("@/pages/Login"));
 
 function App() {
   const [theme, setTheme] = useState("light");
@@ -41,26 +42,38 @@ function App() {
       children: [
         {
           index: true,
-          element: <WelcomePage />,
+          element: (
+            <Suspense fallback={<div>Loading...</div>}>
+              <WelcomePage />
+            </Suspense>
+          ),
         },
         {
           path: "login",
-          element: <Login />,
+          element: (
+            <Suspense fallback={<div>Loading...</div>}>
+              <Login />
+            </Suspense>
+          ),
         },
         {
           path: "invoices",
           element: (
-            <ProtectedRoute>
-              <AllInvoices />
-            </ProtectedRoute>
+            <Suspense fallback={<div>Loading...</div>}>
+              <ProtectedRoute>
+                <AllInvoices />
+              </ProtectedRoute>
+            </Suspense>
           ),
         },
         {
           path: "invoices/:id",
           element: (
-            <ProtectedRoute>
-              <ViewInvoice />
-            </ProtectedRoute>
+            <Suspense fallback={<div>Loading...</div>}>
+              <ProtectedRoute>
+                <ViewInvoice />
+              </ProtectedRoute>
+            </Suspense>
           ),
         },
         {
