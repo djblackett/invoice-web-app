@@ -1,5 +1,5 @@
 import { useAuth0 } from "@auth0/auth0-react";
-import { motion } from "framer-motion";
+import * as m from "motion/react-m";
 import { Link } from "react-router-dom";
 import { VITE_REDIRECT_URI } from "@/index";
 import styled from "styled-components";
@@ -108,7 +108,7 @@ const LogoLogoutContainer = styled.div`
   }
 `;
 
-export const LoginLogoutButton = styled(motion.button)`
+export const LoginLogoutButton = styled(m.button)`
   background-color: ${({ theme }) => theme.newButton};
   border-radius: 24px;
   color: white;

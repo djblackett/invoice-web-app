@@ -1,4 +1,4 @@
-import { motion } from "framer-motion";
+import * as m from "motion/react-m";
 import styled from "styled-components";
 
 export const DarkenScreen = styled.div`
@@ -15,7 +15,7 @@ export const DarkenScreen = styled.div`
   z-index: 100;
 `;
 
-export const ModalContainer = styled(motion.div)`
+export const ModalContainer = styled(m.div)`
   display: flex;
   position: absolute;
   top: 20%;

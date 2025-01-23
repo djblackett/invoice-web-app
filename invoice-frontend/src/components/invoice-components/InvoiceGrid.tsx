@@ -1,9 +1,9 @@
 import styled from "styled-components";
 import PropTypes from "prop-types";
 import React from "react";
-import { motion } from "framer-motion";
+import * as m from "motion/react-m";
 
-const FlexContainer = styled(motion.div)`
+const FlexContainer = styled(m.div)`
   display: flex;
   flex-direction: column;
   width: 100%;

@@ -3,9 +3,9 @@ import { useMemo } from "react";
 import InvoiceStatus from "./InvoiceStatus";
 import { getMoney } from "../../utils/utilityFunctions";
 import { Invoice } from "../../types/types";
-import { motion } from "framer-motion";
+import * as m from "motion/react-m";
 
-const Card = styled(motion.div)`
+const Card = styled(m.div)`
   height: 134px;
   width: 100%;
   background-color: ${({ theme }) => theme.background};

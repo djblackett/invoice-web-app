@@ -1,4 +1,4 @@
-import { motion } from "framer-motion";
+import * as m from "motion/react-m";
 import styled from "styled-components";
 
 const AnimatedText = styled.div`
@@ -27,7 +27,7 @@ function TextAnimation({ text, testId }: TextAnimationProps) {
   return (
     <AnimatedText className="text-animation" data-testid={testId}>
       {text.split(" ").map((el, i) => (
-        <motion.span
+        <m.span
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           transition={{
@@ -37,7 +37,7 @@ function TextAnimation({ text, testId }: TextAnimationProps) {
           key={i}
         >
           {el}{" "}
-        </motion.span>
+        </m.span>
       ))}
     </AnimatedText>
   );

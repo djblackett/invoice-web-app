@@ -9,12 +9,16 @@ import { ApolloProvider } from "@apollo/client";
 import useWindowWidth from "@/hooks/useWindowWidth";
 import useGraphQLClient from "@/hooks/useApolloClient";
 import { Main, StyledToastContainer } from "@/styles/AppStyles";
+import { LazyMotion } from "motion/react";
 
 const WelcomePage = React.lazy(() => import("@/pages/WelcomePage"));
 const ProtectedRoute = React.lazy(() => import("@/ProtectedRoute"));
 const AllInvoices = React.lazy(() => import("@/pages/AllInvoices"));
 const ViewInvoice = React.lazy(() => import("@/pages/ViewInvoice"));
 const Login = React.lazy(() => import("@/pages/Login"));
+
+const loadFeatures = () =>
+  import("../components/motionConfig").then((res) => res.default);
 
 function App() {
   const [theme, setTheme] = useState("light");
@@ -90,11 +94,13 @@ function App() {
     <ApolloProvider client={client}>
       <ThemeProvider theme={theme === "light" ? lightTheme : darkTheme}>
         <GlobalStyles />
-        <Main id="container" data-testid="container">
-          <Header themeToggler={themeToggler} theme={theme} />
-          <StyledToastContainer marginTop={width > 1200 ? 0 : "72px"} />
-          {element}
-        </Main>
+        <LazyMotion features={loadFeatures}>
+          <Main id="container" data-testid="container">
+            <Header themeToggler={themeToggler} theme={theme} />
+            <StyledToastContainer marginTop={width > 1200 ? 0 : "72px"} />
+            {element}
+          </Main>
+        </LazyMotion>
       </ThemeProvider>
     </ApolloProvider>
   );

@@ -1,7 +1,7 @@
-import { motion } from "framer-motion";
+import * as m from "motion/react-m";
 import styled from "styled-components";
 
-export const SlidingComponent = styled(motion.div)`
+export const SlidingComponent = styled(m.div)`
   justify-self: center;
   align-self: center;
   height: fit-content;
@@ -15,6 +15,6 @@ export const SlidingComponent = styled(motion.div)`
 `;
 
 function AnimatedButton() {
-  return <motion.button whileTap={{ scale: 0.85 }}>Login</motion.button>;
+  return <m.button whileTap={{ scale: 0.85 }}>Login</m.button>;
 }
 export default AnimatedButton;
