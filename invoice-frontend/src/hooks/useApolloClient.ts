@@ -18,8 +18,11 @@ const useGraphQLClient = () => {
   if (!VITE_BACKEND_URL) {
     throw new Error("Backend URL was not set during frontend build process");
   }
-  loadDevMessages();
-  loadErrorMessages();
+
+  if (process.env.NODE_ENV !== "production") {
+    loadDevMessages();
+    loadErrorMessages();
+  }
 
   const { getAccessTokenSilently } = useAuth0();
   // Memoize the Apollo Client to prevent unnecessary re-creations
