@@ -42,7 +42,7 @@ describe("DateAndPayment", () => {
     vi.clearAllMocks();
   });
 
-  it.skip("renders DateAndPayment component", () => {
+  it("renders DateAndPayment component", () => {
     render(<DateAndPayment />);
     expect(screen.getByText(/Invoice Date/i)).toBeInTheDocument();
     expect(screen.getByText(/Payment Terms/i)).toBeInTheDocument();
