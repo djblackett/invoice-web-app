@@ -6,13 +6,13 @@ import { Invoice } from "../../types/types";
 import * as m from "motion/react-m";
 
 const Card = styled(m.div)`
-  height: 134px;
+  min-height: 134px;
   width: 100%;
   background-color: ${({ theme }) => theme.background};
   display: grid;
   grid-template-columns: 1fr 1fr;
   grid-template-rows: 43px 43px;
-  padding: 24px;
+  padding: 24px 12px;
   margin-bottom: 8px;
   margin-top: 8px;
   letter-spacing: -0.25px;
@@ -27,6 +27,10 @@ const Card = styled(m.div)`
     border: 1px solid ${({ theme }) => theme.outline};
   }
 
+  @media (min-width: 300px) {
+    padding: 24px;
+  }
+
   @media (min-width: 600px) {
     grid-template-rows: 1fr;
 
@@ -34,16 +38,17 @@ const Card = styled(m.div)`
     // container = 672px  or 624px without padding
     // 1st box = 87  so 87/624 = 14%
     //2nd box = 143px so 143/624 = 23%
-    // 3rd 136 so 136/ 624 =
-    // 130
-    // 124
-    // 4
+    // 3rd 136 so 136/ 624 = 21.7ish%
+    // 130 / 624 = 20.8%
+    // 124 / 624 = 19.9%
+    // 12 / 624 = 2%
 
     grid-template-columns: 14% 23% 21.6% 20.8% 19.9% 2%;
+    grid-template-columns: 14fr 23fr 21.6fr 20.8fr 19.9fr 2fr;
     grid-auto-flow: dense;
     align-items: center;
     justify-items: start;
-    height: 72px;
+    min-height: 72px;
     margin: 8px 0 8px 0;
     align-content: center;
   }

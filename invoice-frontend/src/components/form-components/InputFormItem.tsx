@@ -31,8 +31,15 @@ export default function InputFormItem({
   invoice,
   isEditOpen,
 }: InputFormItemProps) {
-  const { formState, register, watch, clearErrors, setError, resetField } =
-    useFormContext();
+  const {
+    formState,
+    register,
+    watch,
+    clearErrors,
+    setError,
+    resetField,
+    reset,
+  } = useFormContext();
 
   const { fields, remove, append } = useFieldArray({
     name: "items",
@@ -42,10 +49,11 @@ export default function InputFormItem({
   const { errors, isSubmitting } = formState;
 
   const watchItems = watch("items", []);
-  const watcher = watch();
+  // const watcher = watch();
   const width = useWindowWidth();
   const isInitialRender = useRef(true);
 
+  // Only show error if one of the saved/submit button is pressed
   useEffect(() => {
     if (!fields.length && !isInitialRender.current) {
       setError("myFieldArray", {
@@ -60,32 +68,38 @@ export default function InputFormItem({
     }
   }, [fields, isSubmitting]);
 
+  // populate the form with the items from the invoice
   useEffect(() => {
     if (invoice && isEditOpen) {
-      invoice.items.forEach((i) => {
-        append({
+      reset({
+        items: invoice.items.map((i) => ({
           id: i.id,
           name: i.name,
           quantity: i.quantity,
           price: i.price,
           total: i.total,
-        });
+        })),
       });
+    } else if (!isEditOpen) {
+      reset({ items: [] });
     }
+  }, [invoice, isEditOpen, reset]);
 
+  // reset the form when the edit modal is closed
+  useEffect(() => {
     if (!isEditOpen) {
       setTimeout(() => {
         resetField("items");
       }, 200);
     }
-  }, [invoice, isEditOpen]);
+  }, [isEditOpen]);
 
   // validation check for at least one item
-  useEffect(() => {
-    if (!watcher.items || watcher.items.length === 0) {
-      setError("items", { type: "custom", message: "An item must be added" });
-    }
-  }, [watcher.items]);
+  // useEffect(() => {
+  //   if (!watcher.items || watcher.items.length === 0) {
+  //     setError("items", { type: "custom", message: "An item must be added" });
+  //   }
+  // }, [watcher.items]);
 
   const mobileRender = (index: number) => (
     <ItemContainer>

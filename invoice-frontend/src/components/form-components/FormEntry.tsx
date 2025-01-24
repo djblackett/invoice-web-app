@@ -16,15 +16,6 @@ function FormEntry({
   children,
   style,
 }: FormEntryProps) {
-  // const [isDirty, setIsDirty] = useState(false);
-  // const handleChange = () => {
-  //   setIsDirty(true);
-  // };
-
-  // const renderChildren = () => React.Children.map(children, (child) => React.cloneElement(child, {
-  //   isDirty,
-  // }));
-
   // mobile view gets a longer component, hence the awkward naming scheme here
   if (isLongOnMobile) {
     return (

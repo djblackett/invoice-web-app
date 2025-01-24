@@ -94,6 +94,10 @@ const ItemsContainer = styled.div`
   border-radius: 8px 8px 0 0;
   background-color: ${({ theme }) => theme.editButton};
 
+  :first-child {
+    border-radius: 8px 8px 0 0;
+  }
+
   @media (min-width: 768px) {
     padding: 0;
     border-radius: initial;

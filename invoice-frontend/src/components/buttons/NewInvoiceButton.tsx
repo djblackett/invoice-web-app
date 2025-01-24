@@ -8,12 +8,15 @@ const PrimaryButton = styled.div`
   width: 90px;
   display: flex;
   align-items: center;
-  margin-left: 18px;
   cursor: pointer;
   padding-left: 0.5rem;
 
   &:hover {
     background-color: #9277ff;
+  }
+
+  @media (min-width: 300px) {
+    margin-left: 18px;
   }
 
   @media (min-width: 600px) {

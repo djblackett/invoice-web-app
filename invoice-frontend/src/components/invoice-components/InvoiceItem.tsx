@@ -7,14 +7,10 @@ const ItemContainer = styled.div`
   display: grid;
   width: 100%;
   padding: 1.5rem;
-  padding-top: 0;
+  padding-top: 1.5rem;
   grid-template: auto auto / 1fr 1fr;
   grid-auto-flow: dense;
   background-color: ${({ theme }) => theme.editButton};
-
-  :first-child {
-    padding-top: 1.5rem;
-  }
 
   @media (min-width: 768px) {
     padding-left: 2rem;
@@ -34,9 +30,9 @@ const ItemContainer = styled.div`
   }
 `;
 
-const ItemName = styled.p`
+const ItemName = styled.div`
   white-space: nowrap;
-  justify-self: start;
+  justify-self: flex-start;
   width: fit-content;
   margin: 0;
   padding: 0;
@@ -113,7 +109,7 @@ const MobileQuantityPrice = styled.p`
 const MobileHelperContainer = styled.div`
   display: flex;
   flex-direction: column;
-  justify-content: center;
+  justify-content: flex-start;
 
   @media (min-width: 768px) {
     display: contents;
@@ -126,10 +122,10 @@ export type ItemProps = {
 
 function InvoiceItem({ item }: ItemProps) {
   return (
-    <ItemContainer>
-      <MobileHelperContainer>
-        <ItemName>{item.name}</ItemName>
-        <QuantityPriceContainer>
+    <ItemContainer className="item-container">
+      <MobileHelperContainer className="mobile-helper-container">
+        <ItemName className="item-name">{item.name}</ItemName>
+        <QuantityPriceContainer className="quantity-price-container">
           <Quantity>{item.quantity}</Quantity>
           <Price>£ {getMoney(Number(item.price))}</Price>
         </QuantityPriceContainer>

@@ -14,10 +14,13 @@ import { Invoice } from "../../types/types";
 import { useNewInvoiceContext } from "./NewInvoiceContextProvider";
 
 export const CityPostContainer = styled.div`
-  display: flex;
+  display: contents;
   width: 100%;
   justify-content: space-between;
 
+  @media (min-width: 350px) {
+    display: flex;
+  }
   @media (min-width: 600px) {
     display: contents;
   }
@@ -62,7 +65,6 @@ function CompanyFormInfo({ invoice }: CompanyFormInfoProps) {
     </LongFormEntry>
   );
 
-  // if (invoice) {
   return (
     <>
       <LongFormEntry className="company-street-address">

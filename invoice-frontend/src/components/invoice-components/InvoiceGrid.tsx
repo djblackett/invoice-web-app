@@ -10,8 +10,12 @@ const FlexContainer = styled(m.div)`
   height: 100%;
   min-height: 150px;
   align-items: center;
-  padding: 0 1.5rem;
+  padding: 0 1rem;
   align-self: center;
+
+  @media (min-width: 300px) {
+    padding: 0 24px;
+  }
 
   @media (min-width: 768px) {
     padding: 0 48px;

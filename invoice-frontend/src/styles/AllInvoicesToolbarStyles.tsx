@@ -4,7 +4,7 @@ export const GridContainer = styled.div`
   display: grid;
   height: 100%;
   grid-template-rows: auto;
-  grid-template-columns: 1fr 1fr;
+  grid-template-columns: auto auto;
   margin-top: 104px;
   margin-bottom: 25px;
   z-index: 1;
@@ -78,15 +78,20 @@ export const InvoicesLeft = styled.p`
 
 export const ControlBox = styled.div`
   display: flex;
-  justify-self: end;
-  flex-direction: row;
+  justify-self: center;
+  flex-direction: column;
   align-items: center;
   justify-content: flex-end;
+  flex-wrap: wrap;
 
   .largeScreenText {
     display: none;
+    flex-direction: row;
   }
 
+  @media (min-width: 300px) {
+    justify-self: end;
+  }
   @media (min-width: 600px) {
     margin-right: 0;
     width: 308px;

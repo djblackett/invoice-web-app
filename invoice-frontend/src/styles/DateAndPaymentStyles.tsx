@@ -24,6 +24,7 @@ export const CustomDateBox = styled.div<DateBox>`
   caret-color: #7c5dfa;
   outline: none;
   border-width: 1px;
+  cursor: pointer;
 
   letter-spacing: -0.25px;
 
@@ -58,6 +59,8 @@ export const DateInput = styled.input<DateInputProps>`
   border: none;
   touch-action: none;
   cursor: pointer;
+  width: auto;
+  flex-shrink: 1;
 
   &:focus,
   &:hover {

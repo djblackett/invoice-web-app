@@ -47,9 +47,13 @@ const Logo = styled.div`
 `;
 
 const DarkModeProfileContainer = styled.div`
-  display: flex;
-  flex-direction: row;
-  height: 100%;
+  display: contents;
+
+  @media (min-width: 350px) {
+    display: flex;
+    flex-direction: row;
+    height: 100%;
+  }
 
   @media (min-width: 1200px) {
     flex-direction: column;
@@ -96,10 +100,13 @@ const DarkLightBox = styled.div`
 `;
 
 const LogoLogoutContainer = styled.div`
-  display: flex;
-  flex-direction: row;
-  height: 100%;
-  align-items: center;
+  display: contents;
+  @media (min-width: 350px) {
+    display: flex;
+    flex-direction: row;
+    height: 100%;
+    align-items: center;
+  }
 
   @media (min-width: 1200px) {
     flex-direction: column;

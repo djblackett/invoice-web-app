@@ -32,6 +32,7 @@ export const FormContainerDarkenModal = styled.div`
     padding-top: 1rem;
     padding-bottom: 2rem;
     max-width: 700px;
+    margin-top: 0;
     right: 616px;
     max-height: calc(100vh - 72px);
   }
@@ -95,6 +96,7 @@ export const Input = styled.input<InputProps>`
 export const StreetAddressInput = styled(Input)`
   width: 100%;
   $long: false;
+
   @media (min-width: 768px) {
     width: 100%;
   }
