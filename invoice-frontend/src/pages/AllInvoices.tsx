@@ -18,6 +18,11 @@ const FadeOutText = styled.h1`
   opacity: 1;
   transition: all 1s ease-in;
   text-align: center;
+  display: none;
+
+  @media (min-width: 768px) {
+    display: block;
+  }
 `;
 
 type FadeOutProps = {

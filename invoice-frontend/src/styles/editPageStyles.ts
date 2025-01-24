@@ -11,25 +11,23 @@ export const FormContainerDarkenModal = styled.div`
   bottom: 91px;
   left: 0;
   width: 100%;
+  margin-top: 72px;
   background-color: ${({ theme }) => theme.formBackground};
   position: fixed;
   display: flex;
   flex-direction: column;
-  /* transition-property: all;
-  transition-duration: 250ms;
-  transition-timing-function: ease-in-out; */
-  /* -webkit-transform: translateZ(
-    0
-  ); // Force GPU acceleration in Chrome to reduce choppiness
-  transform: translateZ(0); */
   overflow-x: hidden;
   filter: drop-shadow(2px 2px 2px bottom);
   align-self: flex-start;
   z-index: 50;
   max-width: 100%;
+  padding-left: 2rem;
+  padding-right: 2rem;
+  padding-top: 1rem;
+  padding-bottom: 2rem;
 
   @media (min-width: 768px) {
-    padding-left: 5rem;
+    padding-left: 2rem;
     padding-right: 2rem;
     padding-top: 1rem;
     padding-bottom: 2rem;

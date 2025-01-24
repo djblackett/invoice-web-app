@@ -9,10 +9,12 @@ const Sidebar = ({ children }: SidebarProps) => {
   const width = useWindowWidth();
   let sidebarWidth = 700;
 
-  if (width > 700) {
-    sidebarWidth = 700;
-  } else {
+  if (width <= 616) {
     sidebarWidth = width;
+  } else if (width <= 768) {
+    sidebarWidth = 616;
+  } else {
+    sidebarWidth = 700;
   }
 
   // Variants for the sidebar animation
