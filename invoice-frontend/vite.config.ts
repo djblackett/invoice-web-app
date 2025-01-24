@@ -11,7 +11,7 @@ export default defineConfig({
   plugins: [
     react(),
     tsconfigPaths(),
-    visualizer({ open: true, filename: "bundle-visualization.html" }),
+    visualizer({ filename: "bundle-visualization.html" }),
   ],
   base: "/invoice-web-app/",
   server: {

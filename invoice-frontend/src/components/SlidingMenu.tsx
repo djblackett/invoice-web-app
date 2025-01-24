@@ -1,3 +1,4 @@
+import useWindowWidth from "@/hooks/useWindowWidth";
 import { motion } from "motion/react";
 
 interface SidebarProps {
@@ -5,8 +6,15 @@ interface SidebarProps {
 }
 
 const Sidebar = ({ children }: SidebarProps) => {
-  const sidebarWidth = 700; // Define the sidebar width in pixels
-  // todo - may need breakpoints for different screen sizes
+  const width = useWindowWidth();
+  let sidebarWidth = 700;
+
+  if (width > 700) {
+    sidebarWidth = 700;
+  } else {
+    sidebarWidth = width;
+  }
+
   // Variants for the sidebar animation
   const sidebarVariants = {
     hidden: {
@@ -60,7 +68,6 @@ const Sidebar = ({ children }: SidebarProps) => {
           left: 0,
           width: `${sidebarWidth}px`,
           height: "100%",
-          // backgroundColor: "#2c3e50",
           color: "#ecf0f1",
           padding: "20px",
           zIndex: 1001, // Above the overlay
