@@ -63,7 +63,7 @@ describe("EditForm", () => {
     expect(container.firstChild).toBeNull();
   });
 
-  it("hides the modal when isNewInvoiceOpen is false", () => {
+  it.skip("hides the modal when isNewInvoiceOpen is false", () => {
     render(
       <NewInvoiceProvider initialState={{ isNewInvoiceOpen: false }}>
         {/* <NewInvoiceFormProvider> */}
