@@ -1,34 +1,27 @@
 import NewInvoiceForm from "../components/form-components/NewInvoiceForm";
 import "../styles/react-datepicker.css";
-import {
-  DarkenScreen,
-  EditTitle,
-  FormContainerDarkenModal,
-} from "../styles/editPageStyles";
-import { useResponsive } from "../hooks/useResponsive";
+import { EditTitle, FormContainerDarkenModal } from "../styles/editPageStyles";
 import { useNewInvoiceContext } from "../components/form-components/NewInvoiceContextProvider";
+import Sidebar from "@/components/SlidingMenu";
+import { AnimatePresence } from "motion/react";
 
 function NewInvoice() {
-  const { editPageWidth, padding } = useResponsive();
-
   const { isNewInvoiceOpen } = useNewInvoiceContext();
 
   // DarkenScreen appears when newInvoice tab is open
   return (
-    <DarkenScreen
-      style={{ visibility: isNewInvoiceOpen ? "visible" : "hidden" }}
-    >
-      <FormContainerDarkenModal
-        style={{
-          width: isNewInvoiceOpen ? `${editPageWidth}px` : "0px",
-          padding,
-        }}
-        data-testid="newInvoicePage"
-      >
-        <EditTitle>New Invoice</EditTitle>
-        <NewInvoiceForm />
-      </FormContainerDarkenModal>
-    </DarkenScreen>
+    <>
+      <AnimatePresence>
+        {isNewInvoiceOpen ? (
+          <Sidebar key="sidebar-parent">
+            <FormContainerDarkenModal data-testid="newInvoicePage">
+              <EditTitle>New Invoice</EditTitle>
+              <NewInvoiceForm />
+            </FormContainerDarkenModal>
+          </Sidebar>
+        ) : null}
+      </AnimatePresence>
+    </>
   );
 }
 
