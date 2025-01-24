@@ -57,8 +57,6 @@ export const DropDownHeader = styled.div`
     -webkit-rtl-ordering: logical;
     cursor: text;
     padding: 1px 2px;
-    font-family: "League Spartan", sans-serif;
-    font-style: normal;
     font-weight: 700;
     font-size: 12px;
     line-height: 15px;
@@ -66,6 +64,7 @@ export const DropDownHeader = styled.div`
     letter-spacing: -0.25px;
     margin: 0;
     transform: translateY(-2px);
+    color: ${({ theme }) => theme.text};
   }
 `;
 
