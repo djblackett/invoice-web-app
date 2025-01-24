@@ -9,6 +9,7 @@
     "dev:container": "VITE_BACKEND_URL=https://backend-dev:8000/graphql vite",
     "coverage": "vitest run --coverage",
     "build": "vite build",
+    "build:local": "VITE_BACKEND_URL=https://localhost:8000 vite build",
     "preview": "vite preview",
     "test:unit": "tsc -p tsconfig.dev.json && vitest tests/unit",
     "test:e2e": "VITE_BACKEND_URL=https://localhost:8000/graphql playwright test --config=playwright.config.ts",

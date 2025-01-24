@@ -79,24 +79,6 @@ services:
     networks:
       - my_network_dev
 
-  # proxy-dev:
-  #   image: nginx:1.25.2
-  #   hostname: proxy-dev
-  #   container_name: proxy-dev
-  #   depends_on:
-  #     backend-dev:
-  #       condition: service_started
-  #     frontend-dev:
-  #       condition: service_started
-  #   tty: true
-  #   stdin_open: true
-  #   volumes:
-  #     - ./nginx.dev.conf:/etc/nginx/nginx.conf
-  #   ports:
-  #     - "80:80"
-  #   networks:
-  #     - my_network_dev
-
   playwright-e2e:
     depends_on:
       frontend-dev:

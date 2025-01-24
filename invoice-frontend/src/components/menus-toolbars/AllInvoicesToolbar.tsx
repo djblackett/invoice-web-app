@@ -27,10 +27,10 @@ function AllInvoicesToolbar({ invoiceList }: AllInvoicesToolbarProps) {
   const [filterText, setFilterText] = useState("total");
   const width = useWindowWidth();
 
-  const { setIsNewInvoiceOpen } = useNewInvoiceContext();
+  const { setIsNewInvoiceOpen, isNewInvoiceOpen } = useNewInvoiceContext();
 
   const openNewInvoice = () => {
-    setIsNewInvoiceOpen(true);
+    setIsNewInvoiceOpen(!isNewInvoiceOpen);
   };
 
   const openFilter = () => {
