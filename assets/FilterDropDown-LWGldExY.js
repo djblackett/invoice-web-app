@@ -1,4 +1,4 @@
-import{ax as c,ay as k,az as w,aA as d,d as o,j as t,b as y,s as j,aB as C}from"./index-DMmgDaP9.js";import{P as v}from"./invoice.queries-C6PGV1xI.js";import{C as $}from"./ClickOutsideProvider-0y8ZMxMH.js";function a(e=c){const i=e===c?k:w(e);return function(){const{store:n}=i();return n}}const D=a();function S(e=c){const i=e===c?D:a(e);return function(){return i().dispatch}}const z=S(),l=d`
+import{U as c,V as k,W as w,X as d,d as o,j as t,b as y,s as j,Y as C}from"./index-CztSajze.js";import{P as v}from"./invoice.queries-B80zaW6I.js";import{C as $}from"./ClickOutsideProvider-Cphzwxy0.js";function a(e=c){const i=e===c?k:w(e);return function(){const{store:n}=i();return n}}const D=a();function S(e=c){const i=e===c?D:a(e);return function(){return i().dispatch}}const z=S(),l=d`
   background-color: ${({theme:e})=>e.newButton};
   border-color: transparent;
 `,x=d`
@@ -35,7 +35,7 @@ import{ax as c,ay as k,az as w,aA as d,d as o,j as t,b as y,s as j,aB as C}from"
   ${p} {
     visibility: ${e=>e.checked?"visible":"hidden"};
   }
-`;function B({checked:e=!1,...i}){return t.jsxs(L,{className:"styledCheckbox",checked:e,children:[t.jsx(H,{checked:e,...i,readOnly:!0}),t.jsx(R,{checked:e,children:t.jsx(p,{width:"10",height:"8",viewBox:"0 0 10 8",children:t.jsx("path",{d:"M1.5 4.5l2.124 2.124L8.97 1.28"})})})]})}const F=o.div``,O=o.div`
+`;function F({checked:e=!1,...i}){return t.jsxs(L,{className:"styledCheckbox",checked:e,children:[t.jsx(H,{checked:e,...i,readOnly:!0}),t.jsx(R,{checked:e,children:t.jsx(p,{width:"10",height:"8",viewBox:"0 0 10 8",children:t.jsx("path",{d:"M1.5 4.5l2.124 2.124L8.97 1.28"})})})]})}const O=o.div``,P=o.div`
   cursor: pointer;
   box-sizing: border-box;
   margin-left: 0.5rem;
@@ -45,7 +45,7 @@ import{ax as c,ay as k,az as w,aA as d,d as o,j as t,b as y,s as j,aB as C}from"
   /* identical to box height, or 125% */
   letter-spacing: -0.25px;
   color: ${({theme:e})=>e.textPlain};
-`;function h({option:e}){const i=y(j),r=e.toLowerCase(),n=i[r];return t.jsx(F,{children:t.jsxs(O,{children:[t.jsx(B,{checked:n}),t.jsx("span",{style:{marginLeft:"13px",fontFamily:"League Spartan",fontWeight:700},children:e})]})})}h.propTypes={option:v.string.isRequired};const P=o("div")`
+`;function h({option:e}){const i=y(j),r=e.toLowerCase(),n=i[r];return t.jsx(O,{children:t.jsxs(P,{children:[t.jsx(F,{checked:n}),t.jsx("span",{style:{marginLeft:"13px",fontFamily:"League Spartan",fontWeight:700},children:e})]})})}h.propTypes={option:v.string.isRequired};const B=o("div")`
   align-self: center;
   box-sizing: border-box;
   background: transparent;
@@ -95,7 +95,7 @@ import{ax as c,ay as k,az as w,aA as d,d as o,j as t,b as y,s as j,aB as C}from"
   @media (min-width: 768px) {
     left: -130px;
   }
-`,q=o("ul")`
+`,W=o("ul")`
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -111,7 +111,7 @@ import{ax as c,ay as k,az as w,aA as d,d as o,j as t,b as y,s as j,aB as C}from"
   color: ${({theme:e})=>e.text};
   font-size: 1.2rem;
   font-weight: 700;
-`,A=o.li.attrs({})`
+`,q=o.li.attrs({})`
   display: flex;
   flex-grow: 0;
 
@@ -138,4 +138,4 @@ import{ax as c,ay as k,az as w,aA as d,d as o,j as t,b as y,s as j,aB as C}from"
   color: ${({theme:e})=>e.text};
   box-sizing: border-box;
   cursor: pointer;
-`;function J({icon:e,isOpen:i,setIsFilterOpen:r,options:n}){const u=z(),b=s=>f=>{f.stopPropagation();const m=s.toLowerCase();u(C(m))},g=()=>{r(!1)};return t.jsx(P,{children:t.jsxs(I,{"data-testid":"filterDropDown",children:[t.jsx(M,{children:e}),t.jsx($,{onOutsideClick:g,children:t.jsx(T,{style:{height:i?"130px":0},children:t.jsx(q,{"data-testid":"draft-filter",children:n.map(s=>t.jsx(A,{onClick:b(s),children:t.jsx(E,{children:t.jsx(h,{option:s})})},`${s}-li`))})})})]})})}export{J as default};
+`;function X({icon:e,isOpen:i,setIsFilterOpen:r,options:n}){const u=z(),b=s=>f=>{f.stopPropagation();const m=s.toLowerCase();u(C(m))},g=()=>{r(!1)};return t.jsx(B,{children:t.jsxs(I,{"data-testid":"filterDropDown",children:[t.jsx(M,{children:e}),t.jsx($,{onOutsideClick:g,children:t.jsx(T,{style:{height:i?"130px":0},children:t.jsx(W,{"data-testid":"draft-filter",children:n.map(s=>t.jsx(q,{onClick:b(s),children:t.jsx(E,{children:t.jsx(h,{option:s})})},`${s}-li`))})})})]})})}export{X as default};

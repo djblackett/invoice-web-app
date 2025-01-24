@@ -1,4 +1,4 @@
-import{d as e,aA as r}from"./index-DMmgDaP9.js";const i=e.h1`
+import{d as e,X as r}from"./index-CztSajze.js";const i=e.h1`
   font-size: 1.5rem;
   color: ${({theme:t})=>t.text};
 `,n=e.div`
@@ -7,29 +7,28 @@ import{d as e,aA as r}from"./index-DMmgDaP9.js";const i=e.h1`
   bottom: 91px;
   left: 0;
   width: 100%;
+  margin-top: 72px;
   background-color: ${({theme:t})=>t.formBackground};
   position: fixed;
   display: flex;
   flex-direction: column;
-  transition-property: all;
-  transition-duration: 250ms;
-  transition-timing-function: ease-in-out;
-  -webkit-transform: translateZ(
-    0
-  ); // Force GPU acceleration in Chrome to reduce choppiness
-  transform: translateZ(0);
   overflow-x: hidden;
   filter: drop-shadow(2px 2px 2px bottom);
   align-self: flex-start;
   z-index: 50;
   max-width: 100%;
+  padding-left: 2rem;
+  padding-right: 2rem;
+  padding-top: 1rem;
+  padding-bottom: 2rem;
 
   @media (min-width: 768px) {
-    padding-left: 5rem;
+    padding-left: 2rem;
     padding-right: 2rem;
     padding-top: 1rem;
     padding-bottom: 2rem;
     max-width: 700px;
+    margin-top: 0;
     right: 616px;
     max-height: calc(100vh - 72px);
   }
@@ -81,16 +80,17 @@ import{d as e,aA as r}from"./index-DMmgDaP9.js";const i=e.h1`
 `,c=e(o)`
   width: 100%;
   $long: false;
+
   @media (min-width: 768px) {
     width: 100%;
   }
-`,l=e(o)`
+`,p=e(o)`
   width: 100%;
 
   @media (min-width: 768px) {
     max-width: 152px;
   }
-`,p=e(o)`
+`,l=e(o)`
   width: max-content;
 
   @media (min-width: 768px) {
@@ -218,4 +218,4 @@ import{d as e,aA as r}from"./index-DMmgDaP9.js";const i=e.h1`
   .react-datepicker__day--keyboard-selected {
     background-color: rgba(124, 93, 250, 0.5);
   }
-`;export{l as A,d as B,p as C,m as D,i as E,n as F,o as I,s as L,c as S,x as a,g as b,h as c,f as d};
+`;export{p as A,d as B,l as C,m as D,i as E,n as F,o as I,s as L,c as S,x as a,g as b,h as c,f as d};
