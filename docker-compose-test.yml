@@ -10,7 +10,7 @@ services:
     environment:
       - VITE_BACKEND_URL=https://backend-test:8000/graphql
     ports:
-      - "5173:5173"
+      - "5174:5173"
     networks:
       - my_network_test
     volumes:
@@ -30,7 +30,7 @@ services:
         condition: service_started
     restart: unless-stopped
     ports:
-      - "8000:8000"
+      - "8001:8000"
     command: |
       sh -c "npx prisma@5.22.0 generate && \
       npx prisma@5.22 db push && \
@@ -62,7 +62,7 @@ services:
       PGUSER: postgres
       POSTGRES_USER: postgres
     ports:
-      - "5432:5432"
+      - "5433:5432"
     networks:
       - my_network_test
     volumes:
