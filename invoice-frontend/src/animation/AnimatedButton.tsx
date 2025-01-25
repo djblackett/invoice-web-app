@@ -1,7 +1,7 @@
 import * as m from "motion/react-m";
 import styled from "styled-components";
 
-export const SlidingComponent = styled(m.div)`
+export const SlidingButton = styled(m.div)`
   justify-self: center;
   align-self: center;
   height: fit-content;

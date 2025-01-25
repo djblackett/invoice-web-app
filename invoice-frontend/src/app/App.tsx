@@ -12,13 +12,13 @@ import { Main, StyledToastContainer } from "@/styles/AppStyles";
 import { LazyMotion } from "motion/react";
 
 const WelcomePage = React.lazy(() => import("@/pages/WelcomePage"));
-const ProtectedRoute = React.lazy(() => import("@/ProtectedRoute"));
+const ProtectedRoute = React.lazy(() => import("@/components/ProtectedRoute"));
 const AllInvoices = React.lazy(() => import("@/pages/AllInvoices"));
 const ViewInvoice = React.lazy(() => import("@/pages/ViewInvoice"));
 const Login = React.lazy(() => import("@/pages/Login"));
 
 const loadFeatures = () =>
-  import("../components/motionConfig").then((res) => res.default);
+  import("../animation/motionConfig").then((res) => res.default);
 
 function App() {
   const [theme, setTheme] = useState("light");

@@ -17,7 +17,7 @@ import Description from "../components/form-components/Description";
 import { useNewInvoiceForm } from "../hooks/useNewInvoiceForm";
 import { useNewInvoiceContext } from "../components/form-components/NewInvoiceContextProvider";
 import { AnimatePresence } from "motion/react";
-import Sidebar from "@/components/SlidingMenu";
+import Sidebar from "@/animation/SlidingMenu";
 
 type EditFormProps = {
   invoice: Invoice;

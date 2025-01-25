@@ -1,8 +1,8 @@
 import { useAuth0 } from "@auth0/auth0-react";
 import { Navigate } from "react-router-dom";
-import { SlidingComponent } from "@/components/buttons/AnimatedButton";
+import { SlidingButton } from "@/animation/AnimatedButton";
 import { LoginLogoutButton } from "@/components/menus-toolbars/Header";
-import TextAnimation from "@/components/text/AnimatedText";
+import TextAnimation from "@/animation/AnimatedText";
 
 const Login = () => {
   const { isAuthenticated, isLoading, loginWithRedirect } = useAuth0();
@@ -20,7 +20,7 @@ const Login = () => {
       {!isAuthenticated && (
         <>
           <TextAnimation text={text} testId="welcome-text" />
-          <SlidingComponent
+          <SlidingButton
             initial={{ x: "-100%", opacity: 0 }} // Start off-screen to the left
             animate={{ x: 0, opacity: 1 }} // Animate to original position
             transition={{
@@ -37,7 +37,7 @@ const Login = () => {
             >
               Login
             </LoginLogoutButton>
-          </SlidingComponent>
+          </SlidingButton>
         </>
       )}
     </>
