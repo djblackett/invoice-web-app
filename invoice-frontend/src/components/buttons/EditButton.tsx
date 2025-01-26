@@ -21,6 +21,7 @@ const Button = styled.button`
 
   &:focus {
     border: 2px solid rgb(18, 22, 243);
+    outline: auto;
   }
 
   @media (min-width: 300px) {
