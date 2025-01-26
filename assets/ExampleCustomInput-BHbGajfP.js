@@ -1,4 +1,4 @@
-import{d as e,X as i,r as a,j as t}from"./index-CztSajze.js";import{dateIcon as s}from"./DateAndPayment-DR-Kr9Sl.js";import"./utilityFunctions-Dz7gQRQ5.js";import"./SlidingMenu-DBh7LwqB.js";import"./invoice.queries-B80zaW6I.js";import"./editPageStyles-BqFVsHQ1.js";import"./useMutation-DPJ_wiCu.js";import"./create-visual-element-BTtSyCqp.js";const l=e.div`
+import{d as r,X as i,r as s,j as t}from"./index-D1B1EIKJ.js";import{dateIcon as a}from"./DateAndPayment-C5cF6siX.js";import"./SlidingMenu-oLsvNsjq.js";import"./invoice.queries-UruHYCCu.js";import"./editPageStyles-DBqYrXBk.js";import"./utilityFunctions-uQjSmZ7Z.js";import"./useMutation-2Q1gDOlO.js";import"./create-visual-element-C2cQkUZK.js";const d=r.div`
   display: flex;
   justify-content: space-between;
   align-items: center;
@@ -31,7 +31,7 @@ import{d as e,X as i,r as a,j as t}from"./index-CztSajze.js";import{dateIcon as 
   ${o=>o.long&&i`
       width: 100%;
     `}
-`,d=e.input`
+`,l=r.input`
   color: ${({theme:o})=>o.dateText};
   font-family: ${({theme:o})=>o.font};
   font-style: normal;
@@ -41,7 +41,6 @@ import{d as e,X as i,r as a,j as t}from"./index-CztSajze.js";import{dateIcon as 
   background-color: transparent;
   outline: none;
   border: none;
-  touch-action: none;
   cursor: pointer;
   width: auto;
   flex-shrink: 1;
@@ -50,4 +49,4 @@ import{d as e,X as i,r as a,j as t}from"./index-CztSajze.js";import{dateIcon as 
   &:hover {
     border-color: ${({theme:o})=>o.formFieldOutlineFocus};
   }
-`,c=a.forwardRef(({value:o,onClick:r},n)=>t.jsxs(l,{className:"custom-input",onClick:r,style:{},children:[t.jsx(d,{ref:n,defaultValue:o,"data-testid":"invoiceDate"}),s]}));c.displayName="CustomDateInput";export{c as default};
+`,p=s.forwardRef(({value:o,onClick:e},n)=>t.jsxs(d,{className:"custom-input",onClick:e,style:{},children:[t.jsx(l,{ref:n,value:o,"data-testid":"invoiceDate"}),a]}));p.displayName="CustomDateInput";export{p as default};

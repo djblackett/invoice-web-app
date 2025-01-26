@@ -1,5 +1,5 @@
-const __vite__mapDeps=(i,m=__vite__mapDeps,d=(m.f||(m.f=["assets/EditForm-CR0PRo1b.js","assets/index-CztSajze.js","assets/index-BgypsdHM.css","assets/invoice.queries-B80zaW6I.js","assets/SlidingMenu-DBh7LwqB.js","assets/editPageStyles-BqFVsHQ1.js","assets/utilityFunctions-Dz7gQRQ5.js","assets/useMutation-DPJ_wiCu.js","assets/create-visual-element-BTtSyCqp.js","assets/SlidingMenu-Bj78kJkR.css","assets/CancelButton-Ccjw5uXF.js","assets/NewInvoiceBottomMenuStyles--PTSpSS9.js","assets/DateAndPayment-DR-Kr9Sl.js","assets/DeleteModal-_xEgN1Od.js","assets/FullInvoiceStyles-CrVmpQ6D.js","assets/ClickOutsideProvider-Cphzwxy0.js","assets/FullInvoice-C3IRorHh.js"])))=>i.map(i=>d[i]);
-import{d as o,r as d,j as t,Q as p,a as j,R as u,_ as g,c as v,e as k}from"./index-CztSajze.js";import{P as x,M as y,u as I,I as l,a as _,N as B,G as E}from"./invoice.queries-B80zaW6I.js";import{u as T}from"./useMutation-DPJ_wiCu.js";const P=o.button`
+const __vite__mapDeps=(i,m=__vite__mapDeps,d=(m.f||(m.f=["assets/EditForm-DHO1upEr.js","assets/index-D1B1EIKJ.js","assets/index-BgypsdHM.css","assets/invoice.queries-UruHYCCu.js","assets/SlidingMenu-oLsvNsjq.js","assets/editPageStyles-DBqYrXBk.js","assets/utilityFunctions-uQjSmZ7Z.js","assets/useMutation-2Q1gDOlO.js","assets/create-visual-element-C2cQkUZK.js","assets/SlidingMenu-agoxPcWL.css","assets/CancelButton-DwdZQDWJ.js","assets/NewInvoiceBottomMenuStyles-FliDZxqL.js","assets/DateAndPayment-C5cF6siX.js","assets/DeleteModal-BwwaDQSJ.js","assets/FullInvoiceStyles-Cm2Kb8X8.js","assets/ClickOutsideProvider-CoILZRNK.js","assets/FullInvoice-Bid8jK7h.js"])))=>i.map(i=>d[i]);
+import{d as o,r as d,j as t,Q as p,a as j,R as u,_ as x,c as k,e as v}from"./index-D1B1EIKJ.js";import{P as g,M as y,u as I,I as l,a as _,N as B,G as E}from"./invoice.queries-UruHYCCu.js";import{u as T}from"./useMutation-2Q1gDOlO.js";const P=o.button`
   background-color: ${({theme:e})=>e.editButton};
   border-radius: 24px;
   padding: 16px 24px 17px 24px;
@@ -9,9 +9,8 @@ import{d as o,r as d,j as t,Q as p,a as j,R as u,_ as g,c as v,e as k}from"./ind
   font-weight: 700;
   font-size: 12px;
   line-height: 15px;
-  margin: 0.25rem;
-  /* identical to box height, or 125% */
   letter-spacing: -0.25px;
+  scale: 0.85;
 
   &:hover {
     background-color: ${({theme:e})=>e.editButtonHover};
@@ -20,7 +19,12 @@ import{d as o,r as d,j as t,Q as p,a as j,R as u,_ as g,c as v,e as k}from"./ind
   &:focus {
     border: 2px solid rgb(18, 22, 243);
   }
-`,h=d.forwardRef(({toggleEditTab:e,isEditOpen:n},i)=>{const s=()=>{e(!n)};return t.jsx(P,{onClick:s,ref:i,children:"Edit"})});h.displayName="EditButton";h.propTypes={toggleEditTab:x.func.isRequired};const C=o.button`
+
+  @media (min-width: 300px) {
+    scale: 1;
+    margin: 0.25rem;
+  }
+`,h=d.forwardRef(({toggleEditTab:e,isEditOpen:n},i)=>{const s=()=>{e(!n)};return t.jsx(P,{onClick:s,ref:i,children:"Edit"})});h.displayName="EditButton";h.propTypes={toggleEditTab:g.func.isRequired};const C=o.button`
   background-color: #ec5757;
   border-radius: 24px;
   padding: 16px 24px 17px 24px;
@@ -30,36 +34,44 @@ import{d as o,r as d,j as t,Q as p,a as j,R as u,_ as g,c as v,e as k}from"./ind
   font-weight: 700;
   font-size: 12px;
   line-height: 15px;
-  margin: 0.25rem;
-  /* identical to box height, or 125% */
   letter-spacing: -0.25px;
+  scale: 0.85;
 
   &:hover {
     background-color: #ff9797;
   }
-`;function m({handleClick:e}){return t.jsx(C,{onClick:e,type:"button","aria-label":"delete-button",children:"Delete"})}m.propTypes={handleClick:x.func.isRequired};const O=o.button`
+
+  @media (min-width: 300px) {
+    scale: 1;
+    margin: 0.25rem;
+  }
+`;function m({handleClick:e}){return t.jsx(C,{onClick:e,type:"button","aria-label":"delete-button",children:"Delete"})}m.propTypes={handleClick:g.func.isRequired};const O=o.button`
   background-color: ${({theme:e})=>e.newButton};
   border-radius: 24px;
-  padding: 16px 24px 17px 24px;
+  padding: 16px 19px 17px 19px;
   color: white;
   border: none;
   cursor: pointer;
   font-weight: 700;
   font-size: 12px;
   line-height: 15px;
-  margin: 0.25rem;
-  /* identical to box height, or 125% */
-
   letter-spacing: -0.25px;
   white-space: nowrap;
+  scale: 0.85;
 
   &:hover {
     background-color: ${({theme:e})=>e.newButtonHover};
   }
+
+  @media (min-width: 300px) {
+    padding: 16px 24px 17px 24px;
+    scale: 1;
+    margin: 0.25rem;
+  }
 `;function M({invoice:e,editButtonRef:n}){const i=localStorage.getItem("theme"),[s]=T(y,{onError:r=>{console.log(r.graphQLErrors[0].message)}}),a=async()=>{e.status==="pending"?(await s({variables:{markAsPaidId:e.id}})).data&&p.success("💸 Invoice paid!",{position:"top-center",autoClose:5e3,hideProgressBar:!1,closeOnClick:!0,pauseOnHover:!0,draggable:!0,progress:void 0,theme:i||void 0}):(n.current&&(n.current.focus(),console.log("ref:",n.current)),p.error("Cannot mark drafts as paid",{position:"top-right",autoClose:1e3,hideProgressBar:!0,closeOnClick:!0,pauseOnHover:!0,draggable:!1,progress:void 0,theme:i||void 0}))};return t.jsx(t.Fragment,{children:t.jsx(O,{onClick:a,type:"button","data-testid":"mark-as-paid",children:"Mark as Paid"})})}const S=o.div`
   display: flex;
   flex-direction: row;
-  justify-content: space-evenly;
+  justify-content: space-between;
   align-items: center;
   height: 91px;
   width: 100%;
@@ -69,6 +81,7 @@ import{d as o,r as d,j as t,Q as p,a as j,R as u,_ as g,c as v,e as k}from"./ind
   right: 0;
   background-color: ${({theme:e})=>e.background};
   margin-top: 3.5rem;
+
   order: 2;
 
   @media (min-width: 325px) {
@@ -84,7 +97,7 @@ import{d as o,r as d,j as t,Q as p,a as j,R as u,_ as g,c as v,e as k}from"./ind
     margin-top: initial;
     background-color: initial;
   }
-`;function b({invoice:e,openModal:n}){const{isNewInvoiceOpen:i,setIsNewInvoiceOpen:s}=I(),a=()=>{s(!0)},r=d.useRef(null);return t.jsxs(S,{children:[t.jsx(h,{toggleEditTab:a,isEditOpen:i,ref:r}),t.jsx(m,{handleClick:n}),t.jsx(M,{invoice:e,editButtonRef:r})]})}b.propTypes={openModal:x.func.isRequired};const $=o.div`
+`;function b({invoice:e,openModal:n}){const{isNewInvoiceOpen:i,setIsNewInvoiceOpen:s}=I(),a=()=>{s(!0)},r=d.useRef(null);return t.jsxs(S,{children:[t.jsx(h,{toggleEditTab:a,isEditOpen:i,ref:r}),t.jsx(m,{handleClick:n}),t.jsx(M,{invoice:e,editButtonRef:r})]})}b.propTypes={openModal:g.func.isRequired};const $=o.div`
   height: 88px;
   display: contents;
   flex-direction: column;
@@ -170,4 +183,4 @@ import{d as o,r as d,j as t,Q as p,a as j,R as u,_ as g,c as v,e as k}from"./ind
   &:hover {
     color: #7e88c3;
   }
-`,F=t.jsx("svg",{width:"7",height:"10",xmlns:"http://www.w3.org/2000/svg",children:t.jsx("path",{d:"M6.342.886L2.114 5.114l4.228 4.228",stroke:"#9277FF",strokeWidth:"2",fill:"none",fillRule:"evenodd"})}),G=u.lazy(()=>g(()=>import("./EditForm-CR0PRo1b.js"),__vite__mapDeps([0,1,2,3,4,5,6,7,8,9,10,11,12]))),H=u.lazy(()=>g(()=>import("./DeleteModal-_xEgN1Od.js"),__vite__mapDeps([13,1,2,10,3,5,14,15,7]))),Q=u.lazy(()=>g(()=>import("./FullInvoice-C3IRorHh.js"),__vite__mapDeps([16,1,2,3,6,14])));function W(){const e=v(),[n,i]=d.useState(!1),{id:s}=k(),{data:a,loading:r,error:f}=_(E,{variables:{getInvoiceById:s},fetchPolicy:"cache-and-network"}),c=a==null?void 0:a.getInvoiceById,w=()=>{e("/invoices")};return r?t.jsx("h2",{children:"Loading"}):f?t.jsxs("p",{children:["Error: ",f.message]}):t.jsx(z,{children:t.jsxs(B,{children:[t.jsx(d.Suspense,{fallback:t.jsx("div",{children:"Loading..."}),children:t.jsx(G,{invoice:c})}),t.jsxs(A,{onClick:w,children:[t.jsx(N,{children:F}),t.jsx(V,{children:"Go back"})]}),t.jsx(L,{invoice:c,setIsModalOpen:i}),t.jsx(d.Suspense,{fallback:t.jsx("div",{children:"Loading..."}),children:t.jsx(Q,{invoice:c,loading:r})}),t.jsx(d.Suspense,{fallback:t.jsx("div",{children:"Loading..."}),children:t.jsx(H,{setIsModalOpen:i,isModalOpen:n,invoice:c})})]})})}const J=Object.freeze(Object.defineProperty({__proto__:null,default:W},Symbol.toStringTag,{value:"Module"}));export{m as D,J as V};
+`,F=t.jsx("svg",{width:"7",height:"10",xmlns:"http://www.w3.org/2000/svg",children:t.jsx("path",{d:"M6.342.886L2.114 5.114l4.228 4.228",stroke:"#9277FF",strokeWidth:"2",fill:"none",fillRule:"evenodd"})}),G=u.lazy(()=>x(()=>import("./EditForm-DHO1upEr.js"),__vite__mapDeps([0,1,2,3,4,5,6,7,8,9,10,11,12]))),H=u.lazy(()=>x(()=>import("./DeleteModal-BwwaDQSJ.js"),__vite__mapDeps([13,1,2,10,3,5,14,15,7]))),Q=u.lazy(()=>x(()=>import("./FullInvoice-Bid8jK7h.js"),__vite__mapDeps([16,1,2,3,6,14])));function W(){const e=k(),[n,i]=d.useState(!1),{id:s}=v(),{data:a,loading:r,error:f}=_(E,{variables:{getInvoiceById:s},fetchPolicy:"cache-and-network"}),c=a==null?void 0:a.getInvoiceById,w=()=>{e("/invoices")};return r?t.jsx("h2",{children:"Loading"}):f?t.jsxs("p",{children:["Error: ",f.message]}):t.jsx(z,{children:t.jsxs(B,{children:[t.jsx(d.Suspense,{fallback:t.jsx("div",{children:"Loading..."}),children:t.jsx(G,{invoice:c})}),t.jsxs(A,{onClick:w,children:[t.jsx(N,{children:F}),t.jsx(V,{children:"Go back"})]}),t.jsx(L,{invoice:c,setIsModalOpen:i}),t.jsx(d.Suspense,{fallback:t.jsx("div",{children:"Loading..."}),children:t.jsx(Q,{invoice:c,loading:r})}),t.jsx(d.Suspense,{fallback:t.jsx("div",{children:"Loading..."}),children:t.jsx(H,{setIsModalOpen:i,isModalOpen:n,invoice:c})})]})})}const J=Object.freeze(Object.defineProperty({__proto__:null,default:W},Symbol.toStringTag,{value:"Module"}));export{m as D,J as V};

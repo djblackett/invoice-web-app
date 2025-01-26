@@ -1,5 +1,5 @@
-const __vite__mapDeps=(i,m=__vite__mapDeps,d=(m.f||(m.f=["assets/FilterDropDown-LWGldExY.js","assets/index-CztSajze.js","assets/index-BgypsdHM.css","assets/invoice.queries-B80zaW6I.js","assets/ClickOutsideProvider-Cphzwxy0.js","assets/NewInvoice-DNSj4Sgi.js","assets/editPageStyles-BqFVsHQ1.js","assets/SlidingMenu-DBh7LwqB.js","assets/utilityFunctions-Dz7gQRQ5.js","assets/useMutation-DPJ_wiCu.js","assets/create-visual-element-BTtSyCqp.js","assets/SlidingMenu-Bj78kJkR.css"])))=>i.map(i=>d[i]);
-import{d as i,j as a,R as g,_ as j,r as o,a as z,b as w,s as y,M as F,m as u,L as $,u as D}from"./index-CztSajze.js";import{u as k,P as C,I as f,a as I,A as N,N as L}from"./invoice.queries-B80zaW6I.js";import{g as T}from"./utilityFunctions-Dz7gQRQ5.js";const S=i.div`
+const __vite__mapDeps=(i,m=__vite__mapDeps,d=(m.f||(m.f=["assets/FilterDropDown-Cb0Pr_7w.js","assets/index-D1B1EIKJ.js","assets/index-BgypsdHM.css","assets/invoice.queries-UruHYCCu.js","assets/ClickOutsideProvider-CoILZRNK.js","assets/NewInvoice-DBFXPMU1.js","assets/editPageStyles-DBqYrXBk.js","assets/SlidingMenu-oLsvNsjq.js","assets/utilityFunctions-uQjSmZ7Z.js","assets/useMutation-2Q1gDOlO.js","assets/create-visual-element-C2cQkUZK.js","assets/SlidingMenu-agoxPcWL.css"])))=>i.map(i=>d[i]);
+import{d as i,j as a,R as g,_ as j,r as o,a as z,b as w,s as y,M as F,m as u,L as $,u as D}from"./index-D1B1EIKJ.js";import{u as k,P as C,I as f,a as I,A as N,N as L}from"./invoice.queries-UruHYCCu.js";import{g as T}from"./utilityFunctions-uQjSmZ7Z.js";const S=i.div`
   display: grid;
   height: 100%;
   grid-template-rows: auto;
@@ -77,15 +77,17 @@ import{d as i,j as a,R as g,_ as j,r as o,a as z,b as w,s as y,M as F,m as u,L a
 
   .largeScreenText {
     display: none;
-    flex-direction: row;
   }
 
   @media (min-width: 300px) {
     justify-self: end;
+    flex-direction: row;
+    flex-wrap: nowrap;
   }
   @media (min-width: 600px) {
     margin-right: 0;
     width: 308px;
+    flex-direction: row;
 
     .largeScreenText {
       display: inline;
@@ -191,7 +193,7 @@ import{d as i,j as a,R as g,_ as j,r as o,a as z,b as w,s as y,M as F,m as u,L a
 
   @media (min-width: 1200px) {
   }
-`,G=a.jsx("svg",{width:"11",height:"11",xmlns:"http://www.w3.org/2000/svg",children:a.jsx("path",{d:"M6.313 10.023v-3.71h3.71v-2.58h-3.71V.023h-2.58v3.71H.023v2.58h3.71v3.71z",fill:"#7C5DFA",fillRule:"nonzero"})});function U({handleClick:e}){return a.jsxs(W,{onClick:e,"data-testid":"newInvoiceButton","aria-label":"Create a new invoice",children:[a.jsx(_,{children:G}),a.jsxs(R,{children:["New ",a.jsx("span",{className:"largeScreenText",children:"Invoice"})]})]})}const q=g.lazy(()=>j(()=>import("./FilterDropDown-LWGldExY.js"),__vite__mapDeps([0,1,2,3,4])));function J({invoiceList:e}){const[l,t]=o.useState(!1),[n,s]=o.useState("total"),r=z(),{setIsNewInvoiceOpen:p,isNewInvoiceOpen:h}=k(),x=()=>{p(!h)},m=()=>{l||t(!0)},c=w(y);o.useEffect(()=>{c.pending&&!c.draft&&!c.paid?s("pending"):!c.pending&&c.draft&&!c.paid?s("draft"):!c.pending&&!c.draft&&c.paid?s("paid"):s("total")},[c]);const b=r<768?"No ":"no ";return a.jsxs(S,{children:[a.jsxs(A,{children:[a.jsx(O,{"data-testid":"invoicesTitle",children:"Invoices"}),a.jsxs(E,{children:[a.jsx("span",{className:"wideScreenText",children:"There are "}),e.length||b," ",a.jsxs("span",{className:"wideScreenText",children:[" ",n," "]}),"invoices"]})]}),a.jsxs(P,{children:[a.jsxs(H,{onClick:m,"data-testid":"filterButton","aria-label":"Filter invoices by status",style:{pointerEvents:l?"none":"auto"},children:[a.jsxs(B,{children:["Filter ",a.jsx("span",{className:"wideScreenText",children:"by status"})]}),a.jsx(o.Suspense,{fallback:a.jsx("div",{children:"Loading..."}),children:a.jsx(q,{icon:V,isOpen:l,setIsFilterOpen:t,options:["Draft","Pending","Paid"]})})]}),a.jsx(U,{handleClick:x})]})]})}const Q=g.memo(J),K=i(F)`
+`,G=a.jsx("svg",{width:"11",height:"11",xmlns:"http://www.w3.org/2000/svg",children:a.jsx("path",{d:"M6.313 10.023v-3.71h3.71v-2.58h-3.71V.023h-2.58v3.71H.023v2.58h3.71v3.71z",fill:"#7C5DFA",fillRule:"nonzero"})});function U({handleClick:e}){return a.jsxs(W,{onClick:e,"data-testid":"newInvoiceButton","aria-label":"Create a new invoice",children:[a.jsx(_,{children:G}),a.jsxs(R,{children:["New ",a.jsx("span",{className:"largeScreenText",children:"Invoice"})]})]})}const q=g.lazy(()=>j(()=>import("./FilterDropDown-Cb0Pr_7w.js"),__vite__mapDeps([0,1,2,3,4])));function J({invoiceList:e}){const[l,t]=o.useState(!1),[n,s]=o.useState("total"),r=z(),{setIsNewInvoiceOpen:p,isNewInvoiceOpen:h}=k(),x=()=>{p(!h)},m=()=>{l||t(!0)},c=w(y);o.useEffect(()=>{c.pending&&!c.draft&&!c.paid?s("pending"):!c.pending&&c.draft&&!c.paid?s("draft"):!c.pending&&!c.draft&&c.paid?s("paid"):s("total")},[c]);const b=r<768?"No ":"no ";return a.jsxs(S,{children:[a.jsxs(A,{children:[a.jsx(O,{"data-testid":"invoicesTitle",children:"Invoices"}),a.jsxs(E,{children:[a.jsx("span",{className:"wideScreenText",children:"There are "}),e.length||b," ",a.jsxs("span",{className:"wideScreenText",children:[" ",n," "]}),"invoices"]})]}),a.jsxs(P,{children:[a.jsxs(H,{onClick:m,"data-testid":"filterButton","aria-label":"Filter invoices by status",style:{pointerEvents:l?"none":"auto"},children:[a.jsxs(B,{children:["Filter ",a.jsx("span",{className:"wideScreenText",children:"by status"})]}),a.jsx(o.Suspense,{fallback:a.jsx("div",{children:"Loading..."}),children:a.jsx(q,{icon:V,isOpen:l,setIsFilterOpen:t,options:["Draft","Pending","Paid"]})})]}),a.jsx(U,{handleClick:x})]})]})}const Q=g.memo(J),K=i(F)`
   display: flex;
   flex-direction: column;
   width: 100%;
@@ -464,7 +466,7 @@ to {
     padding-right: 48px;
     padding-left: 48px;
   }
-`,v1=g.lazy(()=>j(()=>import("./NewInvoice-DNSj4Sgi.js"),__vite__mapDeps([5,1,2,3,6,7,8,9,10,11]))),M1=i.h1`
+`,v1=g.lazy(()=>j(()=>import("./NewInvoice-DBFXPMU1.js"),__vite__mapDeps([5,1,2,3,6,7,8,9,10,11]))),M1=i.h1`
   font-size: x-large;
   margin: 8px;
   padding: 0;
