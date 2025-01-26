@@ -43,7 +43,6 @@ test("should select the chosen date in the date picker", async ({ page }) => {
 
   const previousMonthButton = page.getByLabel("Previous Month");
 
-  // todo -fix these selectors
   const monthYearDisplay = page.locator(".react-datepicker__current-month"); // Adjust the selector accordingly
   const specificDate = page.getByLabel("Choose Tuesday, December 10th,"); // Adjust as needed
 
@@ -83,14 +82,6 @@ test("should select the chosen date in the date picker", async ({ page }) => {
   }
 
   await specificDate.click();
-  // await page.getByLabel("Choose Tuesday, December 10th,").click();
-
-  // Check if the date picker is closed
-  // 12/10/2024
-  // const dateInputField = await page.getByRole("textbox", {
-  //   name: "Invoice date",
-  // });
-  // expect(await dateInputField).toHaveValue("12/10/2024");
   await expect(await datePicker).toHaveValue("12/10/2024");
 });
 
