@@ -57,7 +57,6 @@ export const DateInput = styled.input<DateInputProps>`
   background-color: transparent;
   outline: none;
   border: none;
-  touch-action: none;
   cursor: pointer;
   width: auto;
   flex-shrink: 1;

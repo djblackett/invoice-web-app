@@ -8,6 +8,7 @@ export const FormEntryContainer = styled.div`
   align-items: flex-start;
   font-style: ${({ theme }) => theme.font};
   width: 100%;
+  z-index: 12;
 `;
 
 type LongFormEntryProps = {

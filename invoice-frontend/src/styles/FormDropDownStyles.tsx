@@ -4,7 +4,7 @@ export const Main = styled.div.attrs({
   tabIndex: 0,
 })`
   display: inline;
-  z-index: 10;
+  z-index: 50;
   position: relative;
   box-sizing: border-box;
   background-color: ${({ theme }) => theme.inputBackgroundColor};

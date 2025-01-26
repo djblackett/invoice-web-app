@@ -183,9 +183,9 @@ export const DateAndPaymentContainer = styled.div`
   .react-datepicker__header {
     background-color: ${({ theme }) => theme.background};
     color: ${({ theme }) => theme.dateText};
-    border: none;
-    padding-top: 1.5rem;
-    padding-bottom: 1.5rem;
+    /* border: none; */
+    /* padding-top: 1rem;
+    padding-bottom: 1rem; */
   }
 
   .react-datepicker__day,
@@ -205,17 +205,38 @@ export const DateAndPaymentContainer = styled.div`
   .react-datepicker {
     background-color: ${({ theme }) => theme.background};
     color: ${({ theme }) => theme.dateText};
-    border: none;
+    /* border: none; */
     box-shadow: ${({ theme }) => theme.filterShadow};
     transition: all 250ms ease-in-out;
+    z-index: 2000;
   }
 
   .react-datepicker__month-year-dropdown {
     background-color: ${({ theme }) => theme.background};
     color: ${({ theme }) => theme.dateText};
-    border: none;
+    /* border: none; */
   }
 
+  .react-datepicker__navigation {
+    /* align-items: flex-start; */
+    /* transform: translateY(3px);
+    font-size: 24px; */
+    /* scale: 2; */
+  }
+
+  .react-datepicker__input-container {
+    width: inherit;
+  }
+
+  .react-datepicker-wrapper {
+    width: 100%;
+  }
+
+  .react-datepicker__navigation-icon {
+    /* height: 24px;
+    width: 24px; */
+    /* font-size: 24px; */
+  }
   .react-datepicker__day--selected {
     color: #7c5dfa;
     background-color: transparent;
@@ -246,5 +267,16 @@ export const DateAndPaymentContainer = styled.div`
 
   .react-datepicker__day--keyboard-selected {
     background-color: rgba(124, 93, 250, 0.5);
+  }
+
+  .react-datepicker-popper {
+    /* max-width: 240px;
+    max-height: 270px; */
+    z-index: 2000;
+  }
+  .react-datepicker {
+    /* max-width: 240px;
+    max-height: 270px; */
+    box-sizing: border-box;
   }
 `;

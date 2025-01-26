@@ -1,4 +1,4 @@
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import DatePicker from "react-datepicker";
 import PaymentTermsDropdown from "./FormDropDown";
 import FormEntry from "./FormEntry";
@@ -33,33 +33,19 @@ export const dateIcon = (
 function DateAndPayment({ invoice }: DateAndPaymentProps) {
   const { startDate, setStartDate } = useNewInvoiceContext();
   // const [startDate, setStartDate] = useState(new Date());
-  // console.log("startDate", startDate);
-  // console.log("invoice", invoice);
 
-  const handleChange = (date: Date) => {
-    setStartDate(date);
-  };
-
-  const handleChangeRaw = (value: unknown) => {
-    if (value instanceof Date) {
-      setStartDate(value);
+  const handleChange = (date: Date | null) => {
+    if (date) {
+      setStartDate(date);
     }
   };
+
+  // Optional: Initialize date from invoice if needed
 
   useEffect(() => {
     if (invoice) {
       const date = convertStringToDate(invoice.createdAt);
-      // date.setUTCDate()
-      const adjustedDate = new Date(
-        date.getTime() + date.getTimezoneOffset() * 60000,
-      );
-      console.log("adjustedDate", adjustedDate);
-      // setStartDate(adjustedDate);
       setStartDate(date);
-      // new Date(val.getTime() - val.getTimezoneOffset() * 60000)
-      console.log("startDate", startDate);
-      console.log("createdAt", invoice?.createdAt);
-      console.log("convertedDate", convertStringToDate(invoice?.createdAt));
     }
   }, [invoice]);
 
@@ -68,17 +54,16 @@ function DateAndPayment({ invoice }: DateAndPaymentProps) {
       <FormEntry isLongOnMobile className="invoice-date">
         <Label htmlFor="invoiceDate">Invoice Date</Label>
         <DatePicker
+          popperProps={{ strategy: "fixed" }}
           fixedHeight={true}
           customInput={<CustomInputWrapper />}
           selected={startDate}
           onChange={handleChange}
-          onChangeRaw={(event) => handleChangeRaw(event.target.value)}
         />
       </FormEntry>
 
       <FormEntry isLongOnMobile className="payment-terms">
         <Label htmlFor="paymentTerms">Payment Terms</Label>
-
         <PaymentTermsDropdown invoice={invoice} />
       </FormEntry>
     </DateAndPaymentContainer>

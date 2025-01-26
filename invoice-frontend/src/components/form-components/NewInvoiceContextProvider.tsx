@@ -49,7 +49,7 @@ const NewInvoiceProvider: FC<NewInvoiceProviderProps> = ({
 }) => {
   const {
     isDraft = false,
-    startDate = null,
+    startDate = new Date(),
     items = [],
     selectedPaymentOption = 1,
     isNewInvoiceOpen = false,
