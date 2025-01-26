@@ -10,7 +10,7 @@ import { SyntheticEvent, useRef } from "react";
 const ButtonsContainer = styled.div`
   display: flex;
   flex-direction: row;
-  justify-content: space-evenly;
+  justify-content: space-between;
   align-items: center;
   height: 91px;
   width: 100%;
@@ -20,6 +20,7 @@ const ButtonsContainer = styled.div`
   right: 0;
   background-color: ${({ theme }) => theme.background};
   margin-top: 3.5rem;
+
   order: 2;
 
   @media (min-width: 325px) {

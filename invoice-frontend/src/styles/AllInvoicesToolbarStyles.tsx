@@ -86,15 +86,17 @@ export const ControlBox = styled.div`
 
   .largeScreenText {
     display: none;
-    flex-direction: row;
   }
 
   @media (min-width: 300px) {
     justify-self: end;
+    flex-direction: row;
+    flex-wrap: nowrap;
   }
   @media (min-width: 600px) {
     margin-right: 0;
     width: 308px;
+    flex-direction: row;
 
     .largeScreenText {
       display: inline;

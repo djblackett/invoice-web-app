@@ -22,7 +22,7 @@ export default function NewInvoiceForm() {
 
   return (
     <FormProvider {...methods}>
-      <form>
+      <form style={{ zIndex: 1 }}>
         <BillText>Bill From</BillText>
         <CompanyFormInfo />
         <BillText>Bill To</BillText>

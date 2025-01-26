@@ -9,21 +9,25 @@ import { MutableRefObject } from "react";
 const Button = styled.button`
   background-color: ${({ theme }) => theme.newButton};
   border-radius: 24px;
-  padding: 16px 24px 17px 24px;
+  padding: 16px 19px 17px 19px;
   color: white;
   border: none;
   cursor: pointer;
   font-weight: 700;
   font-size: 12px;
   line-height: 15px;
-  margin: 0.25rem;
-  /* identical to box height, or 125% */
-
   letter-spacing: -0.25px;
   white-space: nowrap;
+  scale: 0.85;
 
   &:hover {
     background-color: ${({ theme }) => theme.newButtonHover};
+  }
+
+  @media (min-width: 300px) {
+    padding: 16px 24px 17px 24px;
+    scale: 1;
+    margin: 0.25rem;
   }
 `;
 
