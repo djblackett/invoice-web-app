@@ -64,9 +64,9 @@ export const createServer = async () => {
         },
         NODE_ENV === "production"
           ? ApolloServerPluginLandingPageProductionDefault({
-            graphRef: "my-graph-id@my-graph-variant",
-            footer: false,
-          })
+              graphRef: "my-graph-id@my-graph-variant",
+              footer: false,
+            })
           : ApolloServerPluginLandingPageLocalDefault({ footer: false }),
       ],
     });
@@ -81,7 +81,6 @@ export const createServer = async () => {
     );
 
     return [app, httpServer];
-    
   } catch (error) {
     console.error("Server startup error:", error);
     process.exit(1);

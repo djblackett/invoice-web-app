@@ -37,6 +37,7 @@ services:
       - REQUEST_ORIGIN=https://localhost
       - SECRET=theSecretStuff
       - DATABASE_URL=postgres://postgres:example@db-dev:5432/db-dev?schema=public&connect_timout=300
+      - CERT_DIR="./certs"
     networks:
       - my_network_dev
     volumes:
