@@ -54,7 +54,6 @@ test("should select the chosen date in the date picker", async ({ page }) => {
   await expect(await datePicker).toHaveValue("01/30/2025");
 
   await datePicker.click();
-  
 
   await page.getByRole("button", { name: "Cancel" }).click();
   await page.getByRole("button", { name: "Delete" }).click();
