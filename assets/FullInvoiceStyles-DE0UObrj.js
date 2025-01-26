@@ -1,4 +1,4 @@
-import{d as i}from"./index-D1B1EIKJ.js";const o=i.div`
+import{d as i}from"./index-vYH8fMO_.js";const o=i.div`
   width: 100%;
   max-width: 100%;
   background-color: ${({theme:t})=>t.background};

@@ -1,4 +1,4 @@
-import{d as e,X as r}from"./index-D1B1EIKJ.js";const a=e.h1`
+import{d as e,X as r}from"./index-vYH8fMO_.js";const a=e.h1`
   font-size: 1.5rem;
   color: ${({theme:t})=>t.text};
 `,n=e.div`
@@ -77,14 +77,14 @@ import{d as e,X as r}from"./index-D1B1EIKJ.js";const a=e.h1`
   ${t=>t.$long&&r`
       width: 100%;
     `}
-`,p=e(o)`
+`,c=e(o)`
   width: 100%;
   $long: false;
 
   @media (min-width: 768px) {
     width: 100%;
   }
-`,c=e(o)`
+`,p=e(o)`
   width: 100%;
 
   @media (min-width: 768px) {
@@ -155,8 +155,8 @@ import{d as e,X as r}from"./index-D1B1EIKJ.js";const a=e.h1`
     background-color: ${({theme:t})=>t.background};
     color: ${({theme:t})=>t.dateText};
     /* border: none; */
-    /* padding-top: 1rem;
-    padding-bottom: 1rem; */
+    padding-top: 1rem;
+    padding-bottom: 1rem;
   }
 
   .react-datepicker__day,
@@ -167,16 +167,17 @@ import{d as e,X as r}from"./index-D1B1EIKJ.js";const a=e.h1`
   }
 
   .react-datepicker__day {
+    color: ${({theme:t})=>t.dateText};
+
     &:hover {
-      background: #7c5dfa;
-      color: white;
+      background: #7c5dfa !important;
     }
   }
 
   .react-datepicker {
     background-color: ${({theme:t})=>t.background};
     color: ${({theme:t})=>t.dateText};
-    /* border: none; */
+    border: none;
     box-shadow: ${({theme:t})=>t.filterShadow};
     transition: all 250ms ease-in-out;
     z-index: 2000;
@@ -189,10 +190,7 @@ import{d as e,X as r}from"./index-D1B1EIKJ.js";const a=e.h1`
   }
 
   .react-datepicker__navigation {
-    /* align-items: flex-start; */
-    /* transform: translateY(3px);
-    font-size: 24px; */
-    /* scale: 2; */
+    padding-top: 1rem;
   }
 
   .react-datepicker__input-container {
@@ -209,9 +207,10 @@ import{d as e,X as r}from"./index-D1B1EIKJ.js";const a=e.h1`
     /* font-size: 24px; */
   }
   .react-datepicker__day--selected {
-    color: #7c5dfa;
-    background-color: transparent;
+    /* color: #7c5dfa; */
+    /* background-color: transparent; */
     font-weight: bold;
+    background-color: #7c5dfa;
   }
 
   .react-datepicker__day-names {
@@ -250,4 +249,4 @@ import{d as e,X as r}from"./index-D1B1EIKJ.js";const a=e.h1`
     max-height: 270px; */
     box-sizing: border-box;
   }
-`;export{c as A,d as B,l as C,m as D,a as E,n as F,o as I,s as L,p as S,x as a,g as b,h as c,f as d};
+`;export{p as A,d as B,l as C,m as D,a as E,n as F,o as I,s as L,c as S,x as a,g as b,h as c,f as d};
