@@ -108,6 +108,7 @@ export default function ClientFormInfo({ invoice }: ClientFormInfoProps) {
           Street Address
         </Label>
         <StreetAddressInput
+          className="client-street-address"
           style={{
             border: errors.clientStreetAddress ? "1px solid #EC5757" : "",
           }}

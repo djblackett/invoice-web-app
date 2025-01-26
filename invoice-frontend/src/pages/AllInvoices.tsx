@@ -10,6 +10,7 @@ import { Suspense, useEffect, useState } from "react";
 import React from "react";
 
 const NewInvoice = React.lazy(() => import("./NewInvoice"));
+
 const FadeOutText = styled.h1`
   font-size: x-large;
   margin: 8px;
@@ -69,7 +70,7 @@ function AllInvoices() {
               invoiceList={invoiceList}
               data-testid="invoices-toolbar"
             />
-            <Suspense fallback={<div>Loading...</div>}>
+            <Suspense>
               <NewInvoice />
             </Suspense>
           </NewInvoiceProvider>

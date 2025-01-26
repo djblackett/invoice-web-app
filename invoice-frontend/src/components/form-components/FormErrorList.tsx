@@ -19,15 +19,17 @@ function FormErrorList({ isEditOpen }: FormErrorListProps) {
     <ErrorList>
       <ErrorText
         style={{
-          display:
-            (isFieldErrors() || errors.items) && isEditOpen ? "block" : "none",
+          visibility:
+            (isFieldErrors() || errors.items) && isEditOpen
+              ? "visible"
+              : "hidden",
         }}
       >
         - All fields must be added
       </ErrorText>
       <ErrorText
         style={{
-          display: errors.myFieldArray && isEditOpen ? "block" : "none",
+          visibility: errors.myFieldArray && isEditOpen ? "visible" : "hidden",
         }}
       >
         - An item must be added
