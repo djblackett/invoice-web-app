@@ -3,7 +3,6 @@
 
 generator client {
   provider = "prisma-client-js"
-   previewFeatures = ["omitApi"]
    binaryTargets = ["native", "linux-musl-openssl-3.0.x", "debian-openssl-3.0.x", "debian-openssl-1.1.x"]
 }
 
@@ -14,6 +13,8 @@ datasource db {
 
 model Invoice {
   id              String         @id @default(uuid())
+  createdBy       User           @relation(fields: [createdById], references: [id])
+  createdById     Int           
   createdAt       String
   paymentDue      String
   description     String
@@ -27,6 +28,8 @@ model Invoice {
   senderAddress   SenderAddress? @relation(fields: [senderAddressId], references: [id], onDelete: Cascade)
   senderAddressId Int?           @unique
   clientAddressId Int?           @unique
+
+  @@index([createdById])
 }
 
 model Item {
@@ -37,6 +40,8 @@ model Item {
   total     Decimal
   Invoice   Invoice @relation(fields: [invoiceId], references: [id], onDelete: Cascade)
   invoiceId String
+
+  @@index([invoiceId])
 }
 
 model ClientAddress {
@@ -59,7 +64,15 @@ model SenderAddress {
 
 model User {
   id           Int    @id @default(autoincrement())
+  invoices     Invoice[]
   name         String
   username     String @unique
   passwordHash String
+  role         Role   @default(USER)
+}
+
+
+enum Role {
+  USER
+  ADMIN
 }

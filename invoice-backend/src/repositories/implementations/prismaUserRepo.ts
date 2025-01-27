@@ -63,6 +63,7 @@ export class PrismaUserRepo implements IUserRepo {
           name: userArgs.name,
           username: userArgs.username,
           passwordHash: userArgs.passwordHash,
+          role: "USER",
         },
       });
     } catch (e: any) {

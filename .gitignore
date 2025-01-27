@@ -110,3 +110,4 @@ invoice-frontend/bundle-visualization.html
 mappings
 invoice-frontend/__files
 invoice-frontend/.env.production
+invoice-backend/.env
