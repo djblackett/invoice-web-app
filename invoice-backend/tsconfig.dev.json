@@ -1,10 +1,8 @@
 {
   "extends": "./tsconfig.json",
-  "exclude": [
-    "node_modules",
-  ],
+  "exclude": ["node_modules"],
   "compilerOptions": {
-    "noEmit": false,
+    "noEmit": false
   },
-  "types":   []
+  "types": []
 }

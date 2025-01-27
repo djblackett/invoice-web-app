@@ -1,27 +1,37 @@
+import globals from "globals";
 import pluginJs from "@eslint/js";
 import tseslint from "typescript-eslint";
+import eslintPluginPrettierRecommended from "eslint-plugin-prettier/recommended";
 
 /** @type {import('eslint').Linter.Config[]} */
 export default [
-  { files: ["**/*.{js,mjs,cjs,ts}"] },
   {
     ignores: [
+      "dist",
       "build",
       "node_modules",
-      "prisma",
-      ".env",
-      "*.json",
-      "*.yml",
-      "src/mocks",
-      "src/generated",
+      "test-examples/*",
+      "**/.cache/ms-playwright",
     ],
   },
-  { languageOptions: {} },
+  { files: ["**/*.{js,mjs,cjs,ts,jsx,tsx}"] },
+  {
+    languageOptions: {
+      globals: globals.node,
+      parser: "@typescript-eslint/parser", // Specify TypeScript parser
+      parserOptions: {
+        ecmaVersion: "latest",
+        sourceType: "commonjs",
+        project: "./tsconfig.json", // Path to your tsconfig.json
+      },
+    },
+  },
   pluginJs.configs.recommended,
   ...tseslint.configs.recommended,
+  eslintPluginPrettierRecommended,
   {
     rules: {
-      indent: ["warn", 2],
+      // indent: ["warn", 2],
       "linebreak-style": ["warn", "unix"],
       quotes: ["warn", "double"],
       semi: ["warn", "always"],
