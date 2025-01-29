@@ -1,4 +1,4 @@
-import { Invoice } from "../constants/types";
+import { Invoice, UserIdAndRole } from "../constants/types";
 import { validateInvoiceData, validateInvoiceList } from "../utils/utils";
 import { inject, injectable } from "inversify";
 import { IInvoiceRepo } from "../repositories/InvoiceRepo";
@@ -14,11 +14,29 @@ export class InvoiceService {
   constructor(
     @inject(TYPES.IInvoiceRepo)
     private readonly invoiceRepo: IInvoiceRepo,
+    @inject(TYPES.UserContext)
+    private readonly userContext: UserIdAndRole,
   ) {}
 
   getInvoices = async (): Promise<Invoice[]> => {
+    console.log(this.userContext);
+    if (!this.userContext) {
+      throw new ValidationException("Unauthorized");
+    }
+
+    const { role, id } = this.userContext;
+
+    if (!id) {
+      throw new ValidationException("Unauthorized");
+    }
+
+    if (role !== "ADMIN") {
+      this.invoiceRepo.findByUserId(id);
+    }
     try {
       const result = await this.invoiceRepo.findAll();
+      console.log(result);
+      // return result as Invoice[];
       return validateInvoiceList(result);
     } catch (e) {
       console.error(e);
@@ -26,28 +44,83 @@ export class InvoiceService {
     }
   };
 
-  getInvoiceById = async (id: string) => {
+  getInvoicesByUserId = async () => {
+    if (!this.userContext) {
+      throw new ValidationException("Unauthorized");
+    }
+    const { role, id } = this.userContext;
+
+    if (!id) {
+      throw new ValidationException("Unauthorized");
+    }
     try {
-      const result = await this.invoiceRepo.findById(id);
-      if (!result) {
-        throw new NotFoundException("Invoice not found");
-      }
-      return result;
+      const result = await this.invoiceRepo.findByUserId(id);
+      return validateInvoiceList(result);
     } catch (e) {
       console.error(e);
-      if (e instanceof ValidationException) {
-        throw e;
-      }
-      if (e instanceof NotFoundException) {
-        throw e;
-      }
       throw new InternalServerException("Internal server error");
     }
   };
 
+  getInvoiceById = async (invoiceId: string) => {
+    if (!this.userContext) {
+      throw new ValidationException("Unauthorized");
+    }
+    const { role, id } = this.userContext;
+
+    if (!id || !role) {
+      throw new ValidationException("Unauthorized");
+    }
+
+    if (role === "ADMIN") {
+      try {
+        const result = await this.invoiceRepo.findById(invoiceId);
+        if (!result) {
+          throw new NotFoundException("Invoice not found");
+        }
+        return result;
+      } catch (e) {
+        console.error(e);
+        if (e instanceof ValidationException) {
+          throw e;
+        }
+        if (e instanceof NotFoundException) {
+          throw e;
+        }
+        throw new InternalServerException("Internal server error");
+      }
+    } else {
+      try {
+        const result = await this.invoiceRepo.findByUserIdAndInvoiceId(
+          id,
+          invoiceId,
+        );
+        if (!result) {
+          throw new NotFoundException("Invoice not found");
+        }
+        return result;
+      } catch (e) {
+        console.error(e);
+        if (e instanceof ValidationException) {
+          throw e;
+        }
+        if (e instanceof NotFoundException) {
+          throw e;
+        }
+        throw new InternalServerException("Internal server error");
+      }
+    }
+  };
+
   addInvoice = async (invoice: Invoice) => {
+    if (!this.userContext) {
+      throw new ValidationException("Unauthorized");
+    }
+
     try {
-      return validateInvoiceData(await this.invoiceRepo.create(invoice));
+      return validateInvoiceData(
+        await this.invoiceRepo.create(invoice, this.userContext.id),
+      );
     } catch (e) {
       console.error(e);
       if (e instanceof ValidationException) {

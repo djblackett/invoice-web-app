@@ -1,7 +1,12 @@
 import { inject, injectable } from "inversify";
 import { IUserRepo } from "../userRepo";
 import { DatabaseConnection } from "../../database/prisma.database.connection";
-import { UserEntity, ReturnedUser, UserDTO } from "../../constants/types";
+import {
+  UserEntity,
+  ReturnedUser,
+  UserDTO,
+  UserIdAndRole,
+} from "../../constants/types";
 import { PrismaClientKnownRequestError } from "@prisma/client/runtime/library";
 
 @injectable()
@@ -29,23 +34,32 @@ export class PrismaUserRepo implements IUserRepo {
     }
   }
 
-  async findAllUsers() {
+  async findAllUsers(): Promise<ReturnedUser[]> {
     try {
-      return await this.prisma.user.findMany();
+      const users = await this.prisma.user.findMany();
+      return users.map((user) => ({
+        ...user,
+        name: user.name ?? undefined,
+      }));
     } catch (error: any) {
       console.error(error);
       throw new Error("Database error");
     }
   }
 
-  async findUserById(id: number): Promise<UserDTO> {
+  async findUserById(id: string): Promise<UserDTO | null> {
     try {
       const user = await this.prisma.user.findUniqueOrThrow({
+        select: {
+          id: true,
+          name: true,
+          username: true,
+        },
         where: {
           id,
         },
       });
-      return user;
+      return { ...user, name: user.name ?? "" };
     } catch (e: any) {
       console.error(e);
       if (e instanceof PrismaClientKnownRequestError && e.code === "P2025") {
@@ -56,16 +70,37 @@ export class PrismaUserRepo implements IUserRepo {
     }
   }
 
-  async createUser(userArgs: UserEntity): Promise<ReturnedUser> {
+  async getUserSafely(id: string): Promise<UserIdAndRole | null> {
     try {
-      return this.prisma.user.create({
+      const user = await this.prisma.user.findUnique({
+        select: {
+          id: true,
+          name: true,
+          username: true,
+          role: true,
+        },
+        where: {
+          id,
+        },
+      });
+      return user ? { ...user, name: user.name ?? "" } : null;
+    } catch (e: any) {
+      console.error(e);
+      throw new Error("Failed to fetch user");
+    }
+  }
+
+  async createUser(userArgs: UserEntity): Promise<UserDTO> {
+    try {
+      const user = await this.prisma.user.create({
         data: {
-          name: userArgs.name,
+          name: userArgs.name ?? "",
           username: userArgs.username,
           passwordHash: userArgs.passwordHash,
           role: "USER",
         },
       });
+      return { ...user, name: user.name ?? "" };
     } catch (e: any) {
       if (e instanceof PrismaClientKnownRequestError && e.code === "P2002") {
         throw new Error("Unique constraint failed on the fields: (`username`)");
@@ -73,6 +108,35 @@ export class PrismaUserRepo implements IUserRepo {
       throw new Error("Database error");
     }
   }
+
+  createUserWithAuth0 = async (args: UserIdAndRole): Promise<UserIdAndRole> => {
+    try {
+      return this.prisma.user
+        .create({
+          select: {
+            id: true,
+            role: true,
+            username: true,
+            name: true,
+          },
+          data: {
+            id: args.id,
+            role: args.role,
+            username: args.username ?? "",
+            name: args.name ?? "",
+          },
+        })
+        .then((user) => ({
+          ...user,
+          name: user.name ?? "",
+        }));
+    } catch (e: any) {
+      if (e instanceof PrismaClientKnownRequestError && e.code === "P2002") {
+        throw new Error("Unique constraint failed on the fields: (`username`)");
+      }
+      throw new Error("Database error");
+    }
+  };
 
   findUserByUsername = async (username: string): Promise<UserEntity | null> => {
     try {
@@ -85,10 +149,17 @@ export class PrismaUserRepo implements IUserRepo {
         },
         where: {
           username,
+          passwordHash: {
+            not: null,
+          },
         },
       });
 
-      return result;
+      return {
+        ...result,
+        passwordHash: result.passwordHash!,
+        name: result.name ?? undefined,
+      };
     } catch (e: any) {
       console.error(e);
 

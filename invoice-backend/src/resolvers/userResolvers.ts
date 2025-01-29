@@ -21,7 +21,7 @@ export function getUserResolvers(userService: UserService) {
           });
         }
       },
-      getUserById: async (_root: unknown, args: { id: number }) => {
+      getUserById: async (_root: unknown, args: { id: string }) => {
         try {
           const user = await userService.getUser(args.id);
           return user;

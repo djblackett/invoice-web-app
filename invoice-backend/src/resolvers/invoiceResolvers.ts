@@ -1,30 +1,48 @@
 import { GraphQLError } from "graphql/error/GraphQLError";
-import { InvoiceService } from "../services/invoice.service";
 import {
   GetInvoiceByIdArgs,
+  InjectedQueryContext,
   Invoice,
   InvoiceCreateArgs,
   MarkAsPaidArgs,
-  QueryContext,
 } from "../constants/types";
-import { PubSub } from "graphql-subscriptions";
 import { NotFoundException } from "../config/exception.config";
 
-export function getInvoiceResolvers(
-  invoiceService: InvoiceService,
-  pubsub: PubSub,
-) {
+export function getInvoiceResolvers() {
   return {
     Query: {
       allInvoices: async (
         _root: never,
         _parent: never,
-        context: QueryContext,
+        context: InjectedQueryContext,
       ) => {
         try {
-          console.log("Context:", context);
-          console.log("Context:", JSON.stringify(context));
-          const result = await invoiceService.getInvoices();
+          const { user, invoiceService } = context;
+
+          if (!user) {
+            throw new GraphQLError("Unauthorized", {
+              extensions: {
+                code: "UNAUTHORIZED",
+              },
+            });
+          }
+
+          if (!invoiceService) {
+            console.error("Invoice service not found in context");
+            throw new GraphQLError("Internal server error", {
+              extensions: {
+                code: "INTERNAL_SERVER_ERROR",
+              },
+            });
+          }
+
+          let result;
+          if (user.role === "ADMIN") {
+            result = await invoiceService.getInvoices();
+          } else {
+            result = await invoiceService.getInvoicesByUserId();
+          }
+
           return result;
         } catch (error) {
           console.error(error);
@@ -35,7 +53,19 @@ export function getInvoiceResolvers(
           });
         }
       },
-      getInvoiceById: async (_root: never, args: GetInvoiceByIdArgs) => {
+      getInvoiceById: async (
+        _root: never,
+        args: GetInvoiceByIdArgs,
+        context: InjectedQueryContext,
+      ) => {
+        const { user, invoiceService } = context;
+        if (!invoiceService) {
+          throw new GraphQLError("Internal server error", {
+            extensions: {
+              code: "INTERNAL_SERVER_ERROR",
+            },
+          });
+        }
         try {
           const result = await invoiceService.getInvoiceById(args.id);
           return result;
@@ -57,7 +87,19 @@ export function getInvoiceResolvers(
       },
     },
     Mutation: {
-      addInvoice: async (_root: never, args: InvoiceCreateArgs) => {
+      addInvoice: async (
+        _root: never,
+        args: InvoiceCreateArgs,
+        context: InjectedQueryContext,
+      ) => {
+        const { user, invoiceService, pubsub } = context;
+        if (!invoiceService || !pubsub) {
+          throw new GraphQLError("Internal server error", {
+            extensions: {
+              code: "INTERNAL_SERVER_ERROR",
+            },
+          });
+        }
         try {
           const newInvoice = await invoiceService.addInvoice(args);
           await pubsub.publish("INVOICE_ADDED", { invoiceAdded: newInvoice });
@@ -71,7 +113,19 @@ export function getInvoiceResolvers(
           });
         }
       },
-      editInvoice: async (_parent: unknown, args: Partial<Invoice>) => {
+      editInvoice: async (
+        _parent: unknown,
+        args: Partial<Invoice>,
+        context: InjectedQueryContext,
+      ) => {
+        const { user, invoiceService } = context;
+        if (!invoiceService) {
+          throw new GraphQLError("Internal server error", {
+            extensions: {
+              code: "INTERNAL_SERVER_ERROR",
+            },
+          });
+        }
         if (!args.id) {
           throw new GraphQLError("Invoice id is required", {
             extensions: {
@@ -96,7 +150,19 @@ export function getInvoiceResolvers(
         }
       },
 
-      removeInvoice: async (_root: never, args: GetInvoiceByIdArgs) => {
+      removeInvoice: async (
+        _root: never,
+        args: GetInvoiceByIdArgs,
+        context: InjectedQueryContext,
+      ) => {
+        const { user, invoiceService } = context;
+        if (!invoiceService) {
+          throw new GraphQLError("Internal server error", {
+            extensions: {
+              code: "INTERNAL_SERVER_ERROR",
+            },
+          });
+        }
         try {
           const result = await invoiceService.deleteInvoice(args.id);
           return result;
@@ -118,7 +184,19 @@ export function getInvoiceResolvers(
           }
         }
       },
-      deleteAllInvoices: async () => {
+      deleteAllInvoices: async (
+        _root: never,
+        _args: GetInvoiceByIdArgs,
+        context: InjectedQueryContext,
+      ) => {
+        const { user, invoiceService } = context;
+        if (!invoiceService) {
+          throw new GraphQLError("Internal server error", {
+            extensions: {
+              code: "INTERNAL_SERVER_ERROR",
+            },
+          });
+        }
         try {
           const result = await invoiceService.deleteAllInvoices();
           if (result) {
@@ -135,7 +213,19 @@ export function getInvoiceResolvers(
           });
         }
       },
-      markAsPaid: async (_root: unknown, args: MarkAsPaidArgs) => {
+      markAsPaid: async (
+        _root: unknown,
+        args: MarkAsPaidArgs,
+        context: InjectedQueryContext,
+      ) => {
+        const { user, invoiceService } = context;
+        if (!invoiceService) {
+          throw new GraphQLError("Internal server error", {
+            extensions: {
+              code: "INTERNAL_SERVER_ERROR",
+            },
+          });
+        }
         try {
           const result = await invoiceService.markAsPaid(args.id);
           return result;
@@ -159,7 +249,19 @@ export function getInvoiceResolvers(
     },
     Subscription: {
       invoiceAdded: {
-        subscribe: async () => {
+        subscribe: async (
+          _root: any,
+          _args: any,
+          context: InjectedQueryContext,
+        ) => {
+          const { pubsub } = context;
+          if (!pubsub) {
+            throw new GraphQLError("Internal server error", {
+              extensions: {
+                code: "INTERNAL_SERVER_ERROR",
+              },
+            });
+          }
           try {
             return pubsub.asyncIterator("INVOICE_ADDED");
           } catch (error) {
