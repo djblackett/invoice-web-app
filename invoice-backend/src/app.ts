@@ -1,12 +1,10 @@
 import "reflect-metadata";
-import { InversifyExpressServer } from "inversify-express-utils";
 import container from "./config/inversify.config";
 import {
   NODE_ENV,
   serverConfig,
   serverErrorConfig,
 } from "./config/server.config";
-import "./controllers/invoice.controller";
 import { Request, Response } from "express";
 import { DatabaseConnection } from "./database/prisma.database.connection";
 import rateLimit from "express-rate-limit";

@@ -53,6 +53,7 @@ export function getInvoiceResolvers() {
           });
         }
       },
+
       getInvoiceById: async (
         _root: never,
         args: GetInvoiceByIdArgs,

@@ -239,6 +239,8 @@ describe("Integration Tests", () => {
 
     expect(response.errors).toBeDefined();
     expect(response.errors![0].message).toContain(
+      // This override is intentional
+      // eslint-disable-next-line quotes
       'Variable "$username" of required type "String!" was not provided.',
     );
   });
