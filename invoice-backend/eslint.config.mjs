@@ -7,25 +7,21 @@ import eslintPluginPrettierRecommended from "eslint-plugin-prettier/recommended"
 export default [
   {
     ignores: [
-      "dist",
       "build",
       "node_modules",
-      "test-examples/*",
-      "**/.cache/ms-playwright",
+      "prisma",
+      ".env",
+      "*.json",
+      "*.yml",
+      "src/mocks",
+      "src/generated",
+      "dist",
     ],
   },
   { files: ["**/*.{js,mjs,cjs,ts,jsx,tsx}"] },
-  {
-    languageOptions: {
-      globals: globals.node,
-      parser: "@typescript-eslint/parser", // Specify TypeScript parser
-      parserOptions: {
-        ecmaVersion: "latest",
-        sourceType: "commonjs",
-        project: "./tsconfig.json", // Path to your tsconfig.json
-      },
-    },
-  },
+
+  { languageOptions: {} },
+
   pluginJs.configs.recommended,
   ...tseslint.configs.recommended,
   eslintPluginPrettierRecommended,
