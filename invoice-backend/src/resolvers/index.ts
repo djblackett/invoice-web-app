@@ -2,14 +2,9 @@ import { InvoiceService } from "../services/invoice.service";
 import { UserService } from "../services/user.service";
 import { getInvoiceResolvers } from "./invoiceResolvers";
 import { getUserResolvers } from "./userResolvers";
-import { PubSub } from "graphql-subscriptions";
 
-export function getResolvers(
-  invoiceService: InvoiceService,
-  userService: UserService,
-  pubsub: PubSub,
-) {
-  const invoiceResolvers = getInvoiceResolvers(invoiceService, pubsub);
+export function getResolvers(userService: UserService) {
+  const invoiceResolvers = getInvoiceResolvers();
   const userResolvers = getUserResolvers(userService);
 
   return {

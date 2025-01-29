@@ -10,18 +10,16 @@ import "./controllers/invoice.controller";
 import { Request, Response } from "express";
 import { DatabaseConnection } from "./database/prisma.database.connection";
 import rateLimit from "express-rate-limit";
+import express from "express";
 
 export const createApp = async () => {
   try {
-    const inversifyServer = new InversifyExpressServer(container);
-    inversifyServer.setConfig(serverConfig);
-    inversifyServer.setErrorConfig(serverErrorConfig);
+    const app = express();
+    serverConfig(app);
+    serverErrorConfig(app);
 
     const database = container.get(DatabaseConnection);
     await database.initConnection();
-
-    const app = inversifyServer.build();
-
     app.get("/health", (_req: Request, res: Response) => {
       res.status(200).send("OK");
     });

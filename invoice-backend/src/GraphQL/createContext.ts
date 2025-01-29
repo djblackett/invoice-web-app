@@ -1,6 +1,16 @@
 import jwt, { JwtHeader, JwtPayload, VerifyOptions } from "jsonwebtoken";
 import jwksClient, { SigningKey } from "jwks-rsa";
-import { ContextArgs, QueryContext, UserDTO } from "../constants/types";
+import {
+  ContextArgs,
+  InjectedQueryContext,
+  UserDTO,
+  UserIdAndRole,
+} from "../constants/types";
+import container from "@/config/inversify.config";
+import TYPES from "@/constants/identifiers";
+import { InvoiceService } from "@/services/invoice.service";
+import { UserService } from "@/services/user.service";
+import { PubSub } from "graphql-subscriptions";
 
 const client = jwksClient({
   jwksUri: "https://dev-n4e4qk7s3kbzusrs.us.auth0.com/.well-known/jwks.json",
@@ -48,7 +58,7 @@ const options: VerifyOptions = {
 async function verifyTokenAndGetEmail(
   token: string,
   options: VerifyOptions,
-): Promise<string> {
+): Promise<UserIdAndRole> {
   try {
     console.log("Verifying token:", token);
 
@@ -80,12 +90,22 @@ async function verifyTokenAndGetEmail(
 
     // Extract the email from the custom claim
     const email = payload[emailClaim];
+    // const user = payload as UserDTO;
+    const id = payload.sub;
+    const name = payload.name ?? "Dude";
 
-    if (email && typeof email === "string") {
-      console.log("Extracted Email:", email);
-      return email;
+    // Assign role based on payload or default to USER
+    const role: "USER" | "ADMIN" = (payload as any).role || "USER";
+
+    if (id && role && email) {
+      return {
+        id,
+        role,
+        username: email,
+        name,
+      };
     } else {
-      throw new Error("Email claim is missing or invalid");
+      throw new Error("Id claim is missing or invalid");
     }
   } catch (err) {
     console.error("Token verification failed:", err);
@@ -96,7 +116,7 @@ async function verifyTokenAndGetEmail(
 export async function createContext({
   req,
   connection,
-}: ContextArgs): Promise<QueryContext> {
+}: ContextArgs): Promise<InjectedQueryContext> {
   if (connection) {
     // This is a subscription request
     return { connection };
@@ -105,13 +125,57 @@ export async function createContext({
   try {
     if (authHeader && authHeader.startsWith("Bearer ")) {
       const token = authHeader.split(" ")[1];
-      const username = await verifyTokenAndGetEmail(token, options);
-      return { username };
+      const user = await verifyTokenAndGetEmail(token, options);
+
+      const childContainer = container.createChild();
+
+      childContainer
+        .bind<UserIdAndRole>(TYPES.UserContext)
+        .toConstantValue(user);
+
+      // Resolve services from the child container
+      const invoiceService = childContainer.get<InvoiceService>(
+        TYPES.InvoiceService,
+      );
+      const userService = childContainer.get<UserService>(TYPES.UserService);
+      const pubsub = childContainer.get<PubSub>(TYPES.PubSub);
+
+      if (!invoiceService || !userService || !pubsub) {
+        console.error("Service not found in context");
+        throw new Error("Context creation failed");
+      }
+
+      let newUser;
+
+      try {
+        const result = await userService.getUserSafely(user.id);
+
+        if (!result) {
+          newUser = await userService.createUserWithAuth0({
+            id: user.id,
+            name: user.name,
+            username: user.username ?? "",
+            role: user.role,
+          });
+
+          console.log("Created new user:", newUser);
+        }
+      } catch (e) {
+        console.error("error:", e);
+      }
+
+      return {
+        user: newUser ?? user,
+        invoiceService,
+        userService,
+        pubsub,
+        container: childContainer,
+      };
     } else {
-      return { username: null };
+      return { user: null, container };
     }
   } catch (e) {
     console.error("error:", e);
-    return { username: null };
+    return { user: null, container };
   }
 }
