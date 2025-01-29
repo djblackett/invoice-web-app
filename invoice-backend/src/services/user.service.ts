@@ -5,6 +5,8 @@ import {
   CreateUserDTO,
   UserDTO,
   LoginResponseDTO,
+  CreateUserArgs,
+  UserIdAndRole,
 } from "../constants/types";
 import bcrypt from "bcrypt";
 import { IUserRepo } from "../repositories/userRepo";
@@ -42,6 +44,19 @@ export class UserService {
     return userDTO;
   };
 
+  createUserWithAuth0 = async (args: UserIdAndRole): Promise<UserIdAndRole> => {
+    const createdUser = await this.userRepo.createUserWithAuth0(args);
+
+    const userDTO: UserIdAndRole = {
+      id: createdUser.id,
+      name: createdUser.name,
+      username: createdUser.username ?? "",
+      role: createdUser.role,
+    };
+
+    return userDTO;
+  };
+
   getUsers = async () => {
     try {
       const userList = await this.userRepo.findAllUsers();
@@ -53,7 +68,7 @@ export class UserService {
     }
   };
 
-  getUser = async (id: number) => {
+  getUser = async (id: string) => {
     const user = await this.userRepo.findUserById(id);
 
     if (!user) {
@@ -66,6 +81,11 @@ export class UserService {
       username: user.username,
     };
     return userDTO;
+  };
+
+  getUserSafely = async (id: string) => {
+    const user = await this.userRepo.getUserSafely(id);
+    return user;
   };
 
   login = async (
@@ -91,7 +111,7 @@ export class UserService {
 
     const userDTO: UserDTO = {
       id: user.id,
-      name: user.name,
+      name: user.name ?? "",
       username: user.username,
     };
 

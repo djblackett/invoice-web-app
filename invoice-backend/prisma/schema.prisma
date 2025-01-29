@@ -14,7 +14,7 @@ datasource db {
 model Invoice {
   id              String         @id @default(uuid())
   createdBy       User           @relation(fields: [createdById], references: [id])
-  createdById     Int           
+  createdById     String           
   createdAt       String
   paymentDue      String
   description     String
@@ -63,11 +63,11 @@ model SenderAddress {
 }
 
 model User {
-  id           Int    @id @default(autoincrement())
+  id           String    @id @default(uuid())
   invoices     Invoice[]
-  name         String
+  name         String?
   username     String @unique
-  passwordHash String
+  passwordHash String?
   role         Role   @default(USER)
 }
 

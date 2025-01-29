@@ -72,7 +72,7 @@ export const validateUserList = (inputs: unknown) => {
 
 export function mapUserEntityToDTO(user: UserEntity): UserDTO {
   return {
-    name: user.name,
+    name: user.name ?? "",
     username: user.username,
   };
 }

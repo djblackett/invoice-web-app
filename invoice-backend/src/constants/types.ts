@@ -3,8 +3,15 @@ import express from "express";
 import { BaseContext } from "@apollo/server/dist/cjs";
 import { Context as GraphQLWSContext } from "graphql-ws";
 import { PrismaClient } from "@prisma/client";
+import { Container } from "inversify";
+import { InvoiceService } from "@/services/invoice.service";
+import { UserService } from "@/services/user.service";
+import { PubSub } from "graphql-subscriptions";
 
 export interface Invoice {
+  createdBy?: UserIdAndRole;
+  createdById?: string;
+  clientAddressId?: string;
   clientAddress: ClientAddress;
   clientEmail: string;
   clientName: string;
@@ -15,6 +22,7 @@ export interface Invoice {
   paymentDue: string;
   paymentTerms: number;
   senderAddress: SenderAddress;
+  senderAddressId?: string;
   status: string;
   total: number;
 }
@@ -89,6 +97,12 @@ export const addressZod = z.object({
 });
 
 export const invoiceZod = z.object({
+  createdBy: z.object({
+    id: z.string(),
+    name: z.string(),
+    username: z.string(),
+    role: z.enum(["USER", "ADMIN"]),
+  }),
   clientAddress: addressZod,
   clientEmail: z.string(),
   clientName: z.string(),
@@ -104,20 +118,20 @@ export const invoiceZod = z.object({
 });
 
 export const userCreateZod = z.object({
-  id: z.number().optional(),
+  id: z.string().optional(),
   name: z.string(),
   username: z.string(),
   password: z.string(),
 });
 
 export const userZod = z.object({
-  id: z.number(),
+  id: z.string(),
   name: z.string(),
   username: z.string(),
 });
 
 export const loggedInUserZod = z.object({
-  id: z.number(),
+  id: z.string(),
   username: z.string(),
 });
 
@@ -133,8 +147,21 @@ type Username = {
 };
 
 export interface QueryContext extends BaseContext {
-  user?: ReturnedUser;
+  user?: UserIdAndRole | null;
   username?: string | null;
+  connection?: GraphQLWSContext;
+  container?: Container;
+}
+
+export interface InjectedQueryContext {
+  user?: UserIdAndRole | null;
+  // name?: string;
+  // id: string;
+  // role: "USER" | "ADMIN";
+  invoiceService?: InvoiceService;
+  userService?: UserService;
+  pubsub?: PubSub;
+  container?: Container;
   connection?: GraphQLWSContext;
 }
 
@@ -143,15 +170,15 @@ export interface MyContext extends BaseContext {
   applyMiddleware?: unknown;
   connection?: GraphQLWSContext;
   user?: {
-    id: number;
+    id: string;
     name: string;
     username: string;
   };
 }
 
 export interface User {
-  id: number;
-  name: string;
+  id: string;
+  name?: string;
   username: string;
   passwordHash: string;
 }
@@ -166,12 +193,13 @@ export interface LoginResponseDTO {
 }
 
 export interface CreateUserArgs {
-  name: string;
+  id?: string;
+  name?: string;
   username: string;
 }
 
 export interface UserEntity extends CreateUserArgs {
-  id?: number;
+  id?: string;
   passwordHash: string;
 }
 
@@ -180,7 +208,7 @@ export interface CreateUserDTO extends CreateUserArgs {
 }
 
 export interface UserDTO {
-  id?: number;
+  id?: string;
   name: string;
   username: string;
 }
@@ -231,4 +259,11 @@ export type MarkAsPaidArgs = GetInvoiceByIdArgs;
 
 export interface PrismaContext {
   prisma: PrismaClient;
+}
+
+export interface UserIdAndRole {
+  id: string;
+  role: "USER" | "ADMIN";
+  username?: string;
+  name: string;
 }
