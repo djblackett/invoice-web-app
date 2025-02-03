@@ -8,12 +8,15 @@ import {
   validateReturnedUser,
   validateUserList,
   mapUserEntityToDTO,
+  mapPartialInvoiceToInvoice,
 } from "@/utils/utils";
+import { Role } from "@prisma/client";
 
 describe("utils.ts", () => {
   describe("validateInvoiceData", () => {
     it("should return parsed data for valid invoice input", () => {
       const input = data[0];
+      console.log(input);
       const result = validateInvoiceData(input);
       expect(result).toMatchObject(input);
     });
@@ -61,7 +64,7 @@ describe("utils.ts", () => {
   describe("validateReturnedUser", () => {
     it("should return ReturnedUser for valid user input", () => {
       const expected = {
-        id: 1,
+        id: "1",
         name: "new_user",
         username: "new_user@example.com",
       };
@@ -82,12 +85,12 @@ describe("utils.ts", () => {
     it("should return an array of UserDTO for valid user list input", () => {
       const input = [
         {
-          id: 1,
+          id: "1",
           name: "new_user",
           username: "new_user@example.com",
         },
         {
-          id: 2,
+          id: "2",
           name: "new_user2",
           username: "new_use2r@example.com",
         },
@@ -114,6 +117,78 @@ describe("utils.ts", () => {
       expect(result).toEqual({
         name: "John Doe",
         username: "johndoe",
+      });
+    });
+
+    describe("mapPartialInvoiceToInvoice", () => {
+      it("should map a partial invoice to a complete invoice with default values", () => {
+        const partialInvoice = {
+          createdBy: {
+            id: "1",
+            username: "test@example.com",
+            role: Role.USER,
+            name: "",
+          },
+          createdById: "1",
+          items: [
+            {
+              name: "Test Item",
+              quantity: 0,
+              price: 0,
+              total: 0,
+            },
+          ],
+        };
+
+        const result = mapPartialInvoiceToInvoice(partialInvoice);
+
+        expect(result).toMatchObject({
+          id: "",
+          clientEmail: "",
+          clientName: "",
+          description: "",
+          createdBy: {
+            id: "1",
+            name: "",
+            username: "test@example.com",
+            role: "USER",
+          },
+          createdById: "1",
+          status: "draft",
+          paymentTerms: 0,
+          clientAddress: {
+            street: "",
+            city: "",
+            postCode: "",
+            country: "",
+          },
+          senderAddress: {
+            street: "",
+            city: "",
+            postCode: "",
+            country: "",
+          },
+          items: [
+            {
+              id: "",
+              name: "Test Item",
+              price: 0,
+              quantity: 0,
+              total: 0,
+            },
+          ],
+          total: 0,
+        });
+      });
+
+      it("should throw ValidationException when createdBy data is missing", () => {
+        const invalidInvoice = {
+          clientName: "Test Client",
+        };
+
+        expect(() => mapPartialInvoiceToInvoice(invalidInvoice)).toThrowError(
+          ValidationException,
+        );
       });
     });
   });

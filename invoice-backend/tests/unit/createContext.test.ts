@@ -54,19 +54,20 @@ describe("createContext", () => {
     // Mock jwt.verify
     (jwt.verify as Mock).mockReturnValue({
       "invoice-web-app/email": "user@example.com",
+      sub: "user1",
     });
 
     const context = await createContext({ req, connection });
 
-    expect(context.username).toBe("user@example.com");
+    expect(context.user?.username).toBe("user@example.com");
   });
 
-  it("returns null username when no authorization header is provided", async () => {
+  it("returns null user when no authorization header is provided", async () => {
     const context = await createContext({ req, connection });
-    expect(context.username).toBeNull();
+    expect(context.user).toBeNull();
   });
 
-  it("returns null username when token verification fails", async () => {
+  it("returns null user when token verification fails", async () => {
     req.headers.authorization = "Bearer invalid.token.here";
 
     // Mock jwt.decode
@@ -90,6 +91,6 @@ describe("createContext", () => {
 
     const context = await createContext({ req, connection });
 
-    expect(context.username).toBeNull();
+    expect(context.user).toBeNull();
   });
 });

@@ -72,7 +72,7 @@ export function getInvoiceResolvers() {
           return result;
         } catch (error) {
           if (error instanceof NotFoundException) {
-            throw new GraphQLError("Invoice not found", {
+            throw new GraphQLError(error.message, {
               extensions: {
                 code: "NOT_FOUND",
               },
