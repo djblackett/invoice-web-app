@@ -58,6 +58,11 @@ export interface InvoiceUpdatePayload {
   total?: number | undefined;
 }
 
+export interface InvoiceWithCreatedBy extends Invoice {
+  createdBy: UserIdAndRole;
+  createdById: string;
+}
+
 export interface SenderAddress {
   city: string;
   country: string;
@@ -155,9 +160,6 @@ export interface QueryContext extends BaseContext {
 
 export interface InjectedQueryContext {
   user?: UserIdAndRole | null;
-  // name?: string;
-  // id: string;
-  // role: "USER" | "ADMIN";
   invoiceService?: InvoiceService;
   userService?: UserService;
   pubsub?: PubSub;

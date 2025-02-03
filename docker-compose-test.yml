@@ -1,3 +1,4 @@
+version: "3.8"
 services:
   frontend-test:
     build:
@@ -41,6 +42,7 @@ services:
       - REQUEST_ORIGIN=https://frontend-test:5173
       - SECRET=theSecretStuff
       - DATABASE_URL=postgres://postgres:example@db-test:5432/db-test?schema=public&connect_timeout=300
+      - CERT_DIR=../certs
     networks:
       - my_network_test
     volumes:
@@ -96,7 +98,7 @@ services:
       TEST_ENV: local
       TEST_BASE_URL: https://frontend-test:5173/invoice-web-app/
     networks:
-    - my_network_test
+      - my_network_test
   # Allow interactive runs (e.g., debugging or watching tests)
     stdin_open: true
     tty: true
