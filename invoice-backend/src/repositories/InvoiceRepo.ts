@@ -1,4 +1,4 @@
-import { Invoice } from "../constants/types";
+import { Invoice, InvoiceWithCreatedBy } from "../constants/types";
 import { Invoice as InvoiceModel } from "@prisma/client";
 
 export interface IInvoiceRepo {
@@ -13,5 +13,5 @@ export interface IInvoiceRepo {
   deleteAllInvoices: () => Promise<unknown>;
   markAsPaid: (id: string) => Promise<unknown>;
   update: (id: string, invoiceUpdates: Partial<Invoice>) => Promise<unknown>;
-  create: (invoice: Invoice, createdBy: string) => Promise<unknown>;
+  create: (invoice: InvoiceWithCreatedBy) => Promise<unknown>;
 }

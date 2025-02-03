@@ -13,7 +13,7 @@ datasource db {
 
 model Invoice {
   id              String         @id @default(uuid())
-  createdBy       User           @relation(fields: [createdById], references: [id])
+  createdBy       User           @relation(fields: [createdById], references: [id], onDelete: Cascade)
   createdById     String           
   createdAt       String
   paymentDue      String

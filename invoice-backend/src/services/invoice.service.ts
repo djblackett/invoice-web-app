@@ -1,5 +1,9 @@
 import { Invoice, UserIdAndRole } from "../constants/types";
-import { validateInvoiceData, validateInvoiceList } from "../utils/utils";
+import {
+  mapPartialInvoiceToInvoice,
+  validateInvoiceData,
+  validateInvoiceList,
+} from "../utils/utils";
 import { inject, injectable } from "inversify";
 import { IInvoiceRepo } from "../repositories/InvoiceRepo";
 import TYPES from "../constants/identifiers";
@@ -118,15 +122,36 @@ export class InvoiceService {
     }
 
     try {
-      return validateInvoiceData(
-        await this.invoiceRepo.create(invoice, this.userContext.id),
-      );
+      const invoiceWithUserInfo = {
+        ...invoice,
+        createdById: this.userContext.id,
+        createdBy: {
+          id: this.userContext.id,
+          name: this.userContext.name,
+          username: this.userContext.username,
+          role: this.userContext.role,
+        },
+      };
+
+      const fullInvoice = mapPartialInvoiceToInvoice(invoiceWithUserInfo);
+      const createdInvoice = await this.invoiceRepo.create(fullInvoice);
+      const validatedData = validateInvoiceData(createdInvoice);
+
+      console.log("invoiceWithUserInfo:", invoiceWithUserInfo);
+      console.log("fullinvoice:", fullInvoice);
+      console.log("createdInvoice:", createdInvoice);
+      console.log("validatedData:", validatedData);
+
+      return validatedData;
     } catch (e) {
       console.error(e);
       if (e instanceof ValidationException) {
         throw e;
+      } else if (e instanceof NotFoundException) {
+        throw e;
+      } else {
+        throw new InternalServerException("Internal server error");
       }
-      throw new InternalServerException("Internal server error");
     }
   };
 

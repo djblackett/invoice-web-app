@@ -6,6 +6,7 @@ import {
   ReturnedUser,
   UserDTO,
   UserIdAndRole,
+  User,
 } from "../../constants/types";
 import { PrismaClientKnownRequestError } from "@prisma/client/runtime/library";
 
@@ -90,7 +91,7 @@ export class PrismaUserRepo implements IUserRepo {
     }
   }
 
-  async createUser(userArgs: UserEntity): Promise<UserDTO> {
+  async createUser(userArgs: UserEntity): Promise<UserIdAndRole> {
     try {
       const user = await this.prisma.user.create({
         data: {
@@ -138,27 +139,30 @@ export class PrismaUserRepo implements IUserRepo {
     }
   };
 
-  findUserByUsername = async (username: string): Promise<UserEntity | null> => {
+  findUserByUsername = async (
+    username: string,
+  ): Promise<UserIdAndRole | null> => {
     try {
       const result = await this.prisma.user.findUniqueOrThrow({
         select: {
           id: true,
           name: true,
           username: true,
-          passwordHash: true,
+          role: true,
+          // passwordHash: true,
         },
         where: {
           username,
-          passwordHash: {
-            not: null,
-          },
+          // passwordHash: {
+          //   not: null,
+          // },
         },
       });
 
       return {
         ...result,
-        passwordHash: result.passwordHash!,
-        name: result.name ?? undefined,
+        // passwordHash: result.passwordHash!,
+        name: result.name ?? "",
       };
     } catch (e: any) {
       console.error(e);

@@ -76,37 +76,37 @@ export function getUserResolvers(userService: UserService) {
         }
       },
 
-      login: async (_root: unknown, args: LoginArgs, { user }: any) => {
-        try {
-          const username = await user;
-          const loginResponse = await userService.login(
-            args.username,
-            args.password,
-          );
-          return loginResponse;
-        } catch (error) {
-          console.error(error);
-          if (error instanceof NotFoundException) {
-            throw new GraphQLError("User not found", {
-              extensions: {
-                code: "BAD_USER_INPUT",
-              },
-            });
-          } else if (error instanceof UnauthorizedException) {
-            throw new GraphQLError("Invalid username or password", {
-              extensions: {
-                code: "UNAUTHENTICATED",
-              },
-            });
-          } else {
-            throw new GraphQLError("Internal server error", {
-              extensions: {
-                code: "INTERNAL_SERVER_ERROR",
-              },
-            });
-          }
-        }
-      },
+      // login: async (_root: unknown, args: LoginArgs, { user }: any) => {
+      //   try {
+      //     const username = await user;
+      //     const loginResponse = await userService.login(
+      //       args.username,
+      //       args.password,
+      //     );
+      //     return loginResponse;
+      //   } catch (error) {
+      //     console.error(error);
+      //     if (error instanceof NotFoundException) {
+      //       throw new GraphQLError("User not found", {
+      //         extensions: {
+      //           code: "BAD_USER_INPUT",
+      //         },
+      //       });
+      //     } else if (error instanceof UnauthorizedException) {
+      //       throw new GraphQLError("Invalid username or password", {
+      //         extensions: {
+      //           code: "UNAUTHENTICATED",
+      //         },
+      //       });
+      //     } else {
+      //       throw new GraphQLError("Internal server error", {
+      //         extensions: {
+      //           code: "INTERNAL_SERVER_ERROR",
+      //         },
+      //       });
+      //     }
+      //   }
+      // },
     },
   };
 }
