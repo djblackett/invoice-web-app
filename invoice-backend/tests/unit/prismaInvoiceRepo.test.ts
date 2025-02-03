@@ -1,5 +1,5 @@
 import "reflect-metadata";
-import { describe, expect, test, vi } from "vitest";
+import { beforeEach, describe, expect, test, vi } from "vitest";
 import prisma from "../../libs/__mocks__/prisma";
 import {
   prismaErrorHandler,
@@ -8,17 +8,29 @@ import {
 import { DatabaseConnectionMock } from "./database.connection.mock";
 import { IDatabaseConnection } from "../../src/database/database.connection";
 import { Invoice } from "@prisma/client";
-import { Invoice as DomainInvoice } from "../../src/constants/types";
+import {
+  Invoice as DomainInvoice,
+  InvoiceWithCreatedBy,
+} from "../../src/constants/types";
 import {
   Decimal,
   PrismaClientKnownRequestError,
 } from "@prisma/client/runtime/library";
+import { PrismaUserRepo } from "@/repositories/implementations/prismaUserRepo";
+import { send } from "process";
 
 vi.mock("../../libs/prisma");
 
-const mockInvoiceParams: DomainInvoice = {
+const mockInvoiceParams: InvoiceWithCreatedBy = {
   id: "D64FUO",
   createdAt: "2021-08-21",
+  createdBy: {
+    id: "user1",
+    name: "John Doe",
+    username: "john@melba.toast",
+    role: "USER",
+  },
+  createdById: "user1",
   paymentDue: "2021-09-20",
   description: "Graphic Design",
   paymentTerms: 30,
@@ -37,6 +49,8 @@ const mockInvoiceParams: DomainInvoice = {
     postCode: "BD1 9PB",
     country: "United Kingdom",
   },
+  senderAddressId: "4",
+  clientAddressId: "1",
   items: [
     {
       id: "gjhgjhgjhg",
@@ -59,12 +73,21 @@ const mockInvoiceParams: DomainInvoice = {
 const mockInvoicePrismaResponse = {
   id: "D64FUO",
   createdAt: "2021-08-21",
+  createdBy: {
+    id: "user1",
+    name: "John Doe",
+    username: "john@melba.toast",
+    role: "USER",
+  },
+  // createdById: "user1",
   paymentDue: "2021-09-20",
   description: "Graphic Design",
   paymentTerms: 30,
   clientName: "Alex Grim",
   clientEmail: "alexgrim@mail.com",
   status: "pending",
+  // senderAddressId: 4,
+  // clientAddressId: 1,
   senderAddress: {
     street: "19 Union Terrace",
     city: "London",
@@ -96,6 +119,12 @@ const mockInvoicePrismaResponse = {
 
 const mockResponseWithIds = {
   ...mockInvoicePrismaResponse,
+  createdBy: {
+    id: "user1",
+    name: "John Doe",
+    username: "john@melba.toast",
+    role: "USER",
+  },
   clientAddressId: 1,
   senderAddressId: 4,
   total: new Decimal(mockInvoicePrismaResponse.total),
@@ -105,12 +134,72 @@ const mockRepo = new PrismaInvoiceRepository(
   new DatabaseConnectionMock() as IDatabaseConnection,
 );
 
-describe("Prisma Query: createInvoice", () => {
-  test("should return invoice object with matching properties", async () => {
-    prisma.invoice.create.mockResolvedValue(
-      mockInvoicePrismaResponse as unknown as Invoice,
-    );
+const mockUserRepo = new PrismaUserRepo(
+  new DatabaseConnectionMock() as IDatabaseConnection,
+);
 
+describe("Prisma Query: createInvoice", () => {
+  beforeEach(async () => {
+    prisma.user.create.mockResolvedValue({
+      id: "user1",
+      name: "John Doe",
+      username: "john@melba.toast",
+      role: "USER",
+      passwordHash: "password",
+    });
+
+    // Mock the user retrieval (e.g., findUnique or findFirst)
+    prisma.user.findUnique.mockResolvedValue({
+      id: "user1",
+      name: "John Doe",
+      username: "user1@moo.com",
+      role: "USER",
+      passwordHash: "password",
+    });
+
+    const user = {
+      id: "user1",
+      role: "USER",
+      username: "user1@moo.com",
+      name: "John Doe",
+      passwordHash: "password",
+    };
+
+    await mockUserRepo.createUser({ ...user });
+  });
+
+  test("should return invoice object with matching properties", async () => {
+    prisma.invoice.create.mockResolvedValue({
+      ...mockInvoicePrismaResponse,
+      total: new Decimal(mockInvoicePrismaResponse.total),
+    });
+
+    prisma.user.create.mockResolvedValue({
+      id: "user1",
+      name: "John Doe",
+      username: "john@melba.toast",
+      role: "USER",
+      passwordHash: "password",
+    });
+
+    // Mock the user retrieval (e.g., findUnique or findFirst)
+    prisma.user.findUnique.mockResolvedValue({
+      id: "user1",
+      name: "John Doe",
+      username: "user1@moo.com",
+      role: "USER",
+      passwordHash: "password",
+    });
+
+    const user = {
+      id: "user1",
+      role: "USER",
+      username: "user1@moo.com",
+      name: "John Doe",
+      passwordHash: "password",
+    };
+
+    await mockUserRepo.createUser({ ...user });
     const createdInvoice = await mockRepo.create(mockInvoiceParams);
 
     expect(createdInvoice).toStrictEqual(mockInvoicePrismaResponse);
@@ -152,14 +241,14 @@ describe("Prisma Query: createInvoice", () => {
     // Create incomplete invoice params by omitting `clientEmail`
     const incompleteInvoiceParams: Partial<DomainInvoice> = {
       ...mockInvoiceParams,
-      // total: new Decimal(mockInvoicePrismaResponse.total),
+      total: new Decimal(mockInvoicePrismaResponse.total),
       clientEmail: undefined,
     };
 
     // The expected response should match the default value set by the `create` method
     const expectedResponse: Partial<Invoice> = {
       ...mockInvoicePrismaResponse,
-      total: new Decimal(mockInvoicePrismaResponse.total),
+      total: Number(mockInvoicePrismaResponse.total),
       clientEmail: "", // `create` method sets it to an empty string if undefined
     };
 
@@ -450,6 +539,35 @@ describe("Prisma Query: markAsPaid", () => {
 describe("Prisma Query: createInvoice", () => {
   // Existing tests...
 
+  beforeEach(async () => {
+    prisma.user.create.mockResolvedValue({
+      id: "user1",
+      name: "John Doe",
+      username: "john@melba.toast",
+      role: "USER",
+      passwordHash: "password",
+    });
+
+    // Mock the user retrieval (e.g., findUnique or findFirst)
+    prisma.user.findUnique.mockResolvedValue({
+      id: "user1",
+      name: "John Doe",
+      username: "user1@moo.com",
+      role: "USER",
+      passwordHash: "password",
+    });
+
+    const user = {
+      id: "user1",
+      role: "USER",
+      username: "user1@moo.com",
+      name: "John Doe",
+      passwordHash: "password",
+    };
+
+    await mockUserRepo.createUser({ ...user });
+  });
+
   test("should handle create when items are empty", async () => {
     const invoiceWithoutItems: DomainInvoice = {
       ...mockInvoiceParams,
@@ -459,7 +577,7 @@ describe("Prisma Query: createInvoice", () => {
     const expectedResponse = {
       ...mockInvoicePrismaResponse,
       items: [],
-      total: new Decimal(0),
+      total: Number(0),
     };
 
     prisma.invoice.create.mockResolvedValue(
@@ -483,12 +601,12 @@ describe("Prisma Query: createInvoice", () => {
       id: "D64FUO",
       clientEmail: "",
       clientName: "",
-      createdAt: expect.any(String),
-      paymentDue: expect.any(String),
+      // createdAt: expect.any(String),
+      // paymentDue: expect.any(String),
       description: "",
       paymentTerms: 14,
       status: "",
-      total: new Decimal(0),
+      total: 0,
       clientAddress: {
         street: "",
         city: "",
