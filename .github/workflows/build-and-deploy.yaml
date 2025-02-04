@@ -104,6 +104,10 @@ jobs:
       SECRET: theSecretStuff # not critical - only for ephemeral testing env
       NODE_ENV: CI
       CERT_DIR: "../certs/"
+      DOMAIN: ${{ secrets.AUTH_DOMAIN }}
+      AUDIENCE: ${{ secrets.AUDIENCE }}
+      CLIENT_ID: ${{ secrets.CLIENT_ID }}
+      CLIENT_SECRET: ${{ secrets.CLIENT_SECRET }}
     
     runs-on: ubuntu-latest
     services:
