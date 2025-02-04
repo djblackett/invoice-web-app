@@ -35,7 +35,7 @@ export class PrismaUserRepo implements IUserRepo {
     }
   }
 
-  async findAllUsers(): Promise<ReturnedUser[]> {
+  async getAllUsers(): Promise<ReturnedUser[]> {
     try {
       const users = await this.prisma.user.findMany();
       return users.map((user) => ({
@@ -48,7 +48,7 @@ export class PrismaUserRepo implements IUserRepo {
     }
   }
 
-  async findUserById(id: string): Promise<UserDTO | null> {
+  async getUserById(id: string): Promise<UserDTO | null> {
     try {
       const user = await this.prisma.user.findUniqueOrThrow({
         select: {
@@ -139,7 +139,7 @@ export class PrismaUserRepo implements IUserRepo {
     }
   };
 
-  findUserByUsername = async (
+  getUserByUsername = async (
     username: string,
   ): Promise<UserIdAndRole | null> => {
     try {

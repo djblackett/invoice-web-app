@@ -37,9 +37,10 @@ export class InvoiceService {
     if (role !== "ADMIN") {
       this.invoiceRepo.findByUserId(id);
     }
+
     try {
       const result = await this.invoiceRepo.findAll();
-      console.log(result);
+      // console.log(result);
       // return result as Invoice[];
       return validateInvoiceList(result);
     } catch (e) {
@@ -52,11 +53,13 @@ export class InvoiceService {
     if (!this.userContext) {
       throw new ValidationException("Unauthorized");
     }
+
     const { role, id } = this.userContext;
 
     if (!id) {
       throw new ValidationException("Unauthorized");
     }
+
     try {
       const result = await this.invoiceRepo.findByUserId(id);
       return validateInvoiceList(result);
@@ -80,6 +83,7 @@ export class InvoiceService {
       try {
         const result = await this.invoiceRepo.findById(invoiceId);
         if (!result) {
+          console.error("role = ADMIN - Invoice not found");
           throw new NotFoundException("Invoice not found");
         }
         return result;
@@ -100,6 +104,7 @@ export class InvoiceService {
           invoiceId,
         );
         if (!result) {
+          console.error("role = USER - Invoice not found");
           throw new NotFoundException("Invoice not found");
         }
         return result;
@@ -137,11 +142,6 @@ export class InvoiceService {
       const createdInvoice = await this.invoiceRepo.create(fullInvoice);
       const validatedData = validateInvoiceData(createdInvoice);
 
-      console.log("invoiceWithUserInfo:", invoiceWithUserInfo);
-      console.log("fullinvoice:", fullInvoice);
-      console.log("createdInvoice:", createdInvoice);
-      console.log("validatedData:", validatedData);
-
       return validatedData;
     } catch (e) {
       console.error(e);
@@ -165,9 +165,14 @@ export class InvoiceService {
       const newInvoiceUnvalidated = { ...oldInvoice, ...invoiceUpdates };
       const validatedInvoice = validateInvoiceData(newInvoiceUnvalidated);
 
-      const result = await this.invoiceRepo.update(id, validatedInvoice);
+      // validatedInvoice.createdById = oldInvoice.createdById;
+      validatedInvoice.createdBy = undefined;
 
-      return validateInvoiceData(result);
+      delete newInvoiceUnvalidated.createdBy;
+      delete newInvoiceUnvalidated.createdById;
+      const result = await this.invoiceRepo.update(id, newInvoiceUnvalidated);
+
+      return result;
     } catch (e) {
       console.error(e);
       if (e instanceof ValidationException) {

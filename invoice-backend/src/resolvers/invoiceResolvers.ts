@@ -17,12 +17,17 @@ export function getInvoiceResolvers() {
         context: InjectedQueryContext,
       ) => {
         try {
+          console.log("User in resolver:", context.user);
+          console.log("User role:", context.user?.role);
+
           const { user, invoiceService } = context;
+          console.log("invoiceResolvers context:", context);
 
           if (!user) {
-            throw new GraphQLError("Unauthorized", {
+            console.error("User not found in context");
+            throw new GraphQLError("Internal server error", {
               extensions: {
-                code: "UNAUTHORIZED",
+                code: "INTERNAL_SERVER_ERROR",
               },
             });
           }
@@ -120,6 +125,7 @@ export function getInvoiceResolvers() {
         context: InjectedQueryContext,
       ) => {
         const { user, invoiceService } = context;
+
         if (!invoiceService) {
           throw new GraphQLError("Internal server error", {
             extensions: {

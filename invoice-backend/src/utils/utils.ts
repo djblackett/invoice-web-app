@@ -132,7 +132,7 @@ export function mapPartialInvoiceToInvoice(
       total: invoice.total ?? 0,
     };
 
-    console.log("invoiceWithDefaultValues:", invoiceWithDefaultValues);
+    // console.log("invoiceWithDefaultValues:", invoiceWithDefaultValues);
     return invoiceWithDefaultValues;
   } catch (e) {
     console.error(e);

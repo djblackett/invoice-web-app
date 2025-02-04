@@ -59,7 +59,7 @@ export class UserService {
 
   getUsers = async () => {
     try {
-      const userList = await this.userRepo.findAllUsers();
+      const userList = await this.userRepo.getAllUsers();
       const validatedUserList: UserDTO[] = validateUserList(userList);
       return validatedUserList;
     } catch (error) {
@@ -69,7 +69,7 @@ export class UserService {
   };
 
   getUser = async (id: string) => {
-    const user = await this.userRepo.findUserById(id);
+    const user = await this.userRepo.getUserById(id);
 
     if (!user) {
       throw new NotFoundException("User not found");
