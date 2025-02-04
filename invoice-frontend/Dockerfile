@@ -1,7 +1,7 @@
-FROM node:lts-alpine3.20 AS build
+FROM node:20.13.1-bookworm-slim AS build
 
 RUN corepack enable && \
-    corepack prepare yarn@1.22.22 --activate
+    yarn set version stable
 
 WORKDIR /usr/src/app
 

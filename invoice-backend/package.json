@@ -19,8 +19,8 @@
     "start:test": "NODE_ENV=test CERT_DIR='../certs/' ts-node-dev -r tsconfig-paths/register src/index.ts",
     "generate": "graphql-codegen",
     "codegen": "graphql-codegen --config codegen.ts",
-    "prisma-generate": "npx prisma@6.2.1 generate",
-    "prisma-push": "npx prisma@6.2.1 db push"
+    "prisma-generate": "prisma generate",
+    "prisma-push": "prisma db push"
   },
   "author": "David Andrea",
   "license": "ISC",

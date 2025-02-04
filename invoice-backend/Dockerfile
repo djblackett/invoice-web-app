@@ -1,12 +1,17 @@
 FROM node:20.13.1-bookworm-slim AS build
 ENV NODE_ENV=production
 
-RUN apt-get update -y && apt-get install -y openssl && apt-get install yarn -y
+RUN apt-get update -y && \
+    apt-get install -y openssl && \
+    corepack enable && \
+    yarn set version stable
 
 WORKDIR /usr/src/app/
 
 COPY package.json /usr/src/app/
 COPY yarn.lock /usr/src/app/
+COPY .yarnrc.yml /usr/src/app/
+COPY .yarn /usr/src/app/.yarn
 
 RUN yarn install --frozen-lockfile
 
@@ -14,12 +19,15 @@ COPY . /usr/src/app/
 RUN rm -rf libs && rm -rf tests
 
 
-# RUN npx prisma generate && DATABASE_URL=postgres://postgres:example@db:5432/db npx prisma migrate deploy
-RUN npm run prisma-generate && npx --package typescript tsc -p tsconfig.build.json
+RUN yarn prisma-generate && yarn tsc -p tsconfig.build.json
 
 # Stage 2: Production
 FROM node:20.13.1-bookworm-slim AS production
-RUN apt-get update -y && apt-get install -y openssl && apt-get install yarn -y
+
+RUN apt-get update -y && \
+    apt-get install -y openssl && \
+    corepack enable && \
+    yarn set version stable
 
 ENV NODE_ENV=production
 WORKDIR /usr/src/app
