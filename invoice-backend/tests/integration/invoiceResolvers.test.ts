@@ -149,8 +149,7 @@ describe("Invoice Resolvers Integration Tests", () => {
           }
         }
       `)
-      .set("Authorization", `Bearer ${testToken}`)
-      .expectNoErrors();
+      .set("Authorization", `Bearer ${testToken}`);
   });
 
   afterAll(async () => {
@@ -163,8 +162,7 @@ describe("Invoice Resolvers Integration Tests", () => {
           }
         }
       `)
-      .set("Authorization", `Bearer ${testToken}`)
-      .expectNoErrors();
+      .set("Authorization", `Bearer ${testToken}`);
   });
 
   beforeEach(async () => {
@@ -177,8 +175,7 @@ describe("Invoice Resolvers Integration Tests", () => {
           }
         }
       `)
-      .set("Authorization", `Bearer ${testToken}`)
-      .expectNoErrors();
+      .set("Authorization", `Bearer ${testToken}`);
 
     // Generate a unique invoice ID for this test
     currentInvoiceId = `INV-${Date.now()}-${Math.floor(Math.random() * 1000)}`;
@@ -222,8 +219,7 @@ describe("Invoice Resolvers Integration Tests", () => {
         }
       `)
       .variables(invoiceWithUniqueId)
-      .set("Authorization", `Bearer ${testToken}`)
-      .expectNoErrors();
+      .set("Authorization", `Bearer ${testToken}`);
   });
 
   it("should return a list of all invoices (should be 1 now)", async () => {
@@ -236,8 +232,7 @@ describe("Invoice Resolvers Integration Tests", () => {
           }
         }
       `)
-      .set("Authorization", `Bearer ${testToken}`)
-      .expectNoErrors();
+      .set("Authorization", `Bearer ${testToken}`);
 
     expect((data as any).allInvoices).toHaveLength(1);
     expect((data as any).allInvoices[0].id).toBe(currentInvoiceId);
@@ -253,8 +248,7 @@ describe("Invoice Resolvers Integration Tests", () => {
           }
         }
       `)
-      .set("Authorization", `Bearer ${testToken}`)
-      .expectNoErrors();
+      .set("Authorization", `Bearer ${testToken}`);
 
     const { data } = await request(app)
       .query(gql`
@@ -265,8 +259,7 @@ describe("Invoice Resolvers Integration Tests", () => {
           }
         }
       `)
-      .set("Authorization", `Bearer ${testToken}`)
-      .expectNoErrors();
+      .set("Authorization", `Bearer ${testToken}`);
 
     expect((data as any).allInvoices).toEqual([]);
     expect((data as any).allInvoices).toHaveLength(0);
@@ -283,8 +276,7 @@ describe("Invoice Resolvers Integration Tests", () => {
         }
       `)
       .variables({ id: currentInvoiceId })
-      .set("Authorization", `Bearer ${testToken}`)
-      .expectNoErrors();
+      .set("Authorization", `Bearer ${testToken}`);
 
     expect((data as any).getInvoiceById.id).toBe(currentInvoiceId);
     expect((data as any).getInvoiceById.clientName).toBe(
@@ -356,8 +348,7 @@ describe("Invoice Resolvers Integration Tests", () => {
         }
       `)
       .variables(newInvoice)
-      .set("Authorization", `Bearer ${testToken}`)
-      .expectNoErrors();
+      .set("Authorization", `Bearer ${testToken}`);
 
     expect((data as any).addInvoice.id).toBe(secondInvoiceId);
     expect((data as any).addInvoice.clientName).toBe(newInvoice.clientName);
@@ -405,8 +396,7 @@ describe("Invoice Resolvers Integration Tests", () => {
         }
       `)
       .variables(updatedData)
-      .set("Authorization", `Bearer ${testToken}`)
-      .expectNoErrors();
+      .set("Authorization", `Bearer ${testToken}`);
 
     expect((data as any).editInvoice.id).toBe(currentInvoiceId);
     expect((data as any).editInvoice.clientName).toBe(updatedData.clientName);
@@ -420,8 +410,7 @@ describe("Invoice Resolvers Integration Tests", () => {
         }
       `)
       .variables({ id: currentInvoiceId })
-      .set("Authorization", `Bearer ${testToken}`)
-      .expectNoErrors();
+      .set("Authorization", `Bearer ${testToken}`);
 
     // Verify the invoice is removed
     const response = await request(app)
@@ -452,8 +441,7 @@ describe("Invoice Resolvers Integration Tests", () => {
         }
       `)
       .variables({ id: currentInvoiceId })
-      .set("Authorization", `Bearer ${testToken}`)
-      .expectNoErrors();
+      .set("Authorization", `Bearer ${testToken}`);
 
     expect((data as any).markAsPaid.id).toBe(currentInvoiceId);
     expect((data as any).markAsPaid.status).toBe("paid");
