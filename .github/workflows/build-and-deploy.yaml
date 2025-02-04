@@ -108,7 +108,7 @@ jobs:
         uses: actions/cache@v4.2.0
         with:
           path: invoice-backend/node_modules
-          key: ${{ runner.os }}-node-${{ hashFiles('invoice-backend/package-lock.json') }}
+          key: ${{ runner.os }}-node-${{ hashFiles('invoice-backend/yarn.lock') }}
           restore-keys: |
             ${{ runner.os }}-node-
 
