@@ -64,7 +64,7 @@ services:
       PGUSER: postgres
       POSTGRES_USER: postgres
     ports:
-      - "5433:5432"
+      - "5432:5432"
     networks:
       - my_network_test
     volumes:
