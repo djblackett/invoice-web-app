@@ -8,6 +8,7 @@ export default defineConfig({
     outputFile: "./test-output.html",
     include: ["tests/**/*.test.ts"],
     environment: "node",
+    exclude: ["tests/**/*.skip.ts"],
     coverage: {
       provider: "v8",
       reporter: ["text", "html", "json", "lcov", "verbose"],
