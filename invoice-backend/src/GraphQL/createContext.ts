@@ -89,11 +89,13 @@ export async function verifyTokenAndGetEmail(
     const emailClaim = `${namespace}email`;
 
     // Extract the email from the custom claim
-    const email =
-      process.env.NODE_ENV !== "test"
-        ? payload[emailClaim]
-        : "user@example.com";
+    let email;
 
+    if (process.env.NODE_ENV === "test" || process.env.NODE_ENV === "CI") {
+      email = "user@example.com";
+    } else {
+      email = payload[emailClaim];
+    }
     // const user = payload as UserDTO;
     const id = payload.sub;
     const name = payload.name ?? "user";
