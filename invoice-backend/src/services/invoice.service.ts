@@ -155,7 +155,7 @@ export class InvoiceService {
     }
   };
 
-  updateInvoice = async (id: string, invoiceUpdates: object) => {
+  updateInvoice = async (id: string, invoiceUpdates: Partial<Invoice>) => {
     const oldInvoice = await this.getInvoiceById(id);
     if (!oldInvoice) {
       throw new NotFoundException("Invoice not found");
@@ -164,9 +164,6 @@ export class InvoiceService {
     try {
       const newInvoiceUnvalidated = { ...oldInvoice, ...invoiceUpdates };
       const validatedInvoice = validateInvoiceData(newInvoiceUnvalidated);
-
-      // validatedInvoice.createdById = oldInvoice.createdById;
-      validatedInvoice.createdBy = undefined;
 
       delete newInvoiceUnvalidated.createdBy;
       delete newInvoiceUnvalidated.createdById;

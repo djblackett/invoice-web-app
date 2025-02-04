@@ -1,8 +1,20 @@
 import request from "supertest-graphql";
 import { gql } from "graphql-tag";
 import { createServer } from "../../src/server";
-import { describe, beforeAll, afterAll, beforeEach, it, expect } from "vitest";
+import {
+  describe,
+  beforeAll,
+  afterAll,
+  beforeEach,
+  it,
+  expect,
+  afterEach,
+} from "vitest";
 import dotenv from "dotenv";
+import { PrismaClient } from "@prisma/client";
+import { execSync } from "child_process";
+import { randomUUID } from "crypto";
+
 dotenv.config({ path: "no-git.env" });
 
 let app: any;
@@ -75,12 +87,58 @@ const baseInvoice = {
   total: 1000,
 };
 
-let currentInvoiceId = ""; // We'll store a new ID for each test
+let prisma: PrismaClient;
+let schemaName: string;
 
+beforeEach(async () => {
+  // 1. Generate a unique schema name
+  // e.g., "test_schema_182b07dc-5b93-44a8-a248-77102fe91bf0"
+  schemaName = `test_schema_${randomUUID()}`;
+
+  // 2. Construct a new DB URL that includes this schema
+  // Replace your own user/password/host/db as appropriate
+  const baseDatabaseUrl =
+    "postgresql://postgres:example@localhost:5433/db-test";
+  const newDatabaseUrl = `${baseDatabaseUrl}?schema=${schemaName}`;
+
+  // 3. Override the env var for Prisma
+  process.env.DATABASE_URL = newDatabaseUrl;
+
+  // 5. Instantiate Prisma Client *after* the schema is set up
+  prisma = new PrismaClient({
+    datasources: {
+      db: {
+        url: newDatabaseUrl,
+      },
+    },
+  });
+
+  prisma.$connect();
+
+  // 4. Run "prisma db push" or "prisma migrate deploy"
+  //    This ensures the schema is created and tables are set up
+  execSync("npx prisma db push", { stdio: "inherit" });
+
+  // optionally do any seed data insertion here, if needed
+});
+
+afterEach(async () => {
+  // 6. Drop the schema to clean up
+  //    Something like: DROP SCHEMA test_schema_xxx CASCADE
+  //    You can do this via a direct query.
+  await prisma.$executeRawUnsafe(
+    `DROP SCHEMA IF EXISTS "${schemaName}" CASCADE`,
+  );
+
+  // Finally, disconnect Prisma
+  await prisma.$disconnect();
+});
+
+let currentInvoiceId = "";
 describe("Invoice Resolvers Integration Tests", () => {
   beforeAll(async () => {
     [app] = await createServer();
-    testToken = await getTestToken(); // Get token once before all tests
+    testToken = await getTestToken();
 
     // Delete all invoices before starting tests
     await request(app)

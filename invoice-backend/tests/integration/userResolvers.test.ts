@@ -10,6 +10,9 @@ import {
   it,
   expect,
 } from "vitest";
+import { PrismaClient } from "@prisma/client";
+import { execSync } from "child_process";
+import { randomUUID } from "crypto";
 
 let app: any;
 
@@ -52,6 +55,53 @@ async function createUsers() {
   await Promise.all(userPromises);
 }
 
+let prisma: PrismaClient;
+let schemaName: string;
+
+beforeAll(async () => {
+  // 1. Generate a unique schema name
+  // e.g., "test_schema_182b07dc-5b93-44a8-a248-77102fe91bf0"
+  schemaName = `test_schema_${randomUUID()}`;
+
+  // 2. Construct a new DB URL that includes this schema
+  // Replace your own user/password/host/db as appropriate
+  const baseDatabaseUrl =
+    "postgresql://postgres:example@localhost:5433/db-test";
+  const newDatabaseUrl = `${baseDatabaseUrl}?schema=${schemaName}`;
+
+  // 3. Override the env var for Prisma
+  process.env.DATABASE_URL = newDatabaseUrl;
+
+  // 5. Instantiate Prisma Client *after* the schema is set up
+  prisma = new PrismaClient({
+    datasources: {
+      db: {
+        url: newDatabaseUrl,
+      },
+    },
+  });
+
+  prisma.$connect();
+
+  // 4. Run "prisma db push" or "prisma migrate deploy"
+  //    This ensures the schema is created and tables are set up
+  execSync("npx prisma db push", { stdio: "inherit" });
+
+  // optionally do any seed data insertion here, if needed
+});
+
+afterAll(async () => {
+  // 6. Drop the schema to clean up
+  //    Something like: DROP SCHEMA test_schema_xxx CASCADE
+  //    You can do this via a direct query.
+  await prisma.$executeRawUnsafe(
+    `DROP SCHEMA IF EXISTS "${schemaName}" CASCADE`,
+  );
+
+  // Finally, disconnect Prisma
+  await prisma.$disconnect();
+});
+
 describe("Integration Tests", () => {
   beforeAll(async () => {
     [app] = await createServer();
@@ -66,8 +116,6 @@ describe("Integration Tests", () => {
 
     await createUsers();
   });
-
-  afterAll(async () => {});
 
   beforeEach(async () => {
     await request(app).query(gql`
