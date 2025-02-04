@@ -98,7 +98,7 @@ beforeEach(async () => {
   // 2. Construct a new DB URL that includes this schema
   // Replace your own user/password/host/db as appropriate
   const baseDatabaseUrl =
-    "postgresql://postgres:example@localhost:5433/db-test";
+    "postgresql://postgres:example@localhost:5432/db-test";
   const newDatabaseUrl = `${baseDatabaseUrl}?schema=${schemaName}`;
 
   // 3. Override the env var for Prisma
