@@ -2906,6 +2906,7 @@ __metadata:
 "@rollup/rollup-linux-x64-musl@npm:4.9.5":
   version: 4.9.5
   resolution: "@rollup/rollup-linux-x64-musl@npm:4.9.5"
+  checksum: 10c0/d48d56bdd31ccf189d3f3a22cbfcc02c7c3fc5b0ed518d263909fddd8a6ff5ae032b3d5860ac68466ce6401672a000cd66519ef9be2bc0c122317ec2da49a690
   conditions: os=linux & cpu=x64 & libc=musl
   languageName: node
   linkType: hard
@@ -6563,9 +6564,6 @@ __metadata:
     ws: "npm:^8.18.0"
     yargs: "npm:^17.7.2"
     zod: "npm:^3.23.8"
-  dependenciesMeta:
-    "@rollup/rollup-linux-x64-musl":
-      optional: true
   languageName: unknown
   linkType: soft
 
