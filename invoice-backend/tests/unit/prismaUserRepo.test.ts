@@ -45,14 +45,14 @@ describe("findAllUsers", () => {
   test("should return all users", async () => {
     prisma.user.findMany.mockResolvedValue([mockUser as User]);
 
-    const users = await userRepo.findAllUsers();
+    const users = await userRepo.getAllUsers();
     expect(users).toStrictEqual([mockUser]);
   });
 
   test("should return an empty array if no users are found", async () => {
     prisma.user.findMany.mockResolvedValue([]);
 
-    const users = await userRepo.findAllUsers();
+    const users = await userRepo.getAllUsers();
 
     expect(users).toStrictEqual([]);
   });
@@ -62,7 +62,7 @@ describe("findAllUsers", () => {
 
     // const result = await ;
 
-    expect(userRepo.findAllUsers()).rejects.toThrowError("Database error"); // Check that the error is returned as expected
+    expect(userRepo.getAllUsers()).rejects.toThrowError("Database error"); // Check that the error is returned as expected
   });
 });
 
@@ -70,7 +70,7 @@ describe("findUserById", () => {
   test("should return user by ID", async () => {
     prisma.user.findUniqueOrThrow.mockResolvedValue(mockUser as User);
 
-    const user = await userRepo.findUserById(1);
+    const user = await userRepo.getUserById(1);
     expect(user).toEqual(mockUser);
   });
 
@@ -82,7 +82,7 @@ describe("findUserById", () => {
       }),
     );
 
-    await expect(userRepo.findUserById(8000)).rejects.toThrowError(
+    await expect(userRepo.getUserById(8000)).rejects.toThrowError(
       /User not found/,
     );
   });
@@ -92,7 +92,7 @@ describe("findUserById", () => {
       new Error("Failed to fetch user"),
     );
 
-    await expect(userRepo.findUserById(1)).rejects.toThrowError(
+    await expect(userRepo.getUserById(1)).rejects.toThrowError(
       /Failed to fetch user/,
     ); // Check that the error is returned as expected
   });
@@ -127,7 +127,7 @@ describe("loginUser", () => {
       role: "USER",
     } as User);
 
-    const user = await userRepo.findUserByUsername("johndoe");
+    const user = await userRepo.getUserByUsername("johndoe");
     expect(user).toEqual(mockLoggedInUser);
   });
 
@@ -139,7 +139,7 @@ describe("loginUser", () => {
       }),
     );
 
-    await expect(userRepo.findUserByUsername("johndoe")).rejects.toThrowError(
+    await expect(userRepo.getUserByUsername("johndoe")).rejects.toThrowError(
       /Incorrect username or password/,
     );
   });
@@ -149,7 +149,7 @@ describe("loginUser", () => {
       new Error("Database error"),
     );
 
-    await expect(userRepo.findUserByUsername("johndoe")).rejects.toThrowError(
+    await expect(userRepo.getUserByUsername("johndoe")).rejects.toThrowError(
       /Database error/,
     );
   });

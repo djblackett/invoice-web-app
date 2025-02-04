@@ -68,13 +68,13 @@ describe("UserService - getUsers", () => {
       { id: "2", name: "Jane Doe", username: "janedoe", passwordHash: "hash2" },
     ];
 
-    userRepoMock.findAllUsers.mockResolvedValue(users);
+    userRepoMock.getAllUsers.mockResolvedValue(users);
 
     // Act
     const result = await userService.getUsers();
 
     // Assert
-    expect(userRepoMock.findAllUsers).toHaveBeenCalled();
+    expect(userRepoMock.getAllUsers).toHaveBeenCalled();
     expect(result).toEqual([
       { id: "1", name: "John Doe", username: "johndoe" },
       { id: "2", name: "Jane Doe", username: "janedoe" },
@@ -83,7 +83,7 @@ describe("UserService - getUsers", () => {
 
   it("should throw InternalServerException when database error occurs", async () => {
     // Arrange
-    userRepoMock.findAllUsers.mockRejectedValue(
+    userRepoMock.getAllUsers.mockRejectedValue(
       new InternalServerException("Internal server error"),
     );
 
@@ -93,7 +93,7 @@ describe("UserService - getUsers", () => {
     } catch (error: any) {
       expect(error).toBeInstanceOf(InternalServerException);
       expect(error.message).toBe("Internal server error");
-      expect(userRepoMock.findAllUsers).toHaveBeenCalled();
+      expect(userRepoMock.getAllUsers).toHaveBeenCalled();
     }
     // Assert
   });
@@ -110,13 +110,13 @@ describe("UserService - getUser", () => {
       passwordHash: "hashedPassword123",
     };
 
-    userRepoMock.findUserById.mockResolvedValue(user);
+    userRepoMock.getUserById.mockResolvedValue(user);
 
     // Act
     const result = await userService.getUser(userId);
 
     // Assert
-    expect(userRepoMock.findUserById).toHaveBeenCalledWith(userId);
+    expect(userRepoMock.getUserById).toHaveBeenCalledWith(userId);
     expect(result).toEqual({
       id: user.id,
       name: user.name,
@@ -127,11 +127,11 @@ describe("UserService - getUser", () => {
   it("should throw NotFoundException when user does not exist", async () => {
     // Arrange
     const userId = "1";
-    userRepoMock.findUserById.mockResolvedValue(null);
+    userRepoMock.getUserById.mockResolvedValue(null);
 
     // Act & Assert
     await expect(userService.getUser(userId)).rejects.toThrow("User not found");
-    expect(userRepoMock.findUserById).toHaveBeenCalledWith(userId);
+    expect(userRepoMock.getUserById).toHaveBeenCalledWith(userId);
   });
 });
 

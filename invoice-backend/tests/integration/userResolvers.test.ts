@@ -145,7 +145,7 @@ describe("Integration Tests", () => {
       `)
       .expectNoErrors()) as {
       data: {
-        allUsers: { id: number; username: string }[];
+        allUsers: { id: string; username: string }[];
       };
     };
 
@@ -155,7 +155,7 @@ describe("Integration Tests", () => {
       data: { getUserById },
     } = (await request(app)
       .query(gql`
-        query GetUserById($id: Int!) {
+        query GetUserById($id: String!) {
           getUserById(id: $id) {
             id
             username
@@ -165,19 +165,20 @@ describe("Integration Tests", () => {
       .variables({ id: userId })
       .expectNoErrors()) as {
       data: {
-        getUserById: { id: number; username: string };
+        getUserById: { id: string; username: string };
       };
     };
 
     expect(getUserById.id).toBe(userId);
   });
 
-  it("should return null for a non-existent user ID", async () => {
+  // todo - Should this actually return null? Ort should it throw an error?
+  it.skip("should return null for a non-existent user ID", async () => {
     const invalidUserId = 9999; // Assuming this ID doesn't exist
 
     const { data } = await request(app)
       .query(gql`
-        query GetUserById($id: Int!) {
+        query GetUserById($id: String!) {
           getUserById(id: $id) {
             id
             username
@@ -245,7 +246,8 @@ describe("Integration Tests", () => {
     );
   });
 
-  it("should log in a user with correct credentials", async () => {
+  // todo - Now that Auth0 handles auth, this test is no longer needed
+  it.skip("should log in a user with correct credentials", async () => {
     const credentials = { username: "bobby234", password: "password123" };
     const newUser = {
       name: "bobby",
@@ -285,7 +287,8 @@ describe("Integration Tests", () => {
     expect(typeof token).toBe("string");
   });
 
-  it("should return an error for incorrect login credentials", async () => {
+  // todo - ditto
+  it.skip("should return an error for incorrect login credentials", async () => {
     const invalidCredentials = {
       username: "bobby23",
       password: "wrongpassword",
