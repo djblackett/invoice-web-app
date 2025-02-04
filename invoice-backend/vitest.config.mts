@@ -7,6 +7,7 @@ export default defineConfig({
     reporters: ["html", "json", "verbose"],
     outputFile: "./test-output.html",
     include: ["tests/**/*.test.ts"],
+    // fileParallelism: false,
     environment: "node",
     coverage: {
       provider: "v8",

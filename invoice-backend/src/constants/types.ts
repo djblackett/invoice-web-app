@@ -101,13 +101,16 @@ export const addressZod = z.object({
   country: z.string(),
 });
 
+const createdByZod = z.object({
+  id: z.string(),
+  name: z.string(),
+  username: z.string(),
+  role: z.enum(["USER", "ADMIN"]),
+});
+
 export const invoiceZod = z.object({
-  createdBy: z.object({
-    id: z.string(),
-    name: z.string(),
-    username: z.string(),
-    role: z.enum(["USER", "ADMIN"]),
-  }),
+  createdBy: createdByZod,
+  createdById: z.string(),
   clientAddress: addressZod,
   clientEmail: z.string(),
   clientName: z.string(),

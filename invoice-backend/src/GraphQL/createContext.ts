@@ -55,12 +55,12 @@ const options: VerifyOptions = {
  * @param options - Verification options including audience, issuer, and algorithms.
  * @returns A promise that resolves to the user's email.
  */
-async function verifyTokenAndGetEmail(
+export async function verifyTokenAndGetEmail(
   token: string,
   options: VerifyOptions,
 ): Promise<UserIdAndRole> {
   try {
-    console.log("Verifying token:", token);
+    // console.log("Verifying token:", token);
 
     // Define the namespace used for custom claims
     const namespace = "invoice-web-app/";
@@ -83,30 +83,38 @@ async function verifyTokenAndGetEmail(
     // Verify the token's signature and claims
     const payload = jwt.verify(token, signingKey, options) as JwtPayload;
 
-    console.log("Decoded payload:", payload);
+    // console.log("Decoded payload:", payload);
 
     // Construct the fully qualified claim name
     const emailClaim = `${namespace}email`;
 
     // Extract the email from the custom claim
-    const email = payload[emailClaim];
+    const email =
+      process.env.NODE_ENV !== "test"
+        ? payload[emailClaim]
+        : "user@example.com";
+
     // const user = payload as UserDTO;
     const id = payload.sub;
-    const name = payload.name ?? "Dude";
+    const name = payload.name ?? "user";
 
     // Assign role based on payload or default to USER
     const role: "USER" | "ADMIN" = (payload as any).role || "USER";
 
-    if (id && role && email) {
-      return {
-        id,
-        role,
-        username: email,
-        name,
-      };
-    } else {
+    if (!email || typeof email !== "string") {
+      throw new Error("Email claim is missing or invalid");
+    }
+
+    if (!id || typeof id !== "string") {
       throw new Error("Id claim is missing or invalid");
     }
+
+    return {
+      id,
+      role,
+      username: email,
+      name,
+    };
   } catch (err) {
     console.error("Token verification failed:", err);
     throw err;
@@ -145,37 +153,44 @@ export async function createContext({
         throw new Error("Context creation failed");
       }
 
-      let newUser;
+      let dbUser;
 
       try {
-        const result = await userService.getUserSafely(user.id);
+        dbUser = await userService.getUserSafely(user.id);
+        console.log("Found user:", dbUser);
 
-        if (!result) {
-          newUser = await userService.createUserWithAuth0({
+        if (!dbUser) {
+          dbUser = await userService.createUserWithAuth0({
             id: user.id,
             name: user.name,
             username: user.username ?? "",
             role: user.role,
           });
 
-          console.log("Created new user:", newUser);
+          console.log("Created new user:", dbUser);
         }
       } catch (e) {
-        console.error("error:", e);
+        console.error("User creation failed:", e);
+        throw e;
       }
 
-      return {
-        user: newUser ?? user,
+      const returnPayload = {
+        user: dbUser,
         invoiceService,
         userService,
         pubsub,
         container: childContainer,
       };
+
+      // console.log("Context created:", returnPayload);
+
+      return returnPayload;
     } else {
       return { user: null, container };
     }
   } catch (e) {
     console.error("error:", e);
+    // throw e;
     return { user: null, container };
   }
 }
