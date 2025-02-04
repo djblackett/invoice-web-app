@@ -2903,6 +2903,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@rollup/rollup-linux-x64-musl@npm:4.9.5":
+  version: 4.9.5
+  resolution: "@rollup/rollup-linux-x64-musl@npm:4.9.5"
+  conditions: os=linux & cpu=x64 & libc=musl
+  languageName: node
+  linkType: hard
+
 "@rollup/rollup-win32-arm64-msvc@npm:4.32.0":
   version: 4.32.0
   resolution: "@rollup/rollup-win32-arm64-msvc@npm:4.32.0"
@@ -6495,6 +6502,7 @@ __metadata:
     "@jest/globals": "npm:^29.7.0"
     "@mui/utils": "npm:^6.4.1"
     "@prisma/client": "npm:^6.2.1"
+    "@rollup/rollup-linux-x64-musl": "npm:4.9.5"
     "@types/bcrypt": "npm:^5.0.2"
     "@types/cors": "npm:^2.8.13"
     "@types/express": "npm:4.17.21"
@@ -6555,6 +6563,9 @@ __metadata:
     ws: "npm:^8.18.0"
     yargs: "npm:^17.7.2"
     zod: "npm:^3.23.8"
+  dependenciesMeta:
+    "@rollup/rollup-linux-x64-musl":
+      optional: true
   languageName: unknown
   linkType: soft
 

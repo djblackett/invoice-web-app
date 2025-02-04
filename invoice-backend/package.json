@@ -100,5 +100,8 @@
     "yargs": "^17.7.2",
     "zod": "^3.23.8"
   },
+  "optionalDependencies": {
+    "@rollup/rollup-linux-x64-musl": "4.9.5"
+  },
   "packageManager": "yarn@4.6.0"
 }

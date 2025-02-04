@@ -103,5 +103,8 @@
     "vitest-mock-extended": "^2.0.2",
     "wait-on": "^8.0.1"
   },
+  "optionalDependencies": {
+    "@rollup/rollup-linux-x64-musl": "4.9.5"
+  },
   "packageManager": "yarn@4.6.0"
 }
