@@ -35,6 +35,26 @@ export class PrismaUserRepo implements IUserRepo {
     }
   }
 
+  async deleteAllUsersKeepAdmin(): Promise<boolean> {
+    try {
+      const result = await this.prisma.user.deleteMany({
+        where: {
+          role: {
+            not: "ADMIN",
+          },
+        },
+      });
+      if (result) {
+        return true;
+      } else {
+        return false;
+      }
+    } catch (error: any) {
+      console.error(error);
+      throw new Error("Database error");
+    }
+  }
+
   async getAllUsers(): Promise<ReturnedUser[]> {
     try {
       const users = await this.prisma.user.findMany();

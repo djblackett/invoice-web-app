@@ -60,15 +60,11 @@ export async function verifyTokenAndGetEmail(
   options: VerifyOptions,
 ): Promise<UserIdAndRole> {
   try {
-    // console.log("Verifying token:", token);
-
     // Define the namespace used for custom claims
     const namespace = "invoice-web-app/";
 
     // Decode the token to extract the header
     const decoded = jwt.decode(token, { complete: true });
-
-    // console.log("Decoded token:", decoded);
 
     if (!decoded || typeof decoded !== "object" || !decoded.header) {
       throw new Error("Invalid token");
@@ -86,8 +82,6 @@ export async function verifyTokenAndGetEmail(
     // Verify the token's signature and claims
     const payload = jwt.verify(token, signingKey, options) as JwtPayload;
 
-    // console.log("Decoded payload:", payload);
-
     // Construct the fully qualified claim name
     const emailClaim = `${namespace}email`;
 
@@ -99,12 +93,19 @@ export async function verifyTokenAndGetEmail(
     } else {
       email = payload[emailClaim];
     }
-    // const user = payload as UserDTO;
+
     const id = payload.sub;
     const name = payload.name ?? "user";
 
     // Assign role based on payload or default to USER
-    const role: "USER" | "ADMIN" = (payload as any).role || "USER";
+    let role: "USER" | "ADMIN";
+    if (payload.role === "Admin") {
+      role = "ADMIN";
+    } else if (payload.role === "User") {
+      role = "USER";
+    } else {
+      role = "USER";
+    }
 
     if (!email || typeof email !== "string") {
       throw new Error("Email claim is missing or invalid");
@@ -170,7 +171,6 @@ export async function createContext({
 
       try {
         dbUser = await userService.getUserSafely(user.id);
-        // console.log("Found user:", dbUser);
 
         if (!dbUser) {
           dbUser = await userService.createUserWithAuth0({
@@ -179,15 +179,11 @@ export async function createContext({
             username: user.username ?? "",
             role: user.role,
           });
-
-          // console.log("Created new user:", dbUser);
         }
       } catch (e) {
         console.error("User creation failed:", e);
         throw e;
       }
-
-      // console.log("User in context:", dbUser);
 
       const returnPayload = {
         user: dbUser,
@@ -197,15 +193,12 @@ export async function createContext({
         container: childContainer,
       };
 
-      // console.log("Context created:", returnPayload);
-
       return returnPayload;
     } else {
       return { user: null, container };
     }
   } catch (e) {
     console.error("error:", e);
-    // throw e;
     return { user: null, container };
   }
 }

@@ -76,6 +76,23 @@ export function getUserResolvers(userService: UserService) {
         }
       },
 
+      deleteUsersKeepAdmins: async () => {
+        try {
+          const result = await userService.deleteUsersKeepAdmin();
+          if (result) {
+            return { acknowledged: true };
+          }
+          return { acknowledged: false };
+        } catch (error) {
+          console.error(error);
+          throw new GraphQLError("Internal server error", {
+            extensions: {
+              code: "INTERNAL_SERVER_ERROR",
+            },
+          });
+        }
+      },
+
       // login: async (_root: unknown, args: LoginArgs, { user }: any) => {
       //   try {
       //     const username = await user;

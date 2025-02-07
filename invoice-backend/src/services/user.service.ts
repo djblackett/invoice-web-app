@@ -123,4 +123,8 @@ export class UserService {
   deleteUsers = async (): Promise<boolean> => {
     return await this.userRepo.deleteAllUsers();
   };
+
+  deleteUsersKeepAdmin = async (): Promise<boolean> => {
+    return await this.userRepo.deleteAllUsersKeepAdmin();
+  };
 }

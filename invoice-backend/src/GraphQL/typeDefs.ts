@@ -138,6 +138,8 @@ const typeDefs = gql`
 
     deleteUsers: deleteResult
 
+    deleteUsersKeepAdmins: deleteResult
+
     login(username: String!, password: String!): LoginResponse
   }
 
