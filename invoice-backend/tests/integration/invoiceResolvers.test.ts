@@ -14,12 +14,8 @@ import dotenv from "dotenv";
 import { PrismaClient } from "@prisma/client";
 import { execSync } from "child_process";
 import { randomUUID } from "crypto";
-import container from "@/config/inversify.config";
-import TYPES from "@/constants/identifiers";
 
 dotenv.config({ path: "no-git.env" });
-
-// console.log("NODE_ENV:", process.env.NODE_ENV);
 
 const DOMAIN = process.env.DOMAIN ?? "";
 const CLIENT_ID = process.env.CLIENT_ID ?? "";
@@ -54,7 +50,6 @@ const getTestToken = async () => {
   }
 };
 
-// We'll just keep a single "base invoice" template
 const baseInvoice = {
   createdAt: "2023-01-01",
   paymentDue: "2023-01-15",

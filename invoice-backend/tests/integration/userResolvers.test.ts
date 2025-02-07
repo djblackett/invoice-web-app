@@ -107,8 +107,8 @@ describe("Integration Tests", () => {
     [app] = await createServer();
 
     await request(app).query(gql`
-      mutation DeleteUsers {
-        deleteUsers {
+      mutation DeleteUsersKeepAdmins {
+        deleteUsersKeepAdmins {
           acknowledged
         }
       }
@@ -119,8 +119,8 @@ describe("Integration Tests", () => {
 
   beforeEach(async () => {
     await request(app).query(gql`
-      mutation DeleteUsers {
-        deleteUsers {
+      mutation DeleteUsersKeepAdmins {
+        deleteUsersKeepAdmins {
           acknowledged
         }
       }
@@ -132,8 +132,8 @@ describe("Integration Tests", () => {
   afterEach(async () => {
     // Optional: Clean up after each test
     await request(app).query(gql`
-      mutation DeleteUsers {
-        deleteUsers {
+      mutation DeleteUsersKeepAdmins {
+        deleteUsersKeepAdmins {
           acknowledged
         }
       }
@@ -360,15 +360,15 @@ describe("Integration Tests", () => {
   it("should delete all users", async () => {
     const { data } = await request(app)
       .query(gql`
-        mutation DeleteUsers {
-          deleteUsers {
+        mutation DeleteUsersKeepAdmins {
+          deleteUsersKeepAdmins {
             acknowledged
           }
         }
       `)
       .expectNoErrors();
 
-    expect((data as any).deleteUsers.acknowledged).toBe(true);
+    expect((data as any).deleteUsersKeepAdmins.acknowledged).toBe(true);
 
     // Verify that all users are deleted
     const { data: allUsersData } = await request(app)
