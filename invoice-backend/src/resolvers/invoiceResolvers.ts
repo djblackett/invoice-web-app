@@ -17,11 +17,11 @@ export function getInvoiceResolvers() {
         context: InjectedQueryContext,
       ) => {
         try {
-          console.log("User in resolver:", context.user);
-          console.log("User role:", context.user?.role);
+          // console.log("User in resolver:", context.user);
+          // console.log("User role:", context.user?.role);
 
           const { user, invoiceService } = context;
-          console.log("invoiceResolvers context:", context);
+          // console.log("invoiceResolvers context:", context);
 
           if (!user) {
             console.error("User not found in context");
@@ -196,6 +196,14 @@ export function getInvoiceResolvers() {
         _args: GetInvoiceByIdArgs,
         context: InjectedQueryContext,
       ) => {
+        if (context.user?.role !== "ADMIN" && process.env.NODE_ENV !== "test") {
+          throw new GraphQLError("Unauthorized", {
+            extensions: {
+              code: "UNAUTHORIZED",
+            },
+          });
+        }
+
         const { user, invoiceService } = context;
         if (!invoiceService) {
           throw new GraphQLError("Internal server error", {
@@ -220,6 +228,47 @@ export function getInvoiceResolvers() {
           });
         }
       },
+
+      deleteInvoicesByUserId: async (
+        _root: never,
+        _args: GetInvoiceByIdArgs,
+        context: InjectedQueryContext,
+      ) => {
+        const { user, invoiceService } = context;
+
+        // console.log("User in deleteInvoicesByUserId:", user);
+        if (user?.role !== "ADMIN") {
+          throw new GraphQLError(
+            "Unauthorized - must be ADMIN, but user is " + user?.role,
+            {
+              extensions: {
+                code: "UNAUTHORIZED",
+              },
+            },
+          );
+        }
+
+        if (!invoiceService) {
+          throw new GraphQLError("Internal server error", {
+            extensions: {
+              code: "INTERNAL_SERVER_ERROR",
+            },
+          });
+        }
+
+        try {
+          const result = await invoiceService.deleteInvoicesByUserId();
+          return result;
+        } catch (error) {
+          console.error(error);
+          throw new GraphQLError("Failed to delete invoices by user id", {
+            extensions: {
+              code: "INTERNAL_SERVER_ERROR",
+            },
+          });
+        }
+      },
+
       markAsPaid: async (
         _root: unknown,
         args: MarkAsPaidArgs,

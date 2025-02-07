@@ -213,4 +213,23 @@ export class InvoiceService {
       throw new InternalServerException("Internal server error");
     }
   };
+
+  deleteInvoicesByUserId = async () => {
+    if (!this.userContext) {
+      throw new ValidationException("Unauthorized");
+    }
+
+    const { id } = this.userContext;
+
+    if (!id) {
+      throw new ValidationException("Unauthorized");
+    }
+
+    try {
+      return await this.invoiceRepo.deleteInvoicesByUserId(id);
+    } catch (e) {
+      console.error(e);
+      throw new InternalServerException("Internal server error");
+    }
+  };
 }

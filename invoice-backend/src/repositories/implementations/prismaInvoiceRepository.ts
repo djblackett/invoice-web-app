@@ -213,7 +213,7 @@ export class PrismaInvoiceRepository implements IInvoiceRepo {
 
   async create(invoice: InvoiceWithCreatedBy): Promise<unknown> {
     try {
-      console.log("Creating invoice for user ID:", invoice.createdById);
+      // console.log("Creating invoice for user ID:", invoice.createdById);
 
       // Verify that the user exists
 
@@ -289,7 +289,7 @@ export class PrismaInvoiceRepository implements IInvoiceRepo {
         total: Number(result.total),
       };
 
-      console.log("Invoice created:", createdInvoice);
+      // console.log("Invoice created:", createdInvoice);
       return createdInvoice;
     } catch (error) {
       console.error("Error creating invoice:", error);
@@ -314,6 +314,20 @@ export class PrismaInvoiceRepository implements IInvoiceRepo {
   async deleteAllInvoices() {
     try {
       return await this.prisma.invoice.deleteMany({});
+    } catch (e: any) {
+      throw new Error(`Database error: ${e.message}`);
+    }
+  }
+
+  async deleteInvoicesByUserId(userId: string) {
+    try {
+      return await this.prisma.invoice.deleteMany({
+        where: {
+          createdBy: {
+            id: userId,
+          },
+        },
+      });
     } catch (e: any) {
       throw new Error(`Database error: ${e.message}`);
     }

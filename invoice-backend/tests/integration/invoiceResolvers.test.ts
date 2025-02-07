@@ -14,15 +14,19 @@ import dotenv from "dotenv";
 import { PrismaClient } from "@prisma/client";
 import { execSync } from "child_process";
 import { randomUUID } from "crypto";
+import container from "@/config/inversify.config";
+import TYPES from "@/constants/identifiers";
 
 dotenv.config({ path: "no-git.env" });
 
-console.log("NODE_ENV:", process.env.NODE_ENV);
+// console.log("NODE_ENV:", process.env.NODE_ENV);
 
 const DOMAIN = process.env.DOMAIN ?? "";
 const CLIENT_ID = process.env.CLIENT_ID ?? "";
 const CLIENT_SECRET = process.env.CLIENT_SECRET ?? "";
 const AUDIENCE = process.env.AUDIENCE ?? "";
+const TEST_ID =
+  process.env.TEST_ID ?? "Egq5vDmWmVIa8bcKXorFLSv5Gb6DI3Pa@clients";
 
 // Get a real token for testing
 const getTestToken = async () => {
@@ -83,42 +87,12 @@ const baseInvoice = {
   total: 1000,
 };
 
+console.log("Env vars:", process.env.DATABASE_URL);
+
 let app: any;
 let testToken: string;
 let prisma: PrismaClient;
 let schemaName: string;
-
-// beforeEach(async () => {
-//   // 1. Generate a unique schema name
-//   // e.g., "test_schema_182b07dc-5b93-44a8-a248-77102fe91bf0"
-//   schemaName = `test_schema_${randomUUID()}`;
-
-//   // 2. Construct a new DB URL that includes this schema
-//   // Replace your own user/password/host/db as appropriate
-//   const baseDatabaseUrl =
-//     "postgresql://postgres:example@localhost:5432/db-test";
-//   const newDatabaseUrl = `${baseDatabaseUrl}?schema=${schemaName}`;
-
-//   // 3. Override the env var for Prisma
-//   process.env.DATABASE_URL = newDatabaseUrl;
-
-//   // 5. Instantiate Prisma Client *after* the schema is set up
-//   prisma = new PrismaClient({
-//     // datasources: {
-//     //   db: {
-//     //     url: newDatabaseUrl,
-//     //   },
-//     // },
-//   });
-
-//   await prisma.$connect();
-//   [app] = await createServer();
-//   // 4. Run "prisma db push" or "prisma migrate deploy"
-//   //    This ensures the schema is created and tables are set up
-//   execSync("npx prisma db push", { stdio: "inherit" });
-
-//   // optionally do any seed data insertion here, if needed
-// });
 
 let currentInvoiceId = "";
 describe("Invoice Resolvers Integration Tests", () => {
@@ -138,18 +112,27 @@ describe("Invoice Resolvers Integration Tests", () => {
     const newDatabaseUrl = `${baseDatabaseUrl}?schema=${schemaName}`;
 
     // 3. Override the env var for Prisma
-    process.env.DATABASE_URL = newDatabaseUrl;
+    // process.env.DATABASE_URL = newDatabaseUrl;
+
+    // console.log("Env vars:", process.env.DATABASE_URL);
 
     // 5. Instantiate Prisma Client *after* the schema is set up
     prisma = new PrismaClient({
-      datasources: {
-        db: {
-          url: newDatabaseUrl,
-        },
-      },
+      datasourceUrl: newDatabaseUrl,
     });
 
     await prisma.$connect();
+
+    // container.rebind<PrismaClient>(TYPES.PrismaClient).toConstantValue(prisma);
+    console.log("Connected to Prisma", newDatabaseUrl);
+    // Object.keys(prisma).forEach((key) => {
+    //   console.log(key);
+    // });
+
+    await prisma.$executeRawUnsafe(
+      `SET search_path TO "${schemaName}", public`,
+    );
+
     [app] = await createServer();
     // 4. Run "prisma db push" or "prisma migrate deploy"
     //    This ensures the schema is created and tables are set up
@@ -212,7 +195,7 @@ describe("Invoice Resolvers Integration Tests", () => {
   });
 
   afterAll(async () => {
-    // Clean up after all tests
+    // Clean up before each test
     await request(app)
       .query(gql`
         mutation DeleteAllInvoices {
@@ -227,7 +210,7 @@ describe("Invoice Resolvers Integration Tests", () => {
   afterEach(async () => {
     // 6. Drop the schema to clean up
     //    Something like: DROP SCHEMA test_schema_xxx CASCADE
-    //    You can do this via a direct query.
+    //  You can do this via a direct query.
     await prisma.$executeRawUnsafe(
       `DROP SCHEMA IF EXISTS "${schemaName}" CASCADE`,
     );
@@ -461,3 +444,15 @@ describe("Invoice Resolvers Integration Tests", () => {
     expect((data as any).markAsPaid.status).toBe("paid");
   });
 });
+
+// remove orphaned test schemas
+// DO $$DECLARE
+//    s text;
+// BEGIN
+//    FOR s IN
+//       SELECT nspname FROM pg_namespace
+//          WHERE nspname LIKE 'test\_schema\_%'
+//    LOOP
+//       EXECUTE 'DROP SCHEMA ' || quote_ident(s) || ' CASCADE';
+//    END LOOP;
+// END;$$;

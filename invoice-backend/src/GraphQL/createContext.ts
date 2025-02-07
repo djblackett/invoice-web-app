@@ -3,7 +3,6 @@ import jwksClient, { SigningKey } from "jwks-rsa";
 import {
   ContextArgs,
   InjectedQueryContext,
-  UserDTO,
   UserIdAndRole,
 } from "../constants/types";
 import container from "@/config/inversify.config";
@@ -11,6 +10,7 @@ import TYPES from "@/constants/identifiers";
 import { InvoiceService } from "@/services/invoice.service";
 import { UserService } from "@/services/user.service";
 import { PubSub } from "graphql-subscriptions";
+import { PrismaClient } from "@prisma/client";
 
 const client = jwksClient({
   jwksUri: "https://dev-n4e4qk7s3kbzusrs.us.auth0.com/.well-known/jwks.json",
@@ -67,6 +67,9 @@ export async function verifyTokenAndGetEmail(
 
     // Decode the token to extract the header
     const decoded = jwt.decode(token, { complete: true });
+
+    // console.log("Decoded token:", decoded);
+
     if (!decoded || typeof decoded !== "object" || !decoded.header) {
       throw new Error("Invalid token");
     }
@@ -126,6 +129,7 @@ export async function verifyTokenAndGetEmail(
 export async function createContext({
   req,
   connection,
+  testPrisma,
 }: ContextArgs): Promise<InjectedQueryContext> {
   if (connection) {
     // This is a subscription request
@@ -138,6 +142,13 @@ export async function createContext({
       const user = await verifyTokenAndGetEmail(token, options);
 
       const childContainer = container.createChild();
+
+      // If running in tests, rebind the Prisma client with the test-specific instance:
+      if (testPrisma) {
+        childContainer
+          .rebind<PrismaClient>(TYPES.PrismaClient)
+          .toConstantValue(testPrisma);
+      }
 
       childContainer
         .bind<UserIdAndRole>(TYPES.UserContext)
@@ -159,7 +170,7 @@ export async function createContext({
 
       try {
         dbUser = await userService.getUserSafely(user.id);
-        console.log("Found user:", dbUser);
+        // console.log("Found user:", dbUser);
 
         if (!dbUser) {
           dbUser = await userService.createUserWithAuth0({
@@ -169,12 +180,14 @@ export async function createContext({
             role: user.role,
           });
 
-          console.log("Created new user:", dbUser);
+          // console.log("Created new user:", dbUser);
         }
       } catch (e) {
         console.error("User creation failed:", e);
         throw e;
       }
+
+      // console.log("User in context:", dbUser);
 
       const returnPayload = {
         user: dbUser,
