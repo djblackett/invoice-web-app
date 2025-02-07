@@ -130,6 +130,8 @@ const typeDefs = gql`
 
     deleteAllInvoices: deleteResult
 
+    deleteInvoicesByUserId(userId: String!): deleteResult
+
     markAsPaid(id: String!): Invoice
 
     createUser(name: String, username: String!, password: String!): User

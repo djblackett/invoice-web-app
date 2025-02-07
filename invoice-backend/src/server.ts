@@ -29,8 +29,12 @@ export const createServer = async () => {
       const sslOptions = {
         key: fs.readFileSync(
           path.join(__dirname, CERT_DIR, "localhost-key.pem"),
+          "ascii",
         ),
-        cert: fs.readFileSync(path.join(__dirname, CERT_DIR, "localhost.pem")),
+        cert: fs.readFileSync(
+          path.join(__dirname, CERT_DIR, "localhost-fullchain.pem"),
+          "ascii",
+        ),
       };
 
       httpServer = https.createServer(sslOptions, app);

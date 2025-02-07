@@ -1,37 +1,23 @@
-import { injectable } from "inversify";
+import { inject, injectable } from "inversify";
 import { PrismaClient } from "@prisma/client";
 import { IDatabaseConnection } from "./database.connection";
-import { DB } from "../config/server.config";
+import TYPES from "@/constants/identifiers";
 
 @injectable()
 export class DatabaseConnection implements IDatabaseConnection {
-  static prisma = new PrismaClient({
-    datasources: {
-      db: {
-        url: DB.url,
-      },
-    },
-    errorFormat: "pretty",
-    omit: {
-      user: {
-        passwordHash: true,
-      },
-    },
-  });
-
-  constructor() {}
+  constructor(@inject(TYPES.PrismaClient) public prisma: PrismaClient) {}
 
   public getDatabase() {
-    return DatabaseConnection.prisma;
+    return this.prisma;
   }
 
   public async initConnection(): Promise<void> {
     try {
-      await DatabaseConnection.prisma.$connect();
+      await this.prisma.$connect();
       console.log("Connected to Prisma");
     } catch (e) {
       console.error(e);
-      await DatabaseConnection.prisma.$disconnect();
+      await this.prisma.$disconnect();
       process.exit(1);
     }
   }
