@@ -27,6 +27,9 @@ jobs:
       TEST_LOGIN: ${{ secrets.TEST_LOGIN }}
       TEST_PASSWORD: ${{ secrets.TEST_PASSWORD }}
       TEST_BASE_URL: https://localhost:4173/invoice-web-app/
+      DOMAIN: ${{ secrets.AUTH_DOMAIN }}
+      AUDIENCE: ${{ secrets.AUDIENCE }}
+
 
     runs-on: ubuntu-22.04
     services:

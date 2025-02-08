@@ -24,6 +24,8 @@ jobs:
       VITE_BACKEND_URL: http://localhost:8000
       NODE_ENV: CI
       CERT_DIR: "../certs/"
+      DOMAIN: ${{ secrets.AUTH_DOMAIN }}
+      AUDIENCE: ${{ secrets.AUDIENCE }}
 
     runs-on: ubuntu-22.04
     services:
