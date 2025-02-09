@@ -83,7 +83,9 @@ jobs:
         run: |
           cd invoice-backend && mkdir certs && cd certs && \
           mkcert localhost
-          # This will generate localhost.pem and localhost-key.pem
+          cat localhost.pem > localhost-fullchain.pem
+          cat "$(mkcert -CAROOT)/rootCA.pem" >> localhost-fullchain.pem
+          
 
       - name: Copy certs to frontend directory
         run: cp -r invoice-backend/certs invoice-frontend/certs

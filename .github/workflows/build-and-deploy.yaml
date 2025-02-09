@@ -154,7 +154,8 @@ jobs:
         run: |
           cd invoice-backend && mkdir certs && cd certs && \
           mkcert localhost
-          # This will generate localhost.pem and localhost-key.pem
+          cat localhost.pem > localhost-fullchain.pem
+          cat "$(mkcert -CAROOT)/rootCA.pem" >> localhost-fullchain.pem
 
       - name: Restore Cache
         uses: actions/cache@v4.2.0
