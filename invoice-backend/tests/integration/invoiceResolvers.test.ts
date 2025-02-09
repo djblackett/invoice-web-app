@@ -89,12 +89,11 @@ let app: any;
 let testToken: string;
 let prisma: PrismaClient;
 let schemaName: string;
-
 let currentInvoiceId = "";
+
 describe("Invoice Resolvers Integration Tests", () => {
   beforeAll(async () => {
     testToken = await getTestToken();
-    console.log("Test token:", testToken);
   });
 
   beforeEach(async () => {

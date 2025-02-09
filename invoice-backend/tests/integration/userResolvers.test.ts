@@ -13,6 +13,7 @@ import {
 import { PrismaClient } from "@prisma/client";
 import { execSync } from "child_process";
 import { randomUUID } from "crypto";
+import { getTestToken } from "./invoiceResolvers.test";
 
 let app: any;
 
@@ -28,9 +29,6 @@ const users = [
   { name: "Ivan", username: "ivan_iconic", password: "iconicivan88" },
   { name: "Jasmine", username: "jasmine_jazz", password: "jazzitup101" },
 ];
-
-const testToken =
-  "eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCIsImtpZCI6IlJOd1d1V011ckozQ3Bzd1JkVnZHUyJ9.eyJpc3MiOiJodHRwczovL2Rldi1uNGU0cWs3czNrYnp1c3JzLnVzLmF1dGgwLmNvbS8iLCJzdWIiOiJFZ3E1dkRtV21WSWE4YmNLWG9yRkxTdjVHYjZESTNQYUBjbGllbnRzIiwiYXVkIjoiaHR0cHM6Ly9pbnZvaWNlLXdlYi1hcHAvIiwiaWF0IjoxNzM5MDczOTU2LCJleHAiOjE3MzkxNjAzNTYsImd0eSI6ImNsaWVudC1jcmVkZW50aWFscyIsImF6cCI6IkVncTV2RG1XbVZJYThiY0tYb3JGTFN2NUdiNkRJM1BhIiwicGVybWlzc2lvbnMiOltdfQ.N7rns9DzKh2fYNq7dkzoy0NJ4QVm5AYE5aywuSFshf8b2n9RlzLd38qlSLstXIVN99siEXakZqSMOi25mzRDUQpEwf5dmSV1XpEEoIz1bqZAbcW5_eHYhFlP_If2sNYruB4U2eSTUoLYslGa52hxXj93AgTbaqEeMHhLzA40n0E4l9T6l52houQddOTNdtR37IqcD1lhVrIRUkD_BCkTQtJ-gX0Y_uREeSIbWF0PZDHkgTzTRRdDPf0o8wwW81YiHgOIhE5TQfLbdepX7l2m7jciHMxi_qI_iALNtQ7xbQh6i-OuBdOmr9-bZ04GI5yKHA1oxXXbofEN3l1EcBUNLw";
 
 async function createUsers() {
   const userPromises = users.map((user) => {
@@ -60,87 +58,91 @@ async function createUsers() {
 
 let prisma: PrismaClient;
 let schemaName: string;
-
-beforeAll(async () => {
-  // 1. Generate a unique schema name
-  // e.g., "test_schema_182b07dc-5b93-44a8-a248-77102fe91bf0"
-  schemaName = `test_schema_${randomUUID()}`;
-
-  // 2. Construct a new DB URL that includes this schema
-  // Replace your own user/password/host/db as appropriate
-  const baseDatabaseUrl =
-    "postgresql://postgres:example@localhost:5432/db-test";
-  const newDatabaseUrl = `${baseDatabaseUrl}?schema=${schemaName}`;
-
-  // 3. Override the env var for Prisma
-  process.env.DATABASE_URL = newDatabaseUrl;
-
-  // 5. Instantiate Prisma Client *after* the schema is set up
-  prisma = new PrismaClient({
-    datasources: {
-      db: {
-        url: newDatabaseUrl,
-      },
-    },
-  });
-
-  prisma.$connect();
-
-  // 4. Run "prisma db push" or "prisma migrate deploy"
-  //    This ensures the schema is created and tables are set up
-  execSync("npx prisma db push", { stdio: "inherit" });
-
-  // optionally do any seed data insertion here, if needed
-});
-
-afterAll(async () => {
-  // 6. Drop the schema to clean up
-  //    Something like: DROP SCHEMA test_schema_xxx CASCADE
-  //    You can do this via a direct query.
-  await prisma.$executeRawUnsafe(
-    `DROP SCHEMA IF EXISTS "${schemaName}" CASCADE`,
-  );
-
-  // Finally, disconnect Prisma
-  await prisma.$disconnect();
-});
+let testToken: string;
 
 describe("Integration Tests", () => {
   beforeAll(async () => {
+    testToken = await getTestToken();
+    // 1. Generate a unique schema name
+    // e.g., "test_schema_182b07dc-5b93-44a8-a248-77102fe91bf0"
+    schemaName = `test_schema_${randomUUID()}`;
+
+    // 2. Construct a new DB URL that includes this schema
+    // Replace your own user/password/host/db as appropriate
+    const baseDatabaseUrl =
+      "postgresql://postgres:example@localhost:5432/db-test";
+    const newDatabaseUrl = `${baseDatabaseUrl}?schema=${schemaName}`;
+
+    // 3. Override the env var for Prisma
+    process.env.DATABASE_URL = newDatabaseUrl;
+
+    // 5. Instantiate Prisma Client *after* the schema is set up
+    prisma = new PrismaClient({
+      datasources: {
+        db: {
+          url: newDatabaseUrl,
+        },
+      },
+    });
+
+    prisma.$connect();
+
+    // 4. Run "prisma db push" or "prisma migrate deploy"
+    //    This ensures the schema is created and tables are set up
+    execSync("npx prisma db push", { stdio: "inherit" });
+
     [app] = await createServer();
 
-    await request(app).query(gql`
-      mutation DeleteUsersKeepAdmins {
-        deleteUsersKeepAdmins {
-          acknowledged
+    await request(app)
+      .query(gql`
+        mutation DeleteUsersKeepAdmins {
+          deleteUsersKeepAdmins {
+            acknowledged
+          }
         }
-      }
-    `);
+      `)
+      .set("Authorization", `Bearer ${testToken}`);
 
     await createUsers();
   });
 
   beforeEach(async () => {
-    await request(app).query(gql`
-      mutation DeleteUsersKeepAdmins {
-        deleteUsersKeepAdmins {
-          acknowledged
+    await request(app)
+      .query(gql`
+        mutation DeleteUsersKeepAdmins {
+          deleteUsersKeepAdmins {
+            acknowledged
+          }
         }
-      }
-    `);
+      `)
+      .set("Authorization", `Bearer ${testToken}`);
     // Re-create users for each test
     await createUsers();
   });
 
   afterEach(async () => {
     // Optional: Clean up after each test
-    await request(app).query(gql`
-      mutation DeleteUsersKeepAdmins {
-        deleteUsersKeepAdmins {
-          acknowledged
+    await request(app)
+      .query(gql`
+        mutation DeleteUsersKeepAdmins {
+          deleteUsersKeepAdmins {
+            acknowledged
+          }
         }
-      }
-    `);
+      `)
+      .set("Authorization", `Bearer ${testToken}`);
+  });
+
+  afterAll(async () => {
+    // 6. Drop the schema to clean up
+    //    Something like: DROP SCHEMA test_schema_xxx CASCADE
+    //    You can do this via a direct query.
+    await prisma.$executeRawUnsafe(
+      `DROP SCHEMA IF EXISTS "${schemaName}" CASCADE`,
+    );
+
+    // Finally, disconnect Prisma
+    await prisma.$disconnect();
   });
 
   it("should return a list of 10 users", async () => {
@@ -153,6 +155,7 @@ describe("Integration Tests", () => {
           }
         }
       `)
+      .set("Authorization", `Bearer ${testToken}`)
       .expectNoErrors();
     console.log((data as any).allUsers);
     expect((data as any).allUsers).toHaveLength(10);
@@ -199,6 +202,7 @@ describe("Integration Tests", () => {
           }
         }
       `)
+      .set("Authorization", `Bearer ${testToken}`)
       .expectNoErrors()) as {
       data: {
         allUsers: { id: string; username: string }[];
@@ -219,6 +223,7 @@ describe("Integration Tests", () => {
         }
       `)
       .variables({ id: userId })
+      .set("Authorization", `Bearer ${testToken}`)
       .expectNoErrors()) as {
       data: {
         getUserById: { id: string; username: string };
@@ -241,6 +246,7 @@ describe("Integration Tests", () => {
           }
         }
       `)
+      .set("Authorization", `Bearer ${testToken}`)
       .variables({ id: invalidUserId });
 
     expect((data as any).getUserById).toBeNull();
@@ -292,6 +298,7 @@ describe("Integration Tests", () => {
           }
         }
       `)
+      .set("Authorization", `Bearer ${testToken}`)
       .variables(incompleteUser);
 
     expect(response.errors).toBeDefined();
@@ -325,6 +332,7 @@ describe("Integration Tests", () => {
         }
       `)
       .variables(newUser)
+      .set("Authorization", `Bearer ${testToken}`)
       .expectNoErrors();
 
     const { data } = await request(app)
@@ -336,6 +344,7 @@ describe("Integration Tests", () => {
         }
       `)
       .variables(credentials)
+      .set("Authorization", `Bearer ${testToken}`)
       .expectNoErrors();
 
     const token = (data as any).login.token;
@@ -374,6 +383,7 @@ describe("Integration Tests", () => {
           }
         }
       `)
+      .set("Authorization", `Bearer ${testToken}`)
       .expectNoErrors();
 
     expect((data as any).deleteUsersKeepAdmins.acknowledged).toBe(true);
@@ -388,6 +398,7 @@ describe("Integration Tests", () => {
           }
         }
       `)
+      .set("Authorization", `Bearer ${testToken}`)
       .expectNoErrors();
 
     expect((allUsersData as any).allUsers).toHaveLength(0);
