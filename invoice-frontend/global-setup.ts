@@ -13,7 +13,10 @@ const TEST_LOGIN = process.env.TEST_LOGIN;
 const TEST_PASSWORD = process.env.TEST_PASSWORD;
 export const TEST_BASE_URL = process.env.TEST_BASE_URL || "";
 const GRAPHQL_ENDPOINT = `${process.env.VITE_BACKEND_URL}`;
+// const GRAPHQL_ENDPOINT = "./graphql";
 const TEST_ID = process.env.TEST_ID || "auth0|6773303ad84a96d7bc0329b3";
+
+console.log("GraphQL Endpoint:", GRAPHQL_ENDPOINT);
 
 if (!TEST_LOGIN || !TEST_PASSWORD) {
   throw new Error("Please provide login and password");
@@ -33,7 +36,9 @@ const globalSetup = async ({ config }) => {
   const invoiceMainPage = new InvoiceMainPage(page);
   await invoiceMainPage.gotoPage();
 
-  await invoiceMainPage.page.waitForURL(`${TEST_BASE_URL}#/login`);
+  // await invoiceMainPage.page.waitForURL(`${TEST_BASE_URL}#/login`);
+  // await page.waitForFunction(() => window.location.hash === "#/login");
+
   await invoiceMainPage.welcomePage.clickLoginButton();
   await invoiceMainPage.page.waitForLoadState("networkidle");
 
@@ -78,8 +83,9 @@ const globalSetup = async ({ config }) => {
     throw new Error("Origin not found in state.json");
   }
 
-  const tokenItem = origin.localStorage.find((item: any) =>
-    item.name.includes("::openid profile email offline_access"),
+  const tokenItem = origin.localStorage.find(
+    (item: { name: string; value: string }) =>
+      item.name.includes("::openid profile email offline_access"),
   );
 
   if (!tokenItem) {
