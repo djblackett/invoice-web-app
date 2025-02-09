@@ -25,7 +25,7 @@ const TEST_ID =
   process.env.TEST_ID ?? "Egq5vDmWmVIa8bcKXorFLSv5Gb6DI3Pa@clients";
 
 // Get a real token for testing
-const getTestToken = async () => {
+export const getTestToken = async () => {
   try {
     const response = await fetch(`${DOMAIN}/oauth/token`, {
       method: "POST",
@@ -39,6 +39,7 @@ const getTestToken = async () => {
     });
 
     if (!response.ok) {
+      console.error(response);
       throw new Error(`Failed to fetch token: ${response.statusText}`);
     }
 
@@ -93,6 +94,7 @@ let currentInvoiceId = "";
 describe("Invoice Resolvers Integration Tests", () => {
   beforeAll(async () => {
     testToken = await getTestToken();
+    console.log("Test token:", testToken);
   });
 
   beforeEach(async () => {

@@ -1,6 +1,10 @@
 import { GraphQLError } from "graphql";
 import { UserService } from "../services/user.service";
-import { CreateUserDTO, LoginArgs } from "../constants/types";
+import {
+  CreateUserDTO,
+  InjectedQueryContext,
+  LoginArgs,
+} from "../constants/types";
 import {
   NotFoundException,
   UnauthorizedException,
@@ -21,6 +25,7 @@ export function getUserResolvers(userService: UserService) {
           });
         }
       },
+
       getUserById: async (_root: unknown, args: { id: string }) => {
         try {
           const user = await userService.getUser(args.id);
@@ -59,7 +64,18 @@ export function getUserResolvers(userService: UserService) {
           }
         }
       },
-      deleteUsers: async () => {
+
+      deleteUsers: async (
+        _root: never,
+        _args: never,
+        context: InjectedQueryContext,
+      ) => {
+        if (!context.user) {
+          throw new UnauthorizedException();
+        }
+        if (context.user.role !== "admin") {
+          throw new UnauthorizedException("Only admin can delete all users");
+        }
         try {
           const result = await userService.deleteUsers();
           if (result) {
@@ -76,7 +92,17 @@ export function getUserResolvers(userService: UserService) {
         }
       },
 
-      deleteUsersKeepAdmins: async () => {
+      deleteUsersKeepAdmins: async (
+        _root: never,
+        _args: never,
+        context: InjectedQueryContext,
+      ) => {
+        if (!context.user) {
+          throw new UnauthorizedException();
+        }
+        if (context.user.role !== "admin") {
+          throw new UnauthorizedException("Only admin can delete all users");
+        }
         try {
           const result = await userService.deleteUsersKeepAdmin();
           if (result) {
@@ -92,38 +118,6 @@ export function getUserResolvers(userService: UserService) {
           });
         }
       },
-
-      // login: async (_root: unknown, args: LoginArgs, { user }: any) => {
-      //   try {
-      //     const username = await user;
-      //     const loginResponse = await userService.login(
-      //       args.username,
-      //       args.password,
-      //     );
-      //     return loginResponse;
-      //   } catch (error) {
-      //     console.error(error);
-      //     if (error instanceof NotFoundException) {
-      //       throw new GraphQLError("User not found", {
-      //         extensions: {
-      //           code: "BAD_USER_INPUT",
-      //         },
-      //       });
-      //     } else if (error instanceof UnauthorizedException) {
-      //       throw new GraphQLError("Invalid username or password", {
-      //         extensions: {
-      //           code: "UNAUTHENTICATED",
-      //         },
-      //       });
-      //     } else {
-      //       throw new GraphQLError("Internal server error", {
-      //         extensions: {
-      //           code: "INTERNAL_SERVER_ERROR",
-      //         },
-      //       });
-      //     }
-      //   }
-      // },
     },
   };
 }

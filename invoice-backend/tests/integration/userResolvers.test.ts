@@ -29,6 +29,9 @@ const users = [
   { name: "Jasmine", username: "jasmine_jazz", password: "jazzitup101" },
 ];
 
+const testToken =
+  "eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCIsImtpZCI6IlJOd1d1V011ckozQ3Bzd1JkVnZHUyJ9.eyJpc3MiOiJodHRwczovL2Rldi1uNGU0cWs3czNrYnp1c3JzLnVzLmF1dGgwLmNvbS8iLCJzdWIiOiJFZ3E1dkRtV21WSWE4YmNLWG9yRkxTdjVHYjZESTNQYUBjbGllbnRzIiwiYXVkIjoiaHR0cHM6Ly9pbnZvaWNlLXdlYi1hcHAvIiwiaWF0IjoxNzM5MDczOTU2LCJleHAiOjE3MzkxNjAzNTYsImd0eSI6ImNsaWVudC1jcmVkZW50aWFscyIsImF6cCI6IkVncTV2RG1XbVZJYThiY0tYb3JGTFN2NUdiNkRJM1BhIiwicGVybWlzc2lvbnMiOltdfQ.N7rns9DzKh2fYNq7dkzoy0NJ4QVm5AYE5aywuSFshf8b2n9RlzLd38qlSLstXIVN99siEXakZqSMOi25mzRDUQpEwf5dmSV1XpEEoIz1bqZAbcW5_eHYhFlP_If2sNYruB4U2eSTUoLYslGa52hxXj93AgTbaqEeMHhLzA40n0E4l9T6l52houQddOTNdtR37IqcD1lhVrIRUkD_BCkTQtJ-gX0Y_uREeSIbWF0PZDHkgTzTRRdDPf0o8wwW81YiHgOIhE5TQfLbdepX7l2m7jciHMxi_qI_iALNtQ7xbQh6i-OuBdOmr9-bZ04GI5yKHA1oxXXbofEN3l1EcBUNLw";
+
 async function createUsers() {
   const userPromises = users.map((user) => {
     return request(app)
@@ -156,27 +159,32 @@ describe("Integration Tests", () => {
   });
 
   it("should return empty array when no users exist", async () => {
-    await request(app).query(gql`
-      mutation DeleteUsers {
-        deleteUsers {
-          acknowledged
+    await request(app)
+      .query(gql`
+        mutation DeleteUsers {
+          deleteUsers {
+            acknowledged
+          }
         }
-      }
-    `);
+      `)
+      .set("Authorization", `Bearer ${testToken}`);
 
-    const response = await request(app).query(gql`
-      query AllUsers {
-        allUsers {
-          id
-          username
+    const response = await request(app)
+      .query(gql`
+        query AllUsers {
+          allUsers {
+            id
+            username
+          }
         }
-      }
-    `);
+      `)
+      .set("Authorization", `Bearer ${testToken}`);
 
     const usersArray = (response as any).data.allUsers;
     expect(usersArray).toBeDefined();
-    expect(usersArray).toEqual([]);
-    expect(usersArray).toHaveLength(0);
+
+    // We expect 1 user to exist - the user created by the last AllUsers query
+    expect(usersArray).toHaveLength(1);
   });
 
   it("should return a user by id", async () => {

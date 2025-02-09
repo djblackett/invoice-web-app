@@ -171,7 +171,12 @@ jobs:
       - name: Run backend tests (unit and integration)
         run: |
           cd invoice-backend
-          npm run test:unit && npm run test:integration
+          npm run test:unit
+          
+      - name: Run integration tests
+        run: |
+          cd invoice-backend
+          npm run test:integration
 
       - name: Run backend server for e2e tests
         run: |
