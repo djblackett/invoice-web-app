@@ -24,6 +24,16 @@ const AUDIENCE = process.env.AUDIENCE ?? "";
 const TEST_ID =
   process.env.TEST_ID ?? "Egq5vDmWmVIa8bcKXorFLSv5Gb6DI3Pa@clients";
 
+function checkEnvVars() {
+  if (!DOMAIN || !CLIENT_ID || !CLIENT_SECRET || !AUDIENCE) {
+    throw new Error(
+      "Please provide DOMAIN, CLIENT_ID, CLIENT_SECRET, and AUDIENCE in the environment",
+    );
+  }
+}
+
+checkEnvVars();
+
 // Get a real token for testing
 export const getTestToken = async () => {
   try {
