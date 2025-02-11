@@ -4,7 +4,7 @@ import prisma from "../../libs/__mocks__/prisma";
 import { DatabaseConnectionMock } from "./database.connection.mock";
 import { IDatabaseConnection } from "../../src/database/database.connection";
 import { PrismaClientKnownRequestError } from "@prisma/client/runtime/library";
-import { PrismaUserRepo } from "../../src/repositories/implementations/prismaUserRepo";
+import { PrismaUserRepository } from "../../src/repositories/implementations/prismaUserRepo";
 import {
   UserEntity,
   LoggedInUser,
@@ -35,7 +35,7 @@ beforeEach(() => {
   vi.clearAllMocks(); // Clear mocks before each test
 });
 
-const userRepo = new PrismaUserRepo(
+const userRepo = new PrismaUserRepository(
   new DatabaseConnectionMock() as IDatabaseConnection,
 );
 

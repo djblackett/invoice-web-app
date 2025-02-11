@@ -13,9 +13,29 @@ import {
 import { PrismaClient } from "@prisma/client";
 import { execSync } from "child_process";
 import { randomUUID } from "crypto";
-import { getTestToken } from "./invoiceResolvers.test";
+import { getTestToken } from "./utils";
+import container from "@/config/inversify.config";
+import { Container } from "inversify";
+import { UserIdAndRole } from "@/constants/types";
+import TYPES from "@/constants/identifiers";
 
 let app: any;
+process.env.NODE_ENV = "test";
+// export function createTestContainer() {
+//   const container = new Container();
+
+//   // Add test-specific bindings
+//   container.bind<UserIdAndRole>(TYPES.UserContext).toConstantValue({
+//     id: "test-user-id",
+//     role: "USER",
+//     username: "test@example.com",
+//     name: "Test User",
+//   });
+
+//   // Add other necessary bindings...
+
+//   return container;
+// }
 
 const users = [
   { name: "Alice", username: "alicewonder", password: "wonderland123" },
@@ -50,6 +70,7 @@ async function createUsers() {
         username: user.username,
         password: user.password,
       })
+      .set("Authorization", `Bearer ${testToken}`)
       .expectNoErrors();
   });
 
@@ -63,6 +84,9 @@ let testToken: string;
 describe("Integration Tests", () => {
   beforeAll(async () => {
     testToken = await getTestToken();
+  });
+
+  beforeEach(async () => {
     // 1. Generate a unique schema name
     // e.g., "test_schema_182b07dc-5b93-44a8-a248-77102fe91bf0"
     schemaName = `test_schema_${randomUUID()}`;
@@ -74,39 +98,25 @@ describe("Integration Tests", () => {
     const newDatabaseUrl = `${baseDatabaseUrl}?schema=${schemaName}`;
 
     // 3. Override the env var for Prisma
-    process.env.DATABASE_URL = newDatabaseUrl;
+    // process.env.DATABASE_URL = newDatabaseUrl;
 
     // 5. Instantiate Prisma Client *after* the schema is set up
     prisma = new PrismaClient({
-      datasources: {
-        db: {
-          url: newDatabaseUrl,
-        },
-      },
+      datasourceUrl: newDatabaseUrl,
     });
 
-    prisma.$connect();
+    await prisma.$executeRawUnsafe(
+      `SET search_path TO "${schemaName}", public`,
+    );
+    await prisma.$connect();
 
-    // 4. Run "prisma db push" or "prisma migrate deploy"
-    //    This ensures the schema is created and tables are set up
+    const child = container.createChild();
+    child.bind<PrismaClient>(TYPES.PrismaClient).toConstantValue(prisma);
+
+    console.log("Connected to Prisma", newDatabaseUrl);
     execSync("npx prisma db push", { stdio: "inherit" });
-
     [app] = await createServer();
 
-    await request(app)
-      .query(gql`
-        mutation DeleteUsersKeepAdmins {
-          deleteUsersKeepAdmins {
-            acknowledged
-          }
-        }
-      `)
-      .set("Authorization", `Bearer ${testToken}`);
-
-    await createUsers();
-  });
-
-  beforeEach(async () => {
     await request(app)
       .query(gql`
         mutation DeleteUsersKeepAdmins {
@@ -145,7 +155,7 @@ describe("Integration Tests", () => {
     await prisma.$disconnect();
   });
 
-  it("should return a list of 10 users", async () => {
+  it("should return a list of 11 users: 1 ADMIN + 10 created users", async () => {
     const { data } = await request(app)
       .query(gql`
         query AllUsers {
@@ -158,7 +168,7 @@ describe("Integration Tests", () => {
       .set("Authorization", `Bearer ${testToken}`)
       .expectNoErrors();
     console.log((data as any).allUsers);
-    expect((data as any).allUsers).toHaveLength(10);
+    expect((data as any).allUsers).toHaveLength(11);
   });
 
   it("should return empty array when no users exist", async () => {
@@ -273,6 +283,7 @@ describe("Integration Tests", () => {
         }
       `)
       .variables(newUser)
+      .set("Authorization", `Bearer ${testToken}`)
       .expectNoErrors();
 
     expect((data as any).createUser.username).toBe(newUser.username);
@@ -374,7 +385,7 @@ describe("Integration Tests", () => {
     expect(response.errors![0].extensions.code).toBe("UNAUTHENTICATED");
   });
 
-  it("should delete all users", async () => {
+  it("should delete all users except ADMIN", async () => {
     const { data } = await request(app)
       .query(gql`
         mutation DeleteUsersKeepAdmins {
@@ -401,6 +412,6 @@ describe("Integration Tests", () => {
       .set("Authorization", `Bearer ${testToken}`)
       .expectNoErrors();
 
-    expect((allUsersData as any).allUsers).toHaveLength(0);
+    expect((allUsersData as any).allUsers).toHaveLength(1);
   });
 });

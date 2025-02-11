@@ -14,53 +14,10 @@ import dotenv from "dotenv";
 import { PrismaClient } from "@prisma/client";
 import { execSync } from "child_process";
 import { randomUUID } from "crypto";
-
-dotenv.config({ path: "no-git.env" });
-
-const DOMAIN = process.env.DOMAIN ?? "";
-const CLIENT_ID = process.env.CLIENT_ID ?? "";
-const CLIENT_SECRET = process.env.CLIENT_SECRET ?? "";
-const AUDIENCE = process.env.AUDIENCE ?? "";
-const TEST_ID =
-  process.env.TEST_ID ?? "Egq5vDmWmVIa8bcKXorFLSv5Gb6DI3Pa@clients";
-
-function checkEnvVars() {
-  if (!DOMAIN || !CLIENT_ID || !CLIENT_SECRET || !AUDIENCE) {
-    throw new Error(
-      "Please provide DOMAIN, CLIENT_ID, CLIENT_SECRET, and AUDIENCE in the environment",
-    );
-  }
-}
-
-checkEnvVars();
-
-// Get a real token for testing
-export const getTestToken = async () => {
-  try {
-    const response = await fetch(`${DOMAIN}/oauth/token`, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        client_id: CLIENT_ID,
-        client_secret: CLIENT_SECRET,
-        audience: AUDIENCE,
-        grant_type: "client_credentials",
-      }),
-    });
-
-    if (!response.ok) {
-      console.error(response);
-      throw new Error(`Failed to fetch token: ${response.statusText}`);
-    }
-
-    const data = await response.json();
-    return data.access_token;
-  } catch (error) {
-    console.error("Error fetching token:", error);
-    throw error;
-  }
-};
-
+import { getTestToken } from "./utils";
+import container from "@/config/inversify.config";
+import TYPES from "@/constants/identifiers";
+process.env.NODE_ENV = "test";
 const baseInvoice = {
   createdAt: "2023-01-01",
   paymentDue: "2023-01-15",
@@ -127,9 +84,9 @@ describe("Invoice Resolvers Integration Tests", () => {
       datasourceUrl: newDatabaseUrl,
     });
 
-    await prisma.$connect();
+    const child = container.createChild();
 
-    // container.rebind<PrismaClient>(TYPES.PrismaClient).toConstantValue(prisma);
+    child.bind<PrismaClient>(TYPES.PrismaClient).toConstantValue(prisma);
     console.log("Connected to Prisma", newDatabaseUrl);
     // Object.keys(prisma).forEach((key) => {
     //   console.log(key);
@@ -138,11 +95,12 @@ describe("Invoice Resolvers Integration Tests", () => {
     await prisma.$executeRawUnsafe(
       `SET search_path TO "${schemaName}", public`,
     );
+    await prisma.$connect();
 
-    [app] = await createServer();
+    execSync("npx prisma db push", { stdio: "inherit" });
+    [app] = await createServer(prisma);
     // 4. Run "prisma db push" or "prisma migrate deploy"
     //    This ensures the schema is created and tables are set up
-    execSync("npx prisma db push", { stdio: "inherit" });
 
     // Clean up before each test
     await request(app)
