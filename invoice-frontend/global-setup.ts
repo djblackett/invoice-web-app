@@ -3,9 +3,9 @@ dotenv.config();
 import { InvoiceMainPage } from "./qa/pages/invoices/invoice-main-page";
 import { chromium, request } from "@playwright/test";
 
-const TEST_LOGIN = process.env.TEST_LOGIN || "bob";
-const TEST_PASSWORD = process.env.TEST_PASSWORD || "bob";
-export const TEST_BASE_URL = process.env.TEST_BASE_URL || "bob";
+const TEST_LOGIN = process.env.TEST_LOGIN;
+const TEST_PASSWORD = process.env.TEST_PASSWORD;
+const TEST_BASE_URL = process.env.TEST_BASE_URL;
 
 if (!TEST_LOGIN) {
   throw new Error("Please provide TEST_LOGIN");
@@ -16,8 +16,7 @@ if (!TEST_PASSWORD) {
 }
 
 if (!TEST_BASE_URL) {
-  console.warn("TEST_BASE_URL is not set, using default value");
-  process.env.TEST_BASE_URL = "http://localhost:5173";
+  throw new Error("Please provide TEST_BASE_URL");
 }
 
 async function globalSetup({ config }) {
@@ -42,8 +41,8 @@ async function globalSetup({ config }) {
     await page.screenshot({ path: "before-login-screenshot.png" });
   }
 
-  await invoiceMainPage.page.getByLabel("Email address").fill(TEST_LOGIN);
-  await invoiceMainPage.page.getByLabel("Password").fill(TEST_PASSWORD);
+  await invoiceMainPage.page.getByLabel("Email address").fill(TEST_LOGIN!);
+  await invoiceMainPage.page.getByLabel("Password").fill(TEST_PASSWORD!);
   await invoiceMainPage.page
     .getByRole("button", {
       name: "Continue",
