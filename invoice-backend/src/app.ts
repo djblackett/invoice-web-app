@@ -1,6 +1,7 @@
 import "reflect-metadata";
 import container from "./config/inversify.config";
 import {
+  DATABASE_URL,
   NODE_ENV,
   serverConfig,
   serverErrorConfig,
@@ -9,6 +10,7 @@ import { Request, Response } from "express";
 import { DatabaseConnection } from "./database/prisma.database.connection";
 import rateLimit from "express-rate-limit";
 import express from "express";
+import { PrismaClient } from "@prisma/client";
 
 export const createApp = async () => {
   try {
@@ -18,8 +20,21 @@ export const createApp = async () => {
 
     const database = container.get(DatabaseConnection);
     await database.initConnection();
+
     app.get("/health", (_req: Request, res: Response) => {
       res.status(200).send("OK");
+    });
+
+    app.get("/test-setup", async (_req: Request, res: Response) => {
+      if (NODE_ENV === "test" || NODE_ENV === "CI") {
+        const childContainer = container.createChild();
+        const prisma = new PrismaClient({ datasourceUrl: DATABASE_URL });
+        childContainer.bind<PrismaClient>(PrismaClient).toConstantValue(prisma);
+        await prisma.invoice.deleteMany({});
+        childContainer.unbind(PrismaClient);
+        res.status(200).send("OK");
+      }
+      res.status(403).send("Forbidden");
     });
 
     // Rate limiter so I don't get spammed in prod
