@@ -111,7 +111,6 @@ mappings
 invoice-frontend/__files
 invoice-frontend/.env.production
 invoice-backend/.env
-invoice-backend/.yarn/install-state.gz
 invoice-backend/.env
 invoice-backend/favicon.ico
 invoice-backend/favicon.svg
