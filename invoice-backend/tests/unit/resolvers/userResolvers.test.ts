@@ -38,7 +38,11 @@ describe("Query.allUsers", () => {
 
     userServiceMock.getUsers.mockResolvedValue(mockUsers);
 
-    const result = await userResolvers.Query.allUsers();
+    const result = await userResolvers.Query.allUsers(
+      undefined,
+      undefined,
+      mockContext,
+    );
 
     expect(result).toEqual(mockUsers);
     expect(userServiceMock.getUsers).toHaveBeenCalled();
@@ -46,7 +50,7 @@ describe("Query.allUsers", () => {
 
   it("should handle no users", async () => {
     userServiceMock.getUsers.mockResolvedValue([]);
-    const result = await userResolvers.Query.allUsers();
+    const result = await userResolvers.Query.allUsers(null, null, mockContext);
     expect(result).toEqual([]);
     expect(userServiceMock.getUsers).toHaveBeenCalled();
   });
@@ -56,7 +60,7 @@ describe("Query.allUsers", () => {
       new InternalServerException("Internal server error"),
     );
     try {
-      await userResolvers.Query.allUsers();
+      await userResolvers.Query.allUsers(null, null, mockContext);
     } catch (error: any) {
       expect(error).toBeInstanceOf(GraphQLError);
       expect(error.message).toBe("Internal server error");
@@ -81,7 +85,11 @@ describe("Mutation.createUser", () => {
 
     userServiceMock.createUser.mockResolvedValue(createdUser);
 
-    const result = await userResolvers.Mutation.createUser(null, args);
+    const result = await userResolvers.Mutation.createUser(
+      null,
+      args,
+      mockContext,
+    );
 
     expect(result).toEqual(createdUser);
     expect(userServiceMock.createUser).toHaveBeenCalledWith(args);
@@ -99,12 +107,12 @@ describe("Mutation.createUser", () => {
 
     userServiceMock.createUser.mockRejectedValue(validationError);
 
-    await expect(userResolvers.Mutation.createUser(null, args)).rejects.toThrow(
-      GraphQLError,
-    );
+    await expect(
+      userResolvers.Mutation.createUser(null, args, mockContext),
+    ).rejects.toThrow(GraphQLError);
 
     try {
-      await userResolvers.Mutation.createUser(null, args);
+      await userResolvers.Mutation.createUser(null, args, mockContext);
     } catch (error: any) {
       expect(error).toBeInstanceOf(GraphQLError);
       expect(error.message).toBe("Validation error");
@@ -122,12 +130,12 @@ describe("Mutation.createUser", () => {
 
     userServiceMock.createUser.mockRejectedValue(new Error("Database error"));
 
-    await expect(userResolvers.Mutation.createUser(null, args)).rejects.toThrow(
-      GraphQLError,
-    );
+    await expect(
+      userResolvers.Mutation.createUser(null, args, mockContext),
+    ).rejects.toThrow(GraphQLError);
 
     try {
-      await userResolvers.Mutation.createUser(null, args);
+      await userResolvers.Mutation.createUser(null, args, mockContext);
     } catch (error: any) {
       expect(error).toBeInstanceOf(GraphQLError);
       expect(error.message).toBe("Internal server error");

@@ -8,13 +8,20 @@ import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
 import { vi, Mock, beforeEach, describe, expect, it } from "vitest";
 import { InternalServerException } from "@/config/exception.config";
+import { Role } from "@prisma/client";
 
 let userRepoMock: MockProxy<IUserRepo>;
 let userService: UserService;
 
+const userContextMock = {
+  id: "1",
+  role: "ADMIN" as Role,
+  name: "Fred",
+};
+
 beforeEach(() => {
   userRepoMock = mock<IUserRepo>();
-  userService = new UserService(userRepoMock);
+  userService = new UserService(userRepoMock, userContextMock);
 });
 
 describe("UserService - createUser", () => {
@@ -32,6 +39,7 @@ describe("UserService - createUser", () => {
       name: "John Doe",
       username: "johndoe",
       passwordHash: hashedPassword,
+      role: "USER" as Role,
     };
 
     const bcryptHash = vi.fn().mockResolvedValue(hashedPassword);

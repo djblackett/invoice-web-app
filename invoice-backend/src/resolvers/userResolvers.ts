@@ -3,12 +3,12 @@ import { UserService } from "../services/user.service";
 import { CreateUserDTO, InjectedQueryContext } from "../constants/types";
 import { UnauthorizedException } from "../config/exception.config";
 
-export function getUserResolvers() {
+export function getUserResolvers(userServiceMock: unknown) {
   return {
     Query: {
       allUsers: async (
-        _root: never,
-        _parent: never,
+        _root: null = null,
+        _parent: null = null,
         context: InjectedQueryContext,
       ) => {
         try {
@@ -107,8 +107,8 @@ export function getUserResolvers() {
       },
 
       deleteUsers: async (
-        _root: never,
-        _args: never,
+        _root: null = null,
+        _args: null = null,
         context: InjectedQueryContext,
       ) => {
         if (!context.user) {
@@ -145,8 +145,8 @@ export function getUserResolvers() {
       },
 
       deleteUsersKeepAdmins: async (
-        _root: never,
-        _args: never,
+        _root: null = null,
+        _args: null = null,
         context: InjectedQueryContext,
       ) => {
         if (!context.user) {
