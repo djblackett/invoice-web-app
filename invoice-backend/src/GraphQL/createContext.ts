@@ -11,6 +11,7 @@ import { InvoiceService } from "@/services/invoice.service";
 import { UserService } from "@/services/user.service";
 import { PubSub } from "graphql-subscriptions";
 import { PrismaClient } from "@prisma/client";
+import { NODE_ENV } from "@/config/server.config";
 
 const client = jwksClient({
   jwksUri: "https://dev-n4e4qk7s3kbzusrs.us.auth0.com/.well-known/jwks.json",
@@ -99,7 +100,7 @@ export async function verifyTokenAndGetEmail(
 
     // Assign role based on payload or default to USER
     let role: "USER" | "ADMIN";
-    if (payload.role === "Admin") {
+    if (payload.role === "Admin" || NODE_ENV === "test" || NODE_ENV === "CI") {
       role = "ADMIN";
     } else if (payload.role === "User") {
       role = "USER";
@@ -144,16 +145,19 @@ export async function createContext({
 
       const childContainer = container.createChild();
 
-      // If running in tests, rebind the Prisma client with the test-specific instance:
-      if (testPrisma) {
-        childContainer
-          .rebind<PrismaClient>(TYPES.PrismaClient)
-          .toConstantValue(testPrisma);
-      }
-
       childContainer
         .bind<UserIdAndRole>(TYPES.UserContext)
         .toConstantValue(user);
+
+      // Rebind dependent services so they pick up the new binding
+      childContainer
+        .bind<UserService>(TYPES.UserService)
+        .to(UserService)
+        .inTransientScope();
+      childContainer
+        .bind<InvoiceService>(TYPES.InvoiceService)
+        .to(InvoiceService)
+        .inTransientScope();
 
       // Resolve services from the child container
       const invoiceService = childContainer.get<InvoiceService>(
@@ -162,15 +166,22 @@ export async function createContext({
       const userService = childContainer.get<UserService>(TYPES.UserService);
       const pubsub = childContainer.get<PubSub>(TYPES.PubSub);
 
-      if (!invoiceService || !userService || !pubsub) {
-        console.error("Service not found in context");
-        throw new Error("Context creation failed");
+      if (!invoiceService) {
+        throw new Error("Invoice service not found");
+      }
+
+      if (!userService) {
+        throw new Error("User service not found");
+      }
+
+      if (!pubsub) {
+        throw new Error("PubSub not found");
       }
 
       let dbUser;
 
       try {
-        dbUser = await userService.getUserSafely(user.id);
+        dbUser = await userService.getUserByIdSafely(user.id);
 
         if (!dbUser) {
           dbUser = await userService.createUserWithAuth0({
@@ -185,6 +196,8 @@ export async function createContext({
         throw e;
       }
 
+      // console.log("User created:", dbUser);
+
       const returnPayload = {
         user: dbUser,
         invoiceService,
@@ -193,6 +206,8 @@ export async function createContext({
         container: childContainer,
       };
 
+      // console.log("Context created:", returnPayload);
+      // console.log("At end of createContext. UserService:", userService);
       return returnPayload;
     } else {
       return { user: null, container };

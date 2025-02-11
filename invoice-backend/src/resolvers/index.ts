@@ -1,11 +1,9 @@
-import { InvoiceService } from "../services/invoice.service";
-import { UserService } from "../services/user.service";
 import { getInvoiceResolvers } from "./invoiceResolvers";
 import { getUserResolvers } from "./userResolvers";
 
-export function getResolvers(userService: UserService) {
+export function getResolvers() {
   const invoiceResolvers = getInvoiceResolvers();
-  const userResolvers = getUserResolvers(userService);
+  const userResolvers = getUserResolvers();
 
   return {
     Query: {

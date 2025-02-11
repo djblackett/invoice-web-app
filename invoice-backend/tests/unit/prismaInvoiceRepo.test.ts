@@ -16,7 +16,7 @@ import {
   Decimal,
   PrismaClientKnownRequestError,
 } from "@prisma/client/runtime/library";
-import { PrismaUserRepo } from "@/repositories/implementations/prismaUserRepo";
+import { PrismaUserRepository } from "@/repositories/implementations/prismaUserRepo";
 import { send } from "process";
 
 vi.mock("../../libs/prisma");
@@ -134,7 +134,7 @@ const mockRepo = new PrismaInvoiceRepository(
   new DatabaseConnectionMock() as IDatabaseConnection,
 );
 
-const mockUserRepo = new PrismaUserRepo(
+const mockUserRepo = new PrismaUserRepository(
   new DatabaseConnectionMock() as IDatabaseConnection,
 );
 

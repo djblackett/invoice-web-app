@@ -11,7 +11,6 @@ import {
 import { createApp } from "./app";
 import { makeExecutableSchema } from "@graphql-tools/schema";
 import typeDefs from "./GraphQL/typeDefs";
-import container from "./config/inversify.config";
 import { CERT_DIR, NODE_ENV } from "./config/server.config";
 import { expressMiddleware } from "@apollo/server/express4";
 import { createContext } from "./GraphQL/createContext";
@@ -46,8 +45,7 @@ export const createServer = async () => {
       path: "/",
     });
 
-    const userService = container.get(UserService);
-    const resolvers = getResolvers(userService);
+    const resolvers = getResolvers();
     const schema = makeExecutableSchema({ typeDefs, resolvers });
 
     const serverCleanup = useServer({ schema }, wsServer);

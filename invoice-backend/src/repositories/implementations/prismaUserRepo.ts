@@ -6,12 +6,11 @@ import {
   ReturnedUser,
   UserDTO,
   UserIdAndRole,
-  User,
 } from "../../constants/types";
 import { PrismaClientKnownRequestError } from "@prisma/client/runtime/library";
 
 @injectable()
-export class PrismaUserRepo implements IUserRepo {
+export class PrismaUserRepository implements IUserRepo {
   protected prisma;
 
   constructor(
@@ -91,7 +90,7 @@ export class PrismaUserRepo implements IUserRepo {
     }
   }
 
-  async getUserSafely(id: string): Promise<UserIdAndRole | null> {
+  async getUserByIdSafely(id: string): Promise<UserIdAndRole | null> {
     try {
       const user = await this.prisma.user.findUnique({
         select: {
