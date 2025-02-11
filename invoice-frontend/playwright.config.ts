@@ -2,9 +2,9 @@ import { defineConfig, devices } from "@playwright/test";
 import path from "path";
 import { fileURLToPath } from "url";
 import dotenv from "dotenv";
-import { TEST_BASE_URL } from "./global-setup";
 
 dotenv.config();
+const TEST_BASE_URL = process.env.TEST_BASE_URL;
 
 // Define __dirname in ES Modules
 const __filename = fileURLToPath(import.meta.url);
