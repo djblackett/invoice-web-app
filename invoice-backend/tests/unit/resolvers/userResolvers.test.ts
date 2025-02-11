@@ -26,7 +26,7 @@ beforeEach(() => {
     userService: userServiceMock,
   });
 
-  userResolvers = getUserResolvers(userServiceMock);
+  userResolvers = getUserResolvers();
 });
 
 describe("Query.allUsers", () => {

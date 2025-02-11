@@ -3,7 +3,7 @@ import { UserService } from "../services/user.service";
 import { CreateUserDTO, InjectedQueryContext } from "../constants/types";
 import { UnauthorizedException } from "../config/exception.config";
 
-export function getUserResolvers(userServiceMock: unknown) {
+export function getUserResolvers() {
   return {
     Query: {
       allUsers: async (

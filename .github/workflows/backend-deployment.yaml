@@ -26,6 +26,8 @@ jobs:
       CERT_DIR: "../certs/"
       DOMAIN: ${{ secrets.AUTH_DOMAIN }}
       AUDIENCE: ${{ secrets.AUDIENCE }}
+      CLIENT_ID: ${{ secrets.CLIENT_ID }}
+      CLIENT_SECRET: ${{ secrets.CLIENT_SECRET }}
 
     runs-on: ubuntu-22.04
     services:
