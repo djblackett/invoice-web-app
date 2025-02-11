@@ -1,16 +1,30 @@
 import { GraphQLError } from "graphql";
 import { UserService } from "../services/user.service";
-import { CreateUserDTO, LoginArgs } from "../constants/types";
-import {
-  NotFoundException,
-  UnauthorizedException,
-} from "../config/exception.config";
+import { CreateUserDTO, InjectedQueryContext } from "../constants/types";
+import { UnauthorizedException } from "../config/exception.config";
 
-export function getUserResolvers(userService: UserService) {
+export function getUserResolvers() {
   return {
     Query: {
-      allUsers: async () => {
+      allUsers: async (
+        _root: null = null,
+        _parent: null = null,
+        context: InjectedQueryContext,
+      ) => {
         try {
+          // console.error("User resolver:", context);
+          // const userService = validateUserService(context.userService);
+          const { userService } = context;
+
+          if (!userService) {
+            console.error("User service not found in context");
+            throw new GraphQLError("Internal server error", {
+              extensions: {
+                code: "INTERNAL_SERVER_ERROR",
+              },
+            });
+          }
+          // console.log("userService:", userService);
           return await userService.getUsers();
         } catch (error) {
           console.error("Error caught in resolver", error);
@@ -21,9 +35,24 @@ export function getUserResolvers(userService: UserService) {
           });
         }
       },
-      getUserById: async (_root: unknown, args: { id: number }) => {
+
+      getUserById: async (
+        _root: unknown,
+        args: { id: string },
+        context: InjectedQueryContext,
+      ) => {
         try {
-          const user = await userService.getUser(args.id);
+          const userService = validateUserService(context.userService);
+
+          if (!userService) {
+            console.error("User service not found in context");
+            throw new GraphQLError("Internal server error", {
+              extensions: {
+                code: "INTERNAL_SERVER_ERROR",
+              },
+            });
+          }
+          const user = await userService.getUserByIdSafely(args.id);
           return user;
         } catch (error) {
           console.error(error);
@@ -37,8 +66,25 @@ export function getUserResolvers(userService: UserService) {
     },
 
     Mutation: {
-      createUser: async (_root: unknown, args: CreateUserDTO) => {
+      createUser: async (
+        _root: unknown,
+        args: CreateUserDTO,
+        context: InjectedQueryContext,
+      ) => {
         try {
+          // console.log("Create user resolver: context:", context);
+          // const userService = validateUserService(context.userService);
+          const { userService } = context;
+
+          if (!userService) {
+            console.error("User service not found in context");
+            throw new GraphQLError("Internal server error", {
+              extensions: {
+                code: "INTERNAL_SERVER_ERROR",
+              },
+            });
+          }
+          // console.error("userService:", userService);
           const user = await userService.createUser(args);
           return user;
         } catch (error: any) {
@@ -59,8 +105,30 @@ export function getUserResolvers(userService: UserService) {
           }
         }
       },
-      deleteUsers: async () => {
+
+      deleteUsers: async (
+        _root: null = null,
+        _args: null = null,
+        context: InjectedQueryContext,
+      ) => {
+        if (!context.user) {
+          throw new UnauthorizedException("User not authenticated");
+        }
+        if (context.user.role !== "ADMIN") {
+          throw new UnauthorizedException("Only admin can delete all users");
+        }
         try {
+          // const userService = validateUserService(context.userService);
+          const { userService } = context;
+
+          if (!userService) {
+            console.error("User service not found in context");
+            throw new GraphQLError("Internal server error", {
+              extensions: {
+                code: "INTERNAL_SERVER_ERROR",
+              },
+            });
+          }
           const result = await userService.deleteUsers();
           if (result) {
             return { acknowledged: true };
@@ -76,37 +144,55 @@ export function getUserResolvers(userService: UserService) {
         }
       },
 
-      login: async (_root: unknown, args: LoginArgs, { user }: any) => {
+      deleteUsersKeepAdmins: async (
+        _root: null = null,
+        _args: null = null,
+        context: InjectedQueryContext,
+      ) => {
+        if (!context.user) {
+          throw new UnauthorizedException("User not authenticated");
+        }
+        if (context.user.role !== "ADMIN") {
+          throw new UnauthorizedException("Only admin can delete all users");
+        }
         try {
-          const username = await user;
-          const loginResponse = await userService.login(
-            args.username,
-            args.password,
-          );
-          return loginResponse;
-        } catch (error) {
-          console.error(error);
-          if (error instanceof NotFoundException) {
-            throw new GraphQLError("User not found", {
-              extensions: {
-                code: "BAD_USER_INPUT",
-              },
-            });
-          } else if (error instanceof UnauthorizedException) {
-            throw new GraphQLError("Invalid username or password", {
-              extensions: {
-                code: "UNAUTHENTICATED",
-              },
-            });
-          } else {
+          // const userService = validateUserService(context.userService);
+          const { userService } = context;
+
+          if (!userService) {
+            console.error("User service not found in context");
             throw new GraphQLError("Internal server error", {
               extensions: {
                 code: "INTERNAL_SERVER_ERROR",
               },
             });
           }
+          const result = await userService.deleteUsersKeepAdmin();
+          if (result) {
+            return { acknowledged: true };
+          }
+          return { acknowledged: false };
+        } catch (error) {
+          console.error(error);
+          throw new GraphQLError("Internal server error", {
+            extensions: {
+              code: "INTERNAL_SERVER_ERROR",
+            },
+          });
         }
       },
     },
   };
+}
+
+function validateUserService(userService: UserService | undefined) {
+  if (!userService) {
+    console.error("User service not found in context");
+    throw new GraphQLError("Internal server error", {
+      // extensions: {
+      //   code: "INTERNAL_SERVER_ERROR",
+      // },
+    });
+  }
+  return userService;
 }

@@ -1,9 +1,16 @@
-import { UserEntity, ReturnedUser, UserDTO } from "../constants/types";
+import {
+  UserEntity,
+  ReturnedUser,
+  UserDTO,
+  UserIdAndRole,
+} from "../constants/types";
 
 export interface IUserRepo {
-  createUser: (userArgs: UserEntity) => Promise<UserDTO>;
-  findAllUsers: () => Promise<ReturnedUser[]>;
-  findUserById: (id: number) => Promise<UserDTO | null>;
-  findUserByUsername: (username: string) => Promise<UserEntity | null>;
+  createUser: (userArgs: UserEntity) => Promise<UserIdAndRole>;
+  createUserWithAuth0: (args: UserIdAndRole) => Promise<UserIdAndRole>;
+  getAllUsers: () => Promise<ReturnedUser[]>;
+  getUserById: (id: string) => Promise<UserDTO | null>;
+  getUserByIdSafely: (id: string) => Promise<UserIdAndRole | null>;
   deleteAllUsers: () => Promise<boolean>;
+  deleteAllUsersKeepAdmin: () => Promise<boolean>;
 }

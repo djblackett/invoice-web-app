@@ -4,3 +4,4 @@ build
 *.env
 coverage
 certs
+no-git.env

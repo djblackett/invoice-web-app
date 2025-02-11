@@ -8,6 +8,8 @@ const TYPES = {
   InvoiceResolver: Symbol.for("InvoiceResolver"),
   DatabaseConnection: Symbol.for("DatabaseConnection"),
   PubSub: Symbol.for("PubSub"),
+  UserContext: Symbol.for("UserContext"),
+  PrismaClient: Symbol.for("PrismaClient"),
 };
 
 export default TYPES;

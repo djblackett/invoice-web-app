@@ -1,9 +1,10 @@
+import globals from "globals";
 import pluginJs from "@eslint/js";
 import tseslint from "typescript-eslint";
+import eslintPluginPrettierRecommended from "eslint-plugin-prettier/recommended";
 
 /** @type {import('eslint').Linter.Config[]} */
 export default [
-  { files: ["**/*.{js,mjs,cjs,ts}"] },
   {
     ignores: [
       "build",
@@ -14,14 +15,19 @@ export default [
       "*.yml",
       "src/mocks",
       "src/generated",
+      "dist",
     ],
   },
+  { files: ["**/*.{js,mjs,cjs,ts,jsx,tsx}"] },
+
   { languageOptions: {} },
+
   pluginJs.configs.recommended,
   ...tseslint.configs.recommended,
+  eslintPluginPrettierRecommended,
   {
     rules: {
-      indent: ["warn", 2],
+      // indent: ["warn", 2],
       "linebreak-style": ["warn", "unix"],
       quotes: ["warn", "double"],
       semi: ["warn", "always"],

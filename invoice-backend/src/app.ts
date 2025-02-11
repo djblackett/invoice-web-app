@@ -1,29 +1,45 @@
 import "reflect-metadata";
-import { InversifyExpressServer } from "inversify-express-utils";
 import container from "./config/inversify.config";
 import {
+  DATABASE_URL,
   NODE_ENV,
   serverConfig,
   serverErrorConfig,
 } from "./config/server.config";
-import "./controllers/invoice.controller";
 import { Request, Response } from "express";
 import { DatabaseConnection } from "./database/prisma.database.connection";
 import rateLimit from "express-rate-limit";
+import express from "express";
+import { PrismaClient } from "@prisma/client";
 
 export const createApp = async () => {
   try {
-    const inversifyServer = new InversifyExpressServer(container);
-    inversifyServer.setConfig(serverConfig);
-    inversifyServer.setErrorConfig(serverErrorConfig);
+    const app = express();
+    serverConfig(app);
+    serverErrorConfig(app);
 
     const database = container.get(DatabaseConnection);
     await database.initConnection();
 
-    const app = inversifyServer.build();
-
     app.get("/health", (_req: Request, res: Response) => {
       res.status(200).send("OK");
+    });
+
+    app.get("/test-setup", async (_req: Request, res: Response) => {
+      if (
+        NODE_ENV === "test" ||
+        NODE_ENV === "CI" ||
+        NODE_ENV === "development"
+      ) {
+        const childContainer = container.createChild();
+        const prisma = new PrismaClient({ datasourceUrl: DATABASE_URL });
+        childContainer.bind<PrismaClient>(PrismaClient).toConstantValue(prisma);
+        await prisma.invoice.deleteMany({});
+        childContainer.unbind(PrismaClient);
+        res.status(200).send("OK");
+        return;
+      }
+      res.status(403).send("Forbidden");
     });
 
     // Rate limiter so I don't get spammed in prod

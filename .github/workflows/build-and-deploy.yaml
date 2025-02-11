@@ -15,6 +15,10 @@ jobs:
   frontend:
     name: Frontend CI
     runs-on: ubuntu-latest
+    env:
+      VITE_BACKEND_URL: https://localhost:8000
+      NODE_ENV: CI
+      CERT_DIR: "../certs/"
     steps:
       - name: Checkout Code
         uses: actions/checkout@v4.2.2
@@ -27,7 +31,26 @@ jobs:
       - name: Enable Corepack and Install Yarn
         run: |
           corepack enable
-          corepack prepare yarn@1.22.22 --activate
+          yarn set version stable
+
+      - name: Set up mkcert
+        run: |
+          sudo apt-get update
+          sudo apt-get install libnss3-tools
+          wget -O mkcert https://github.com/FiloSottile/mkcert/releases/download/v1.4.3/mkcert-v1.4.3-linux-amd64
+          chmod +x mkcert
+          sudo mv mkcert /usr/local/bin/
+          mkcert -install
+
+      - name: Generate HTTPS certificates
+        run: |
+          cd invoice-backend && mkdir certs && cd certs && \
+          mkcert localhost
+          # This will generate localhost.pem and localhost-key.pem
+
+      - name: Copy certs to frontend directory
+        run: cp -r invoice-backend/certs invoice-frontend/certs
+
 
       - name: Restore Frontend Cache
         uses: actions/cache@v4.2.0
@@ -77,6 +100,15 @@ jobs:
     name: Backend CI
     env:
       DATABASE_URL: postgres://postgres:example@localhost:5432/db-test
+      REQUEST_ORIGIN: https://localhost:4173
+      SECRET: theSecretStuff # not critical - only for ephemeral testing env
+      NODE_ENV: CI
+      CERT_DIR: "../certs/"
+      DOMAIN: ${{ secrets.AUTH_DOMAIN }}
+      AUDIENCE: ${{ secrets.AUDIENCE }}
+      CLIENT_ID: ${{ secrets.CLIENT_ID }}
+      CLIENT_SECRET: ${{ secrets.CLIENT_SECRET }}
+    
     runs-on: ubuntu-latest
     services:
       postgres:
@@ -86,6 +118,7 @@ jobs:
           PG_USER: postgres
           POSTGRES_PASSWORD: example
           POSTGRES_DB: db-test
+          
         ports:
           - 5432:5432
         options: >-
@@ -103,11 +136,32 @@ jobs:
         with:
           node-version: "20.x"
 
+      - name: Enable Corepack and Install Yarn
+        run: |
+          corepack enable
+          yarn set version stable
+
+      - name: Set up mkcert
+        run: |
+          sudo apt-get update
+          sudo apt-get install libnss3-tools
+          wget -O mkcert https://github.com/FiloSottile/mkcert/releases/download/v1.4.3/mkcert-v1.4.3-linux-amd64
+          chmod +x mkcert
+          sudo mv mkcert /usr/local/bin/
+          mkcert -install
+
+      - name: Generate HTTPS certificates
+        run: |
+          cd invoice-backend && mkdir certs && cd certs && \
+          mkcert localhost
+          cat localhost.pem > localhost-fullchain.pem
+          cat "$(mkcert -CAROOT)/rootCA.pem" >> localhost-fullchain.pem
+
       - name: Restore Cache
         uses: actions/cache@v4.2.0
         with:
           path: invoice-backend/node_modules
-          key: ${{ runner.os }}-node-${{ hashFiles('invoice-backend/package-lock.json') }}
+          key: ${{ runner.os }}-node-${{ hashFiles('invoice-backend/yarn.lock') }}
           restore-keys: |
             ${{ runner.os }}-node-
 

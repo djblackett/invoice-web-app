@@ -110,3 +110,16 @@ invoice-frontend/bundle-visualization.html
 mappings
 invoice-frontend/__files
 invoice-frontend/.env.production
+invoice-backend/.env
+invoice-backend/.yarn/install-state.gz
+invoice-backend/.env
+invoice-backend/favicon.ico
+invoice-backend/favicon.svg
+invoice-backend/html.meta.json.gz
+invoice-backend/test-output.html
+invoice-backend/assets/index-CGSAdLIf.css
+invoice-backend/assets/index-DWjHzG4O.js
+invoice-backend/bg.png
+invoice-frontend/before-clicking-invoice.png
+invoice-backend/.env.test
+invoice-backend/.env.development

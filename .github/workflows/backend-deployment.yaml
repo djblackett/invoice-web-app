@@ -24,6 +24,10 @@ jobs:
       VITE_BACKEND_URL: http://localhost:8000
       NODE_ENV: CI
       CERT_DIR: "../certs/"
+      DOMAIN: ${{ secrets.AUTH_DOMAIN }}
+      AUDIENCE: ${{ secrets.AUDIENCE }}
+      CLIENT_ID: ${{ secrets.CLIENT_ID }}
+      CLIENT_SECRET: ${{ secrets.CLIENT_SECRET }}
 
     runs-on: ubuntu-22.04
     services:
@@ -116,7 +120,8 @@ jobs:
         run: |
           cd invoice-backend && mkdir certs && cd certs && \
           mkcert localhost
-          # This will generate localhost.pem and localhost-key.pem
+          cat localhost.pem > localhost-fullchain.pem
+          cat "$(mkcert -CAROOT)/rootCA.pem" >> localhost-fullchain.pem
 
       - name: Run backend unit tests
         run: |

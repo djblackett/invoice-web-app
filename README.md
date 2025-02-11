@@ -45,7 +45,7 @@ I began this project in May 2022 as a **FrontendMentor** challenge to sharpen my
 
 ### Planned Features
 
-- **Unit Testing** for all backend services (partially done)
+- **Unit Testing** for all backend services
 - **Frontend Refactor** to emphasize presentational vs. container components
 - **Unit Testing** for frontend
 - **Integration Testing**

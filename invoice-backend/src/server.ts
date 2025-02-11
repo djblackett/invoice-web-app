@@ -11,14 +11,14 @@ import {
 import { createApp } from "./app";
 import { makeExecutableSchema } from "@graphql-tools/schema";
 import typeDefs from "./GraphQL/typeDefs";
-import InvoiceController from "./controllers/invoice.controller";
-import container from "./config/inversify.config";
 import { CERT_DIR, NODE_ENV } from "./config/server.config";
 import { expressMiddleware } from "@apollo/server/express4";
 import { createContext } from "./GraphQL/createContext";
 import path from "path";
 import fs from "fs";
 import https from "https";
+import { getResolvers } from "./resolvers";
+import { UserService } from "./services/user.service";
 
 export const createServer = async () => {
   try {
@@ -28,8 +28,12 @@ export const createServer = async () => {
       const sslOptions = {
         key: fs.readFileSync(
           path.join(__dirname, CERT_DIR, "localhost-key.pem"),
+          "ascii",
         ),
-        cert: fs.readFileSync(path.join(__dirname, CERT_DIR, "localhost.pem")),
+        cert: fs.readFileSync(
+          path.join(__dirname, CERT_DIR, "localhost-fullchain.pem"),
+          "ascii",
+        ),
       };
 
       httpServer = https.createServer(sslOptions, app);
@@ -41,8 +45,7 @@ export const createServer = async () => {
       path: "/",
     });
 
-    const controller = container.get(InvoiceController);
-    const resolvers = controller.resolvers;
+    const resolvers = getResolvers();
     const schema = makeExecutableSchema({ typeDefs, resolvers });
 
     const serverCleanup = useServer({ schema }, wsServer);

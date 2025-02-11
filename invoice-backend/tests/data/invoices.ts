@@ -3,6 +3,13 @@ import { Invoice } from "../../src/constants/types";
 const data: Invoice[] = [
   {
     id: "RT3080",
+    createdBy: {
+      id: "user1",
+      name: "John Doe",
+      username: "john@melba.toast",
+      role: "USER",
+    },
+    createdById: "user1",
     createdAt: "2021-08-18",
     paymentDue: "2021-08-19",
     description: "Re-branding",
@@ -34,6 +41,14 @@ const data: Invoice[] = [
   },
   {
     id: "XM9141",
+
+    createdBy: {
+      id: "user1",
+      name: "John Doe",
+      username: "john@melba.toast",
+      role: "USER",
+    },
+    createdById: "user1",
     createdAt: "2021-08-21",
     paymentDue: "2021-09-20",
     description: "Graphic Design",
@@ -71,6 +86,13 @@ const data: Invoice[] = [
   },
   {
     id: "RG0314",
+    createdBy: {
+      id: "user1",
+      name: "John Doe",
+      username: "john@melba.toast",
+      role: "USER",
+    },
+    createdById: "user1",
     createdAt: "2021-09-24",
     paymentDue: "2021-10-01",
     description: "Website Redesign",
@@ -102,6 +124,13 @@ const data: Invoice[] = [
   },
   {
     id: "RT2080",
+    createdBy: {
+      id: "user1",
+      name: "John Doe",
+      username: "john@melba.toast",
+      role: "USER",
+    },
+    createdById: "user1",
     createdAt: "2021-10-11",
     paymentDue: "2021-10-12",
     description: "Logo Concept",
@@ -133,6 +162,13 @@ const data: Invoice[] = [
   },
   {
     id: "AA1449",
+    createdBy: {
+      id: "user1",
+      name: "John Doe",
+      username: "john@melba.toast",
+      role: "USER",
+    },
+    createdById: "user1",
     createdAt: "2021-10-7",
     paymentDue: "2021-10-14",
     description: "Re-branding",
@@ -170,6 +206,13 @@ const data: Invoice[] = [
   },
   {
     id: "TY9141",
+    createdBy: {
+      id: "user1",
+      name: "John Doe",
+      username: "john@melba.toast",
+      role: "USER",
+    },
+    createdById: "user1",
     createdAt: "2021-10-01",
     paymentDue: "2021-10-31",
     description: "Landing Page Design",
@@ -201,6 +244,13 @@ const data: Invoice[] = [
   },
   {
     id: "FV2353",
+    createdBy: {
+      id: "user1",
+      name: "John Doe",
+      username: "john@melba.toast",
+      role: "USER",
+    },
+    createdById: "user1",
     createdAt: "2021-11-05",
     paymentDue: "2021-11-12",
     description: "Logo Re-design",

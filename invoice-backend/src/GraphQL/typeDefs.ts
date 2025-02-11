@@ -9,7 +9,7 @@ const typeDefs = gql`
 
   type User {
     username: String!
-    id: Int!
+    id: String!
   }
 
   type Token {
@@ -22,6 +22,7 @@ const typeDefs = gql`
   }
 
   type Invoice {
+    createdBy: User
     clientAddress: ClientAddress
     clientEmail: String
     clientName: String
@@ -90,7 +91,7 @@ const typeDefs = gql`
     getAllClientAddresses: [ClientAddress]
     getAllSenderAddresses: [SenderAddress]
     allUsers: [User]
-    getUserById(id: Int!): User
+    getUserById(id: String!): User
     me: User
   }
 
@@ -129,11 +130,15 @@ const typeDefs = gql`
 
     deleteAllInvoices: deleteResult
 
+    deleteInvoicesByUserId(userId: String!): deleteResult
+
     markAsPaid(id: String!): Invoice
 
     createUser(name: String, username: String!, password: String!): User
 
     deleteUsers: deleteResult
+
+    deleteUsersKeepAdmins: deleteResult
 
     login(username: String!, password: String!): LoginResponse
   }

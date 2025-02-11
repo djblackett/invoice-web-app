@@ -27,6 +27,11 @@ jobs:
       TEST_LOGIN: ${{ secrets.TEST_LOGIN }}
       TEST_PASSWORD: ${{ secrets.TEST_PASSWORD }}
       TEST_BASE_URL: https://localhost:4173/invoice-web-app/
+      DOMAIN: ${{ secrets.AUTH_DOMAIN }}
+      AUDIENCE: ${{ secrets.AUDIENCE }}
+      CLIENT_ID: ${{ secrets.CLIENT_ID }}
+      CLIENT_SECRET: ${{ secrets.CLIENT_SECRET }}
+
 
     runs-on: ubuntu-22.04
     services:
@@ -37,7 +42,7 @@ jobs:
           PG_USER: postgres
           POSTGRES_PASSWORD: example
           POSTGRES_DB: db-test
-
+          
         ports:
           - 5432:5432
         options: >-
@@ -80,7 +85,9 @@ jobs:
         run: |
           cd invoice-backend && mkdir certs && cd certs && \
           mkcert localhost
-          # This will generate localhost.pem and localhost-key.pem
+          cat localhost.pem > localhost-fullchain.pem
+          cat "$(mkcert -CAROOT)/rootCA.pem" >> localhost-fullchain.pem
+          
 
       - name: Copy certs to frontend directory
         run: cp -r invoice-backend/certs invoice-frontend/certs
@@ -166,7 +173,12 @@ jobs:
       - name: Run backend tests (unit and integration)
         run: |
           cd invoice-backend
-          npm run test:unit && npm run test:integration
+          npm run test:unit
+          
+      - name: Run integration tests
+        run: |
+          cd invoice-backend
+          npm run test:integration
 
       - name: Run backend server for e2e tests
         run: |

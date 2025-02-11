@@ -30,7 +30,7 @@ services:
     restart: unless-stopped
     ports:
       - "8000:8000"
-    command: sh -c "npx prisma@5.22.0 generate && npx prisma@5.22 db push && DATABASE_URL=postgresql://postgres:example@db-dev:5432/db-dev?schema=public npm run dev"
+    command: sh -c "npx prisma@6.2.1 generate && npx prisma@6.2.1 db push && DATABASE_URL=postgresql://postgres:example@db-dev:5432/db-dev?schema=public npm run dev"
     environment:
       - NODE_ENV=development
       - PORT=8000

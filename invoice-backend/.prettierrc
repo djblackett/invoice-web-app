@@ -1,17 +1,10 @@
 {
-  "extends": "./tsconfig.json",
-  "exclude": [
-    "node_modules",
-    "dist"
-  ],
   "singleQuote": false,
+  "tabWidth": 2,
   "plugins": [],
   "overrides": [
     {
-      "files": [
-        "*.graphql",
-        "*.gql"
-      ],
+      "files": ["*.graphql", "*.gql"],
       "options": {
         "parser": "graphql"
       }
