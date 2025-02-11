@@ -1,4 +1,5 @@
-import "dotenv/config";
+import dotenv from "dotenv";
+dotenv.config();
 import { urlencoded } from "body-parser";
 import express, { Application, NextFunction, Request, Response } from "express";
 import cors from "cors";
