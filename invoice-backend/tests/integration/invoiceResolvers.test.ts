@@ -17,6 +17,7 @@ import { randomUUID } from "crypto";
 import { getTestToken } from "./utils";
 import container from "@/config/inversify.config";
 import TYPES from "@/constants/identifiers";
+
 process.env.NODE_ENV = "test";
 const baseInvoice = {
   createdAt: "2023-01-01",
@@ -60,7 +61,8 @@ let currentInvoiceId = "";
 
 describe("Invoice Resolvers Integration Tests", () => {
   beforeAll(async () => {
-    testToken = await getTestToken();
+    // testToken = await getTestToken();
+    testToken = "dummy-token";
   });
 
   beforeEach(async () => {

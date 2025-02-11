@@ -18,6 +18,8 @@ const TEST_ID = process.env.TEST_ID || "auth0|6773303ad84a96d7bc0329b3";
 
 // console.log("GraphQL Endpoint:", GRAPHQL_ENDPOINT);
 
+const MOCK_AUTH = true;
+
 if (!TEST_LOGIN || !TEST_PASSWORD) {
   throw new Error("Please provide login and password");
 }
@@ -31,6 +33,14 @@ const globalSetup = async ({ config }) => {
   const context = await browser.newContext({
     ignoreHTTPSErrors: true,
   });
+
+  // if (MOCK_AUTH) {
+  //   context.setExtraHTTPHeaders({
+  //     Authorization: `Bearer ${process.env.MOCK_AUTH_TOKEN || "mock-auth-token"}`,
+  //   });
+  //   return;
+  // }
+
   const page = await context.newPage();
 
   const invoiceMainPage = new InvoiceMainPage(page);
@@ -141,6 +151,8 @@ async function clearDatabase() {
       "Content-Type": "application/json",
     },
   });
+
+  console.log("Response:", response);
   if (!response.ok()) {
     throw new Error(`Failed to delete invoices: ${await response.text()}`);
   }

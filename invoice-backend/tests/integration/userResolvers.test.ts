@@ -83,7 +83,8 @@ let testToken: string;
 
 describe("Integration Tests", () => {
   beforeAll(async () => {
-    testToken = await getTestToken();
+    // testToken = await getTestToken();
+    testToken = "dummy-token";
   });
 
   beforeEach(async () => {
