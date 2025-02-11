@@ -1,4 +1,4 @@
-import{U as c,V as k,W as w,X as d,d as o,j as t,b as y,s as j,Y as C}from"./index-vYH8fMO_.js";import{P as v}from"./invoice.queries-DdSBF33T.js";import{C as $}from"./ClickOutsideProvider-Cz52KiZN.js";function a(e=c){const i=e===c?k:w(e);return function(){const{store:n}=i();return n}}const D=a();function S(e=c){const i=e===c?D:a(e);return function(){return i().dispatch}}const z=S(),l=d`
+import{U as c,V as k,W as w,j as t,d as o,X as d,b as y,s as j,Y as C}from"./index-DJHl-HbE.js";import{P as v}from"./invoice.queries-kXq_As9r.js";import{C as $}from"./ClickOutsideProvider-DisquDvI.js";function a(e=c){const i=e===c?k:w(e);return function(){const{store:n}=i();return n}}const D=a();function S(e=c){const i=e===c?D:a(e);return function(){return i().dispatch}}const z=S(),l=d`
   background-color: ${({theme:e})=>e.newButton};
   border-color: transparent;
 `,x=d`

@@ -1,4 +1,4 @@
-import{d as n,j as r}from"./index-vYH8fMO_.js";import{P as e}from"./invoice.queries-DdSBF33T.js";const s=n.button`
+import{j as n,d as r}from"./index-DJHl-HbE.js";import{P as e}from"./invoice.queries-kXq_As9r.js";const s=r.button`
   display: inline;
   background-color: ${({theme:t})=>t.editButton};
   border-radius: 24px;
@@ -22,4 +22,4 @@ import{d as n,j as r}from"./index-vYH8fMO_.js";import{P as e}from"./invoice.quer
   &:hover {
     background-color: ${({theme:t})=>t.editButtonHover};
   }
-`;function p({handleClick:t,text:o,justifySelf:i}){return r.jsx(s,{style:{justifySelf:i||"auto"},onClick:t,type:"button",children:o})}p.propTypes={handleClick:e.func.isRequired,text:e.string.isRequired,justifySelf:e.string};export{p as C};
+`;function p({handleClick:t,text:o,justifySelf:i}){return n.jsx(s,{style:{justifySelf:i||"auto"},onClick:t,type:"button",children:o})}p.propTypes={handleClick:e.func.isRequired,text:e.string.isRequired,justifySelf:e.string};export{p as C};
