@@ -33,6 +33,7 @@ ENV NODE_ENV=production
 WORKDIR /usr/src/app
 
 COPY --chown=node:node package.json yarn.lock ./
+COPY --chown=node:node .yarn .yarnrc.yml ./
 
 RUN yarn install --frozen-lockfile
 COPY --chown=node:node --from=build /usr/src/app/dist/src ./dist/src
@@ -43,4 +44,4 @@ COPY --chown=node:node --from=build /usr/src/app/prisma ./prisma
 EXPOSE 8000
 USER node
 
-CMD ["npm", "start"]
+CMD ["yarn", "start"]
