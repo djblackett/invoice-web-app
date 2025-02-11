@@ -5,7 +5,7 @@ import { chromium, request } from "@playwright/test";
 
 const TEST_LOGIN = process.env.TEST_LOGIN;
 const TEST_PASSWORD = process.env.TEST_PASSWORD;
-const TEST_BASE_URL = process.env.TEST_BASE_URL;
+export const TEST_BASE_URL = process.env.TEST_BASE_URL;
 
 if (!TEST_LOGIN) {
   throw new Error("Please provide TEST_LOGIN");
