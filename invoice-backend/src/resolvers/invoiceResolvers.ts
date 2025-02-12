@@ -18,7 +18,8 @@ export function getInvoiceResolvers() {
       ) => {
         try {
           // console.log("User in resolver:", context.user);
-          // console.log("User role:", context.user?.role);
+          console.log("User role:", context.user?.role);
+          console.log("NODE_ENV:", process.env.NODE_ENV);
 
           const { user, invoiceService } = context;
           // console.log("invoiceResolvers context:", context);

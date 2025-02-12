@@ -141,7 +141,6 @@ export async function verifyTokenAndGetEmail(
 export async function createContext({
   req,
   connection,
-  testPrisma,
 }: ContextArgs): Promise<InjectedQueryContext> {
   if (connection) {
     // This is a subscription request
@@ -157,80 +156,80 @@ export async function createContext({
         username: "user@example.com",
         name: "user",
       };
+    }
 
-      if (authHeader && authHeader.startsWith("Bearer ")) {
-        const token = authHeader.split(" ")[1];
-        user = await verifyTokenAndGetEmail(token, options);
-      }
-      const childContainer = container.createChild();
-
-      childContainer
-        .bind<UserIdAndRole>(TYPES.UserContext)
-        .toConstantValue(user);
-
-      // Rebind dependent services so they pick up the new binding
-      childContainer
-        .bind<UserService>(TYPES.UserService)
-        .to(UserService)
-        .inTransientScope();
-      childContainer
-        .bind<InvoiceService>(TYPES.InvoiceService)
-        .to(InvoiceService)
-        .inTransientScope();
-
-      // Resolve services from the child container
-      const invoiceService = childContainer.get<InvoiceService>(
-        TYPES.InvoiceService,
-      );
-      const userService = childContainer.get<UserService>(TYPES.UserService);
-      const pubsub = childContainer.get<PubSub>(TYPES.PubSub);
-
-      if (!invoiceService) {
-        throw new Error("Invoice service not found");
-      }
-
-      if (!userService) {
-        throw new Error("User service not found");
-      }
-
-      if (!pubsub) {
-        throw new Error("PubSub not found");
-      }
-
-      let dbUser;
-
-      try {
-        dbUser = await userService.getUserByIdSafely(user.id);
-
-        if (!dbUser) {
-          dbUser = await userService.createUserWithAuth0({
-            id: user.id,
-            name: user.name,
-            username: user.username ?? "",
-            role: user.role,
-          });
-        }
-      } catch (e) {
-        console.error("User creation failed:", e);
-        throw e;
-      }
-
-      // console.log("User created:", dbUser);
-
-      const returnPayload = {
-        user: dbUser,
-        invoiceService,
-        userService,
-        pubsub,
-        container: childContainer,
-      };
-
-      // console.log("Context created:", returnPayload);
-      // console.log("At end of createContext. UserService:", userService);
-      return returnPayload;
+    if (authHeader && authHeader.startsWith("Bearer ")) {
+      const token = authHeader.split(" ")[1];
+      user = await verifyTokenAndGetEmail(token, options);
     } else {
       return { user: null, container };
+
+      // throw new Error("No toke  n provided");
     }
+    const childContainer = container.createChild();
+
+    childContainer.bind<UserIdAndRole>(TYPES.UserContext).toConstantValue(user);
+
+    // Rebind dependent services so they pick up the new binding
+    childContainer
+      .bind<UserService>(TYPES.UserService)
+      .to(UserService)
+      .inTransientScope();
+    childContainer
+      .bind<InvoiceService>(TYPES.InvoiceService)
+      .to(InvoiceService)
+      .inTransientScope();
+
+    // Resolve services from the child container
+    const invoiceService = childContainer.get<InvoiceService>(
+      TYPES.InvoiceService,
+    );
+    const userService = childContainer.get<UserService>(TYPES.UserService);
+    const pubsub = childContainer.get<PubSub>(TYPES.PubSub);
+
+    if (!invoiceService) {
+      throw new Error("Invoice service not found");
+    }
+
+    if (!userService) {
+      throw new Error("User service not found");
+    }
+
+    if (!pubsub) {
+      throw new Error("PubSub not found");
+    }
+
+    let dbUser;
+
+    try {
+      dbUser = await userService.getUserByIdSafely(user.id);
+
+      if (!dbUser) {
+        dbUser = await userService.createUserWithAuth0({
+          id: user.id,
+          name: user.name,
+          username: user.username ?? "",
+          role: user.role,
+        });
+      }
+    } catch (e) {
+      console.error("User creation failed:", e);
+      throw e;
+    }
+
+    // console.log("User created:", dbUser);
+
+    const returnPayload = {
+      user: dbUser,
+      invoiceService,
+      userService,
+      pubsub,
+      container: childContainer,
+    };
+
+    // console.log("Context created:", returnPayload);
+    // console.log("At end of createContext. UserService:", userService);
+    return returnPayload;
   } catch (e) {
     console.error("error:", e);
     return { user: null, container };

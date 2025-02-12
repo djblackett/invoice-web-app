@@ -1,6 +1,6 @@
 import { z } from "zod";
 import express from "express";
-import { BaseContext } from "@apollo/server/dist/cjs";
+import { BaseContext } from "@apollo/server";
 import { Context as GraphQLWSContext } from "graphql-ws";
 import { PrismaClient } from "@prisma/client";
 import { Container } from "inversify";

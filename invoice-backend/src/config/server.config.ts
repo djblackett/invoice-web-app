@@ -10,7 +10,7 @@ export const DATABASE_URL = process.env.DATABASE_URL || "";
 export const CERT_DIR = process.env.CERT_DIR || "../certs";
 
 export const NODE_ENV = process.env.NODE_ENV;
-process.env.NODE_ENV = "test";
+// process.env.NODE_ENV = "test";
 
 if (!SECRET) {
   throw new Error("Server env secret not set");

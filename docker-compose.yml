@@ -44,6 +44,7 @@ services:
       - REQUEST_ORIGIN=http://frontend.localhost
       - SECRET=Secret
       - DATABASE_URL=postgres://postgres:example@db:5432/db
+      # - DATABASE_URL=postgres://postgres:example@localhost:5432/db
     networks:
       - my_network
     depends_on:
