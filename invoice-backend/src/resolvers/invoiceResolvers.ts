@@ -17,12 +17,7 @@ export function getInvoiceResolvers() {
         context: InjectedQueryContext,
       ) => {
         try {
-          // console.log("User in resolver:", context.user);
-          console.log("User role:", context.user?.role);
-          console.log("NODE_ENV:", process.env.NODE_ENV);
-
           const { user, invoiceService } = context;
-          // console.log("invoiceResolvers context:", context);
 
           if (!user) {
             console.error("User not found in context");

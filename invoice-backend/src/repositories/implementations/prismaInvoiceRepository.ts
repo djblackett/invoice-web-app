@@ -1,4 +1,4 @@
-import { Prisma } from "@prisma/client";
+import { Prisma, Role } from "@prisma/client";
 import { inject, injectable } from "inversify";
 import { Invoice, InvoiceWithCreatedBy } from "../../constants/types";
 import { DatabaseConnection } from "../../database/prisma.database.connection";
@@ -84,7 +84,11 @@ export class PrismaInvoiceRepository implements IInvoiceRepo {
     }
   }
 
-  async findByUserIdAndInvoiceId(userId: string, invoiceId: string) {
+  async findByUserIdAndInvoiceId(
+    userId: string,
+    role: Role,
+    invoiceId: string,
+  ) {
     try {
       const result = await this.prisma.invoice.findUniqueOrThrow({
         where: {
@@ -98,11 +102,10 @@ export class PrismaInvoiceRepository implements IInvoiceRepo {
         },
       });
 
-      if (result.createdById !== userId) {
-        throw new NotFoundException("Don't have necessary permissions");
+      if (result.createdById === userId || role !== "ADMIN") {
+        return result;
       }
-
-      return result;
+      throw new NotFoundException("Don't have necessary permissions");
     } catch (e: any) {
       if (
         e instanceof Prisma.PrismaClientKnownRequestError &&

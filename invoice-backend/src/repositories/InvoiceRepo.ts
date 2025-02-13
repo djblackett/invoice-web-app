@@ -1,3 +1,4 @@
+import { Role } from "@prisma/client";
 import { Invoice, InvoiceWithCreatedBy } from "../constants/types";
 
 export interface IInvoiceRepo {
@@ -6,6 +7,7 @@ export interface IInvoiceRepo {
   findById: (id: string) => Promise<unknown>;
   findByUserIdAndInvoiceId: (
     userId: string,
+    role: Role,
     invoiceId: string,
   ) => Promise<unknown>;
   delete: (id: string) => Promise<boolean>;

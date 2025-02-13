@@ -40,8 +40,6 @@ export class InvoiceService {
 
     try {
       const result = await this.invoiceRepo.findAll();
-      // console.log(result);
-      // return result as Invoice[];
       return validateInvoiceList(result);
     } catch (e) {
       console.error(e);
@@ -101,6 +99,7 @@ export class InvoiceService {
       try {
         const result = await this.invoiceRepo.findByUserIdAndInvoiceId(
           id,
+          role,
           invoiceId,
         );
         if (!result) {
