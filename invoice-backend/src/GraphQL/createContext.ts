@@ -110,10 +110,19 @@ export async function verifyTokenAndGetEmail(
 
     // Assign role based on payload or default to USER
     let role: "USER" | "ADMIN";
-    if (payload.role === "Admin" || NODE_ENV === "test" || NODE_ENV === "CI") {
+    const tokenRoleClaim = `${namespace}roles`;
+    const tokenRole = payload[tokenRoleClaim];
+
+    console.log("tokenRoleClaim:", tokenRoleClaim);
+    console.log("tokenRole:", tokenRole);
+    // console.log("database_url:", process.env.DATABASE_URL);
+    console.log("payload:", payload);
+    if (
+      (tokenRole && tokenRole.includes("Admin")) ||
+      NODE_ENV === "test" ||
+      NODE_ENV === "CI"
+    ) {
       role = "ADMIN";
-    } else if (payload.role === "User") {
-      role = "USER";
     } else {
       role = "USER";
     }

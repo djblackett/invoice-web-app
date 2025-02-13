@@ -35,7 +35,7 @@ export class InvoiceService {
     }
 
     if (role !== "ADMIN") {
-      this.invoiceRepo.findByUserId(id);
+      return validateInvoiceList(await this.invoiceRepo.findByUserId(id));
     }
 
     try {
@@ -47,6 +47,7 @@ export class InvoiceService {
     }
   };
 
+  // todo - may be redundant to have two methods for getting invoices
   getInvoicesByUserId = async () => {
     if (!this.userContext) {
       throw new ValidationException("Unauthorized");
