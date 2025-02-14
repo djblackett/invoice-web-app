@@ -146,7 +146,7 @@ export const loggedInUserZod = z.object({
 export const invoiceListZod = z.array(invoiceZod);
 
 export interface ContextArgs {
-  req: express.Request;
+  req?: express.Request;
   connection?: GraphQLWSContext;
   testPrisma?: PrismaClient;
 }

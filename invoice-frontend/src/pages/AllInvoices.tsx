@@ -8,6 +8,8 @@ import { useAuth0 } from "@auth0/auth0-react";
 import styled from "styled-components";
 import { Suspense, useEffect, useState } from "react";
 import React from "react";
+import { useSubscription } from "@apollo/client";
+import { ALL_INVOICES, INVOICE_ADDED } from "@/graphql/invoice.queries";
 
 const NewInvoice = React.lazy(() => import("./NewInvoice"));
 
@@ -53,9 +55,17 @@ function AllInvoices() {
   const width = useWindowWidth();
   const { invoiceList, loading, error } = useInvoices();
 
-  const { isAuthenticated, user, isLoading } = useAuth0();
+  useSubscription(INVOICE_ADDED, {
+    onData: ({ data, client }) => {
+      console.log("inside subscription", data);
+      const addedInvoice = data.data.invoiceAdded;
+      client.cache.updateQuery({ query: ALL_INVOICES }, ({ allInvoices }) => {
+        return { allInvoices: allInvoices.concat(addedInvoice) };
+      });
+    },
+  });
 
-  console.log("isAuthenticated", isAuthenticated);
+  const { isAuthenticated, user, isLoading } = useAuth0();
 
   if (isLoading) {
     return <h1>Loading</h1>;

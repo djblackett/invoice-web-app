@@ -31,7 +31,7 @@ if (container) {
           useRefreshTokens // Optional: Improves token handling
           authorizationParams={{
             redirect_uri: VITE_REDIRECT_URI + "#/invoices",
-            scope: "openid profile email offline_access", // Include offline_access
+            scope: "openid profile email offline_access, role", // Include offline_access
             audience: "https://invoice-web-app/",
           }}
         >

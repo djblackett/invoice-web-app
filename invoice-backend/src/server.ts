@@ -18,7 +18,6 @@ import path from "path";
 import fs from "fs";
 import https from "https";
 import { getResolvers } from "./resolvers";
-import { UserService } from "./services/user.service";
 
 export const createServer = async () => {
   try {
@@ -48,7 +47,16 @@ export const createServer = async () => {
     const resolvers = getResolvers();
     const schema = makeExecutableSchema({ typeDefs, resolvers });
 
-    const serverCleanup = useServer({ schema }, wsServer);
+    const serverCleanup = useServer(
+      {
+        schema,
+        context: async (ctx, msg, args) => {
+          // Here, `ctx.connectionParams` holds the connection parameters (e.g., headers)
+          return createContext({ connection: ctx });
+        },
+      },
+      wsServer,
+    );
 
     const server = new ApolloServer<MyContext>({
       schema,

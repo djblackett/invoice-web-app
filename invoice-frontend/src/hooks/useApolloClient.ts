@@ -54,10 +54,30 @@ const useGraphQLClient = () => {
       uri: VITE_BACKEND_URL,
     });
 
+    const addressWithoutProtocol = VITE_BACKEND_URL.replace("https://", "");
+
     // WebSocket Link for subscriptions
     const wsLink = new GraphQLWsLink(
       createClient({
-        url: `ws://${VITE_BACKEND_URL}`, // Adjust protocol if needed (wss:// for secure)
+        url: `wss://${addressWithoutProtocol}`,
+        connectionParams: async () => {
+          try {
+            const options = {
+              authorizationParams: {
+                audience: "https://invoice-web-app/",
+                scope: "openid profile email offline_access",
+              },
+            };
+            const token = await getAccessTokenSilently(options);
+            return token ? { Authorization: `Bearer ${token}` } : {};
+          } catch (error) {
+            console.error(
+              "Error fetching access token for subscriptions:",
+              error,
+            );
+            return {};
+          }
+        },
       }),
     );
 
@@ -70,7 +90,7 @@ const useGraphQLClient = () => {
           definition.operation === "subscription"
         );
       },
-      wsLink,
+      authLink.concat(wsLink),
       authLink.concat(httpLink),
     );
 
