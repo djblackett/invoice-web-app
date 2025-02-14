@@ -36,7 +36,7 @@ function DeleteModal({
       navigate("/");
     },
     onError: (error) => {
-      console.log(error.graphQLErrors[0]);
+      console.error(error.graphQLErrors[0]);
       toast.error("An error occurred!", {
         position: "top-center",
         autoClose: 3000,

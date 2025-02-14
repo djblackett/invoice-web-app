@@ -152,12 +152,10 @@ export async function createContext({
     // This branch handles subscription requests, which are initiated through WebSocket connections.
     console.log("Subscription request");
 
-    console.log("Connection:", connection);
     // Extract the token from the connection parameters (assuming it is passed as an authorization header)
     const authHeader = (connection.connectionParams?.Authorization ||
       connection.connectionParams?.authorization) as string | undefined;
 
-    console.log("WebSocket authorization header received:", authHeader);
     let user = null;
 
     if (authHeader && authHeader.startsWith("Bearer ")) {
@@ -213,8 +211,6 @@ export async function createContext({
       user = await verifyTokenAndGetEmail(token, options);
     } else {
       return { user: null, container };
-
-      // throw new Error("No toke  n provided");
     }
     const childContainer = container.createChild();
 

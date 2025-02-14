@@ -320,7 +320,6 @@ export function getInvoiceResolvers() {
             });
           }
           try {
-            console.log("Subscribing to INVOICE_ADDED");
             return pubsub.asyncIterator("INVOICE_ADDED");
           } catch (error) {
             console.error(error);

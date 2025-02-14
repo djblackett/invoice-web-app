@@ -57,7 +57,6 @@ function AllInvoices() {
 
   useSubscription(INVOICE_ADDED, {
     onData: ({ data, client }) => {
-      console.log("inside subscription", data);
       const addedInvoice = data.data.invoiceAdded;
       client.cache.updateQuery({ query: ALL_INVOICES }, ({ allInvoices }) => {
         return { allInvoices: allInvoices.concat(addedInvoice) };

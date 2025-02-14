@@ -84,19 +84,3 @@ test("should select the chosen date in the date picker", async ({ page }) => {
   await specificDate.click();
   await expect(await datePicker).toHaveValue("12/10/2024");
 });
-
-// test.skip("create an example invoice to to use with playwright codegen", async ({
-//   page,
-// }) => {
-//   const newInvoiceForm = new NewInvoiceForm(page);
-
-//   // Navigate to the invoice page if not already there
-//   await page.goto(
-//     process.env.NODE_ENV === "CI"
-//       ? "https://localhost:4173/invoice-web-app/"
-//       : "https://localhost:5173/invoice-web-app/#/invoices",
-//   );
-//   await page.waitForLoadState("networkidle");
-
-//   await createExampleInvoice(newInvoiceForm);
-// });

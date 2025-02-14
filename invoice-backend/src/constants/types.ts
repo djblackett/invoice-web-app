@@ -42,7 +42,6 @@ export interface InvoiceUpdateArgs {
   total?: number;
 }
 
-// New interface for the update object
 export interface InvoiceUpdatePayload {
   id: string | undefined;
   clientAddress?: ClientAddress | undefined;
@@ -94,7 +93,7 @@ export const itemsZod = z.object({
 });
 
 export const addressZod = z.object({
-  id: z.number().optional(), // Assuming id is optional
+  id: z.number().optional(),
   street: z.string(),
   city: z.string(),
   postCode: z.string(),
@@ -172,7 +171,6 @@ export interface InjectedQueryContext {
 }
 
 export interface MyContext extends BaseContext {
-  // token?: string;
   applyMiddleware?: unknown;
   connection?: GraphQLWSContext;
   user?: {

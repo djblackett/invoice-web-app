@@ -38,6 +38,5 @@ describe("WelcomePage", () => {
     render(<WelcomePage />);
     expect(screen.queryByText("Loading")).not.toBeInTheDocument();
     expect(screen.queryByText("Navigate")).not.toBeInTheDocument();
-    // Similarly, verify Navigate was called with the correct props
   });
 });

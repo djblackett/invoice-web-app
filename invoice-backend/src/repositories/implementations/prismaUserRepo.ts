@@ -168,19 +168,14 @@ export class PrismaUserRepository implements IUserRepo {
           name: true,
           username: true,
           role: true,
-          // passwordHash: true,
         },
         where: {
           username,
-          // passwordHash: {
-          //   not: null,
-          // },
         },
       });
 
       return {
         ...result,
-        // passwordHash: result.passwordHash!,
         name: result.name ?? "",
       };
     } catch (e: any) {

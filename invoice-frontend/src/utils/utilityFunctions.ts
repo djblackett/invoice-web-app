@@ -94,7 +94,6 @@ export const createInvoiceObject = (
   const { items } = newInvoice;
 
   for (let i = 0; i < items.length; i++) {
-    console.log(typeof items[i].quantity);
     items[i].quantity = Number(items[i].quantity);
     items[i].price = Number(items[i].price);
     items[i].total = items[i].quantity * items[i].price;

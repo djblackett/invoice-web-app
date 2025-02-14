@@ -29,7 +29,6 @@ export const createApp = async () => {
       if (
         NODE_ENV === "test" ||
         NODE_ENV === "CI" //||
-        // NODE_ENV === "development"
       ) {
         const childContainer = container.createChild();
         const prisma = new PrismaClient({ datasourceUrl: DATABASE_URL });

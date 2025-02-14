@@ -45,7 +45,6 @@ function PaymentTermsDropdown({ invoice }: PaymentTermsProps) {
 
     const num = Number(option.split(" ")[1]);
     handleChangeSelectedOption(num);
-    console.log(num);
   };
 
   useEffect(() => {

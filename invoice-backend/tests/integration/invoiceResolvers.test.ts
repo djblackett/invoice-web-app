@@ -90,9 +90,6 @@ describe("Invoice Resolvers Integration Tests", () => {
 
     child.bind<PrismaClient>(TYPES.PrismaClient).toConstantValue(prisma);
     console.log("Connected to Prisma", newDatabaseUrl);
-    // Object.keys(prisma).forEach((key) => {
-    //   console.log(key);
-    // });
 
     await prisma.$executeRawUnsafe(
       `SET search_path TO "${schemaName}", public`,

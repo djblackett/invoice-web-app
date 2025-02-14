@@ -31,9 +31,6 @@ async function globalSetup({ config }) {
   const invoiceMainPage = new InvoiceMainPage(page);
   await invoiceMainPage.gotoPage();
 
-  // await invoiceMainPage.page.waitForURL(`${TEST_BASE_URL}#/login`);
-  // await page.waitForFunction(() => window.location.hash === "#/login");
-
   await invoiceMainPage.welcomePage.clickLoginButton();
   await invoiceMainPage.page.waitForLoadState("networkidle");
 

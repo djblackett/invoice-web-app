@@ -1,7 +1,3 @@
-// use your extended Playwright setup
-// import { chromium } from "@playwright/test";
-// import { Page } from "@playwright/test";
-
 import { expect, test } from "../fixtures/base";
 
 test("should navigate to the page and interact with elements", async ({
@@ -10,10 +6,6 @@ test("should navigate to the page and interact with elements", async ({
   try {
     // Navigate to the base URL
     await page.goto("/invoice-web-app/");
-
-    // Take a full-page screenshot
-
-    // await page.screenshot({ path: "fullpage.png", fullPage: true });
 
     // Locate and verify visibility of the button
     const button = page.getByTestId("newInvoiceButton");
@@ -30,8 +22,7 @@ test("should navigate to the page and interact with elements", async ({
     await expect(filterButton).toContainText("Pending");
     await expect(filterButton).toContainText("Paid");
   } finally {
-    // // Clean up resources
-    // await context.close();
-    // await browser.close();
+    // Close the browser
+    await page.close();
   }
 });

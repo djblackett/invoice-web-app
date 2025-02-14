@@ -369,7 +369,6 @@ describe("Prisma Query: updateInvoice", () => {
       ...mockInvoiceInput,
       clientName: "Dr. Evil",
     });
-    console.log(updatedInvoice);
 
     // Eslint is interfering with the tests
     // None of the tests rely on 'this' so this rule can be safely ignored
@@ -484,14 +483,9 @@ describe("Prisma Query: deleteInvoice", () => {
   });
 
   test("should handle delete when invoice has related items", async () => {
-    // const id = "D64FUO";
-
-    // prisma.invoice.delete.mockResolvedValue(true);
-
     const deletedInvoice = await mockRepo.delete("D64FUO");
 
     expect(deletedInvoice).toStrictEqual(true);
-
     expect(prisma.invoice.delete).toHaveBeenCalledWith({
       where: { id: "D64FUO" },
     });
