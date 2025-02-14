@@ -157,32 +157,32 @@ jobs:
       - name: Lint backend
         run: |
           cd invoice-backend
-          npm run lint
+          yarn lint
 
       - name: Lint frontend
         run: |
           cd invoice-frontend
-          npm run lint
+          yarn lint
 
       - name: Initialize Prisma
         run: |
           cd invoice-backend
-          npm run prisma-generate && npm run prisma-push
+          yarn prisma-generate && yarn prisma-push
 
       - name: Run backend tests (unit and integration)
         run: |
           cd invoice-backend
-          npm run test:unit
+          yarn test:unit
           
       - name: Run integration tests
         run: |
           cd invoice-backend
-          npm run test:integration
+          yarn test:integration
 
       - name: Run backend server for e2e tests
         run: |
           cd invoice-backend
-          npm run start:test & echo "Backend server running" &&
+          yarn start:test & echo "Backend server running" &&
           sleep 2
 
       - name: GraphQL health check
@@ -196,12 +196,12 @@ jobs:
       - name: Run frontend unit tests
         run: |
           cd invoice-frontend
-          npm run test:unit
+          yarn test:unit
 
       - name: Run frontend server for e2e tests`
         run: |
           cd invoice-frontend
-          npm run build && npm run preview &
+          yarn build && yarn preview &
           sleep 1
 
       - name: Wait for frontend
@@ -270,7 +270,7 @@ jobs:
 
       - name: Build the project
         working-directory: ${{ env.FRONTEND_DIR }}
-        run: npm run build
+        run: yarn build
 
       - name: Deploy to GitHub Pages
         uses: peaceiris/actions-gh-pages@v4.0.0

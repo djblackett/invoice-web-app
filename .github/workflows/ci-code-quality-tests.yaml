@@ -170,11 +170,11 @@ jobs:
           cd invoice-backend
           yarn install --frozen-lockfile
 
-      - name: Save Backend Cache
-        uses: actions/cache@v4.2.0
-        with:
-          path: invoice-backend/node_modules
-          key: ${{ runner.os }}-backend-yarn-${{ hashFiles('invoice-backend/yarn.lock') }}
+      # - name: Save Backend Cache
+      #   uses: actions/cache@v4.2.0
+      #   with:
+      #     path: invoice-backend/node_modules
+      #     key: ${{ runner.os }}-backend-yarn-${{ hashFiles('invoice-backend/yarn.lock') }}
 
       - name: Wait for PostgreSQL to be Ready
         run: |
@@ -196,12 +196,12 @@ jobs:
       - name: Lint
         run: |
           cd invoice-backend
-          npm run lint:fix
+          yarn lint:fix
 
       - name: Initialize Prisma
         run: |
           cd invoice-backend
-          npm run prisma-generate && npm run prisma-push
+          yarn prisma-generate && yarn prisma-push
 
       - name: Run Unit Tests
         run: |
