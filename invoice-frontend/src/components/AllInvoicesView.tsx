@@ -8,12 +8,12 @@ import { Grid } from "react-loader-spinner";
 import { memo } from "react";
 
 interface StyledLinkProps extends LinkProps {
-  isMobile: boolean;
+  $isMobile: boolean;
 }
 
 const StyledLink = styled(Link)<StyledLinkProps>`
-  width: ${(props) => (props.isMobile ? "100%" : "50%")};
-  min-width: ${(props) => (props.isMobile ? "auto" : "730px")};
+  width: ${(props) => (props.$isMobile ? "100%" : "50%")};
+  min-width: ${(props) => (props.$isMobile ? "auto" : "730px")};
   text-decoration: none;
   display: flex;
   justify-content: center;
@@ -65,7 +65,7 @@ const AllInvoicesView = ({
             <StyledLink
               key={invoice.id}
               to={`/invoices/${invoice.id}`}
-              isMobile={width < 1200}
+              $isMobile={width < 1200}
             >
               <InvoiceCard invoice={invoice} />
             </StyledLink>
