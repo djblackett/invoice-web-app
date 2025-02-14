@@ -113,10 +113,6 @@ export async function verifyTokenAndGetEmail(
     const tokenRoleClaim = `${namespace}roles`;
     const tokenRole = payload[tokenRoleClaim];
 
-    // console.log("tokenRoleClaim:", tokenRoleClaim);
-    // console.log("tokenRole:", tokenRole);
-    // // console.log("database_url:", process.env.DATABASE_URL);
-    // console.log("payload:", payload);
     if (
       (tokenRole && tokenRole.includes("Admin")) ||
       NODE_ENV === "test" ||
@@ -271,8 +267,6 @@ export async function createContext({
       throw e;
     }
 
-    // console.log("User created:", dbUser);
-
     const returnPayload = {
       user: dbUser,
       invoiceService,
@@ -281,8 +275,6 @@ export async function createContext({
       container: childContainer,
     };
 
-    // console.log("Context created:", returnPayload);
-    // console.log("At end of createContext. UserService:", userService);
     return returnPayload;
   } catch (e) {
     console.error("error:", e);
