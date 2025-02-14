@@ -41,7 +41,7 @@ function MarkAsPaidButton({ invoice, editButtonRef }: MarkPaidProps) {
 
   const [markAsPaid] = useMutation(MARK_AS_PAID, {
     onError: (error) => {
-      console.log(error.graphQLErrors[0].message);
+      console.error(error.graphQLErrors[0].message);
     },
   });
 
@@ -67,7 +67,6 @@ function MarkAsPaidButton({ invoice, editButtonRef }: MarkPaidProps) {
     } else {
       if (editButtonRef.current) {
         editButtonRef.current.focus();
-        console.log("ref:", editButtonRef.current);
       }
 
       toast.error("Cannot mark drafts as paid", {

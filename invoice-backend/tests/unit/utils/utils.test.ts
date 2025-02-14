@@ -16,7 +16,6 @@ describe("utils.ts", () => {
   describe("validateInvoiceData", () => {
     it("should return parsed data for valid invoice input", () => {
       const input = data[0];
-      console.log(input);
       const result = validateInvoiceData(input);
       expect(result).toMatchObject(input);
     });
@@ -50,7 +49,6 @@ describe("utils.ts", () => {
         password: "securePassword123",
       };
       const result = validateUserCreate(input);
-      console.log(result);
       expect(result).toMatchObject(input);
     });
 

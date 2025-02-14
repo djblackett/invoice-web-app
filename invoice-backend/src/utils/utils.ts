@@ -132,11 +132,9 @@ export function mapPartialInvoiceToInvoice(
       total: invoice.total ?? 0,
     };
 
-    // console.log("invoiceWithDefaultValues:", invoiceWithDefaultValues);
     return invoiceWithDefaultValues;
   } catch (e) {
     console.error(e);
-    console.log(e);
     throw new ValidationException("Failed to map invoice data");
   }
 }

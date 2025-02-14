@@ -23,7 +23,6 @@ export class InvoiceService {
   ) {}
 
   getInvoices = async (): Promise<Invoice[]> => {
-    console.log(this.userContext);
     if (!this.userContext) {
       throw new ValidationException("Unauthorized");
     }

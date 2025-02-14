@@ -480,11 +480,6 @@ describe("Mutation.removeInvoice", () => {
     invoiceServiceMock.deleteInvoice.mockRejectedValue(
       new NotFoundException("Invoice not found"),
     );
-
-    // await expect(
-    //   invoiceResolvers.Mutation.removeInvoice(null, args, mockContext),
-    // ).rejects.toThrow(GraphQLError);
-
     try {
       await invoiceResolvers.Mutation.removeInvoice(null, args, mockContext);
     } catch (error: any) {
@@ -598,6 +593,7 @@ describe("Mutation.markAsPaid", () => {
   });
 });
 
+// todo - come back to this
 describe.skip("Subscription.invoiceAdded", () => {
   it("should subscribe to invoiceAdded events", async () => {
     const asyncIteratorMock = {

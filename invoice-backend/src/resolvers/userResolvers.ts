@@ -12,8 +12,6 @@ export function getUserResolvers() {
         context: InjectedQueryContext,
       ) => {
         try {
-          // console.error("User resolver:", context);
-          // const userService = validateUserService(context.userService);
           const { userService } = context;
 
           if (!userService) {
@@ -24,7 +22,7 @@ export function getUserResolvers() {
               },
             });
           }
-          // console.log("userService:", userService);
+
           return await userService.getUsers();
         } catch (error) {
           console.error("Error caught in resolver", error);
@@ -72,8 +70,6 @@ export function getUserResolvers() {
         context: InjectedQueryContext,
       ) => {
         try {
-          // console.log("Create user resolver: context:", context);
-          // const userService = validateUserService(context.userService);
           const { userService } = context;
 
           if (!userService) {
@@ -84,7 +80,7 @@ export function getUserResolvers() {
               },
             });
           }
-          // console.error("userService:", userService);
+
           const user = await userService.createUser(args);
           return user;
         } catch (error: any) {
@@ -118,7 +114,6 @@ export function getUserResolvers() {
           throw new UnauthorizedException("Only admin can delete all users");
         }
         try {
-          // const userService = validateUserService(context.userService);
           const { userService } = context;
 
           if (!userService) {
@@ -156,7 +151,6 @@ export function getUserResolvers() {
           throw new UnauthorizedException("Only admin can delete all users");
         }
         try {
-          // const userService = validateUserService(context.userService);
           const { userService } = context;
 
           if (!userService) {
@@ -189,9 +183,9 @@ function validateUserService(userService: UserService | undefined) {
   if (!userService) {
     console.error("User service not found in context");
     throw new GraphQLError("Internal server error", {
-      // extensions: {
-      //   code: "INTERNAL_SERVER_ERROR",
-      // },
+      extensions: {
+        code: "INTERNAL_SERVER_ERROR",
+      },
     });
   }
   return userService;

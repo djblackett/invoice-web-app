@@ -14,7 +14,7 @@ const __dirname = path.dirname(__filename);
  * See https://playwright.dev/docs/test-configuration.
  */
 export default defineConfig({
-  // testDir: "qa", //"./tests/e2e",
+  testDir: "qa",
   testMatch: "**/*.spec.ts",
   timeout: 30 * 1000,
   globalSetup: "./global-setup",
@@ -63,36 +63,6 @@ export default defineConfig({
     //   name: "webkit",
     //   use: {
     //     ...devices["Desktop Safari"],
-    //     launchOptions: {
-    //       args: ["--ignore-certificate-errors"],
-    //     },
-    //   },
-    // },
-    /* Test against mobile viewports. */
-    // {
-    //   name: 'Mobile Chrome',
-    //   use: { ...devices['Pixel 5'] },
-    // },
-    // {
-    //   name: 'Mobile Safari',
-    //   use: { ...devices['iPhone 12'] },
-    // },
-    /* Test against branded browsers. */
-    // {
-    //   name: "Microsoft Edge",
-    //   use: {
-    //     ...devices["Desktop Edge"],
-    //     channel: "msedge",
-    //     launchOptions: {
-    //       args: ["--ignore-certificate-errors"],
-    //     },
-    //   },
-    // },
-    // {
-    //   name: "Google Chrome",
-    //   use: {
-    //     ...devices["Desktop Chrome"],
-    //     channel: "chrome",
     //     launchOptions: {
     //       args: ["--ignore-certificate-errors"],
     //     },

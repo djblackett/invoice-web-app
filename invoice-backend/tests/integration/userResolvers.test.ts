@@ -13,29 +13,11 @@ import {
 import { PrismaClient } from "@prisma/client";
 import { execSync } from "child_process";
 import { randomUUID } from "crypto";
-import { getTestToken } from "./utils";
 import container from "@/config/inversify.config";
-import { Container } from "inversify";
-import { UserIdAndRole } from "@/constants/types";
 import TYPES from "@/constants/identifiers";
 
 let app: any;
 process.env.NODE_ENV = "test";
-// export function createTestContainer() {
-//   const container = new Container();
-
-//   // Add test-specific bindings
-//   container.bind<UserIdAndRole>(TYPES.UserContext).toConstantValue({
-//     id: "test-user-id",
-//     role: "USER",
-//     username: "test@example.com",
-//     name: "Test User",
-//   });
-
-//   // Add other necessary bindings...
-
-//   return container;
-// }
 
 const users = [
   { name: "Alice", username: "alicewonder", password: "wonderland123" },

@@ -1,11 +1,9 @@
 import "reflect-metadata";
 import { MockProxy, mock } from "vitest-mock-extended";
-import { SECRET } from "@/config/server.config";
 import { CreateUserDTO } from "@/constants/types";
 import { IUserRepo } from "@/repositories/userRepo";
 import { UserService } from "@/services/user.service";
 import bcrypt from "bcrypt";
-import jwt from "jsonwebtoken";
 import { vi, Mock, beforeEach, describe, expect, it } from "vitest";
 import { InternalServerException } from "@/config/exception.config";
 import { Role } from "@prisma/client";
@@ -142,89 +140,3 @@ describe("UserService - getUser", () => {
     expect(userRepoMock.getUserById).toHaveBeenCalledWith(userId);
   });
 });
-
-// describe("UserService - login", () => {
-//   it("should return a token and user DTO when login is successful", async () => {
-//     // Arrange
-//     const username = "johndoe";
-//     const password = "password123";
-//     const hashedPassword = "hashedPassword123";
-//     const user = {
-//       id: "1",
-//       name: "John Doe",
-//       username,
-//       passwordHash: hashedPassword,
-//     };
-
-//     const token = "jwtToken123";
-
-//     const bcryptCompare = vi.fn().mockResolvedValue(true);
-//     (bcrypt.compare as Mock) = bcryptCompare;
-//     //call method that uses bcrypt.compare with async
-
-//     const jwtSign = vi.fn().mockReturnValue(token);
-//     (jwt.sign as Mock) = jwtSign;
-
-//     userRepoMock.findUserByUsername.mockResolvedValue(user);
-
-//     // Act
-//     const result = await userService.login(username, password);
-
-//     // Assert
-//     expect(userRepoMock.findUserByUsername).toHaveBeenCalledWith(username);
-//     expect(bcrypt.compare).toHaveBeenCalledWith(password, hashedPassword);
-//     expect(jwt.sign).toHaveBeenCalledWith(
-//       { id: user.id, username: user.username },
-//       SECRET,
-//       { expiresIn: "1h" },
-//     );
-//     expect(result).toEqual({
-//       token,
-//       user: {
-//         id: user.id,
-//         name: user.name,
-//         username: user.username,
-//       },
-//     });
-//   });
-
-//   it("should throw UnauthorizedException when password is incorrect", async () => {
-//     // Arrange
-//     const username = "johndoe";
-//     const password = "wrongPassword";
-//     const user = {
-//       id: "1",
-//       name: "John Doe",
-//       username,
-//       passwordHash: "hashedPassword123",
-//     };
-
-//     userRepoMock.findUserByUsername.mockResolvedValue(user);
-
-//     const bcryptCompare = vi
-//       .fn()
-//       .mockRejectedValue(new Error("Invalid username or password"));
-//     (bcrypt.compare as Mock) = bcryptCompare;
-
-//     // Act & Assert
-//     await expect(userService.login(username, password)).rejects.toThrow(
-//       "Invalid username or password",
-//     );
-//     expect(userRepoMock.findUserByUsername).toHaveBeenCalledWith(username);
-//     expect(bcrypt.compare).toHaveBeenCalledWith(password, user.passwordHash);
-//   });
-
-//   it("should throw NotFoundException when user does not exist", async () => {
-//     // Arrange
-//     const username = "nonexistent";
-//     const password = "password123";
-
-//     userRepoMock.findUserByUsername.mockResolvedValue(null);
-
-//     // Act & Assert
-//     await expect(userService.login(username, password)).rejects.toThrow(
-//       "User not found",
-//     );
-//     expect(userRepoMock.findUserByUsername).toHaveBeenCalledWith(username);
-//   });
-// });

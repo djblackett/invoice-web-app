@@ -9,7 +9,6 @@ import {
   NotFoundException,
   ValidationException,
 } from "../../config/exception.config";
-import { validateInvoiceData } from "@/utils/utils";
 
 @injectable()
 export class PrismaInvoiceRepository implements IInvoiceRepo {
@@ -200,7 +199,6 @@ export class PrismaInvoiceRepository implements IInvoiceRepo {
             items: true,
             clientAddress: true,
             senderAddress: true,
-            // createdBy: true,
           },
         });
 
@@ -216,10 +214,6 @@ export class PrismaInvoiceRepository implements IInvoiceRepo {
 
   async create(invoice: InvoiceWithCreatedBy): Promise<unknown> {
     try {
-      // console.log("Creating invoice for user ID:", invoice.createdById);
-
-      // Verify that the user exists
-
       try {
         const user = await this.prisma.user.findUnique({
           where: { id: invoice.createdById },
@@ -292,11 +286,9 @@ export class PrismaInvoiceRepository implements IInvoiceRepo {
         total: Number(result.total),
       };
 
-      // console.log("Invoice created:", createdInvoice);
       return createdInvoice;
     } catch (error) {
       console.error("Error creating invoice:", error);
-      // throw new InternalServerException("Failed to create invoice");
       return prismaErrorHandler(error);
     }
   }

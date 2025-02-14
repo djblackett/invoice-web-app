@@ -164,7 +164,6 @@ export const useNewInvoiceForm = () => {
       );
       newInvoice.id = String(id);
       newInvoice.status = "pending";
-      console.log(id);
 
       try {
         await updateInvoice({

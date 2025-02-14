@@ -7,6 +7,10 @@ import {
 import { chromium } from "@playwright/test";
 import { TEST_BASE_URL } from "../../global-setup";
 
+if (!process.env.TEST_BASE_URL) {
+  throw new Error("TEST_URL is not defined");
+}
+
 test.beforeEach(async () => {
   const browser = await chromium.launch();
   const context = await browser.newContext({
@@ -14,7 +18,7 @@ test.beforeEach(async () => {
   });
   const page = await context.newPage();
 
-  await page.goto(TEST_BASE_URL);
+  await page.goto(TEST_BASE_URL!);
   const newInvoiceForm = new NewInvoiceForm(page);
   await createExampleInvoice(newInvoiceForm);
 });
@@ -43,9 +47,8 @@ test("Should mark invoice as paid", async ({ invoiceMainPage }) => {
     .click();
 });
 
-// should edit an invoice and save the changes
+// todo - should edit an invoice and save the changes
 
-// should delete an invoice
 test("Should delete an invoice", async ({ invoiceMainPage }) => {
   await invoiceMainPage.gotoPage();
 
