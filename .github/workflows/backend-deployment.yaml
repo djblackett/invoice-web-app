@@ -60,13 +60,13 @@ jobs:
           corepack enable
           corepack prepare yarn@1.22.22 --activate
 
-      - name: Restore Backend Cache
-        uses: actions/cache@v4.2.0
-        with:
-          path: invoice-backend/node_modules
-          key: ${{ runner.os }}-backend-yarn-${{ hashFiles('invoice-backend/yarn.lock') }}
-          restore-keys: |
-            ${{ runner.os }}-backend-yarn-
+      # - name: Restore Backend Cache
+      #   uses: actions/cache@v4.2.0
+      #   with:
+      #     path: invoice-backend/node_modules
+      #     key: ${{ runner.os }}-backend-yarn-${{ hashFiles('invoice-backend/yarn.lock') }}
+      #     restore-keys: |
+      #       ${{ runner.os }}-backend-yarn-
 
       - name: Install Backend Dependencies
         run: |
