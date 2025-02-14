@@ -99,7 +99,7 @@ describe("Invoice Resolvers Integration Tests", () => {
     );
     await prisma.$connect();
 
-    execSync("npx prisma@6.2.1 db push", { stdio: "inherit" });
+    execSync("yarn prisma db push", { stdio: "inherit" });
     [app] = await createServer();
     // 4. Run "prisma db push" or "prisma migrate deploy"
     //    This ensures the schema is created and tables are set up

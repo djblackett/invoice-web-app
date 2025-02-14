@@ -115,7 +115,7 @@ describe("Integration Tests", () => {
     child.bind<PrismaClient>(TYPES.PrismaClient).toConstantValue(prisma);
 
     console.log("Connected to Prisma", newDatabaseUrl);
-    execSync("npx prisma@6.2.1 db push", { stdio: "inherit" });
+    execSync("yarn prisma db push", { stdio: "inherit" });
     [app] = await createServer();
 
     await request(app)
