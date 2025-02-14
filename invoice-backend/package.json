@@ -6,7 +6,6 @@
   "scripts": {
     "test:unit": "vitest ./tests/unit",
     "test:integration": "CERT_DIR='../certs/' DATABASE_URL=postgres://postgres:example@localhost:5432/db-test vitest ./tests/integration",
-    "test:integration:dev": "CERT_DIR='../certs/' DATABASE_URL=postgres://postgres:example@localhost:5432/db-test vitest ./tests/integration",
     "coverage": "DATABASE_URL=postgres://postgres:example@localhost:5432/db-test CERT_DIR='../certs/' vitest run --coverage",
     "build": "tsc -p tsconfig.build.json && tsc-alias",
     "build:slim": "npm run prisma-generate && ncc build ./src/index.ts -o dist -t",

@@ -201,10 +201,6 @@ type HeaderProps = {
 function Header({ themeToggler, theme }: HeaderProps) {
   const { user, logout, isAuthenticated } = useAuth0();
 
-  if (user) {
-    console.log(user);
-  }
-
   const logoutWithRedirect = () =>
     logout({
       logoutParams: {

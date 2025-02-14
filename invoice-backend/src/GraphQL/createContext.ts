@@ -110,10 +110,15 @@ export async function verifyTokenAndGetEmail(
 
     // Assign role based on payload or default to USER
     let role: "USER" | "ADMIN";
-    if (payload.role === "Admin" || NODE_ENV === "test" || NODE_ENV === "CI") {
+    const tokenRoleClaim = `${namespace}roles`;
+    const tokenRole = payload[tokenRoleClaim];
+
+    if (
+      (tokenRole && tokenRole.includes("Admin")) ||
+      NODE_ENV === "test" ||
+      NODE_ENV === "CI"
+    ) {
       role = "ADMIN";
-    } else if (payload.role === "User") {
-      role = "USER";
     } else {
       role = "USER";
     }
@@ -142,10 +147,55 @@ export async function createContext({
   req,
   connection,
 }: ContextArgs): Promise<InjectedQueryContext> {
+  console.log("createContext called");
   if (connection) {
-    // This is a subscription request
-    return { connection };
+    // This branch handles subscription requests, which are initiated through WebSocket connections.
+    console.log("Subscription request");
+
+    console.log("Connection:", connection);
+    // Extract the token from the connection parameters (assuming it is passed as an authorization header)
+    const authHeader = (connection.connectionParams?.Authorization ||
+      connection.connectionParams?.authorization) as string | undefined;
+
+    console.log("WebSocket authorization header received:", authHeader);
+    let user = null;
+
+    if (authHeader && authHeader.startsWith("Bearer ")) {
+      const token = authHeader.split(" ")[1];
+      try {
+        user = await verifyTokenAndGetEmail(token, options);
+      } catch (error) {
+        console.error("Subscription token verification failed:", error);
+        // Optionally throw an error or set user to null depending on your needs.
+      }
+    }
+
+    // Optionally, you can also initialize services for subscriptions.
+    // For example, you might want to create a child container as in the HTTP request branch.
+    const childContainer = container.createChild();
+
+    if (user) {
+      childContainer
+        .bind<UserIdAndRole>(TYPES.UserContext)
+        .toConstantValue(user);
+    }
+
+    const invoiceService = childContainer.get<InvoiceService>(
+      TYPES.InvoiceService,
+    );
+    const userService = childContainer.get<UserService>(TYPES.UserService);
+    const pubsub = childContainer.get<PubSub>(TYPES.PubSub);
+
+    return {
+      user,
+      invoiceService,
+      userService,
+      pubsub,
+      container: childContainer,
+      connection,
+    };
   }
+
   const authHeader = req?.headers.authorization;
   try {
     let user;
@@ -217,8 +267,6 @@ export async function createContext({
       throw e;
     }
 
-    // console.log("User created:", dbUser);
-
     const returnPayload = {
       user: dbUser,
       invoiceService,
@@ -227,8 +275,6 @@ export async function createContext({
       container: childContainer,
     };
 
-    // console.log("Context created:", returnPayload);
-    // console.log("At end of createContext. UserService:", userService);
     return returnPayload;
   } catch (e) {
     console.error("error:", e);

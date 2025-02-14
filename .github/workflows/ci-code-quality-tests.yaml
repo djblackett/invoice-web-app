@@ -74,12 +74,12 @@ jobs:
       - name: Lint
         run: |
           cd invoice-frontend
-          npm run lint:fix
+          yarn lint:fix
 
       - name: Run Frontend Tests
         run: |
           cd invoice-frontend
-          npm run test:unit
+          yarn test:unit
 
       - name: Build Frontend Docker Image
         run: |
@@ -102,12 +102,14 @@ jobs:
       DATABASE_URL: postgres://postgres:example@localhost:5432/db-test
       REQUEST_ORIGIN: https://localhost:4173
       SECRET: theSecretStuff # not critical - only for ephemeral testing env
+      VITE_BACKEND_URL: http://localhost:8000
       NODE_ENV: CI
       CERT_DIR: "../certs/"
       DOMAIN: ${{ secrets.AUTH_DOMAIN }}
       AUDIENCE: ${{ secrets.AUDIENCE }}
       CLIENT_ID: ${{ secrets.CLIENT_ID }}
       CLIENT_SECRET: ${{ secrets.CLIENT_SECRET }}
+      
     
     runs-on: ubuntu-latest
     services:
@@ -157,24 +159,24 @@ jobs:
           cat localhost.pem > localhost-fullchain.pem
           cat "$(mkcert -CAROOT)/rootCA.pem" >> localhost-fullchain.pem
 
-      - name: Restore Cache
-        uses: actions/cache@v4.2.0
-        with:
-          path: invoice-backend/node_modules
-          key: ${{ runner.os }}-node-${{ hashFiles('invoice-backend/yarn.lock') }}
-          restore-keys: |
-            ${{ runner.os }}-node-
+      # - name: Restore Cache
+      #   uses: actions/cache@v4.2.0
+      #   with:
+      #     path: invoice-backend/node_modules
+      #     key: ${{ runner.os }}-node-${{ hashFiles('invoice-backend/yarn.lock') }}
+      #     restore-keys: |
+      #       ${{ runner.os }}-node-
 
       - name: Install Backend Dependencies
         run: |
           cd invoice-backend
           yarn install --frozen-lockfile
 
-      - name: Save Backend Cache
-        uses: actions/cache@v4.2.0
-        with:
-          path: invoice-backend/node_modules
-          key: ${{ runner.os }}-backend-yarn-${{ hashFiles('invoice-backend/yarn.lock') }}
+      # - name: Save Backend Cache
+      #   uses: actions/cache@v4.2.0
+      #   with:
+      #     path: invoice-backend/node_modules
+      #     key: ${{ runner.os }}-backend-yarn-${{ hashFiles('invoice-backend/yarn.lock') }}
 
       - name: Wait for PostgreSQL to be Ready
         run: |
@@ -196,22 +198,22 @@ jobs:
       - name: Lint
         run: |
           cd invoice-backend
-          npm run lint:fix
+          yarn lint:fix
 
       - name: Initialize Prisma
         run: |
           cd invoice-backend
-          npm run prisma-generate && npm run prisma-push
+          yarn prisma-generate && yarn prisma-push
 
       - name: Run Unit Tests
         run: |
           cd invoice-backend
-          npm run test:unit
+          yarn test:unit
 
       - name: Run Integration Tests
         run: |
           cd invoice-backend
-          npm run test:integration
+          yarn test:integration
 
       - name: Build Docker Image
         run: |

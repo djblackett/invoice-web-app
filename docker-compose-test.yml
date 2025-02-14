@@ -99,7 +99,6 @@ services:
       TEST_BASE_URL: https://frontend-test:5173/invoice-web-app/
     networks:
       - my_network_test
-  # Allow interactive runs (e.g., debugging or watching tests)
     stdin_open: true
     tty: true
 

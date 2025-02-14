@@ -17,12 +17,7 @@ export function getInvoiceResolvers() {
         context: InjectedQueryContext,
       ) => {
         try {
-          // console.log("User in resolver:", context.user);
-          console.log("User role:", context.user?.role);
-          console.log("NODE_ENV:", process.env.NODE_ENV);
-
           const { user, invoiceService } = context;
-          // console.log("invoiceResolvers context:", context);
 
           if (!user) {
             console.error("User not found in context");
@@ -237,7 +232,6 @@ export function getInvoiceResolvers() {
       ) => {
         const { user, invoiceService } = context;
 
-        // console.log("User in deleteInvoicesByUserId:", user);
         if (user?.role !== "ADMIN") {
           throw new GraphQLError(
             "Unauthorized - must be ADMIN, but user is " + user?.role,
@@ -311,15 +305,22 @@ export function getInvoiceResolvers() {
           _args: any,
           context: InjectedQueryContext,
         ) => {
-          const { pubsub } = context;
+          const { pubsub, user } = context;
           if (!pubsub) {
-            throw new GraphQLError("Internal server error", {
+            throw new GraphQLError("Internal server error : pubsub missing", {
               extensions: {
                 code: "INTERNAL_SERVER_ERROR",
               },
             });
           }
+
+          if (user?.role !== "ADMIN") {
+            throw new GraphQLError("Not authorized to subscribe", {
+              extensions: { code: "FORBIDDEN" },
+            });
+          }
           try {
+            console.log("Subscribing to INVOICE_ADDED");
             return pubsub.asyncIterator("INVOICE_ADDED");
           } catch (error) {
             console.error(error);

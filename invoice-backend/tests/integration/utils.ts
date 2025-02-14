@@ -5,8 +5,6 @@ const DOMAIN = process.env.DOMAIN ?? "";
 const CLIENT_ID = process.env.CLIENT_ID ?? "";
 const CLIENT_SECRET = process.env.CLIENT_SECRET ?? "";
 const AUDIENCE = process.env.AUDIENCE ?? "";
-const TEST_ID =
-  process.env.TEST_ID ?? "Egq5vDmWmVIa8bcKXorFLSv5Gb6DI3Pa@clients";
 
 function checkEnvVars() {
   if (!DOMAIN || !CLIENT_ID || !CLIENT_SECRET || !AUDIENCE) {

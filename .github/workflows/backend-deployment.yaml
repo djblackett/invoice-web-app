@@ -60,13 +60,13 @@ jobs:
           corepack enable
           corepack prepare yarn@1.22.22 --activate
 
-      - name: Restore Backend Cache
-        uses: actions/cache@v4.2.0
-        with:
-          path: invoice-backend/node_modules
-          key: ${{ runner.os }}-backend-yarn-${{ hashFiles('invoice-backend/yarn.lock') }}
-          restore-keys: |
-            ${{ runner.os }}-backend-yarn-
+      # - name: Restore Backend Cache
+      #   uses: actions/cache@v4.2.0
+      #   with:
+      #     path: invoice-backend/node_modules
+      #     key: ${{ runner.os }}-backend-yarn-${{ hashFiles('invoice-backend/yarn.lock') }}
+      #     restore-keys: |
+      #       ${{ runner.os }}-backend-yarn-
 
       - name: Install Backend Dependencies
         run: |
@@ -76,7 +76,7 @@ jobs:
       - name: Lint backend
         run: |
           cd invoice-backend
-          npm run lint
+          yarn lint
 
       - name: Save Backend Cache
         uses: actions/cache@v4.2.0
@@ -104,7 +104,7 @@ jobs:
       - name: Initialize Prisma
         run: |
           cd invoice-backend
-          npm run prisma-generate && npm run prisma-push
+          yarn prisma-generate && yarn prisma-push
 
       - name: Set up mkcert
         run: |
@@ -125,12 +125,12 @@ jobs:
       - name: Run backend unit tests
         run: |
           cd invoice-backend
-          npm run test:unit
+          yarn test:unit
 
       - name: Run backend integration tests
         run: |
           cd invoice-backend
-          npm run test:integration
+          yarn test:integration
 
   deploy:
     name: Deploy to Environment

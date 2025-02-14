@@ -35,13 +35,11 @@ export class InvoiceService {
     }
 
     if (role !== "ADMIN") {
-      this.invoiceRepo.findByUserId(id);
+      return validateInvoiceList(await this.invoiceRepo.findByUserId(id));
     }
 
     try {
       const result = await this.invoiceRepo.findAll();
-      // console.log(result);
-      // return result as Invoice[];
       return validateInvoiceList(result);
     } catch (e) {
       console.error(e);
@@ -49,6 +47,7 @@ export class InvoiceService {
     }
   };
 
+  // todo - may be redundant to have two methods for getting invoices
   getInvoicesByUserId = async () => {
     if (!this.userContext) {
       throw new ValidationException("Unauthorized");
@@ -101,6 +100,7 @@ export class InvoiceService {
       try {
         const result = await this.invoiceRepo.findByUserIdAndInvoiceId(
           id,
+          role,
           invoiceId,
         );
         if (!result) {
