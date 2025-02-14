@@ -1,4 +1,4 @@
-import{U as c,V as k,W as w,j as t,d as o,X as d,b as y,s as j,Y as C}from"./index-DJHl-HbE.js";import{P as v}from"./invoice.queries-kXq_As9r.js";import{C as $}from"./ClickOutsideProvider-DisquDvI.js";function a(e=c){const i=e===c?k:w(e);return function(){const{store:n}=i();return n}}const D=a();function S(e=c){const i=e===c?D:a(e);return function(){return i().dispatch}}const z=S(),l=d`
+import{V as c,W as k,X as w,j as t,d as o,Y as d,c as y,s as j,Z as C}from"./index-BOeL8XZv.js";import{P as v}from"./invoice.queries-ClMKVYNv.js";import{C as $}from"./ClickOutsideProvider-DIYwishr.js";function a(e=c){const i=e===c?k:w(e);return function(){const{store:n}=i();return n}}const D=a();function S(e=c){const i=e===c?D:a(e);return function(){return i().dispatch}}const z=S(),l=d`
   background-color: ${({theme:e})=>e.newButton};
   border-color: transparent;
 `,x=d`
@@ -138,4 +138,4 @@ import{U as c,V as k,W as w,j as t,d as o,X as d,b as y,s as j,Y as C}from"./ind
   color: ${({theme:e})=>e.text};
   box-sizing: border-box;
   cursor: pointer;
-`;function X({icon:e,isOpen:i,setIsFilterOpen:r,options:n}){const u=z(),b=s=>f=>{f.stopPropagation();const m=s.toLowerCase();u(C(m))},g=()=>{r(!1)};return t.jsx(B,{children:t.jsxs(I,{"data-testid":"filterDropDown",children:[t.jsx(M,{children:e}),t.jsx($,{onOutsideClick:g,children:t.jsx(T,{style:{height:i?"130px":0},children:t.jsx(W,{"data-testid":"draft-filter",children:n.map(s=>t.jsx(q,{onClick:b(s),children:t.jsx(E,{children:t.jsx(h,{option:s})})},`${s}-li`))})})})]})})}export{X as default};
+`;function Y({icon:e,isOpen:i,setIsFilterOpen:r,options:n}){const u=z(),b=s=>f=>{f.stopPropagation();const m=s.toLowerCase();u(C(m))},g=()=>{r(!1)};return t.jsx(B,{children:t.jsxs(I,{"data-testid":"filterDropDown",children:[t.jsx(M,{children:e}),t.jsx($,{onOutsideClick:g,children:t.jsx(T,{style:{height:i?"130px":0},children:t.jsx(W,{"data-testid":"draft-filter",children:n.map(s=>t.jsx(q,{onClick:b(s),children:t.jsx(E,{children:t.jsx(h,{option:s})})},`${s}-li`))})})})]})})}export{Y as default};
