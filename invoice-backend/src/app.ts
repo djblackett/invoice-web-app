@@ -26,10 +26,7 @@ export const createApp = async () => {
     });
 
     app.get("/test-setup", async (_req: Request, res: Response) => {
-      if (
-        NODE_ENV === "test" ||
-        NODE_ENV === "CI" //||
-      ) {
+      if (NODE_ENV === "test" || NODE_ENV === "CI") {
         const childContainer = container.createChild();
         const prisma = new PrismaClient({ datasourceUrl: DATABASE_URL });
         childContainer.bind<PrismaClient>(PrismaClient).toConstantValue(prisma);
@@ -41,7 +38,8 @@ export const createApp = async () => {
       res.status(403).send("Forbidden");
     });
 
-    // Rate limiter so I don't get spammed in prod
+    // Rate limiter to prevent abuse and limit the number of requests per IP address in production
+    // Configuration: 100 requests per 15 minutes window, standard headers enabled, legacy headers disabled
     if (NODE_ENV === "production") {
       const limiter = rateLimit({
         windowMs: 15 * 60 * 1000, // 15 minutes

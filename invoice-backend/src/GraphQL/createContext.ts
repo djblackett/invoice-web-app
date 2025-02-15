@@ -153,15 +153,20 @@ export async function createContext({
     console.log("Subscription request");
 
     // Extract the token from the connection parameters (assuming it is passed as an authorization header)
-    const authHeader = (connection.connectionParams?.Authorization ||
-      connection.connectionParams?.authorization) as string | undefined;
+    const authHeader = (connection?.connectionParams?.Authorization ||
+      connection?.connectionParams?.authorization) as string | undefined;
 
     let user = null;
 
     if (authHeader && authHeader.startsWith("Bearer ")) {
       const token = authHeader.split(" ")[1];
       try {
-        user = await verifyTokenAndGetEmail(token, options);
+        try {
+          user = await verifyTokenAndGetEmail(token, options);
+        } catch (error) {
+          console.error("Token verification failed:", error);
+          user = null;
+        }
       } catch (error) {
         console.error("Subscription token verification failed:", error);
         // Optionally throw an error or set user to null depending on your needs.
@@ -194,7 +199,7 @@ export async function createContext({
     };
   }
 
-  const authHeader = req?.headers.authorization;
+  const authHeader = req && req.headers ? req.headers.authorization : undefined;
   try {
     let user;
     if (process.env.NODE_ENV === "test" || process.env.NODE_ENV === "CI") {
@@ -272,8 +277,9 @@ export async function createContext({
     };
 
     return returnPayload;
-  } catch (e) {
-    console.error("error:", e);
+  } catch (e: unknown) {
+    const error = e instanceof Error ? e : new Error(String(e));
+    console.error("Error in createContext function:", error.message, error);
     return { user: null, container };
   }
 }

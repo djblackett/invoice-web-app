@@ -12,6 +12,8 @@ import { createApp } from "./app";
 import { makeExecutableSchema } from "@graphql-tools/schema";
 import typeDefs from "./GraphQL/typeDefs";
 import { CERT_DIR, NODE_ENV } from "./config/server.config";
+
+const isProduction = NODE_ENV === "production";
 import { expressMiddleware } from "@apollo/server/express4";
 import { createContext } from "./GraphQL/createContext";
 import path from "path";
@@ -23,7 +25,7 @@ export const createServer = async () => {
   try {
     const app = await createApp();
     let httpServer;
-    if (CERT_DIR && NODE_ENV !== "production") {
+    if (CERT_DIR && !isProduction) {
       const sslOptions = {
         key: fs.readFileSync(
           path.join(__dirname, CERT_DIR, "localhost-key.pem"),
@@ -49,7 +51,9 @@ export const createServer = async () => {
 
     const serverCleanup = useServer(
       {
-        schema,
+        // The `ctx` object contains the WebSocket connection context.
+        // `ctx.connectionParams` holds the connection parameters (e.g., headers) sent by the client during the connection handshake.
+        // This context is used to create a new GraphQL context for each WebSocket connection.
         context: async (ctx, msg, args) => {
           // Here, `ctx.connectionParams` holds the connection parameters (e.g., headers)
           return createContext({ connection: ctx });
@@ -73,9 +77,10 @@ export const createServer = async () => {
             };
           },
         },
-        NODE_ENV === "production"
+        isProduction
           ? ApolloServerPluginLandingPageProductionDefault({
-              graphRef: "my-graph-id@my-graph-variant",
+              graphRef:
+                process.env.APOLLO_GRAPH_REF || "my-graph-id@my-graph-variant",
               footer: false,
             })
           : ApolloServerPluginLandingPageLocalDefault({ footer: false }),
@@ -93,6 +98,8 @@ export const createServer = async () => {
 
     return [app, httpServer];
   } catch (error) {
+    // Exiting the process with a non-zero status code indicates that the server failed to start.
+    // This is important for container orchestration systems (like Kubernetes) to detect the failure and take appropriate actions.
     console.error("Server startup error:", error);
     process.exit(1);
   }
