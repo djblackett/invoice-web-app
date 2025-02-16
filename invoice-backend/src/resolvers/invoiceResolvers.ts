@@ -37,13 +37,14 @@ export function getInvoiceResolvers() {
             });
           }
 
-          let result;
-          if (user.role === "ADMIN") {
-            result = await invoiceService.getInvoices();
-          } else {
-            result = await invoiceService.getInvoicesByUserId();
-          }
+          // let result;
+          // if (user.role === "ADMIN") {
+          //   result = await invoiceService.getInvoices();
+          // } else {
+          //   result = await invoiceService.getInvoicesByUserId();
+          // }
 
+          const result = await invoiceService.getInvoices();
           return result;
         } catch (error) {
           console.error(error);
