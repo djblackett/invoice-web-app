@@ -82,7 +82,11 @@ function App() {
         },
         {
           path: "/*",
-          element: <div>404 Not Found</div>,
+          element: (
+            <Suspense fallback={<div>Loading...</div>}>
+              <div>404 Not Found</div>
+            </Suspense>
+          ),
         },
       ],
     },

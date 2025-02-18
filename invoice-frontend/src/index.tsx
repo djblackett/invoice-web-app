@@ -17,22 +17,18 @@ console.log("VITE_REDIRECT_URI:", VITE_REDIRECT_URI);
 
 if (container) {
   const root = createRoot(container);
-
-  {
-    /* todo - use env vars here */
-  }
   root.render(
     <React.StrictMode>
       <Provider store={store}>
         <Auth0Provider
-          domain="dev-n4e4qk7s3kbzusrs.us.auth0.com"
-          clientId="loNmHPxISIwdG530C4nTgEP5lWFVusZW"
+          domain={process.env.DOMAIN ?? ""}
+          clientId={process.env.CLIENT_ID ?? ""}
           cacheLocation="localstorage" // Optional: Ensures tokens persist across refreshes
           useRefreshTokens // Optional: Improves token handling
           authorizationParams={{
             redirect_uri: VITE_REDIRECT_URI + "#/invoices",
-            scope: "openid profile email offline_access, role", // Include offline_access
-            audience: "https://invoice-web-app/",
+            scope: process.env.SCOPE ?? "", // Include offline_access
+            audience: process.env.AUDIENCE ?? "",
           }}
         >
           <HashRouter>

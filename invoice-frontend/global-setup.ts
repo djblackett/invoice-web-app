@@ -20,7 +20,11 @@ if (!TEST_BASE_URL) {
 }
 
 async function globalSetup({ config }) {
-  const browser = await chromium.launch();
+  const browser = await chromium.launch({ headless: true });
+  if (!TEST_BASE_URL) {
+    throw new Error("Please provide TEST_BASE_URL");
+  }
+
   const context = await browser.newContext({
     baseURL: TEST_BASE_URL,
     ignoreHTTPSErrors: true,
@@ -34,9 +38,15 @@ async function globalSetup({ config }) {
   await invoiceMainPage.welcomePage.clickLoginButton();
   await invoiceMainPage.page.waitForLoadState("networkidle");
 
-  if (process.env.NODE_ENV === "CI") {
-    await page.screenshot({ path: "before-login-screenshot.png" });
+  if (!TEST_LOGIN) {
+    throw new Error("TEST_LOGIN is not defined");
   }
+  if (!TEST_PASSWORD) {
+    throw new Error("TEST_PASSWORD is not defined");
+  }
+
+  await invoiceMainPage.page.getByLabel("Email address").fill(TEST_LOGIN);
+  await invoiceMainPage.page.getByLabel("Password").fill(TEST_PASSWORD);
 
   await invoiceMainPage.page.getByLabel("Email address").fill(TEST_LOGIN!);
   await invoiceMainPage.page.getByLabel("Password").fill(TEST_PASSWORD!);
@@ -52,6 +62,7 @@ async function globalSetup({ config }) {
   // set the auth key in the local storage so that the app thinks we are logged in
   await context.storageState({ path: "state.json" });
 
+  // seemed to have race conditions with the storageState, so added a delay
   await invoiceMainPage.page.waitForTimeout(2000);
 
   await clearDatabase();
