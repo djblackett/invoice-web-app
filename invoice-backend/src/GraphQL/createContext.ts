@@ -10,7 +10,7 @@ import TYPES from "@/constants/identifiers";
 import { InvoiceService } from "@/services/invoice.service";
 import { UserService } from "@/services/user.service";
 import { PubSub } from "graphql-subscriptions";
-import { PrismaClient, Role } from "@prisma/client";
+import { Role } from "@prisma/client";
 import { NODE_ENV } from "@/config/server.config";
 
 const client = jwksClient({
