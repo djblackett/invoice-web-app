@@ -11,7 +11,8 @@ import { InvoiceService } from "@/services/invoice.service";
 import { UserService } from "@/services/user.service";
 import { PubSub } from "graphql-subscriptions";
 import { Role } from "@prisma/client";
-import { NODE_ENV } from "@/config/server.config";
+import { logger, NODE_ENV } from "@/config/server.config";
+import { log } from "console";
 
 const client = jwksClient({
   jwksUri: "https://dev-n4e4qk7s3kbzusrs.us.auth0.com/.well-known/jwks.json",
@@ -147,10 +148,10 @@ export async function createContext({
   req,
   connection,
 }: ContextArgs): Promise<InjectedQueryContext> {
-  console.log("createContext called");
+  logger.info("creating context");
   if (connection) {
     // This branch handles subscription requests, which are initiated through WebSocket connections.
-    console.log("Subscription request");
+    logger.info("Subscription request");
 
     // Extract the token from the connection parameters (assuming it is passed as an authorization header)
     const authHeader = (connection?.connectionParams?.Authorization ||
@@ -200,6 +201,7 @@ export async function createContext({
   }
 
   const authHeader = req && req.headers ? req.headers.authorization : undefined;
+
   try {
     let user;
     if (process.env.NODE_ENV === "test" || process.env.NODE_ENV === "CI") {
@@ -256,6 +258,7 @@ export async function createContext({
       dbUser = await userService.getUserByIdSafely(user.id);
 
       if (!dbUser) {
+        logger.info("User not found, creating user");
         dbUser = await userService.createUserWithAuth0({
           id: user.id,
           name: user.name,
@@ -267,6 +270,8 @@ export async function createContext({
       console.error("User creation failed:", e);
       throw e;
     }
+
+    logger.info("User:", dbUser);
 
     const returnPayload = {
       user: dbUser,
