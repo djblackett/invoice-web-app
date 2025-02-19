@@ -6,7 +6,7 @@ import {
   split,
 } from "@apollo/client";
 import { setContext } from "@apollo/client/link/context";
-import { useAuth0 } from "@auth0/auth0-react";
+import { useAuth } from "@/hooks/useAuth";
 import { GraphQLWsLink } from "@apollo/client/link/subscriptions";
 import { createClient } from "graphql-ws";
 import { getMainDefinition } from "@apollo/client/utilities";
@@ -24,7 +24,7 @@ const useGraphQLClient = () => {
     loadErrorMessages();
   }
 
-  const { getAccessTokenSilently } = useAuth0();
+  const { getAccessTokenSilently } = useAuth();
   // Memoize the Apollo Client to prevent unnecessary re-creations
   const client = useMemo(() => {
     // Authentication Link to attach the token to headers
@@ -32,11 +32,19 @@ const useGraphQLClient = () => {
       try {
         const options = {
           authorizationParams: {
-            audience: "https://invoice-web-app/",
-            scope: "openid profile email offline_access",
+            audience: import.meta.env.VITE_AUDIENCE,
+            scope: import.meta.env.VITE_SCOPE,
           },
         };
-        const token = await getAccessTokenSilently(options);
+
+        let token;
+
+        // Demo mode does not require authentication
+        if (import.meta.env.IS_DEMO === "true") {
+          token = "demo";
+        } else {
+          token = await getAccessTokenSilently(options);
+        }
         return {
           headers: {
             ...headers,
@@ -64,8 +72,8 @@ const useGraphQLClient = () => {
           try {
             const options = {
               authorizationParams: {
-                audience: "https://invoice-web-app/",
-                scope: "openid profile email offline_access",
+                audience: import.meta.env.VITE_AUDIENCE,
+                scope: import.meta.env.VITE_SCOPE,
               },
             };
             const token = await getAccessTokenSilently(options);

@@ -1,11 +1,11 @@
-import { useAuth0 } from "@auth0/auth0-react";
+import { useAuth } from "@/hooks/useAuth";
 import { Navigate } from "react-router-dom";
 import { SlidingButton } from "@/animation/AnimatedButton";
 import { LoginLogoutButton } from "@/components/menus-toolbars/Header";
 import TextAnimation from "@/animation/AnimatedText";
 
 const Login = () => {
-  const { isAuthenticated, isLoading, loginWithRedirect } = useAuth0();
+  const { isAuthenticated, isLoading, loginWithRedirect } = useAuth();
   const text = "Please login to view your invoices";
 
   if (isLoading) {

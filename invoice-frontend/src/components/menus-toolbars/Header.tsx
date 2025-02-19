@@ -1,4 +1,4 @@
-import { useAuth0 } from "@auth0/auth0-react";
+import { useAuth } from "@/hooks/useAuth";
 import * as m from "motion/react-m";
 import { Link } from "react-router-dom";
 import { VITE_REDIRECT_URI } from "@/index";
@@ -199,7 +199,7 @@ type HeaderProps = {
 };
 
 function Header({ themeToggler, theme }: HeaderProps) {
-  const { user, logout, isAuthenticated } = useAuth0();
+  const { user, logout, isAuthenticated } = useAuth();
 
   const logoutWithRedirect = () =>
     logout({
