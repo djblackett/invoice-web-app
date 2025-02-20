@@ -19,6 +19,11 @@ jobs:
       VITE_BACKEND_URL: https://localhost:8000
       NODE_ENV: CI
       CERT_DIR: "../certs/"
+      DOMAIN: ${{ secrets.AUTH_DOMAIN }}
+      AUDIENCE: ${{ secrets.AUDIENCE }}
+      CLIENT_ID: ${{ secrets.CLIENT_ID }}
+      CLIENT_SECRET: ${{ secrets.CLIENT_SECRET }}
+      
     steps:
       - name: Checkout Code
         uses: actions/checkout@v4.2.2
