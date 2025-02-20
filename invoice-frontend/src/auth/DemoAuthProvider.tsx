@@ -10,7 +10,7 @@ export const DemoAuthProvider = ({ children }: { children: ReactNode }) => {
     user: {
       id: "demoId",
       name: "Demo User",
-      username: "demo@example.com",
+      email: "demo@example.com",
       role: Role.USER,
     },
     loginWithRedirect: () => console.log("Demo login"),

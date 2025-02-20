@@ -3,6 +3,9 @@
   "version": "1.0.0",
   "description": "",
   "main": "src/index.ts",
+  "prisma": {
+    "seed": "node ./prisma/seed.js"
+  },
   "scripts": {
     "test:unit": "vitest ./tests/unit",
     "test:integration": "cross-env CERT_DIR='../certs/' DATABASE_URL=postgres://postgres:example@localhost:5432/db-test vitest ./tests/integration",
