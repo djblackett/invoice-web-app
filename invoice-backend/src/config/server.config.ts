@@ -7,7 +7,13 @@ import winston from "winston";
 
 export const SECRET = process.env.SECRET || "";
 export const PORT = Number(process.env.PORT) || 8000;
-export const DATABASE_URL = process.env.DATABASE_URL || "";
+let DATABASE_URL = process.env.DATABASE_URL || "";
+
+if (process.env.DEMO_MODE === "true") {
+  DATABASE_URL = process.env.DEMO_DATABASE_URL || "";
+  process.env.DATABASE_URL = DATABASE_URL;
+}
+export { DATABASE_URL };
 export const CERT_DIR = process.env.CERT_DIR || "../certs";
 
 export const NODE_ENV = process.env.NODE_ENV;

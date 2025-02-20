@@ -10,9 +10,9 @@ import TYPES from "@/constants/identifiers";
 import { InvoiceService } from "@/services/invoice.service";
 import { UserService } from "@/services/user.service";
 import { PubSub } from "graphql-subscriptions";
-import { Role } from "@prisma/client";
+import { PrismaClient, Role } from "@prisma/client";
 import { logger, NODE_ENV } from "@/config/server.config";
-import { log } from "console";
+import { execSync } from "child_process";
 
 const client = jwksClient({
   jwksUri: "https://dev-n4e4qk7s3kbzusrs.us.auth0.com/.well-known/jwks.json",
@@ -45,6 +45,7 @@ function getSigningKeyAsync(kid: string): Promise<string> {
   });
 }
 
+// todo - move to config
 const options: VerifyOptions = {
   audience: "https://invoice-web-app/",
   issuer: "https://dev-n4e4qk7s3kbzusrs.us.auth0.com/",
@@ -158,19 +159,28 @@ export async function createContext({
       connection?.connectionParams?.authorization) as string | undefined;
 
     let user = null;
-
+    let token = null;
     if (authHeader && authHeader.startsWith("Bearer ")) {
-      const token = authHeader.split(" ")[1];
-      try {
+      token = authHeader.split(" ")[1];
+      if (token !== "demo-token") {
         try {
-          user = await verifyTokenAndGetEmail(token, options);
+          try {
+            user = await verifyTokenAndGetEmail(token, options);
+          } catch (error) {
+            console.error("Token verification failed:", error);
+            user = null;
+          }
         } catch (error) {
-          console.error("Token verification failed:", error);
-          user = null;
+          console.error("Subscription token verification failed:", error);
+          // Optionally throw an error or set user to null depending on your needs.
         }
-      } catch (error) {
-        console.error("Subscription token verification failed:", error);
-        // Optionally throw an error or set user to null depending on your needs.
+      } else {
+        user = {
+          id: "auth0|12345",
+          role: Role.ADMIN,
+          username: "demo-user@example.com",
+          name: "demo-user",
+        };
       }
     }
 
@@ -212,15 +222,30 @@ export async function createContext({
         name: "user",
       };
     }
-
+    let token;
     if (authHeader && authHeader.startsWith("Bearer ")) {
-      const token = authHeader.split(" ")[1];
-      user = await verifyTokenAndGetEmail(token, options);
-    } else {
-      return { user: null, container };
+      token = authHeader.split(" ")[1];
+      if (token !== "demo-token") {
+        user = await verifyTokenAndGetEmail(token, options);
+        if (!user) {
+          // return { user: null, container };
+          throw new Error("User not found");
+        }
+      } else {
+        user = {
+          id: "auth0|12345",
+          role: Role.ADMIN,
+          username: "demo-user@example.com",
+          name: "demo-user",
+        };
+      }
     }
-    const childContainer = container.createChild();
 
+    const childContainer = container.createChild();
+    if (!user) {
+      console.warn("User is undefined, cannot proceed with user creation.");
+      return { user: null, container: container };
+    }
     childContainer.bind<UserIdAndRole>(TYPES.UserContext).toConstantValue(user);
 
     // Rebind dependent services so they pick up the new binding

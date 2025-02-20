@@ -41,7 +41,7 @@ const useGraphQLClient = () => {
 
         // Demo mode does not require authentication
         if (import.meta.env.IS_DEMO === "true") {
-          token = "demo";
+          token = "demo-token";
         } else {
           token = await getAccessTokenSilently(options);
         }
@@ -76,7 +76,15 @@ const useGraphQLClient = () => {
                 scope: import.meta.env.VITE_SCOPE,
               },
             };
-            const token = await getAccessTokenSilently(options);
+
+            let token;
+
+            // Demo mode does not require authentication
+            if (import.meta.env.IS_DEMO === "true") {
+              token = "demo-token";
+            } else {
+              token = await getAccessTokenSilently(options);
+            }
             return token ? { Authorization: `Bearer ${token}` } : {};
           } catch (error) {
             console.error(
@@ -98,7 +106,7 @@ const useGraphQLClient = () => {
           definition.operation === "subscription"
         );
       },
-      authLink.concat(wsLink),
+      wsLink,
       authLink.concat(httpLink),
     );
 
