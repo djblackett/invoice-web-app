@@ -27,10 +27,11 @@ jobs:
       TEST_LOGIN: ${{ secrets.TEST_LOGIN }}
       TEST_PASSWORD: ${{ secrets.TEST_PASSWORD }}
       TEST_BASE_URL: https://localhost:4173/invoice-web-app/
-      DOMAIN: ${{ secrets.AUTH_DOMAIN }}
-      AUDIENCE: ${{ secrets.AUDIENCE }}
-      CLIENT_ID: ${{ secrets.CLIENT_ID }}
-      CLIENT_SECRET: ${{ secrets.CLIENT_SECRET }}
+      VITE_DOMAIN: ${{ secrets.AUTH_DOMAIN }}
+      VITE_AUDIENCE: ${{ secrets.AUDIENCE }}
+      VITE_CLIENT_ID: ${{ secrets.CLIENT_ID }}
+      VITE_CLIENT_SECRET: ${{ secrets.CLIENT_SECRET }}
+      VITE_SCOPE: ${{ secrets.AUTH_SCOPE }}
 
 
     runs-on: ubuntu-22.04
