@@ -12,14 +12,14 @@ import { createApp } from "./app";
 import { makeExecutableSchema } from "@graphql-tools/schema";
 import typeDefs from "./GraphQL/typeDefs";
 import { CERT_DIR, NODE_ENV } from "./config/server.config";
-
-const isProduction = NODE_ENV === "production";
 import { expressMiddleware } from "@apollo/server/express4";
 import { createContext } from "./GraphQL/createContext";
 import path from "path";
 import fs from "fs";
 import https from "https";
 import { getResolvers } from "./resolvers";
+
+const isProduction = NODE_ENV === "production";
 
 export const createServer = async () => {
   try {
@@ -51,6 +51,7 @@ export const createServer = async () => {
 
     const serverCleanup = useServer(
       {
+        schema,
         // The `ctx` object contains the WebSocket connection context.
         // `ctx.connectionParams` holds the connection parameters (e.g., headers) sent by the client during the connection handshake.
         // This context is used to create a new GraphQL context for each WebSocket connection.

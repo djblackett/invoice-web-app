@@ -256,6 +256,7 @@ describe("InvoiceService", () => {
     const newInvoice: Invoice = invoices[1];
     const createdInvoice = {
       ...newInvoice,
+      createdById: newInvoice.createdById ?? mockUserContext.id,
       createdBy: {
         id: mockUserContext.id,
         name: mockUserContext.name,
@@ -363,18 +364,16 @@ describe("InvoiceService", () => {
     expect(validateInvoiceDataMock).toHaveBeenCalledWith(invoice);
   });
 
-  test("should call delete on invoiceRepo when deleteInvoice is called", async () => {
+  test("deleteInvoice should throw error when invoice does not exist", async () => {
     // Arrange
-    const invoice: Invoice = invoices[0]; // Mock data
-    const id = invoice.id;
-    mockInvoiceRepo.delete.mockResolvedValue(true);
+    const id = "non-existent-id";
+    mockInvoiceRepo.findById.mockResolvedValue(null);
 
-    // Act
-    const result = await invoiceService.deleteInvoice(id);
-
-    // Assert
-    expect(mockInvoiceRepo.delete).toHaveBeenCalledWith(id);
-    expect(result).toEqual(true);
+    // Act & Assert
+    await expect(invoiceService.deleteInvoice(id)).rejects.toThrow(
+      "Invoice not found",
+    );
+    expect(mockInvoiceRepo.delete).not.toHaveBeenCalled();
   });
 
   test("addInvoice should throw error when validation fails", async () => {

@@ -1,14 +1,14 @@
 import { render, screen } from "../testUtils";
-import { useAuth0 } from "@auth0/auth0-react";
+import { useAuth } from "@/hooks/useAuth";
 import { describe, it, expect, vi, Mock } from "vitest";
 import WelcomePage from "@/pages/WelcomePage";
 
 // Mock the useAuth0 hook
-vi.mock("@auth0/auth0-react");
+vi.mock("@/hooks/useAuth");
 
 describe("WelcomePage", () => {
   it("renders loading state when isLoading is true", () => {
-    (useAuth0 as Mock).mockReturnValue({
+    (useAuth as Mock).mockReturnValue({
       isLoading: true,
       isAuthenticated: false,
     });
@@ -18,7 +18,7 @@ describe("WelcomePage", () => {
   });
 
   it("navigates to /invoices when authenticated", () => {
-    (useAuth0 as Mock).mockReturnValue({
+    (useAuth as Mock).mockReturnValue({
       isLoading: false,
       isAuthenticated: true,
     });
@@ -30,7 +30,7 @@ describe("WelcomePage", () => {
   });
 
   it("navigates to login when not authenticated", () => {
-    (useAuth0 as Mock).mockReturnValue({
+    (useAuth as Mock).mockReturnValue({
       isLoading: false,
       isAuthenticated: false,
     });

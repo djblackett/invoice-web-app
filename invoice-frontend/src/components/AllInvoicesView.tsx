@@ -35,16 +35,21 @@ const AllInvoicesView = ({
 }: AllInvoicesViewProps) => {
   if (loading) {
     return (
-      <Grid
-        visible={true}
-        height="80"
-        width="80"
-        color="#7c5dfa"
-        ariaLabel="grid-loading"
-        radius="12.5"
-        wrapperStyle={{ margin: "50px" }}
-        wrapperClass="grid-wrapper"
-      />
+      <>
+        <Grid
+          visible={true}
+          height="80"
+          width="80"
+          color="#7c5dfa"
+          ariaLabel="grid-loading"
+          radius="12.5"
+          wrapperStyle={{ margin: "50px" }}
+          wrapperClass="grid-wrapper"
+        />
+        {process.env.NODE_ENV === "production" && (
+          <h1>Waking up the backend containers</h1>
+        )}
+      </>
     );
   }
   if (error)

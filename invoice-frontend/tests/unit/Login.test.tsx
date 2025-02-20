@@ -1,15 +1,15 @@
 import { render, screen, fireEvent } from "../testUtils";
-import { useAuth0 } from "@auth0/auth0-react";
+import { useAuth } from "@/hooks/useAuth";
 import Login from "@/pages/Login";
 import { describe, it, expect, vi, beforeEach, Mock } from "vitest";
 
-vi.mock("@auth0/auth0-react");
+vi.mock("@/hooks/useAuth");
 
 describe("Login Component", () => {
   const mockLoginWithRedirect = vi.fn();
 
   beforeEach(() => {
-    (useAuth0 as Mock).mockReturnValue({
+    (useAuth as Mock).mockReturnValue({
       isAuthenticated: false,
       isLoading: false,
       loginWithRedirect: mockLoginWithRedirect,
@@ -17,7 +17,7 @@ describe("Login Component", () => {
   });
 
   it("displays loading when isLoading is true", () => {
-    (useAuth0 as Mock).mockReturnValue({
+    (useAuth as Mock).mockReturnValue({
       isAuthenticated: false,
       isLoading: true,
       loginWithRedirect: mockLoginWithRedirect,
@@ -27,7 +27,7 @@ describe("Login Component", () => {
   });
 
   it("redirects to /invoices when authenticated", () => {
-    (useAuth0 as Mock).mockReturnValue({
+    (useAuth as Mock).mockReturnValue({
       isAuthenticated: true,
       isLoading: false,
       loginWithRedirect: mockLoginWithRedirect,

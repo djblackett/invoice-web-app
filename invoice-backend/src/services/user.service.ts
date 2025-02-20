@@ -24,24 +24,28 @@ export class UserService {
   ) {}
 
   createUser = async (args: CreateUserDTO): Promise<UserDTO> => {
-    const validatedArgs = validateUserCreate(args);
-    const hashedPassword = await bcrypt.hash(args.password, 10);
+    try {
+      const validatedArgs = validateUserCreate(args);
+      const hashedPassword = await bcrypt.hash(args.password, 10);
 
-    const userEntity: UserEntity = {
-      name: validatedArgs.name,
-      username: validatedArgs.username,
-      passwordHash: hashedPassword,
-    };
+      const userEntity: UserEntity = {
+        name: validatedArgs.name,
+        username: validatedArgs.username,
+        passwordHash: hashedPassword,
+      };
 
-    const createdUser = await this.userRepo.createUser(userEntity);
+      const createdUser = await this.userRepo.createUser(userEntity);
 
-    const userDTO: UserDTO = {
-      id: createdUser.id,
-      name: createdUser.name,
-      username: createdUser.username ?? "",
-    };
+      const userDTO: UserDTO = {
+        id: createdUser.id,
+        name: createdUser.name,
+        username: createdUser.username ?? "",
+      };
 
-    return userDTO;
+      return userDTO;
+    } catch (error) {
+      throw new ValidationException("User validation failed");
+    }
   };
 
   createUserWithAuth0 = async (args: UserIdAndRole): Promise<UserIdAndRole> => {

@@ -12,16 +12,7 @@ export function getUserResolvers() {
         context: InjectedQueryContext,
       ) => {
         try {
-          const { userService } = context;
-
-          if (!userService) {
-            console.error("User service not found in context");
-            throw new GraphQLError("Internal server error", {
-              extensions: {
-                code: "INTERNAL_SERVER_ERROR",
-              },
-            });
-          }
+          const userService = validateUserService(context.userService);
 
           return await userService.getUsers();
         } catch (error) {
@@ -42,14 +33,6 @@ export function getUserResolvers() {
         try {
           const userService = validateUserService(context.userService);
 
-          if (!userService) {
-            console.error("User service not found in context");
-            throw new GraphQLError("Internal server error", {
-              extensions: {
-                code: "INTERNAL_SERVER_ERROR",
-              },
-            });
-          }
           const user = await userService.getUserByIdSafely(args.id);
           return user;
         } catch (error) {
@@ -70,17 +53,7 @@ export function getUserResolvers() {
         context: InjectedQueryContext,
       ) => {
         try {
-          const { userService } = context;
-
-          if (!userService) {
-            console.error("User service not found in context");
-            throw new GraphQLError("Internal server error", {
-              extensions: {
-                code: "INTERNAL_SERVER_ERROR",
-              },
-            });
-          }
-
+          const userService = validateUserService(context.userService);
           const user = await userService.createUser(args);
           return user;
         } catch (error: any) {
@@ -114,16 +87,7 @@ export function getUserResolvers() {
           throw new UnauthorizedException("Only admin can delete all users");
         }
         try {
-          const { userService } = context;
-
-          if (!userService) {
-            console.error("User service not found in context");
-            throw new GraphQLError("Internal server error", {
-              extensions: {
-                code: "INTERNAL_SERVER_ERROR",
-              },
-            });
-          }
+          const userService = validateUserService(context.userService);
           const result = await userService.deleteUsers();
           if (result) {
             return { acknowledged: true };
@@ -151,16 +115,8 @@ export function getUserResolvers() {
           throw new UnauthorizedException("Only admin can delete all users");
         }
         try {
-          const { userService } = context;
+          const userService = validateUserService(context.userService);
 
-          if (!userService) {
-            console.error("User service not found in context");
-            throw new GraphQLError("Internal server error", {
-              extensions: {
-                code: "INTERNAL_SERVER_ERROR",
-              },
-            });
-          }
           const result = await userService.deleteUsersKeepAdmin();
           if (result) {
             return { acknowledged: true };
