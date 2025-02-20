@@ -37,7 +37,6 @@ services:
       - PORT=8000
       - REQUEST_ORIGIN=https://localhost
       - SECRET=theSecretStuff
-      # - DATABASE_URL=postgres://postgres:example@db-dev:5432/db-dev
       - CERT_DIR="./certs"
     networks:
       - my_network_dev
