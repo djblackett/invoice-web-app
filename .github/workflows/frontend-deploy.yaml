@@ -230,6 +230,7 @@ jobs:
             **/network_logs.json
             **/trace.har
             screenshot-*.png
+            page.html
 
   build:
     runs-on: ubuntu-latest

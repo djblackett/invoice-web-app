@@ -2,6 +2,7 @@ import dotenv from "dotenv";
 dotenv.config();
 import { InvoiceMainPage } from "./qa/pages/invoices/invoice-main-page";
 import { chromium, request } from "@playwright/test";
+import * as fs from "fs";
 
 const TEST_LOGIN = process.env.TEST_LOGIN;
 const TEST_PASSWORD = process.env.TEST_PASSWORD;
@@ -20,7 +21,7 @@ if (!TEST_BASE_URL) {
   throw new Error("Please provide TEST_BASE_URL");
 }
 
-async function globalSetup({ config }) {
+async function globalSetup({ config, testInfo }) {
   const browser = await chromium.launch({ headless: true });
   if (!TEST_BASE_URL) {
     throw new Error("Please provide TEST_BASE_URL");
@@ -50,6 +51,16 @@ async function globalSetup({ config }) {
     await page.screenshot({
       path: "screenshot-login-screen.png",
       fullPage: true,
+    });
+    const htmlContent = await page.content();
+
+    // Write the content to a file called 'page.html'
+    fs.writeFileSync("page.html", htmlContent);
+
+    // Attach the HTML content to the test report
+    testInfo.attach("page-html", {
+      body: htmlContent,
+      contentType: "text/html",
     });
   }
 
