@@ -6,6 +6,7 @@ import { chromium, request } from "@playwright/test";
 const TEST_LOGIN = process.env.TEST_LOGIN;
 const TEST_PASSWORD = process.env.TEST_PASSWORD;
 export const TEST_BASE_URL = process.env.TEST_BASE_URL;
+console.log("VITE_REDIRECT_URI:", process.env.VITE_REDIRECT_URI);
 
 if (!TEST_LOGIN) {
   throw new Error("Please provide TEST_LOGIN");
@@ -46,7 +47,10 @@ async function globalSetup({ config }) {
   }
 
   if (process.env.NODE_ENV === "CI") {
-    await page.screenshot({ path: "login-screen.png", fullPage: true });
+    await page.screenshot({
+      path: "/screenshots/login-screen.png",
+      fullPage: true,
+    });
   }
 
   await invoiceMainPage.page.getByLabel("Email address").fill(TEST_LOGIN!);

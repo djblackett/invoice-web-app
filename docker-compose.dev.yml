@@ -4,7 +4,7 @@ services:
     build:
       context: invoice-frontend
       dockerfile: dev.Dockerfile
-    # command: npm run dev:container # Uncomment this line when running playwright inside docker
+    command: npm run dev:container # Uncomment this line when running playwright inside docker
     environment:
       - VITE_BACKEND_URL=https://localhost:8000/graphql # This is the URL for the backend server
     ports:
