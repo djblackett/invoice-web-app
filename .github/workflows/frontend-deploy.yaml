@@ -206,7 +206,7 @@ jobs:
           sleep 1
 
       - name: Wait for frontend
-        run: yarn wait-on https://localhost:4173/invoice-web-app/
+        run: npx wait-on https://localhost:4173/invoice-web-app/
 
       - name: Run Playwright e2e tests
         run: |
