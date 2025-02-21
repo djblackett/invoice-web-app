@@ -45,9 +45,6 @@ async function globalSetup({ config }) {
     throw new Error("TEST_PASSWORD is not defined");
   }
 
-  await invoiceMainPage.page.getByLabel("Email address").fill(TEST_LOGIN);
-  await invoiceMainPage.page.getByLabel("Password").fill(TEST_PASSWORD);
-
   await invoiceMainPage.page.getByLabel("Email address").fill(TEST_LOGIN!);
   await invoiceMainPage.page.getByLabel("Password").fill(TEST_PASSWORD!);
   await invoiceMainPage.page
