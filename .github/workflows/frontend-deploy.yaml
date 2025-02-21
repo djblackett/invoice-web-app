@@ -229,7 +229,7 @@ jobs:
           path: |
             **/network_logs.json
             **/trace.har
-            screenshots/*.png
+            screenshot-*.png
 
   build:
     runs-on: ubuntu-latest

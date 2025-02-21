@@ -48,7 +48,7 @@ async function globalSetup({ config }) {
 
   if (process.env.NODE_ENV === "CI") {
     await page.screenshot({
-      path: "/screenshots/login-screen.png",
+      path: "screenshot-login-screen.png",
       fullPage: true,
     });
   }
