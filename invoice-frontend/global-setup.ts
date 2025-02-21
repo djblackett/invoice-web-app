@@ -21,7 +21,7 @@ if (!TEST_BASE_URL) {
   throw new Error("Please provide TEST_BASE_URL");
 }
 
-async function globalSetup({ config, testInfo }) {
+async function globalSetup({ config }) {
   const browser = await chromium.launch({ headless: true });
   if (!TEST_BASE_URL) {
     throw new Error("Please provide TEST_BASE_URL");
@@ -58,10 +58,10 @@ async function globalSetup({ config, testInfo }) {
     fs.writeFileSync("page.html", htmlContent);
 
     // Attach the HTML content to the test report
-    testInfo.attach("page-html", {
-      body: htmlContent,
-      contentType: "text/html",
-    });
+    // testInfo.attach("page-html", {
+    //   body: htmlContent,
+    //   contentType: "text/html",
+    // });
   }
 
   await invoiceMainPage.page.getByLabel("Email address").fill(TEST_LOGIN!);
