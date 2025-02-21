@@ -14,6 +14,7 @@ const isDemoMode = import.meta.env.VITE_DEMO_MODE === "true";
 export const VITE_REDIRECT_URI =
   import.meta.env.VITE_REDIRECT_URI ||
   window.location.origin + "/invoice-web-app/";
+console.log("VITE_REDIRECT_URI:", VITE_REDIRECT_URI);
 
 if (isDemoMode) {
   console.log("Demo mode enabled");
