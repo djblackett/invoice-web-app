@@ -13,6 +13,9 @@ on:
     paths:
       - "invoice-frontend/**" # Triggers on PRs that modify the frontend directory
       - ".github/workflows/frontend-deploy.yaml" # Triggers on PRs that modify the workflow file
+  pull_request_target:
+    branches:
+      - main
 
 jobs:
   test:
@@ -51,7 +54,9 @@ jobs:
           --health-interval=10s
           --health-timeout=5s
           --health-retries=5
-
+    if: |
+          (github.event_name == 'pull_request_target' && github.actor == 'dependabot[bot]') ||
+          (github.event_name != 'pull_request_target' && github.actor != 'dependabot[bot]')
     steps:
       - name: Check NODE_ENV
         run: |
@@ -61,7 +66,14 @@ jobs:
         uses: catchpoint/workflow-telemetry-action@v2
 
       - name: Checkout Code
+        if: ${{ github.event_name != 'pull_request_target' }} 
         uses: actions/checkout@v4.2.2
+      
+      - name: Checkout Code for PR
+        if: ${{ github.event_name == 'pull_request_target' }} 
+        uses: actions/checkout@v4.2.2
+        with: 
+          ref: ${{ github.event.pull_request.head.sha }} 
 
       - name: Set up Node.js and Yarn
         uses: actions/setup-node@v4.1.0
