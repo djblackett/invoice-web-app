@@ -1,20 +1,36 @@
-import { ReactNode } from "react";
+import { ReactNode, useState } from "react";
 import { AuthContext } from "../hooks/useAuth";
 import { Role } from "@/types/types";
 
+const demoUser = {
+  id: "demoId",
+  name: "Demo User",
+  email: "demo@example.com",
+  role: Role.USER,
+};
+
 export const DemoAuthProvider = ({ children }: { children: ReactNode }) => {
-  // Simulate an authenticated user in demo mode
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const [user, setUser] = useState<typeof demoUser | null>(null);
+
+  const loginWithRedirect = () => {
+    console.log("Demo login");
+    setIsAuthenticated(true);
+    setUser(demoUser);
+  };
+
+  const logout = () => {
+    console.log("Demo logout");
+    setIsAuthenticated(false);
+    setUser(null);
+  };
+
   const demoAuth = {
-    isAuthenticated: true,
+    isAuthenticated,
     isLoading: false,
-    user: {
-      id: "demoId",
-      name: "Demo User",
-      email: "demo@example.com",
-      role: Role.USER,
-    },
-    loginWithRedirect: () => console.log("Demo login"),
-    logout: () => console.log("Demo logout"),
+    user,
+    loginWithRedirect,
+    logout,
     getAccessTokenSilently: () => Promise.resolve("demo-token"),
   };
 
