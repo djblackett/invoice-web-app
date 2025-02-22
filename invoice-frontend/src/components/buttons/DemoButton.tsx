@@ -26,6 +26,8 @@ const Button = styled.button`
 
   @media (min-width: 1200px) {
     margin-left: 0;
+    justify-self: flex-end;
+    margin-bottom: 1rem;
   }
 `;
 
