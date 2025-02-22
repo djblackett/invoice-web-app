@@ -46,27 +46,6 @@ export class InvoiceService {
     }
   };
 
-  // todo - may be redundant to have two methods for getting invoices
-  getInvoicesByUserId = async () => {
-    if (!this.userContext) {
-      throw new ValidationException("Unauthorized");
-    }
-
-    const { role, id } = this.userContext;
-
-    if (!id) {
-      throw new ValidationException("Unauthorized");
-    }
-
-    try {
-      const result = await this.invoiceRepo.findByUserId(id);
-      return validateInvoiceList(result);
-    } catch (e) {
-      console.error(e);
-      throw new InternalServerException("Internal server error");
-    }
-  };
-
   getInvoiceById = async (invoiceId: string) => {
     if (!this.userContext) {
       throw new ValidationException("Unauthorized");
@@ -179,6 +158,9 @@ export class InvoiceService {
   };
 
   markAsPaid = async (id: string) => {
+    if (!this.userContext) {
+      throw new ValidationException("Unauthorized");
+    }
     try {
       const result = await this.invoiceRepo.markAsPaid(id);
       return validateInvoiceData(result);
@@ -191,9 +173,18 @@ export class InvoiceService {
     }
   };
 
-  deleteInvoice = async (id: string) => {
+  deleteInvoice = async (invoiceId: string) => {
+    if (!this.userContext) {
+      throw new ValidationException("Unauthorized");
+    }
+
+    const { id, role } = this.userContext;
+    const invoice = (await this.getInvoiceById(invoiceId)) as Invoice;
+    if (invoice.createdById !== id || role !== "ADMIN") {
+      throw new ValidationException("Unauthorized");
+    }
     try {
-      const result = await this.invoiceRepo.delete(id);
+      const result = await this.invoiceRepo.delete(invoiceId);
       if (!result) {
         throw new NotFoundException("Invoice not found");
       }
@@ -205,6 +196,16 @@ export class InvoiceService {
   };
 
   deleteAllInvoices = async () => {
+    if (!this.userContext) {
+      throw new ValidationException("Unauthorized");
+    }
+
+    const { id, role } = this.userContext;
+
+    if (!id || role !== "ADMIN") {
+      throw new ValidationException("Unauthorized");
+    }
+
     try {
       return await this.invoiceRepo.deleteAllInvoices();
     } catch (e) {
@@ -218,9 +219,9 @@ export class InvoiceService {
       throw new ValidationException("Unauthorized");
     }
 
-    const { id } = this.userContext;
+    const { id, role } = this.userContext;
 
-    if (!id) {
+    if (!id || role !== "ADMIN") {
       throw new ValidationException("Unauthorized");
     }
 

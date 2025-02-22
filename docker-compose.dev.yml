@@ -4,7 +4,7 @@ services:
     build:
       context: invoice-frontend
       dockerfile: dev.Dockerfile
-    # command: npm run dev:container # Uncomment this line when running playwright inside docker
+    command: npm run dev:container # Uncomment this line when running playwright inside docker
     environment:
       - VITE_BACKEND_URL=https://localhost:8000/graphql # This is the URL for the backend server
     ports:
@@ -30,14 +30,13 @@ services:
     restart: unless-stopped
     ports:
       - "8000:8000"
-    command: sh -c "npx prisma@6.2.1 generate && npx prisma@6.2.1 db push && DATABASE_URL=postgresql://postgres:example@db-dev:5432/db-dev npm run dev"
+    command: sh -c "npx prisma@6.2.1 generate && npx prisma@6.2.1 db push && npm run dev"
     environment:
       # - NODE_ENV=development
       - NODE_ENV=test
       - PORT=8000
       - REQUEST_ORIGIN=https://localhost
       - SECRET=theSecretStuff
-      - DATABASE_URL=postgres://postgres:example@db-dev:5432/db-dev
       - CERT_DIR="./certs"
     networks:
       - my_network_dev
@@ -96,8 +95,8 @@ services:
       - "9323:9323"
     volumes:
       - ./invoice-frontend:/app
-    # entrypoint: ["npx", "playwright", "test"]
-    entrypoint: ["sh", "-c"]
+    entrypoint: ["npx", "playwright", "test"]
+    # entrypoint: ["sh"]
     env_file:
       - invoice-frontend/.env
     environment:

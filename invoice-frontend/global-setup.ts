@@ -2,10 +2,12 @@ import dotenv from "dotenv";
 dotenv.config();
 import { InvoiceMainPage } from "./qa/pages/invoices/invoice-main-page";
 import { chromium, request } from "@playwright/test";
+import * as fs from "fs";
 
 const TEST_LOGIN = process.env.TEST_LOGIN;
 const TEST_PASSWORD = process.env.TEST_PASSWORD;
 export const TEST_BASE_URL = process.env.TEST_BASE_URL;
+console.log("VITE_REDIRECT_URI:", process.env.VITE_REDIRECT_URI);
 
 if (!TEST_LOGIN) {
   throw new Error("Please provide TEST_LOGIN");
@@ -20,7 +22,11 @@ if (!TEST_BASE_URL) {
 }
 
 async function globalSetup({ config }) {
-  const browser = await chromium.launch();
+  const browser = await chromium.launch({ headless: true });
+  if (!TEST_BASE_URL) {
+    throw new Error("Please provide TEST_BASE_URL");
+  }
+
   const context = await browser.newContext({
     baseURL: TEST_BASE_URL,
     ignoreHTTPSErrors: true,
@@ -34,8 +40,28 @@ async function globalSetup({ config }) {
   await invoiceMainPage.welcomePage.clickLoginButton();
   await invoiceMainPage.page.waitForLoadState("networkidle");
 
+  if (!TEST_LOGIN) {
+    throw new Error("TEST_LOGIN is not defined");
+  }
+  if (!TEST_PASSWORD) {
+    throw new Error("TEST_PASSWORD is not defined");
+  }
+
   if (process.env.NODE_ENV === "CI") {
-    await page.screenshot({ path: "before-login-screenshot.png" });
+    await page.screenshot({
+      path: "screenshot-login-screen.png",
+      fullPage: true,
+    });
+    const htmlContent = await page.content();
+
+    // Write the content to a file called 'page.html'
+    fs.writeFileSync("page.html", htmlContent);
+
+    // Attach the HTML content to the test report
+    // testInfo.attach("page-html", {
+    //   body: htmlContent,
+    //   contentType: "text/html",
+    // });
   }
 
   await invoiceMainPage.page.getByLabel("Email address").fill(TEST_LOGIN!);
@@ -52,6 +78,7 @@ async function globalSetup({ config }) {
   // set the auth key in the local storage so that the app thinks we are logged in
   await context.storageState({ path: "state.json" });
 
+  // seemed to have race conditions with the storageState, so added a delay
   await invoiceMainPage.page.waitForTimeout(2000);
 
   await clearDatabase();

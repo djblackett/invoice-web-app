@@ -22,15 +22,17 @@ jobs:
       REQUEST_ORIGIN: https://localhost:4173
       SECRET: theSecretStuff # not critical - only for ephemeral testing env
       VITE_BACKEND_URL: https://localhost:8000
+      VITE_REDIRECT_URI: https://localhost:4173/invoice-web-app/
       NODE_ENV: CI
       CERT_DIR: "../certs/"
       TEST_LOGIN: ${{ secrets.TEST_LOGIN }}
       TEST_PASSWORD: ${{ secrets.TEST_PASSWORD }}
       TEST_BASE_URL: https://localhost:4173/invoice-web-app/
-      DOMAIN: ${{ secrets.AUTH_DOMAIN }}
-      AUDIENCE: ${{ secrets.AUDIENCE }}
-      CLIENT_ID: ${{ secrets.CLIENT_ID }}
-      CLIENT_SECRET: ${{ secrets.CLIENT_SECRET }}
+      VITE_DOMAIN: ${{ secrets.AUTH_DOMAIN }}
+      VITE_AUDIENCE: ${{ secrets.AUDIENCE }}
+      VITE_CLIENT_ID: ${{ secrets.AUTH0_CLIENT_ID }}
+      VITE_CLIENT_SECRET: ${{ secrets.CLIENT_SECRET }}
+      VITE_SCOPE: ${{ secrets.AUTH_SCOPE }}
 
 
     runs-on: ubuntu-22.04
@@ -210,7 +212,7 @@ jobs:
       - name: Run Playwright e2e tests
         run: |
           cd invoice-frontend
-          DEBUG=pw:api npx playwright test
+          DEBUG=pw:api yarn playwright test
       - uses: actions/upload-artifact@v4
         if: always()
         with:
@@ -219,14 +221,16 @@ jobs:
           retention-days: 30
 
       # Save network logs as artifacts
-      - name: Upload network logs
+      - name: Upload artifacts
         if: always()
         uses: actions/upload-artifact@v4
         with:
-          name: network-logs
+          name: network-logs-screenshots
           path: |
             **/network_logs.json
             **/trace.har
+            **/screenshot-*.png
+            **/page.html
 
   build:
     runs-on: ubuntu-latest

@@ -22,8 +22,8 @@
     - [Running the Application](#running-the-application)
   - [Testing](#testing)
   - [Deployment](#deployment)
-    - [Deploying with Docker](#deploying-with-docker)
-    - [Deploying with Kubernetes](#deploying-with-kubernetes)
+    <!-- - [Deploying with Docker](#deploying-with-docker) -->
+  - [Diagrams](#diagrams)
   - [Contributing](#contributing)
   - [License](#license)
   - [Contact](#contact)
@@ -37,7 +37,7 @@ I began this project in May 2022 as a **FrontendMentor** challenge to sharpen my
 ### Currently Implemented
 
 - **Responsive Frontend** using ReactJS and Styled Components
-- **State Management** with Redux Toolkit
+- **State Management** with Redux Toolkit and React Context
 - **GraphQL Integration** via Apollo Client
 - **Backend Services** built with NodeJS, ExpressJS, and InversifyJS
 - **Database Management** using Prisma ORM and PostgreSQL
@@ -53,7 +53,6 @@ I began this project in May 2022 as a **FrontendMentor** challenge to sharpen my
 - **Enhanced Error Handling**
 - **CI/CD Pipeline** implementation
 - **Optimized Docker Configuration**
-- **Kubernetes Configuration** (`config.yaml`)
 
 ## Tech Stack
 
@@ -78,7 +77,6 @@ I began this project in May 2022 as a **FrontendMentor** challenge to sharpen my
 - **Docker Containers**
 - **Docker Compose**
 - **GitHub Actions** CI/CD Pipeline
-- **Kubernetes** Configuration
 
 ## Getting Started
 
@@ -86,10 +84,9 @@ I began this project in May 2022 as a **FrontendMentor** challenge to sharpen my
 
 Ensure you have the following installed on your machine:
 
-- [Node.js](https://nodejs.org/) (v16.13.0 or higher)
+- [Node.js](https://nodejs.org/) (LTS recommended)
 - [Docker](https://www.docker.com/get-started)
 - [Docker Compose](https://docs.docker.com/compose/install/)
-- [Kubernetes](https://kubernetes.io/docs/setup/) (optional, for deployment)
 - [Git](https://git-scm.com/)
 
 ### Installation
@@ -97,87 +94,123 @@ Ensure you have the following installed on your machine:
 1. **Clone the repository:**
 
    ```bash
-   git clone https://github.com/yourusername/fullstack-invoice-project.git
-   cd fullstack-invoice-project
+   git clone https://github.com/djblackett/invoice-web-app.git
+   cd invoice-web-app
    ```
 
 2. **Install dependencies for the frontend:**
 
    ```bash
    cd frontend
-   npm install
+   yarn install
    ```
 
 3. **Install dependencies for the backend:**
 
    ```bash
    cd ../backend
-   npm install
+   yarn install
    ```
 
 4. **Set up environment variables:**
 
    Create a `.env` file in both `frontend` and `backend` directories based on the provided `.env.example` files.
 
+5. **Set up HTTPS certificates:**  
+  Installation example for Ubuntu (x86)  
+  Install mkcert:
+
+   ```bash
+   sudo apt-get update
+   sudo apt-get install libnss3-tools
+   wget -O mkcert https://github.com/FiloSottile/mkcert/releases/download/v1.4.3/mkcert-v1.4.3-linux-amd64
+   chmod +x mkcert
+   sudo mv mkcert /usr/local/bin/
+   mkcert -install
+   ```
+
+   Create certs with mkcert
+
+      ```bash
+      cd invoice-backend  
+      mkdir certs  
+      cd certs
+      mkcert localhost
+      ```
+
+   Copy certs to frontend directory
+
+      ```bash
+      cp -r invoice-backend/certs invoice-frontend/certs
+      ```
+
 ### Running the Application
 
 1. **Start the application using Docker Compose:**
 
    ```bash
-   docker-compose up --build
+   docker compose -f docker-compose.dev.yml up --build
    ```
 
 2. **Access the application:**
 
-   Open your browser and navigate to `http://localhost:3000`.
+   Open your browser and navigate to `https://localhost:5173/invoice-web-app/`.
 
 ## Testing
 
 The project includes various levels of testing to ensure reliability and maintainability.
 
 - **Backend Unit Tests:** Implemented using Vitest.
-- **Frontend Unit Tests:** To be implemented using React Testing Library.
-- **Integration Tests:** Planned to verify interactions between frontend and backend.
-- **End-to-End (E2E) Tests:** Planned using tools like Cypress or Selenium.
+- **Frontend Unit Tests:** Implemented using React Testing Library.
+- **Integration Tests:** Verify interactions between backend GraphQL resolvers and a real PostgresQL database. 
+- **End-to-End (E2E) Tests:** Implemented with PlayWright and tests normal user flows
 
 To run backend tests:
 
 ```bash
 cd backend
-npm run test
+npm run test:unit
+npm run test:integration
+```
+
+To run frontend tests:
+
+```bash
+cd frontend
+npm run test:unit
+npm run test:e2e
 ```
 
 ## Deployment
 
-The project is configured for deployment using Docker and Kubernetes. Continuous Integration and Continuous Deployment (CI/CD) pipelines are set up with GitHub Actions to automate the build, test, and deployment processes.
+The project is configured for deployment using Fly.io. Continuous Integration and Continuous Deployment (CI/CD) pipelines are set up with GitHub Actions to automate the build, test, and deployment processes.
 
-### Deploying with Docker
+<!-- ### Deploying with Docker
 
 1. **Build Docker images:**
 
    ```bash
-   docker-compose build
+   docker compose build
    ```
 
 2. **Run containers:**
 
    ```bash
    docker-compose up -d
-   ```
+   ``` -->
 
-### Deploying with Kubernetes
+## Diagrams
 
-1. **Apply Kubernetes configurations:**
+### GraphQL Schema
 
-   ```bash
-   kubectl apply -f kubernetes/config.yaml
-   ```
+Queries:
+![GraphQL Queries](./invoice-backend/graphql-diagrams/queries-visualization-invoicegraph.svg)
 
-2. **Verify deployment:**
+Mutations:
+![GraphQL Mutations](./invoice-backend/graphql-diagrams/mutations-visualization-invoicegraph.svg)
 
-   ```bash
-   kubectl get pods
-   ```
+Subscriptions:
+![GraphQL Queries](./invoice-backend/graphql-diagrams/subscriptions-visualization-invoicegraph.svg)
 
 ## Contributing
 
@@ -212,6 +245,6 @@ This project is licensed under the MIT License. See the [LICENSE](LICENSE) file 
 
 ## Contact
 
-- **Author:** Your Name
+- **Author:** David Andrea
 - **Email:** your.email@example.com
-- **GitHub:** [yourusername](https://github.com/yourusername)
+- **GitHub:** [djblackett](https://github.com/djblackett)

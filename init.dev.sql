@@ -1,1 +1,4 @@
 CREATE DATABASE "db-dev";
+CREATE DATABASE "db-test";
+CREATE DATABASE "db-demo";
+
