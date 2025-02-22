@@ -1,6 +1,6 @@
 import { useAuth } from "@/hooks/useAuth";
 import * as m from "motion/react-m";
-import { Link } from "react-router-dom";
+import { Link, useLocation } from "react-router-dom";
 import { VITE_REDIRECT_URI } from "@/index";
 import styled from "styled-components";
 import DemoButton from "../buttons/DemoButton";
@@ -150,6 +150,19 @@ const LogoutButton = styled(LoginLogoutButton)`
   }
 `;
 
+const DemoAndLogoutContainer = styled.div`
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  align-items: center;
+
+  @media (min-width: 1200px) {
+    flex-direction: column;
+    width: 100%;
+    justify-content: space-between;
+  }
+`;
+
 const moon = (
   <svg
     width="20"
@@ -200,7 +213,10 @@ type HeaderProps = {
 };
 
 function Header({ themeToggler, theme }: HeaderProps) {
-  const { user, logout, isAuthenticated, toggleAdmin } = useAuth();
+  const { user, logout, isAuthenticated } = useAuth();
+  const location = useLocation();
+
+  console.log("location:", location);
 
   const logoutWithRedirect = () =>
     logout({
@@ -227,15 +243,19 @@ function Header({ themeToggler, theme }: HeaderProps) {
             {logo}
           </Link>
         </Logo>
-        <>{import.meta.env.VITE_DEMO_MODE === "true" && <DemoButton />}</>
-        {isAuthenticated && (
-          <LogoutButton
-            onClick={() => logoutWithRedirect()}
-            whileTap={{ scale: 0.85 }}
-          >
-            Logout
-          </LogoutButton>
-        )}
+        <DemoAndLogoutContainer>
+          {import.meta.env.VITE_DEMO_MODE === "true" &&
+            location.pathname === "/invoices" && <DemoButton />}
+
+          {isAuthenticated && (
+            <LogoutButton
+              onClick={() => logoutWithRedirect()}
+              whileTap={{ scale: 0.85 }}
+            >
+              Logout
+            </LogoutButton>
+          )}
+        </DemoAndLogoutContainer>
       </LogoLogoutContainer>
       <DarkModeProfileContainer>
         <DarkLightBox onClick={themeToggler} data-testid="dark-mode-button">
