@@ -21,7 +21,7 @@ jobs:
       CERT_DIR: "../certs/"
       VITE_DOMAIN: ${{ secrets.AUTH_DOMAIN }}
       VITE_AUDIENCE: ${{ secrets.AUDIENCE }}
-      VITE_CLIENT_ID: ${{ secrets.CLIENT_ID }}
+      VITE_CLIENT_ID: ${{ secrets.AUTH0_CLIENT_ID }}
       VITE_CLIENT_SECRET: ${{ secrets.CLIENT_SECRET }}
       VITE_SCOPE: ${{ secrets.AUTH_SCOPE }}
 
