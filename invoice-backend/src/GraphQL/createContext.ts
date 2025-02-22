@@ -10,10 +10,11 @@ import TYPES from "@/constants/identifiers";
 import { InvoiceService } from "@/services/invoice.service";
 import { UserService } from "@/services/user.service";
 import { PubSub } from "graphql-subscriptions";
-import { PrismaClient, Role } from "@prisma/client";
+import { Role } from "@prisma/client";
 import { logger, NODE_ENV } from "@/config/server.config";
-import { execSync } from "child_process";
+import { name } from "eslint-plugin-prettier/recommended";
 
+// todo - use env vars
 const client = jwksClient({
   jwksUri: "https://dev-n4e4qk7s3kbzusrs.us.auth0.com/.well-known/jwks.json",
 });
@@ -162,7 +163,7 @@ export async function createContext({
     let token = null;
     if (authHeader && authHeader.startsWith("Bearer ")) {
       token = authHeader.split(" ")[1];
-      if (token !== "demo-token") {
+      if (token !== "demo-token" && token !== "demo-token-admin") {
         try {
           try {
             user = await verifyTokenAndGetEmail(token, options);
@@ -177,7 +178,7 @@ export async function createContext({
       } else {
         user = {
           id: "auth0|12345",
-          role: Role.ADMIN,
+          role: token === "demo-token-admin" ? Role.ADMIN : Role.USER,
           username: "demo-user@example.com",
           name: "demo-user",
         };
@@ -225,18 +226,25 @@ export async function createContext({
     let token;
     if (authHeader && authHeader.startsWith("Bearer ")) {
       token = authHeader.split(" ")[1];
-      if (token !== "demo-token") {
+      if (token !== "demo-token" && token !== "demo-token-admin") {
         user = await verifyTokenAndGetEmail(token, options);
         if (!user) {
           // return { user: null, container };
           throw new Error("User not found");
         }
-      } else {
+      } else if (token === "demo-token") {
         user = {
-          id: "auth0|12345",
-          role: Role.ADMIN,
+          id: "demoId",
+          role: Role.USER,
           username: "demo-user@example.com",
           name: "demo-user",
+        };
+      } else {
+        user = {
+          id: "demoAdminId",
+          role: Role.ADMIN,
+          username: "demo-admin@example.com",
+          name: "demo-admin",
         };
       }
     }
