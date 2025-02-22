@@ -55,13 +55,8 @@ async function globalSetup({ config }) {
     const htmlContent = await page.content();
 
     // Write the content to a file called 'page.html'
+    // This is useful for debugging purposes when auth0 config is not working
     fs.writeFileSync("page.html", htmlContent);
-
-    // Attach the HTML content to the test report
-    // testInfo.attach("page-html", {
-    //   body: htmlContent,
-    //   contentType: "text/html",
-    // });
   }
 
   await invoiceMainPage.page.getByLabel("Email address").fill(TEST_LOGIN!);
