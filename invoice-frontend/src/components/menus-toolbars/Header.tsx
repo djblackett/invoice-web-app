@@ -3,6 +3,7 @@ import * as m from "motion/react-m";
 import { Link } from "react-router-dom";
 import { VITE_REDIRECT_URI } from "@/index";
 import styled from "styled-components";
+import DemoButton from "../buttons/DemoButton";
 
 const HeaderContainer = styled.div`
   width: 100%;
@@ -199,7 +200,7 @@ type HeaderProps = {
 };
 
 function Header({ themeToggler, theme }: HeaderProps) {
-  const { user, logout, isAuthenticated } = useAuth();
+  const { user, logout, isAuthenticated, toggleAdmin } = useAuth();
 
   const logoutWithRedirect = () =>
     logout({
@@ -226,7 +227,7 @@ function Header({ themeToggler, theme }: HeaderProps) {
             {logo}
           </Link>
         </Logo>
-
+        <>{import.meta.env.VITE_DEMO_MODE === "true" && <DemoButton />}</>
         {isAuthenticated && (
           <LogoutButton
             onClick={() => logoutWithRedirect()}

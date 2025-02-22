@@ -5,8 +5,15 @@ import { Role } from "@/types/types";
 const demoUser = {
   id: "demoId",
   name: "Demo User",
-  email: "demo@example.com",
+  email: "demo-user@example.com",
   role: Role.USER,
+};
+
+const demoAdmin = {
+  id: "demoAdminId",
+  name: "Demo Admin",
+  email: "demo-admin@example.com",
+  role: Role.ADMIN,
 };
 
 export const DemoAuthProvider = ({ children }: { children: ReactNode }) => {
@@ -17,6 +24,10 @@ export const DemoAuthProvider = ({ children }: { children: ReactNode }) => {
     console.log("Demo login");
     setIsAuthenticated(true);
     setUser(demoUser);
+  };
+
+  const toggleAdmin = () => {
+    setUser(user === demoUser ? demoAdmin : demoUser);
   };
 
   const logout = () => {
@@ -31,6 +42,7 @@ export const DemoAuthProvider = ({ children }: { children: ReactNode }) => {
     user,
     loginWithRedirect,
     logout,
+    toggleAdmin,
     getAccessTokenSilently: () => Promise.resolve("demo-token"),
   };
 

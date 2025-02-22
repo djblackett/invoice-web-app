@@ -19,6 +19,8 @@ const Auth0Wrapper = ({ children }: Auth0WrapperProps) => {
     getAccessTokenSilently,
   } = useAuth0();
 
+  const toggleAdmin = () => {}; // intentionally not implemented
+
   return (
     <AuthContext.Provider
       value={{
@@ -28,6 +30,7 @@ const Auth0Wrapper = ({ children }: Auth0WrapperProps) => {
         loginWithRedirect: loginWithRedirect,
         logout,
         getAccessTokenSilently,
+        toggleAdmin,
       }}
     >
       {children}

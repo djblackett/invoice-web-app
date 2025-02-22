@@ -12,6 +12,7 @@ interface IAuthContext {
   user: User | Auth0User | null;
   getAccessTokenSilently: (options: GetTokenSilentlyOptions) => Promise<string>;
   loginWithRedirect: () => void;
+  toggleAdmin: () => void;
   logout: (logoutParams: LogoutOptions) => void;
 }
 
@@ -21,6 +22,7 @@ export const AuthContext = createContext<IAuthContext>({
   isLoading: false,
   loginWithRedirect: () => {},
   logout: () => {},
+  toggleAdmin: () => {},
   getAccessTokenSilently: async () => "",
 });
 
