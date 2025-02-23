@@ -38,7 +38,6 @@ function DemoButton() {
   const handleClick = () => {
     flushSync(() => toggleAdmin());
     apolloClient.refetchQueries({ include: [ALL_INVOICES] });
-    console.log("User role toggled");
   };
 
   return (

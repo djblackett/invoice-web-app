@@ -23,7 +23,6 @@ if (isDemoMode) {
 }
 
 console.log("VITE_REDIRECT_URI:", VITE_REDIRECT_URI);
-console.log("isDemoMode:", isDemoMode);
 
 if (container) {
   const root = createRoot(container);

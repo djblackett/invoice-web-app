@@ -216,8 +216,6 @@ function Header({ themeToggler, theme }: HeaderProps) {
   const { user, logout, isAuthenticated } = useAuth();
   const location = useLocation();
 
-  console.log("location:", location);
-
   const logoutWithRedirect = () =>
     logout({
       logoutParams: {

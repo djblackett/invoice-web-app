@@ -25,7 +25,6 @@ const useGraphQLClient = () => {
   }
 
   const { getAccessTokenSilently, user } = useAuth();
-  console.log(user);
   // Memoize the Apollo Client to prevent unnecessary re-creations
   const client = useMemo(() => {
     // Authentication Link to attach the token to headers
@@ -82,7 +81,7 @@ const useGraphQLClient = () => {
             let token;
 
             // Demo mode does not require authentication
-            if (import.meta.env.IS_DEMO === "true") {
+            if (import.meta.env.VITE_DEMO_MODE === "true") {
               token = "demo-token" + (user?.role === 1 ? "-admin" : "");
             } else {
               token = await getAccessTokenSilently(options);
