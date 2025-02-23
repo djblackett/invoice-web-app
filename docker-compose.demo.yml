@@ -10,6 +10,7 @@ services:
     command: npm run demo
     environment:
       - VITE_BACKEND_URL=http://backend-test:8000/graphql
+      - VITE_DEMO_MODE=true
     ports:
       - "5173:5173"
     networks:
@@ -38,6 +39,7 @@ services:
       DATABASE_URL=postgresql://postgres:example@db-demo:5432/db-demo?schema=public npm run start:test"
     environment:
       - NODE_ENV=test
+      - DEMO_MODE=true
       - PORT=8000
       - REQUEST_ORIGIN=http://frontend-test:5173
       - SECRET=theSecretStuff
