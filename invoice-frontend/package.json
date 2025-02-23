@@ -6,6 +6,7 @@
   "homepage": "https://localhost:5173/invoice-web-app/",
   "scripts": {
     "dev": "cross-env VITE_BACKEND_URL=https://localhost:8000 vite",
+    "demo": "cross-env VITE_BACKEND_URL=http://localhost:8000 vite",
     "dev:container": "cross-env VITE_BACKEND_URL=https://backend-dev:8000/graphql vite",
     "coverage": "vitest run --coverage",
     "build": "vite build",
@@ -29,6 +30,7 @@
     "@reduxjs/toolkit": "^1.8.1",
     "@rollup/rollup-linux-x64-musl": "4.9.5",
     "@shelf/react-outside-click": "^0.1.4",
+    "@vitejs/plugin-basic-ssl": "^1.2.0",
     "cross-env": "^7.0.3",
     "dotenv": "^16.4.7",
     "graphql": "^16.9.0",
