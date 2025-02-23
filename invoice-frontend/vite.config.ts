@@ -5,7 +5,6 @@ import tsconfigPaths from "vite-tsconfig-paths";
 import path from "path";
 import fs from "fs";
 import { visualizer } from "rollup-plugin-visualizer";
-import basicSsl from "@vitejs/plugin-basic-ssl";
 
 const isDemoMode = process.env.VITE_DEMO_MODE === "true";
 
@@ -15,16 +14,6 @@ export default defineConfig({
     react(),
     tsconfigPaths(),
     visualizer({ filename: "bundle-visualization.html" }),
-    // isDemoMode
-    //   ? basicSsl({
-    //       /** name of certification */
-    //       name: "test",
-    //       /** custom trust domains */
-    //       domains: ["*.custom.com"],
-    //       /** custom certification directory */
-    //       certDir: "./cert",
-    //     })
-    //   : undefined,
   ],
   base: "/invoice-web-app/",
   server: {
