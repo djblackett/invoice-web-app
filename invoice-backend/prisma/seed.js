@@ -1,7 +1,8 @@
 import { Prisma, PrismaClient } from "@prisma/client";
 
 const prisma = new PrismaClient({
-  datasourceUrl: "postgresql://postgres:example@localhost:5432/db-demo",
+  datasourceUrl:
+    "postgresql://postgres:example@localhost:5432/db-demo?schema=public",
 });
 
 async function create(invoice) {

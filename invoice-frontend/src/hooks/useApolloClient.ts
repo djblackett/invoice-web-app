@@ -63,12 +63,12 @@ const useGraphQLClient = () => {
       uri: VITE_BACKEND_URL,
     });
 
-    const addressWithoutProtocol = VITE_BACKEND_URL.replace("https://", "");
+    const addressWithoutProtocol = VITE_BACKEND_URL.replace(/https?:\/\//, "");
 
     // WebSocket Link for subscriptions
     const wsLink = new GraphQLWsLink(
       createClient({
-        url: `wss://${addressWithoutProtocol}`,
+        url: `ws://${addressWithoutProtocol}`,
         connectionParams: async () => {
           try {
             const options = {

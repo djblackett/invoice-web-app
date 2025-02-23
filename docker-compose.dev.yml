@@ -6,7 +6,8 @@ services:
       dockerfile: dev.Dockerfile
     # command: npm run dev:container # Uncomment this line when running playwright inside docker
     environment:
-      - VITE_BACKEND_URL=https://localhost:8000/graphql # This is the URL for the backend server
+      - VITE_BACKEND_URL=https://localhost:8000/graphql 
+      - VITE_DEMO_MODE=false
     ports:
       - "5173:5173"
     networks:
@@ -32,12 +33,12 @@ services:
       - "8000:8000"
     command: sh -c "npx prisma@6.2.1 generate && npx prisma@6.2.1 db push && npm run dev"
     environment:
-      # - NODE_ENV=development
       - NODE_ENV=test
       - PORT=8000
       - REQUEST_ORIGIN=https://localhost
       - SECRET=theSecretStuff
       - CERT_DIR="./certs"
+      - DEMO_MODE=false
     networks:
       - my_network_dev
     volumes:
@@ -96,7 +97,7 @@ services:
     volumes:
       - ./invoice-frontend:/app
     entrypoint: ["npx", "playwright", "test"]
-    # entrypoint: ["sh"]
+    # entrypoint: ["sh"] 
     env_file:
       - invoice-frontend/.env
     environment:
@@ -106,7 +107,6 @@ services:
       VITE_BACKEND_URL: http://proxy-dev/graphql/
     networks:
       - my_network_dev
-    # Allow interactive runs (e.g., debugging or watching tests)
     stdin_open: true
     tty: true
 

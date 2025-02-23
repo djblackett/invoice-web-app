@@ -20,12 +20,15 @@ import https from "https";
 import { getResolvers } from "./resolvers";
 
 const isProduction = NODE_ENV === "production";
+const isDemo = process.env.DEMO_MODE === "true";
+
+console.log("isDemo", isDemo);
 
 export const createServer = async () => {
   try {
     const app = await createApp();
     let httpServer;
-    if (CERT_DIR && !isProduction) {
+    if (CERT_DIR && !isProduction && !isDemo) {
       const sslOptions = {
         key: fs.readFileSync(
           path.join(__dirname, CERT_DIR, "localhost-key.pem"),
