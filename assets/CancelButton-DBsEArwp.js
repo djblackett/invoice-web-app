@@ -1,4 +1,4 @@
-import{j as n,d as r}from"./index-Bcsviz4w.js";import{P as e}from"./InvoiceStatus-DE31O4Em.js";const s=r.button`
+import{j as n,d as r}from"./index-CLbxjEQY.js";import{P as e}from"./InvoiceStatus-DreSZqp8.js";const s=r.button`
   display: inline;
   background-color: ${({theme:t})=>t.editButton};
   border-radius: 24px;
