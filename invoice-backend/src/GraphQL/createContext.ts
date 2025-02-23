@@ -175,12 +175,19 @@ export async function createContext({
           console.error("Subscription token verification failed:", error);
           // Optionally throw an error or set user to null depending on your needs.
         }
-      } else {
+      } else if (token === "demo-token") {
         user = {
-          id: "auth0|12345",
-          role: token === "demo-token-admin" ? Role.ADMIN : Role.USER,
+          id: "demoId",
+          role: Role.USER,
           username: "demo-user@example.com",
           name: "demo-user",
+        };
+      } else {
+        user = {
+          id: "demoAdminId",
+          role: Role.ADMIN,
+          username: "demo-admin@example.com",
+          name: "demo-admin",
         };
       }
     }
