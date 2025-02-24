@@ -28,7 +28,7 @@ jobs:
       VITE_REDIRECT_URI: https://localhost:4173/invoice-web-app/
       NODE_ENV: CI
       VITE_DEMO_MODE: false
-      CERT_DIR: "../certs/"
+      CERT_DIR: "./certs/"
       TEST_LOGIN: ${{ secrets.TEST_LOGIN }}
       TEST_PASSWORD: ${{ secrets.TEST_PASSWORD }}
       TEST_BASE_URL: https://localhost:4173/invoice-web-app/
@@ -84,7 +84,7 @@ jobs:
       - name: Enable Corepack and Install Yarn
         run: |
           corepack enable
-          corepack prepare yarn@1.22.22 --activate
+          yarn set version stable
 
       - name: Set up mkcert
         run: |
