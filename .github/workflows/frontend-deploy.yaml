@@ -27,6 +27,7 @@ jobs:
       VITE_BACKEND_URL: https://localhost:8000
       VITE_REDIRECT_URI: https://localhost:4173/invoice-web-app/
       NODE_ENV: CI
+      VITE_DEMO_MODE: false
       CERT_DIR: "../certs/"
       TEST_LOGIN: ${{ secrets.TEST_LOGIN }}
       TEST_PASSWORD: ${{ secrets.TEST_PASSWORD }}
@@ -113,13 +114,13 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-frontend-yarn-
 
-      # - name: Restore Backend Cache
-      #   uses: actions/cache@v4.2.0
-      #   with:
-      #     path: invoice-backend/node_modules
-      #     key: ${{ runner.os }}-backend-yarn-${{ hashFiles('invoice-backend/yarn.lock') }}
-      #     restore-keys: |
-      #       ${{ runner.os }}-backend-yarn-
+      - name: Restore Backend Cache
+        uses: actions/cache@v4.2.0
+        with:
+          path: invoice-backend/node_modules
+          key: ${{ runner.os }}-backend-yarn-${{ hashFiles('invoice-backend/yarn.lock') }}
+          restore-keys: |
+            ${{ runner.os }}-backend-yarn-
 
       - name: Install Frontend Dependencies
         run: |
