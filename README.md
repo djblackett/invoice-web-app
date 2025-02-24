@@ -91,6 +91,8 @@ Ensure you have the following installed on your machine:
 
 ### Installation
 
+#### Demo and Development Mode Instructions
+
 1. **Clone the repository:**
 
    ```bash
@@ -112,11 +114,31 @@ Ensure you have the following installed on your machine:
    yarn install
    ```
 
-4. **Set up environment variables:**
+#### Demo Instructions
+
+1. **Run demo docker compose file**
+
+   ```bash
+   docker compose -f docker-compose.demo.yml up
+   ```
+
+2. **Seed demo data**
+
+   ```bash
+   npx prisma db seed
+   ```
+
+3. **Access the application**  
+ Open your browser and navigate to <https://localhost:5173/invoice-web-app/>.
+
+
+#### Development Instructions
+
+1. **Set up environment variables:**
 
    Create a `.env` file in both `frontend` and `backend` directories based on the provided `.env.example` files.
 
-5. **Set up HTTPS certificates:**  
+2. **Set up HTTPS certificates:**  
   Installation example for Ubuntu (x86)  
   Install mkcert:
 
@@ -146,11 +168,12 @@ Ensure you have the following installed on your machine:
 
 ### Running the Application
 
-1. **Start the application using Docker Compose:**
+1. **Start the application using Docker Compose:**  
+    Shut down demo mode if currently running: `docker compose -f docker-compose.demo.yml down`, then run:
 
-   ```bash
-   docker compose -f docker-compose.dev.yml up --build
-   ```
+      ```bash
+      docker compose -f docker-compose.dev.yml up
+      ```
 
 2. **Access the application:**
 
