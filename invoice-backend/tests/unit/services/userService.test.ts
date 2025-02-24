@@ -3,7 +3,7 @@ import { MockProxy, mock } from "vitest-mock-extended";
 import { CreateUserDTO } from "@/constants/types";
 import { IUserRepo } from "@/repositories/userRepo";
 import { UserService } from "@/services/user.service";
-import bcrypt from "bcrypt";
+import bcrypt from "bcryptjs";
 import { vi, Mock, beforeEach, describe, expect, it } from "vitest";
 import { InternalServerException } from "@/config/exception.config";
 import { Role } from "@prisma/client";

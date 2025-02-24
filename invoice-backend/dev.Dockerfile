@@ -1,7 +1,8 @@
 FROM node:20.9.0
 
 WORKDIR /usr/src/app/
-RUN apt-get update -y && apt-get install -y openssl && apt install yarn -y
+RUN apt-get update -y && apt-get install -y openssl
+RUN corepack enable && yarn set version stable
 
 COPY package.json /usr/src/app/
 COPY yarn.lock /usr/src/app/
@@ -11,4 +12,4 @@ RUN yarn install
 
 EXPOSE 8000
 
-CMD ["npm", "run", "dev"]
+CMD ["yarn", "run", "dev"]

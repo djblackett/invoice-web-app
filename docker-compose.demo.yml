@@ -15,8 +15,7 @@ services:
       - "5173:5173"
     networks:
       - my_network_test
-    volumes:
-      - ./invoice-frontend:/usr/src/app/
+
     healthcheck:
       test: ["CMD", "curl", "-f", "-k", "https://localhost:5173"]
       interval: 30s
