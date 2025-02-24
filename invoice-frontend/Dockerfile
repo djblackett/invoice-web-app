@@ -7,12 +7,14 @@ WORKDIR /usr/src/app
 
 COPY package.json /usr/src/app/
 COPY yarn.lock /usr/src/app/
+COPY .yarnrc.yml /usr/src/app/
+COPY .yarn /usr/src/app/.yarn
 RUN yarn install --frozen-lockfile
 
 COPY . .
 RUN rm -rf tests
 
-RUN npm run build
+RUN yarn run build
 
 FROM nginx:1.27.3-alpine-slim
 
