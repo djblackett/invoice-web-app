@@ -17,7 +17,7 @@ services:
       - my_network_test
 
     healthcheck:
-      test: ["CMD", "curl", "-f", "-k", "https://localhost:5173"]
+      test: ["CMD", "curl", "-f", "-k", "http://localhost:5173"]
       interval: 30s
       timeout: 10s
       retries: 3

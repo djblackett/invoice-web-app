@@ -4,7 +4,9 @@ services:
       context: invoice-frontend
       dockerfile: Dockerfile
     environment:
-      VITE_BACKEND_URL: http://backend.localhost/graphql
+      VITE_BACKEND_URL: http://backend.localhost/api/graphql
+      VITE_REDIRECT_URI: http://frontend.localhost
+      VITR_DEMO_MODE: false
       
     networks:
       - my_network
@@ -40,18 +42,19 @@ services:
       context: invoice-backend
       dockerfile: Dockerfile
     environment:
-      - NODE_ENV=production
-      - PORT=8000
-      - REQUEST_ORIGIN=http://frontend.localhost
-      - SECRET=Secret
-      - DATABASE_URL=postgres://postgres:example@db:5432/db
+      NODE_ENV: production
+      PORT: 8000
+      CORS_ORIGIN: http://frontend.localhost
+      SECRET: Secret
+      DATABASE_URL: postgres://postgres:example@db:5432/db
+      DEMO_MODE: false
     networks:
       - my_network
     depends_on:
       db:
         condition: service_healthy
     labels:
-      - "traefik.http.routers.backend.rule=Host(`frontend.localhost`) && PathPrefix(`/api`)"
+      - "traefik.http.routers.backend.rule=Host(`backend.localhost`) && PathPrefix(`/api`)"
       - "traefik.http.services.backend.loadbalancer.server.port=8000"
 
   db:

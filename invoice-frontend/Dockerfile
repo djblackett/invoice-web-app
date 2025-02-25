@@ -14,7 +14,7 @@ RUN yarn install --frozen-lockfile
 COPY . .
 RUN rm -rf tests
 
-RUN yarn run build
+RUN yarn run build:local
 
 FROM nginx:1.27.3-alpine-slim
 
