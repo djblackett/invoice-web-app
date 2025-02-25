@@ -9,8 +9,8 @@
     "demo": "cross-env VITE_BACKEND_URL=http://localhost:8000 vite",
     "dev:container": "cross-env VITE_BACKEND_URL=https://backend-dev:8000/graphql vite",
     "coverage": "vitest run --coverage",
-    "build": "vite build",
-    "build:local": "cross-env VITE_BACKEND_URL=https://localhost:8000 vite build",
+    "build:local": "cross-env VITE_BACKEND_URL=http://backend.localhost/graphql vite build",
+    "build": "cross-env VITE_BACKEND_URL=https://localhost:8000 vite build",
     "preview": "vite preview",
     "test:unit": "vitest tests/unit",
     "test:e2e": "cross-env VITE_BACKEND_URL=https://localhost:8000/graphql NODE_ENV=test playwright test --config=playwright.config.ts",
@@ -28,7 +28,6 @@
     "@hookform/resolvers": "^3.9.0",
     "@js-temporal/polyfill": "^0.4.4",
     "@reduxjs/toolkit": "^1.8.1",
-    "@rollup/rollup-linux-x64-musl": "4.9.5",
     "@shelf/react-outside-click": "^0.1.4",
     "@vitejs/plugin-basic-ssl": "^1.2.0",
     "cross-env": "^7.0.3",
@@ -107,6 +106,9 @@
     "vitest": "3.0.2",
     "vitest-mock-extended": "^2.0.2",
     "wait-on": "^8.0.1"
+  },
+  "optionalDependencies": {
+    "@rollup/rollup-linux-x64-musl": "4.9.5"
   },
   "packageManager": "yarn@4.6.0"
 }

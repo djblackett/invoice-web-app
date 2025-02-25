@@ -5,7 +5,7 @@ import {
   UserDTO,
   UserIdAndRole,
 } from "../constants/types";
-import bcrypt from "bcrypt";
+import bcrypt from "bcryptjs";
 import { IUserRepo } from "../repositories/userRepo";
 import { validateUserCreate, validateUserList } from "../utils/utils";
 import {

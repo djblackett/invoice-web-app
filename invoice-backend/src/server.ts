@@ -18,11 +18,14 @@ import path from "path";
 import fs from "fs";
 import https from "https";
 import { getResolvers } from "./resolvers";
+import { createLoggingPlugin } from "./GraphQL/loggingPlugin";
+import container from "./config/inversify.config";
+import { Logger } from "./config/logger.config";
 
 const isProduction = NODE_ENV === "production";
 const isDemo = process.env.DEMO_MODE === "true";
 
-console.log("isDemo", isDemo);
+const logger = container.get(Logger);
 
 export const createServer = async () => {
   try {
@@ -44,6 +47,7 @@ export const createServer = async () => {
     } else {
       httpServer = http.createServer(app);
     }
+
     const wsServer = new WebSocketServer({
       server: httpServer,
       path: "/",
@@ -88,6 +92,7 @@ export const createServer = async () => {
               footer: false,
             })
           : ApolloServerPluginLandingPageLocalDefault({ footer: false }),
+        createLoggingPlugin(logger),
       ],
     });
 

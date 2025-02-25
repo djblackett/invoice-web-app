@@ -27,7 +27,9 @@ jobs:
       VITE_BACKEND_URL: https://localhost:8000
       VITE_REDIRECT_URI: https://localhost:4173/invoice-web-app/
       NODE_ENV: CI
-      CERT_DIR: "../certs/"
+      VITE_DEMO_MODE: false # frontend env var
+      DEMO_MODE: false      # backend env var
+      CERT_DIR: "./certs/"
       TEST_LOGIN: ${{ secrets.TEST_LOGIN }}
       TEST_PASSWORD: ${{ secrets.TEST_PASSWORD }}
       TEST_BASE_URL: https://localhost:4173/invoice-web-app/
@@ -62,8 +64,9 @@ jobs:
         run: |
           echo "NODE_ENV is: $NODE_ENV"
 
-      - name: Collect Workflow Telemetry
-        uses: catchpoint/workflow-telemetry-action@v2
+      # Getting in the way of reading the logs - may reenable later
+      # - name: Collect Workflow Telemetry
+      #   uses: catchpoint/workflow-telemetry-action@v2
 
       - name: Checkout Code
         if: ${{ github.event_name != 'pull_request_target' }} 
@@ -83,7 +86,7 @@ jobs:
       - name: Enable Corepack and Install Yarn
         run: |
           corepack enable
-          corepack prepare yarn@1.22.22 --activate
+          yarn set version stable
 
       - name: Set up mkcert
         run: |
@@ -113,13 +116,13 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-frontend-yarn-
 
-      # - name: Restore Backend Cache
-      #   uses: actions/cache@v4.2.0
-      #   with:
-      #     path: invoice-backend/node_modules
-      #     key: ${{ runner.os }}-backend-yarn-${{ hashFiles('invoice-backend/yarn.lock') }}
-      #     restore-keys: |
-      #       ${{ runner.os }}-backend-yarn-
+      - name: Restore Backend Cache
+        uses: actions/cache@v4.2.0
+        with:
+          path: invoice-backend/node_modules
+          key: ${{ runner.os }}-backend-yarn-${{ hashFiles('invoice-backend/yarn.lock') }}
+          restore-keys: |
+            ${{ runner.os }}-backend-yarn-
 
       - name: Install Frontend Dependencies
         run: |
@@ -196,8 +199,8 @@ jobs:
       - name: Run backend server for e2e tests
         run: |
           cd invoice-backend
-          yarn start:test & echo "Backend server running" &&
-          sleep 2
+          yarn start:test 2>&1 | tee backend.log &
+
 
       - name: GraphQL health check
         run: |
@@ -215,8 +218,7 @@ jobs:
       - name: Run frontend server for e2e tests`
         run: |
           cd invoice-frontend
-          yarn build && yarn preview &
-          sleep 1
+          yarn build && yarn preview 2>&1 | tee frontend.log &
 
       - name: Wait for frontend
         run: npx wait-on https://localhost:4173/invoice-web-app/
@@ -243,6 +245,7 @@ jobs:
             **/trace.har
             **/screenshot-*.png
             **/page.html
+            **/*end.log
 
   build:
     runs-on: ubuntu-latest

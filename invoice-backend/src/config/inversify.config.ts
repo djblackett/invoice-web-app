@@ -46,7 +46,7 @@ container
   .to(InvoiceService)
   .inTransientScope();
 
-container.bind(Logger).toSelf();
+container.bind<Logger>(Logger).toSelf().inSingletonScope();
 container.bind<PubSub>(TYPES.PubSub).toConstantValue(new PubSub());
 
 // uncomment for verbose logging

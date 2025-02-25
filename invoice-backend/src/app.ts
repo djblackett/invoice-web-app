@@ -11,6 +11,9 @@ import { DatabaseConnection } from "./database/prisma.database.connection";
 import rateLimit from "express-rate-limit";
 import express from "express";
 import { PrismaClient } from "@prisma/client";
+import { Logger } from "./config/logger.config";
+
+const logger = container.get(Logger);
 
 export const createApp = async () => {
   try {
@@ -34,11 +37,13 @@ export const createApp = async () => {
         const childContainer = container.createChild();
         const prisma = new PrismaClient({ datasourceUrl: DATABASE_URL });
         childContainer.bind<PrismaClient>(PrismaClient).toConstantValue(prisma);
-        await prisma.invoice.deleteMany({});
+        const result = await prisma.invoice.deleteMany({});
+        logger.info("Deleted invoices:" + JSON.stringify(result));
         childContainer.unbind(PrismaClient);
         res.status(200).send("OK");
         return;
       }
+      logger.warn("Forbidden request to /test-setup");
       res.status(403).send("Forbidden");
     });
 
@@ -57,7 +62,7 @@ export const createApp = async () => {
 
     return app;
   } catch (error) {
-    console.error("Error during app initialization:", error);
+    logger.error("Error during app initialization: " + JSON.stringify(error));
     throw error; // Rethrow the error to handle it in the caller
   }
 };

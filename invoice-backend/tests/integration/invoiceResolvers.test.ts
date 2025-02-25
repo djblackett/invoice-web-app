@@ -10,7 +10,6 @@ import {
   expect,
   afterEach,
 } from "vitest";
-import dotenv from "dotenv";
 import { PrismaClient } from "@prisma/client";
 import { execSync } from "child_process";
 import { randomUUID } from "crypto";
@@ -96,7 +95,7 @@ describe("Invoice Resolvers Integration Tests", () => {
     );
     await prisma.$connect();
 
-    execSync("yarn prisma db push", { stdio: "inherit" });
+    execSync("npx prisma db push", { stdio: "inherit" });
     [app] = await createServer();
     // 4. Run "prisma db push" or "prisma migrate deploy"
     //    This ensures the schema is created and tables are set up

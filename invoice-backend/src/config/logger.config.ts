@@ -7,8 +7,11 @@ Not sure if I'll keep it or not. It's a logger service that uses Winston. I didn
 import { injectable } from "inversify";
 import { format, createLogger, transports, LogCallback } from "winston";
 
-const { colorize, combine, label, printf, timestamp } = format;
-
+const { colorize, combine, label, printf, timestamp, uncolorize } = format;
+const shouldColorize =
+  process.stdout.isTTY &&
+  process.env.NODE_ENV !== "production" &&
+  process.env.NODE_ENV !== "CI";
 @injectable()
 export class Logger {
   private logger = createLogger({
@@ -18,15 +21,7 @@ export class Logger {
       timestamp({
         format: "MMM-DD-YYYY HH:mm:ss",
       }),
-      colorize({
-        all: true,
-        colors: {
-          info: "bold blue", // fontStyle color
-          warn: "italic yellow",
-          error: "bold red",
-          debug: "green",
-        },
-      }),
+      shouldColorize ? colorize({ all: true }) : uncolorize(),
       printf(function (info) {
         return `\x1B[33m\x1B[3[${info.label}\x1B[23m\x1B[39m \x1B[32m${info.timestamp}\x1B[39m ${info.level} : ${info.message}`;
       }),

@@ -2,10 +2,14 @@ import { inject, injectable } from "inversify";
 import { PrismaClient } from "@prisma/client";
 import { IDatabaseConnection } from "./database.connection";
 import TYPES from "@/constants/identifiers";
+import { Logger } from "@/config/logger.config";
 
 @injectable()
 export class DatabaseConnection implements IDatabaseConnection {
-  constructor(@inject(TYPES.PrismaClient) public prisma: PrismaClient) {}
+  constructor(
+    @inject(TYPES.PrismaClient) public prisma: PrismaClient,
+    @inject(Logger) public logger: Logger,
+  ) {}
 
   public getDatabase() {
     return this.prisma;
@@ -14,9 +18,9 @@ export class DatabaseConnection implements IDatabaseConnection {
   public async initConnection(): Promise<void> {
     try {
       await this.prisma.$connect();
-      console.log("Connected to Prisma");
+      this.logger.info("Connected to Prisma");
     } catch (e) {
-      console.error(e);
+      this.logger.error(e);
       await this.prisma.$disconnect();
       process.exit(1);
     }

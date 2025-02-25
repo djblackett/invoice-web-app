@@ -2,12 +2,14 @@ FROM node:22.11.0
 
 WORKDIR /usr/src/app
 
+COPY . .
+
 RUN corepack enable && \
-    corepack prepare yarn@1.22.22 --activate \
+    yarn set version stable \
     && yarn install --frozen-lockfile
 
-COPY . .
+
 
 EXPOSE 5173
 
-CMD ["npm", "run", "dev"]
+CMD ["yarn", "run", "dev"]

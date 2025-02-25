@@ -12,6 +12,8 @@ import { createClient } from "graphql-ws";
 import { getMainDefinition } from "@apollo/client/utilities";
 import { loadDevMessages, loadErrorMessages } from "@apollo/client/dev";
 
+const isDemo = import.meta.env.VITE_DEMO_MODE === "true";
+
 const useGraphQLClient = () => {
   const VITE_BACKEND_URL = import.meta.env.VITE_BACKEND_URL || "";
 
@@ -41,7 +43,7 @@ const useGraphQLClient = () => {
 
         // Demo mode does not require authentication
         // TODO - use the user object to specify if user or admin in token for backend
-        if (import.meta.env.VITE_DEMO_MODE === "true") {
+        if (isDemo) {
           token = "demo-token" + (user?.role === 1 ? "-admin" : "");
         } else {
           token = await getAccessTokenSilently(options);
@@ -68,7 +70,9 @@ const useGraphQLClient = () => {
     // WebSocket Link for subscriptions
     const wsLink = new GraphQLWsLink(
       createClient({
-        url: `ws://${addressWithoutProtocol}`,
+        url: isDemo
+          ? `ws://${addressWithoutProtocol}`
+          : `wss://${addressWithoutProtocol}`,
         connectionParams: async () => {
           try {
             const options = {
@@ -81,7 +85,7 @@ const useGraphQLClient = () => {
             let token;
 
             // Demo mode does not require authentication
-            if (import.meta.env.VITE_DEMO_MODE === "true") {
+            if (isDemo) {
               token = "demo-token" + (user?.role === 1 ? "-admin" : "");
             } else {
               token = await getAccessTokenSilently(options);
