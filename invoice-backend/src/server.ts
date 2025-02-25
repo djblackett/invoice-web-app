@@ -47,6 +47,7 @@ export const createServer = async () => {
     } else {
       httpServer = http.createServer(app);
     }
+
     const wsServer = new WebSocketServer({
       server: httpServer,
       path: "/",

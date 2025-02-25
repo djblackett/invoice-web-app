@@ -169,7 +169,7 @@ export async function createContext({
           try {
             user = await verifyTokenAndGetEmail(token, options);
           } catch (error) {
-            console.error("Token verification failed:", error);
+            logger.error("Token verification failed:" + JSON.stringify(error));
             user = null;
           }
         } catch (error) {
