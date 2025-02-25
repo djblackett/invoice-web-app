@@ -22,12 +22,15 @@ type FadeOutProps = {
 };
 
 const FadeOut = ({ username, className }: FadeOutProps) => {
-  const [height] = useState("32px");
+  const [height, setHeight] = useState("32px");
   const [opacity, setOpacity] = useState(1);
   useEffect(() => {
     setTimeout(() => {
       setOpacity(0);
     }, 3000);
+    setTimeout(() => {
+      setHeight("0px");
+    }, 3500);
   }, []);
   return (
     <FadeOutText
