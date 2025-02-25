@@ -5,8 +5,9 @@ import cors from "cors";
 import { BaseException, InternalServerException } from "./exception.config";
 import container from "./inversify.config";
 import { Logger } from "./logger.config";
+import TYPES from "@/constants/identifiers";
 
-const logger = container.get(Logger);
+const logger = container.get<Logger>(TYPES.Logger);
 
 export const SECRET = process.env.SECRET || "";
 export const PORT = Number(process.env.PORT) || 8000;
@@ -37,18 +38,11 @@ logger.info(`Cert Directory: ${CERT_DIR}`);
 logger.info(`Demo Mode: ${process.env.DEMO_MODE}`);
 
 export function serverConfig(app: Application) {
-  app.use(
-    "/",
-    urlencoded({
-      extended: true,
-    }),
-  );
-
   if (NODE_ENV === "production") {
     app.use(
       cors({
-        origin: process.env.CORS_ORIGIN ?? "https://djblackett.github.io", // GitHub Pages URL
-        methods: "GET,HEAD,PUT,PATCH,POST,DELETE",
+        origin: process.env.CORS_ORIGIN ?? "https://djblackett.github.io", // GitHub Pages URL as default
+        methods: "GET,HEAD,PUT,PATCH,POST,DELETE,OPTIONS",
         credentials: true,
       }),
     );
@@ -62,11 +56,17 @@ export function serverConfig(app: Application) {
   }
 
   app.use(express.json());
-
   app.use((req, res, next) => {
     logger.info(`Incoming request: ${req.method} ${req.url}`);
     next();
   });
+
+  app.use(
+    "/",
+    urlencoded({
+      extended: true,
+    }),
+  );
 }
 
 export function serverErrorConfig(app: Application) {

@@ -8,7 +8,7 @@ import { Logger } from "@/config/logger.config";
 export class DatabaseConnection implements IDatabaseConnection {
   constructor(
     @inject(TYPES.PrismaClient) public prisma: PrismaClient,
-    @inject(Logger) public logger: Logger,
+    @inject(TYPES.Logger) public logger: Logger,
   ) {}
 
   public getDatabase() {
