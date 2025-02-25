@@ -10,6 +10,7 @@ const TYPES = {
   PubSub: Symbol.for("PubSub"),
   UserContext: Symbol.for("UserContext"),
   PrismaClient: Symbol.for("PrismaClient"),
+  Logger: Symbol.for("Logger"),
 };
 
 export default TYPES;

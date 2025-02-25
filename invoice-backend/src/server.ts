@@ -21,11 +21,12 @@ import { getResolvers } from "./resolvers";
 import { createLoggingPlugin } from "./GraphQL/loggingPlugin";
 import container from "./config/inversify.config";
 import { Logger } from "./config/logger.config";
+import TYPES from "./constants/identifiers";
 
 const isProduction = NODE_ENV === "production";
 const isDemo = process.env.DEMO_MODE === "true";
 
-const logger = container.get(Logger);
+const logger = container.get<Logger>(TYPES.Logger);
 
 export const createServer = async () => {
   try {

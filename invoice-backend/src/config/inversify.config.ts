@@ -46,15 +46,15 @@ container
   .to(InvoiceService)
   .inTransientScope();
 
-container.bind<Logger>(Logger).toSelf().inSingletonScope();
+container.bind<Logger>(TYPES.Logger).to(Logger).inSingletonScope();
 container.bind<PubSub>(TYPES.PubSub).toConstantValue(new PubSub());
 
 // uncomment for verbose logging
-// container.applyMiddleware((planAndResolve) => {
-//   return (args) => {
-//     console.log(`Resolving ${args.serviceIdentifier.toString()}`);
-//     return planAndResolve(args);
-//   };
-// });
+container.applyMiddleware((planAndResolve) => {
+  return (args) => {
+    console.log(`Resolving ${args.serviceIdentifier.toString()}`);
+    return planAndResolve(args);
+  };
+});
 
 export default container;

@@ -1,9 +1,10 @@
 import container from "./config/inversify.config";
+import { Logger } from "./config/logger.config";
 import { NODE_ENV, PORT } from "./config/server.config";
+import TYPES from "./constants/identifiers";
 import { createServer } from "./server";
-import { Logger } from "@/config/logger.config";
 
-const logger = container.get(Logger);
+const logger = container.get<Logger>(TYPES.Logger);
 
 createServer()
   .then(([, httpServer]) => {

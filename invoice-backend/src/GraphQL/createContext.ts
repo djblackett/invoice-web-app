@@ -14,7 +14,7 @@ import { Role } from "@prisma/client";
 import { NODE_ENV } from "@/config/server.config";
 import { Logger } from "@/config/logger.config";
 
-const logger = container.get<Logger>(Logger);
+const logger = container.get<Logger>(TYPES.Logger);
 // todo - use env vars
 const client = jwksClient({
   jwksUri: "https://dev-n4e4qk7s3kbzusrs.us.auth0.com/.well-known/jwks.json",
@@ -64,7 +64,6 @@ export async function verifyTokenAndGetEmail(
   token: string,
   options: VerifyOptions,
 ): Promise<UserIdAndRole> {
-  console.error("verifyTokenAndGetEmail- NODE_ENV:", NODE_ENV);
   if (NODE_ENV === "test" || NODE_ENV === "CI") {
     return {
       id: "auth0|12345",

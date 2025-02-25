@@ -11,9 +11,10 @@ import { DatabaseConnection } from "./database/prisma.database.connection";
 import rateLimit from "express-rate-limit";
 import express from "express";
 import { PrismaClient } from "@prisma/client";
+import TYPES from "./constants/identifiers";
 import { Logger } from "./config/logger.config";
 
-const logger = container.get(Logger);
+const logger = container.get<Logger>(TYPES.Logger);
 
 export const createApp = async () => {
   try {
