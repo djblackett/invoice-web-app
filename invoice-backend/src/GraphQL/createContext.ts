@@ -11,9 +11,10 @@ import { InvoiceService } from "@/services/invoice.service";
 import { UserService } from "@/services/user.service";
 import { PubSub } from "graphql-subscriptions";
 import { Role } from "@prisma/client";
-import { logger, NODE_ENV } from "@/config/server.config";
-import { name } from "eslint-plugin-prettier/recommended";
+import { NODE_ENV } from "@/config/server.config";
+import { Logger } from "@/config/logger.config";
 
+const logger = container.get<Logger>(Logger);
 // todo - use env vars
 const client = jwksClient({
   jwksUri: "https://dev-n4e4qk7s3kbzusrs.us.auth0.com/.well-known/jwks.json",
@@ -306,12 +307,12 @@ export async function createContext({
           role: user.role,
         });
       }
-    } catch (e) {
-      console.error("User creation failed:", e);
+    } catch (e: any) {
+      logger.error(`Error creating user: ${e.message}`);
       throw e;
     }
 
-    logger.info("User:", dbUser);
+    logger.info(`User: ${dbUser.username}`);
 
     const returnPayload = {
       user: dbUser,

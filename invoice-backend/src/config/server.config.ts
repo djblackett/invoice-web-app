@@ -3,7 +3,19 @@ import { urlencoded } from "body-parser";
 import express, { Application, NextFunction, Request, Response } from "express";
 import cors from "cors";
 import { BaseException, InternalServerException } from "./exception.config";
-import winston from "winston";
+import container from "./inversify.config";
+import { Logger } from "./logger.config";
+
+const logger = container.get(Logger);
+
+// export const logger = winston.createLogger({
+//   level: "info",
+//   format: winston.format.json(),
+//   transports: [
+//     new winston.transports.Console(),
+//     new winston.transports.File({ filename: "combined.log" }),
+//   ],
+// });
 
 export const SECRET = process.env.SECRET || "";
 export const PORT = Number(process.env.PORT) || 8000;
@@ -15,27 +27,23 @@ if (process.env.DEMO_MODE === "true") {
 }
 export { DATABASE_URL };
 export const CERT_DIR = process.env.CERT_DIR || "../certs";
-
 export const NODE_ENV = process.env.NODE_ENV;
 
 if (!SECRET) {
+  logger.error("Server env secret not set");
   throw new Error("Server env secret not set");
 }
 
 if (!PORT) {
+  logger.error("Server env port not set");
   throw new Error("Server env port not set");
 }
 
-export const logger = winston.createLogger({
-  level: "info",
-  format: winston.format.json(),
-  transports: [
-    new winston.transports.Console(),
-    new winston.transports.File({ filename: "combined.log" }),
-  ],
-});
-
 logger.info(`Database URL: ${DATABASE_URL}`);
+logger.info(`Server Port: ${PORT}`);
+logger.info(`Node Environment: ${NODE_ENV}`);
+logger.info(`Cert Directory: ${CERT_DIR}`);
+logger.info(`Demo Mode: ${process.env.DEMO_MODE}`);
 
 export function serverConfig(app: Application) {
   app.use(
@@ -63,15 +71,22 @@ export function serverConfig(app: Application) {
   }
 
   app.use(express.json());
+
+  app.use((req, res, next) => {
+    logger.info(`Incoming request: ${req.method} ${req.url}`);
+    next();
+  });
 }
 
 export function serverErrorConfig(app: Application) {
   app.use((err: Error, _req: Request, res: Response, next: NextFunction) => {
     if (err && err instanceof BaseException) {
+      logger.error(err.message);
       return res.status(err.statusCode).json(err);
     }
 
     if (err) {
+      logger.error(err.message);
       return res.status(500).json(new InternalServerException(err.message));
     }
 
