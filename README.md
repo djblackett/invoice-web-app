@@ -1,8 +1,8 @@
 # Fullstack Invoice Project
 
 ![License](https://img.shields.io/badge/license-MIT-blue.svg)
-![Build Status](https://github.com/yourusername/fullstack-invoice-project/actions/workflows/ci.yml/badge.svg)
-![Node.js Version](https://img.shields.io/badge/node-v16.13.0-brightgreen.svg)
+<!-- ![Build Status](https://github.com/djblackett/fullstack-invoice-project/actions/workflows/ci.yml/badge.svg) -->
+![Node.js Version](https://img.shields.io/badge/node-v22.11.0-brightgreen.svg)
 
 ## Table of Contents
 
@@ -30,7 +30,9 @@
 
 ## Project Overview
 
-I began this project in May 2022 as a **FrontendMentor** challenge to sharpen my CSS skills. Impressed with the initial frontend implementation, I expanded the project to include backend functionality, leveraging concepts from the **FullStackOpen** course. The goal is to develop a robust, full-stack invoicing application with comprehensive testing and deployment pipelines.
+The Fullstack Invoice Project is a robust invoicing application designed as a complete full-stack solution to streamline invoice management. Originally initiated as a **[FrontendMentor](<https://www.frontendmentor.io/challenges/invoice-app-i7KaLTQjl>)** challenge in May 2022 to enhance CSS skills, the project has evolved into a comprehensive application featuring both a dynamic frontend and a scalable backend. The backend leverages and expands on principles from the **[FullStackOpen](<http://fullstackopen.com>)** course, ensuring maintainability and a solid testing foundation.
+
+More details on my motivation and approach to writing this app can be found here[Add link].
 
 ## Features
 
