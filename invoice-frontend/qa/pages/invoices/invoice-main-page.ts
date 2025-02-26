@@ -30,7 +30,7 @@ export class InvoiceMainPage extends BasePage {
     accessibilityScanResults.violations.forEach((violation) => {
       console.log(violation.description);
     });
-
+    // TODO - Fix accessibility issues
     // if (accessibilityScanResults.violations.length > 0) {
     //   const formattedViolations = accessibilityScanResults.violations
     //     .map((violation, index) => {
