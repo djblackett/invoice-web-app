@@ -1,7 +1,7 @@
 import { useAuth } from "@/hooks/useAuth";
 import * as m from "motion/react-m";
 import { Link, useLocation } from "react-router-dom";
-import { VITE_REDIRECT_URI } from "@/index";
+import { VITE_REDIRECT_URI } from "@/config/config";
 import styled from "styled-components";
 import DemoButton from "../buttons/DemoButton";
 
