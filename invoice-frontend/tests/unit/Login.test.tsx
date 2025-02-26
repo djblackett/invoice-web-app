@@ -1,12 +1,29 @@
 import { render, screen, fireEvent } from "../testUtils";
 import { useAuth } from "@/hooks/useAuth";
 import Login from "@/pages/Login";
-import { describe, it, expect, vi, beforeEach, Mock } from "vitest";
+import { describe, it, expect, vi, beforeEach, Mock, beforeAll } from "vitest";
 
 vi.mock("@/hooks/useAuth");
+// Mock the configuration module before importing the module that uses it.
+vi.mock("@/config/config", () => ({
+  BACKEND_URL: "http://localhost:4000",
+}));
 
 describe("Login Component", () => {
   const mockLoginWithRedirect = vi.fn();
+  // Object.defineProperty(import.meta, "env", {
+  //   value: {
+  //     VITE_REDIRECT_URI: "http://localhost:3000",
+  //     VITE_SOME_KEY: "testValue",
+  //     // include any other VITE_ variables your tests need
+  //   },
+  //   configurable: true,
+  // });
+
+  beforeAll(() => {
+    vi.stubEnv("VITE_BACKEND_URL", "http://localhost:4000");
+    import.meta.env.VITE_BACKEND_URL = "http://localhost:4000";
+  });
 
   beforeEach(() => {
     (useAuth as Mock).mockReturnValue({

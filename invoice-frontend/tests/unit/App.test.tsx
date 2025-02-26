@@ -3,6 +3,10 @@ import { fireEvent } from "@testing-library/react";
 import { describe, it, expect, vi, beforeEach } from "vitest";
 import App from "@/app/App";
 
+vi.mock("@/config/config", () => ({
+  BACKEND_URL: "http://localhost:4000",
+}));
+
 // Mock the useWindowWidth hook
 vi.mock("@/hooks/useWindowWidth", () => ({
   default: () => 1024,
@@ -68,6 +72,4 @@ describe("App Component", () => {
     render(<App />);
     expect(screen.getByRole("banner")).toBeInTheDocument();
   });
-
-  // Add more tests as needed
 });

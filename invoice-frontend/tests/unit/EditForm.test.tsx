@@ -41,9 +41,7 @@ describe("EditForm", () => {
   const renderEditForm = (invoice: Invoice) => {
     return render(
       <NewInvoiceProvider initialState={{ isNewInvoiceOpen: true }}>
-        {/* <NewInvoiceFormProvider> */}
         <EditForm invoice={invoice} />
-        {/* </NewInvoiceFormProvider> */}
       </NewInvoiceProvider>,
     );
   };
@@ -66,9 +64,7 @@ describe("EditForm", () => {
   it.skip("hides the modal when isNewInvoiceOpen is false", () => {
     render(
       <NewInvoiceProvider initialState={{ isNewInvoiceOpen: false }}>
-        {/* <NewInvoiceFormProvider> */}
         <EditForm invoice={mockInvoice} />
-        {/* </NewInvoiceFormProvider> */}
       </NewInvoiceProvider>,
     );
     const darkenScreen = screen.getByTestId("editInvoiceModal");
