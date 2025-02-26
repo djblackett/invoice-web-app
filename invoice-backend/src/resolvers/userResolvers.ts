@@ -7,8 +7,8 @@ export function getUserResolvers() {
   return {
     Query: {
       allUsers: async (
-        _root: null = null,
-        _parent: null = null,
+        _root: unknown,
+        _args: unknown,
         context: InjectedQueryContext,
       ) => {
         try {
@@ -76,8 +76,8 @@ export function getUserResolvers() {
       },
 
       deleteUsers: async (
-        _root: null = null,
-        _args: null = null,
+        _root: unknown,
+        _args: unknown,
         context: InjectedQueryContext,
       ) => {
         if (!context.user) {
@@ -104,8 +104,8 @@ export function getUserResolvers() {
       },
 
       deleteUsersKeepAdmins: async (
-        _root: null = null,
-        _args: null = null,
+        _root: unknown,
+        _args: unknown,
         context: InjectedQueryContext,
       ) => {
         if (!context.user) {

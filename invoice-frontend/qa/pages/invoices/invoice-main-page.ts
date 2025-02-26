@@ -16,7 +16,7 @@ export class InvoiceMainPage extends BasePage {
   }
 
   async gotoPage() {
-    await this.navigateTo(TEST_BASE_URL);
+    await this.navigateTo(TEST_BASE_URL as string);
   }
 
   public async runAccessibilityTest(): Promise<void> {

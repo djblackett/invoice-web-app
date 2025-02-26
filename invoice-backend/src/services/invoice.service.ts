@@ -141,7 +141,6 @@ export class InvoiceService {
 
     try {
       const newInvoiceUnvalidated = { ...oldInvoice, ...invoiceUpdates };
-      const validatedInvoice = validateInvoiceData(newInvoiceUnvalidated);
 
       delete newInvoiceUnvalidated.createdBy;
       delete newInvoiceUnvalidated.createdById;

@@ -14,6 +14,7 @@ import {
   ValidationException,
 } from "../config/exception.config";
 import TYPES from "@/constants/identifiers";
+import { Logger } from "@/config/logger.config";
 
 @injectable()
 export class UserService {
@@ -21,6 +22,7 @@ export class UserService {
     @inject(TYPES.IUserRepo) private readonly userRepo: IUserRepo,
     @inject(TYPES.UserContext)
     private readonly userContext: UserIdAndRole,
+    @inject(TYPES.Logger) private readonly logger: Logger,
   ) {}
 
   createUser = async (args: CreateUserDTO): Promise<UserDTO> => {
@@ -44,6 +46,7 @@ export class UserService {
 
       return userDTO;
     } catch (error) {
+      this.logger.error(error);
       throw new ValidationException("User validation failed");
     }
   };
@@ -66,7 +69,7 @@ export class UserService {
       throw new ValidationException("Unauthorized");
     }
 
-    const { role, id } = this.userContext;
+    const { id } = this.userContext;
 
     if (!id) {
       throw new ValidationException("Unauthorized");
@@ -76,7 +79,7 @@ export class UserService {
       const validatedUserList: UserDTO[] = validateUserList(userList);
       return validatedUserList;
     } catch (error) {
-      console.error(error);
+      this.logger.error(error);
       throw new InternalServerException("Internal server error");
     }
   };
@@ -85,8 +88,6 @@ export class UserService {
     if (!this.userContext) {
       throw new ValidationException("Unauthorized");
     }
-
-    const { role } = this.userContext;
 
     if (!id) {
       throw new ValidationException("Unauthorized");
@@ -115,7 +116,7 @@ export class UserService {
       throw new ValidationException("Unauthorized");
     }
 
-    const { role, id } = this.userContext;
+    const { id } = this.userContext;
 
     if (!id) {
       throw new ValidationException("Unauthorized");

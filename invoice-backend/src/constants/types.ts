@@ -150,10 +150,6 @@ export interface ContextArgs {
   testPrisma?: PrismaClient;
 }
 
-type Username = {
-  username: string | null;
-};
-
 export interface QueryContext extends BaseContext {
   user?: UserIdAndRole | null;
   username?: string | null;

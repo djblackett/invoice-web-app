@@ -37,13 +37,6 @@ export function getInvoiceResolvers() {
             });
           }
 
-          // let result;
-          // if (user.role === "ADMIN") {
-          //   result = await invoiceService.getInvoices();
-          // } else {
-          //   result = await invoiceService.getInvoicesByUserId();
-          // }
-
           const result = await invoiceService.getInvoices();
           return result;
         } catch (error) {
@@ -61,7 +54,7 @@ export function getInvoiceResolvers() {
         args: GetInvoiceByIdArgs,
         context: InjectedQueryContext,
       ) => {
-        const { user, invoiceService } = context;
+        const { invoiceService } = context;
         if (!invoiceService) {
           throw new GraphQLError("Internal server error", {
             extensions: {
@@ -95,7 +88,7 @@ export function getInvoiceResolvers() {
         args: InvoiceCreateArgs,
         context: InjectedQueryContext,
       ) => {
-        const { user, invoiceService, pubsub } = context;
+        const { invoiceService, pubsub } = context;
         if (!invoiceService || !pubsub) {
           throw new GraphQLError("Internal server error", {
             extensions: {
@@ -121,7 +114,7 @@ export function getInvoiceResolvers() {
         args: Partial<Invoice>,
         context: InjectedQueryContext,
       ) => {
-        const { user, invoiceService } = context;
+        const { invoiceService } = context;
 
         if (!invoiceService) {
           throw new GraphQLError("Internal server error", {
@@ -159,7 +152,7 @@ export function getInvoiceResolvers() {
         args: GetInvoiceByIdArgs,
         context: InjectedQueryContext,
       ) => {
-        const { user, invoiceService } = context;
+        const { invoiceService } = context;
         if (!invoiceService) {
           throw new GraphQLError("Internal server error", {
             extensions: {
@@ -201,7 +194,7 @@ export function getInvoiceResolvers() {
           });
         }
 
-        const { user, invoiceService } = context;
+        const { invoiceService } = context;
         if (!invoiceService) {
           throw new GraphQLError("Internal server error", {
             extensions: {
@@ -270,7 +263,7 @@ export function getInvoiceResolvers() {
         args: MarkAsPaidArgs,
         context: InjectedQueryContext,
       ) => {
-        const { user, invoiceService } = context;
+        const { invoiceService } = context;
         if (!invoiceService) {
           throw new GraphQLError("Internal server error", {
             extensions: {
