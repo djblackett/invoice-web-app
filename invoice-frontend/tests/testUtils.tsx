@@ -35,12 +35,7 @@ const AllProviders = ({
 
 const customRender = (
   ui: ReactElement,
-  {
-    route = "/",
-    mocks = [],
-    addTypename = false,
-    ...options
-  }: CustomRenderOptions = {},
+  { mocks = [], addTypename = false, ...options }: CustomRenderOptions = {},
 ) => {
   return render(ui, {
     wrapper: ({ children }) => (

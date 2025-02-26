@@ -21,7 +21,7 @@ if (!TEST_BASE_URL) {
   throw new Error("Please provide TEST_BASE_URL");
 }
 
-async function globalSetup({ config }) {
+async function globalSetup() {
   const browser = await chromium.launch({ headless: true });
   if (!TEST_BASE_URL) {
     throw new Error("Please provide TEST_BASE_URL");
