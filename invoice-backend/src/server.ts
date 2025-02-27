@@ -63,7 +63,7 @@ export const createServer = async () => {
         // The `ctx` object contains the WebSocket connection context.
         // `ctx.connectionParams` holds the connection parameters (e.g., headers) sent by the client during the connection handshake.
         // This context is used to create a new GraphQL context for each WebSocket connection.
-        context: async (ctx, msg, args) => {
+        context: async (ctx) => {
           // Here, `ctx.connectionParams` holds the connection parameters (e.g., headers)
           return createContext({ connection: ctx });
         },

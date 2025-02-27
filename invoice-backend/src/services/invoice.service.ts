@@ -145,7 +145,7 @@ export class InvoiceService {
 
       delete newInvoiceUnvalidated.createdBy;
       delete newInvoiceUnvalidated.createdById;
-      const result = await this.invoiceRepo.update(id, newInvoiceUnvalidated);
+      const result = await this.invoiceRepo.update(id, validatedInvoice);
 
       return result;
     } catch (e) {

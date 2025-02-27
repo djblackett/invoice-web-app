@@ -136,6 +136,7 @@ const invoices: Invoice[] = [
       username: "john@melba.toast",
       role: "USER",
     },
+    createdById: "user1",
     clientEmail: "max.mustermann@mail.de",
     clientName: "Mr Clean",
     createdAt: "2023-2-31",
@@ -174,6 +175,7 @@ const invoices: Invoice[] = [
       username: "john@melba.toast",
       role: "USER",
     },
+    createdById: "user1",
     clientEmail: "",
     clientName: "",
     createdAt: "9/3/2024",
@@ -211,6 +213,7 @@ describe("InvoiceService", () => {
     // Arrange
     const validatedInvoices = invoices.map((invoice) => ({
       ...invoice,
+      createdById: invoice.createdById ?? mockUserContext.id,
       createdBy: {
         id: invoice.createdBy?.id ?? mockUserContext.id,
         name: invoice.createdBy?.name ?? mockUserContext.name,
@@ -423,7 +426,7 @@ describe("InvoiceService", () => {
     // Arrange
     const oldInvoice: Invoice = invoices[2];
     const id = oldInvoice.id;
-    const invoiceUpdates = { total: 200 };
+    const invoiceUpdates = { total: 200, status: 32 };
     const newInvoiceUnvalidated = { ...oldInvoice, ...invoiceUpdates };
 
     mockInvoiceRepo.findById.mockResolvedValue(oldInvoice);

@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 import DatePicker from "react-datepicker";
 import PaymentTermsDropdown from "./FormDropDown";
 import FormEntry from "./FormEntry";

@@ -1,4 +1,3 @@
-import globals from "globals";
 import pluginJs from "@eslint/js";
 import tseslint from "typescript-eslint";
 import eslintPluginPrettierRecommended from "eslint-plugin-prettier/recommended";
@@ -16,6 +15,7 @@ export default [
       "src/mocks",
       "src/generated",
       "dist",
+      "global-setup.ts",
     ],
   },
   { files: ["**/*.{js,mjs,cjs,ts,jsx,tsx}"] },
@@ -27,7 +27,6 @@ export default [
   eslintPluginPrettierRecommended,
   {
     rules: {
-      // indent: ["warn", 2],
       "linebreak-style": ["warn", "unix"],
       quotes: ["warn", "double"],
       semi: ["warn", "always"],
@@ -36,7 +35,7 @@ export default [
       "consistent-return": "off",
       "no-plusplus": "off",
       "no-param-reassign": "off",
-      "@typescript-eslint/no-unused-vars": "off",
+      "@typescript-eslint/no-unused-vars": "error",
       "no-unsafe-return": "off",
     },
   },

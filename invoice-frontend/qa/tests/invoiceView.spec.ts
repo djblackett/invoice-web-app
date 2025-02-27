@@ -1,4 +1,3 @@
-import path from "path";
 import { expect, test } from "../fixtures/base";
 import {
   createExampleInvoice,

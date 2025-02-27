@@ -7,9 +7,13 @@ import bcrypt from "bcryptjs";
 import { vi, Mock, beforeEach, describe, expect, it } from "vitest";
 import { InternalServerException } from "@/config/exception.config";
 import { Role } from "@prisma/client";
+import container from "@/config/inversify.config";
+import TYPES from "@/constants/identifiers";
+import { Logger } from "@/config/logger.config";
 
 let userRepoMock: MockProxy<IUserRepo>;
 let userService: UserService;
+const logger = container.get<Logger>(TYPES.Logger);
 
 const userContextMock = {
   id: "1",
@@ -19,7 +23,7 @@ const userContextMock = {
 
 beforeEach(() => {
   userRepoMock = mock<IUserRepo>();
-  userService = new UserService(userRepoMock, userContextMock);
+  userService = new UserService(userRepoMock, userContextMock, logger);
 });
 
 describe("UserService - createUser", () => {

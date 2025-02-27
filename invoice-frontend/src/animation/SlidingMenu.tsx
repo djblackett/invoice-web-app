@@ -32,7 +32,6 @@ const Sidebar = ({ children }: SidebarProps) => {
 
   return (
     <>
-      {/* Overlay */}
       <motion.div
         key="overlay"
         initial={{ opacity: 0 }}

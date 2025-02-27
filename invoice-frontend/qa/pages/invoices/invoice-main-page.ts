@@ -1,4 +1,4 @@
-import { expect, Locator, Page } from "@playwright/test";
+import { expect, Page } from "@playwright/test";
 import BasePage from "../base/base-page";
 import { WelcomePage } from "./welcome-page";
 import { Header } from "./header";
@@ -16,7 +16,7 @@ export class InvoiceMainPage extends BasePage {
   }
 
   async gotoPage() {
-    await this.navigateTo(TEST_BASE_URL);
+    await this.navigateTo(TEST_BASE_URL as string);
   }
 
   public async runAccessibilityTest(): Promise<void> {
@@ -30,7 +30,7 @@ export class InvoiceMainPage extends BasePage {
     accessibilityScanResults.violations.forEach((violation) => {
       console.log(violation.description);
     });
-
+    // TODO - Fix accessibility issues
     // if (accessibilityScanResults.violations.length > 0) {
     //   const formattedViolations = accessibilityScanResults.violations
     //     .map((violation, index) => {

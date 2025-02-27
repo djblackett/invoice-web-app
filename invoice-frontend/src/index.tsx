@@ -7,22 +7,16 @@ import store from "./app/store";
 import App from "./app/App";
 import { DemoAuthProvider } from "./auth/DemoAuthProvider";
 import { Auth0ProviderWrapper } from "./auth/Auth0ProviderWrapper";
+import {
+  VITE_AUDIENCE,
+  VITE_CLIENT_ID,
+  VITE_DOMAIN,
+  VITE_SCOPE,
+  VITE_REDIRECT_URI,
+  isDemoMode,
+} from "./config/config";
 
 const container = document.getElementById("root");
-const isDemoMode = import.meta.env.VITE_DEMO_MODE === "true";
-
-export const VITE_REDIRECT_URI =
-  import.meta.env.VITE_REDIRECT_URI ||
-  window.location.origin + "/invoice-web-app/";
-console.log("VITE_REDIRECT_URI:", VITE_REDIRECT_URI);
-
-if (isDemoMode) {
-  console.log("Demo mode enabled");
-} else {
-  checkEnv();
-}
-
-console.log("VITE_REDIRECT_URI:", VITE_REDIRECT_URI);
 
 if (container) {
   const root = createRoot(container);
@@ -37,14 +31,14 @@ if (container) {
           </DemoAuthProvider>
         ) : (
           <Auth0ProviderWrapper
-            domain={import.meta.env.VITE_DOMAIN ?? ""}
-            clientId={import.meta.env.VITE_CLIENT_ID ?? ""}
-            cacheLocation="localstorage" // Optional: Ensures tokens persist across refreshes
-            useRefreshTokens // Optional: Improves token handling
+            domain={VITE_DOMAIN ?? ""}
+            clientId={VITE_CLIENT_ID ?? ""}
+            cacheLocation="localstorage"
+            useRefreshTokens
             authorizationParams={{
-              redirect_uri: VITE_REDIRECT_URI, //+ "#/invoices",
-              scope: import.meta.env.VITE_SCOPE ?? "", // Include offline_access
-              audience: import.meta.env.VITE_AUDIENCE ?? "",
+              redirect_uri: VITE_REDIRECT_URI,
+              scope: VITE_SCOPE ?? "",
+              audience: VITE_AUDIENCE ?? "",
             }}
           >
             <HashRouter>
@@ -55,25 +49,4 @@ if (container) {
       </ReduxProvider>
     </React.StrictMode>,
   );
-}
-
-function checkEnv() {
-  if (!import.meta.env.VITE_BACKEND_URL) {
-    throw new Error("VITE_BACKEND_URL is required");
-  }
-  if (!import.meta.env.VITE_AUDIENCE) {
-    throw new Error("VITE_AUDIENCE is required");
-  }
-  if (!import.meta.env.VITE_SCOPE) {
-    throw new Error("VITE_SCOPE is required");
-  }
-  if (!import.meta.env.VITE_DOMAIN) {
-    throw new Error("VITE_DOMAIN is required");
-  }
-  if (!import.meta.env.VITE_CLIENT_ID) {
-    throw new Error("VITE_CLIENT_ID is required");
-  }
-  if (!import.meta.env.VITE_REDIRECT_URI && VITE_REDIRECT_URI === "") {
-    throw new Error("VITE_REDIRECT_URI is required");
-  }
 }

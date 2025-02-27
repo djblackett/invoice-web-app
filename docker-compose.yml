@@ -2,12 +2,11 @@ services:
   frontend:
     build:
       context: invoice-frontend
-      dockerfile: Dockerfile
+      dockerfile: localProd.Dockerfile
     environment:
       VITE_BACKEND_URL: http://backend.localhost/api/graphql
       VITE_REDIRECT_URI: http://frontend.localhost
       VITR_DEMO_MODE: false
-      
     networks:
       - my_network
     depends_on:
