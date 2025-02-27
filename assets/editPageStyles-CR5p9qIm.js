@@ -1,4 +1,4 @@
-import{d as e,S as r}from"./index-Cpfwgvgm.js";const a=e.h1`
+import{d as e,S as r}from"./index-Bo1oAiba.js";const a=e.h1`
   font-size: 1.5rem;
   color: ${({theme:t})=>t.text};
 `,n=e.div`
@@ -154,7 +154,6 @@ import{d as e,S as r}from"./index-Cpfwgvgm.js";const a=e.h1`
   .react-datepicker__header {
     background-color: ${({theme:t})=>t.background};
     color: ${({theme:t})=>t.dateText};
-    /* border: none; */
     padding-top: 1rem;
     padding-bottom: 1rem;
   }
@@ -186,7 +185,6 @@ import{d as e,S as r}from"./index-Cpfwgvgm.js";const a=e.h1`
   .react-datepicker__month-year-dropdown {
     background-color: ${({theme:t})=>t.background};
     color: ${({theme:t})=>t.dateText};
-    /* border: none; */
   }
 
   .react-datepicker__navigation {
@@ -201,14 +199,7 @@ import{d as e,S as r}from"./index-Cpfwgvgm.js";const a=e.h1`
     width: 100%;
   }
 
-  .react-datepicker__navigation-icon {
-    /* height: 24px;
-    width: 24px; */
-    /* font-size: 24px; */
-  }
   .react-datepicker__day--selected {
-    /* color: #7c5dfa; */
-    /* background-color: transparent; */
     font-weight: bold;
     background-color: #7c5dfa;
   }
@@ -240,13 +231,9 @@ import{d as e,S as r}from"./index-Cpfwgvgm.js";const a=e.h1`
   }
 
   .react-datepicker-popper {
-    /* max-width: 240px;
-    max-height: 270px; */
     z-index: 2000;
   }
   .react-datepicker {
-    /* max-width: 240px;
-    max-height: 270px; */
     box-sizing: border-box;
   }
 `;export{p as A,d as B,l as C,m as D,a as E,n as F,o as I,s as L,c as S,x as a,g as b,h as c,f as d};
