@@ -1,15 +1,15 @@
 import * as m from "motion/react-m";
 import styled from "styled-components";
 
-const AnimatedText = styled.div`
+const AnimatedText = styled.h1`
   position: relative;
-  font-family: sans-serif;
-  font-size: 60px;
-  font-weight: 800;
+  font-family: ${({ theme }) => theme.font};
+  font-size: 64px;
+  font-weight: 900;
   letter-spacing: -1px;
   line-height: 1.2;
   text-align: center;
-  margin: 100px 0 40px;
+  margin: 20% 0 40px;
   color: ${({ theme }) => theme.text};
 
   @media (min-width: 1200px) {
