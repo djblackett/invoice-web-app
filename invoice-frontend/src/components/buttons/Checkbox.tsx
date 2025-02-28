@@ -60,8 +60,7 @@ export interface CheckboxProps extends CheckedProps {
 
 function Checkbox({ checked = false, ...props }: CheckboxProps) {
   return (
-    <CheckboxContainer className="styledCheckbox" checked={checked}>
-      <HiddenCheckbox checked={checked} {...props} readOnly />
+    <CheckboxContainer className="styledCheckbox" checked={checked} {...props}>
       <StyledCheckbox checked={checked}>
         <Icon width="10" height="8" viewBox="0 0 10 8">
           <path d="M1.5 4.5l2.124 2.124L8.97 1.28" />
