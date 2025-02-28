@@ -24,6 +24,7 @@ function Description({ invoice }: DescriptionProps) {
           Project Description
         </Label>
         <Input
+          id="projectDescription"
           type="text"
           defaultValue={invoice?.description}
           {...register("projectDescription", { required: !isDraft })}

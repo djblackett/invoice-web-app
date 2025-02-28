@@ -2,6 +2,7 @@ import { Prisma, PrismaClient } from "@prisma/client";
 
 const prisma = new PrismaClient({
   datasourceUrl:
+    process.env.DATABASE_URL ||
     "postgresql://postgres:example@localhost:5432/db-demo?schema=public",
 });
 

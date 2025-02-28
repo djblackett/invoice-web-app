@@ -37,9 +37,9 @@ const Card = styled.div`
   }
 `;
 
-const IDNumber = styled.p`
+const IDNumber = styled.h1`
   margin: 0;
-  font-family: "Spartan", sans-serif;
+  font-family: ${({ theme }) => theme.font};
   font-style: normal;
   font-weight: 700;
   font-size: 16px;

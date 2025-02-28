@@ -71,6 +71,7 @@ const AllInvoicesView = ({
               key={invoice.id}
               to={`/invoices/${invoice.id}`}
               $isMobile={width < 1200}
+              tabIndex={-1}
             >
               <InvoiceCard invoice={invoice} />
             </StyledLink>
