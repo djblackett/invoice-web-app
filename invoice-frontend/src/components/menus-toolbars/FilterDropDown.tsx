@@ -6,7 +6,7 @@ import { changeFilter } from "../../features/invoices/filterSlice";
 import { StatusKey } from "../../types/types";
 import { ClickOutsideProvider } from "@shelf/react-outside-click";
 
-const Main = styled("div")`
+const Main = styled.div`
   align-self: center;
   box-sizing: border-box;
   background: transparent;
@@ -16,6 +16,7 @@ const Main = styled("div")`
   margin-left: 0;
   position: relative;
   pointer-events: auto;
+  border: none;
 
   @media (min-width: 325px) {
     margin-left: 8px;
@@ -26,28 +27,38 @@ const Main = styled("div")`
   }
 `;
 
-const DropDownContainer = styled("div")`
+const DropDownContainer = styled.button`
   width: 8px;
   margin: 0 auto;
   z-index: 10;
   background: transparent;
-`;
-
-const DropDownHeader = styled.div.attrs({
-  tabIndex: 0,
-})`
+  border: none;
   display: flex;
   z-index: -1;
   justify-content: center;
   align-items: center;
   align-self: center;
   box-sizing: border-box;
-  width: 12px;
+  width: 1.5rem;
   font-weight: 600;
   font-size: 1.2rem;
   color: ${({ theme }) => theme.text};
   border-radius: 6px;
 `;
+
+// const DropDownHeader = styled.span.attrs({})`
+//   display: flex;
+//   z-index: -1;
+//   justify-content: center;
+//   align-items: center;
+//   align-self: center;
+//   box-sizing: border-box;
+//   width: 12px;
+//   font-weight: 600;
+//   font-size: 1.2rem;
+//   color: ${({ theme }) => theme.text};
+//   border-radius: 6px;
+// `;
 
 const DropDownListContainer = styled("div")`
   position: absolute;
@@ -87,7 +98,6 @@ const DropDownList = styled("ul")`
 const ListItem = styled.li.attrs({})`
   display: flex;
   flex-grow: 0;
-
   align-items: center;
   justify-content: center;
   list-style: none;
@@ -142,22 +152,26 @@ export default function FilterDropDown({
 
   return (
     <Main>
-      <DropDownContainer data-testid="filterDropDown">
-        <DropDownHeader>{icon}</DropDownHeader>
-        <ClickOutsideProvider onOutsideClick={closeFilter}>
-          <DropDownListContainer style={{ height: isOpen ? "130px" : 0 }}>
-            <DropDownList data-testid="draft-filter">
-              {options.map((option: string) => (
-                <ListItem key={`${option}-li`} onClick={clickCallback(option)}>
-                  <ItemButton>
-                    <CheckboxSelection option={option} />
-                  </ItemButton>
-                </ListItem>
-              ))}
-            </DropDownList>
-          </DropDownListContainer>
-        </ClickOutsideProvider>
+      <DropDownContainer
+        data-testid="filterDropDown"
+        tabIndex={0}
+        aria-label="Filter invoices"
+      >
+        {icon}
       </DropDownContainer>
+      <ClickOutsideProvider onOutsideClick={closeFilter}>
+        <DropDownListContainer style={{ height: isOpen ? "130px" : 0 }}>
+          <DropDownList data-testid="draft-filter">
+            {options.map((option: string) => (
+              <ListItem key={`${option}-li`}>
+                <ItemButton onClick={clickCallback(option)}>
+                  <CheckboxSelection option={option} />
+                </ItemButton>
+              </ListItem>
+            ))}
+          </DropDownList>
+        </DropDownListContainer>
+      </ClickOutsideProvider>
     </Main>
   );
 }
