@@ -184,8 +184,4 @@ function InvoiceCard({ invoice }: InvoiceCardProps) {
   );
 }
 
-InvoiceCard.propTypes = {
-  // invoice: PropTypes.object.isRequired,
-};
-
 export default InvoiceCard;

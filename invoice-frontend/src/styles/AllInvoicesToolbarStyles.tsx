@@ -110,32 +110,6 @@ export const ControlBox = styled.div`
   }
 `;
 
-export const NewInvoiceButton = styled.div`
-  border-radius: 24px;
-  background-color: #7c5dfa;
-  height: 44px;
-  width: 90px;
-  display: flex;
-  align-items: center;
-  margin-left: 18px;
-  cursor: pointer;
-  padding-left: 0.5rem;
-
-  &:hover {
-    background-color: #9277ff;
-  }
-
-  @media (min-width: 600px) {
-    height: 48px;
-    width: 150px;
-    padding-right: 1rem;
-    margin-left: 40px;
-  }
-
-  @media (min-width: 1200px) {
-  }
-`;
-
 export const arrowDownSVG = (
   <svg
     width="11"
@@ -153,20 +127,23 @@ export const arrowDownSVG = (
   </svg>
 );
 
-export const WhiteCircle = styled.div`
+export const WhiteCircle = styled.span`
   background-color: white;
   border-radius: 50%;
   height: 32px;
   width: 32px;
   margin: 8px;
   margin-left: 0;
+  padding-left: 1px;
+  padding-top: 1px;
   display: flex;
   align-items: center;
   justify-content: center;
 `;
 
-export const NewText = styled.p`
+export const NewText = styled.span`
   color: white;
+  font-family: ${({ theme }) => theme.font};
   font-weight: bold;
   letter-spacing: -0.25px;
   white-space: nowrap;

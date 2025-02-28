@@ -1,7 +1,7 @@
 import { ToastContainer } from "react-toastify";
 import styled from "styled-components";
 
-export const Main = styled.main`
+export const Main = styled.div`
   height: 100%;
   width: 100%;
   min-height: 100vh;
@@ -47,4 +47,16 @@ export const StyledToastContainer = styled(ToastContainer)<{
 }>`
   margin-top: ${(props) => props.marginTop};
   background-color: transparent;
+`;
+
+export const ScreenReaderOnly = styled.span`
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap; /* added for consistency */
+  border: 0;
 `;

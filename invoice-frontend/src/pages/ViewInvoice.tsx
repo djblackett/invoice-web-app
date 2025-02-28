@@ -44,7 +44,7 @@ function ViewInvoice() {
   }
 
   return (
-    <ViewContainer>
+    <ViewContainer role="main">
       <NewInvoiceProvider>
         <Suspense fallback={<div>Loading...</div>}>
           <EditForm invoice={invoice} />

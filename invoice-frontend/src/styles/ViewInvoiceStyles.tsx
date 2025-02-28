@@ -1,6 +1,6 @@
 import styled from "styled-components";
 
-export const ViewContainer = styled.div`
+export const ViewContainer = styled.main`
   z-index: 5;
   display: flex;
   flex-direction: column;
@@ -28,7 +28,7 @@ export const ViewContainer = styled.div`
   }
 `;
 
-export const GoBackButton = styled.div`
+export const GoBackButton = styled.button`
   align-self: flex-start;
   display: flex;
   align-items: center;
@@ -37,6 +37,8 @@ export const GoBackButton = styled.div`
   flex-direction: row;
   cursor: pointer;
   margin-bottom: 2rem;
+  background-color: transparent;
+  color: ${({ theme }) => theme.text};
 `;
 
 export const Icon = styled.p`

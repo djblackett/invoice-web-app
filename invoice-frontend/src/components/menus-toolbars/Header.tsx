@@ -4,6 +4,7 @@ import { Link, useLocation } from "react-router-dom";
 import { VITE_REDIRECT_URI } from "@/config/config";
 import styled from "styled-components";
 import DemoButton from "../buttons/DemoButton";
+import { ScreenReaderOnly } from "@/styles/AppStyles";
 
 const HeaderContainer = styled.div`
   width: 100%;
@@ -91,13 +92,15 @@ const AvatarBox = styled.div`
   }
 `;
 
-const DarkLightBox = styled.div`
+const DarkLightBox = styled.button`
   height: 100%;
   width: 80px;
   display: flex;
   justify-content: center;
   align-items: center;
   cursor: pointer;
+  background-color: ${({ theme }) => theme.headerBackground};
+  border: none;
 `;
 
 const LogoLogoutContainer = styled.div`
@@ -228,6 +231,7 @@ function Header({ themeToggler, theme }: HeaderProps) {
       <LogoLogoutContainer>
         <Logo data-testid="logo">
           <Link
+            aria-label="Go to homepage"
             to={"/"}
             style={{
               width: "100%",
@@ -237,6 +241,7 @@ function Header({ themeToggler, theme }: HeaderProps) {
               justifyContent: "center",
             }}
           >
+            <ScreenReaderOnly>Go to homepage</ScreenReaderOnly>
             <BottomColorBoxForLogo />
             {logo}
           </Link>
@@ -256,7 +261,12 @@ function Header({ themeToggler, theme }: HeaderProps) {
         </DemoAndLogoutContainer>
       </LogoLogoutContainer>
       <DarkModeProfileContainer>
-        <DarkLightBox onClick={themeToggler} data-testid="dark-mode-button">
+        <DarkLightBox
+          onClick={themeToggler}
+          data-testid="dark-mode-button"
+          aria-label="Toggle dark mode"
+          tabIndex={0}
+        >
           {theme === "light" ? moon : sun}
         </DarkLightBox>
         <AvatarBox data-testid="avatar">
