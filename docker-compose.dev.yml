@@ -32,6 +32,8 @@ services:
     ports:
       - "8000:8000"
     command: sh -c "npx prisma@6.2.1 generate && npx prisma@6.2.1 db push && npm run dev"
+    # use commented out command to run playwright tests in their own DB
+    # command: sh -c "npx prisma@6.2.1 generate && npx prisma@6.2.1 db push && npm run start:test"
     environment:
       - NODE_ENV=test
       - PORT=8000
@@ -97,7 +99,7 @@ services:
     volumes:
       - ./invoice-frontend:/app
     entrypoint: ["npx", "playwright", "test"]
-    # entrypoint: ["sh"] 
+    # entrypoint: ["sh"] # switch to this command if you want to manually trigger the tests from the container
     env_file:
       - invoice-frontend/.env
     environment:
