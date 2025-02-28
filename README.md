@@ -32,7 +32,7 @@
 
 The Fullstack Invoice Project is a robust invoicing application designed as a complete full-stack solution to streamline invoice management. Originally initiated as a **[FrontendMentor](<https://www.frontendmentor.io/challenges/invoice-app-i7KaLTQjl>)** challenge in May 2022 to enhance CSS skills, the project has evolved into a comprehensive application featuring both a dynamic frontend and a scalable backend. The backend leverages and expands on principles from the **[FullStackOpen](<http://fullstackopen.com>)** course, ensuring maintainability and a solid testing foundation.
 
-More details on my motivation and approach to writing this app can be found here[Add link].
+More details on my motivation and approach to writing this app can be found [here](./project-description.md). The specific requirements of the Frontend Mentor challenge can be found [here](./README-frontend-mentor.md).
 
 ## Features
 
@@ -133,7 +133,6 @@ Ensure you have the following installed on your machine:
 3. **Access the application**  
  Open your browser and navigate to <https://localhost:5173/invoice-web-app/>.
 
-
 #### Development Instructions
 
 1. **Set up environment variables:**
@@ -187,7 +186,7 @@ The project includes various levels of testing to ensure reliability and maintai
 
 - **Backend Unit Tests:** Implemented using Vitest.
 - **Frontend Unit Tests:** Implemented using React Testing Library.
-- **Integration Tests:** Verify interactions between backend GraphQL resolvers and a real PostgresQL database. 
+- **Integration Tests:** Verify interactions between backend GraphQL resolvers and a real PostgresQL database.
 - **End-to-End (E2E) Tests:** Implemented with PlayWright and tests normal user flows
 
 To run backend tests:
@@ -271,5 +270,5 @@ This project is licensed under the MIT License. See the [LICENSE](LICENSE) file 
 ## Contact
 
 - **Author:** David Andrea
-- **Email:** your.email@example.com
+- **Email:** <your.email@example.com>
 - **GitHub:** [djblackett](https://github.com/djblackett)
