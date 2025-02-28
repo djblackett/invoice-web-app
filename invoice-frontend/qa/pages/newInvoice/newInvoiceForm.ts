@@ -229,7 +229,8 @@ export async function createExampleInvoice(newInvoiceForm: NewInvoiceForm) {
   // Select invoice date
   await newInvoiceForm.clickInvoiceDate();
   await newInvoiceForm.selectInvoiceDate("Thursday, January 30th,");
-  await newInvoiceForm.fillDate("2025-01-30");
+
+  // await newInvoiceForm.fillDate("2025-01-30");
 
   // Select payment terms
   await newInvoiceForm.selectPaymentTerms("Net 14 Days");
