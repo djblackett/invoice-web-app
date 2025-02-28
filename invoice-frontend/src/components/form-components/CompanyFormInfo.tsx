@@ -44,12 +44,13 @@ function CompanyFormInfo({ invoice }: CompanyFormInfoProps) {
       className="company-country"
     >
       <Label
-        htmlFor="country"
+        htmlFor="CompanyCountry"
         style={{ color: errors?.country ? "#EC5757" : "" }}
       >
         Country
       </Label>
       <CountryInput
+        id="CompanyCountry"
         type="text"
         style={{
           border: errors?.country ? "1px solid #EC5757" : "",
@@ -75,6 +76,7 @@ function CompanyFormInfo({ invoice }: CompanyFormInfoProps) {
           Street Address
         </Label>
         <StreetAddressInput
+          id="streetAddress"
           style={{ border: errors?.streetAddress ? "1px solid #EC5757" : "" }}
           defaultValue={invoice ? invoice?.senderAddress?.street : ""}
           {...register("streetAddress", {
@@ -88,12 +90,13 @@ function CompanyFormInfo({ invoice }: CompanyFormInfoProps) {
         <CityPostContainer>
           <FormEntry className="company-city">
             <Label
-              htmlFor="city"
+              htmlFor="companyCity"
               style={{ color: errors?.city ? "#EC5757" : "" }}
             >
               City
             </Label>
             <AddressDetailInput
+              id="companyCity"
               style={{ border: errors?.city ? "1px solid #EC5757" : "" }}
               defaultValue={invoice ? invoice?.senderAddress?.city : ""}
               type="text"
@@ -110,12 +113,13 @@ function CompanyFormInfo({ invoice }: CompanyFormInfoProps) {
             className="company-postal-code"
           >
             <Label
-              htmlFor="postalCode"
+              htmlFor="CompanyPostalCode"
               style={{ color: errors?.postalCode ? "#EC5757" : "" }}
             >
               Post Code
             </Label>
             <AddressDetailInput
+              id="CompanyPostalCode"
               style={{ border: errors?.postalCode ? "1px solid #EC5757" : "" }}
               type="text"
               defaultValue={invoice ? invoice?.senderAddress?.postCode : ""}

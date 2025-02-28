@@ -39,6 +39,7 @@ export default function ClientFormInfo({ invoice }: ClientFormInfoProps) {
         Country
       </Label>
       <CountryInput
+        id="clientCountry"
         $long={false}
         style={{
           border: errors?.clientCountry ? "1px solid #EC5757" : "",
@@ -68,6 +69,7 @@ export default function ClientFormInfo({ invoice }: ClientFormInfoProps) {
           <ErrorTextInline>can&apos;t be empty</ErrorTextInline>
         )}
         <Input
+          id="clientName"
           $long
           style={{ border: errors.clientName ? "1px solid #EC5757" : "" }}
           type="text"
@@ -88,6 +90,7 @@ export default function ClientFormInfo({ invoice }: ClientFormInfoProps) {
           </ErrorTextInline>
         )}
         <Input
+          id="clientEmail"
           $long
           style={{ border: errors.clientEmail ? "1px solid #EC5757" : "" }}
           type="text"
@@ -108,7 +111,7 @@ export default function ClientFormInfo({ invoice }: ClientFormInfoProps) {
           Street Address
         </Label>
         <StreetAddressInput
-          className="client-street-address"
+          id="clientStreetAddress"
           style={{
             border: errors.clientStreetAddress ? "1px solid #EC5757" : "",
           }}
@@ -118,7 +121,7 @@ export default function ClientFormInfo({ invoice }: ClientFormInfoProps) {
       </LongFormEntry>
 
       <AddressBox>
-        <FormEntry className="client-city">
+        <FormEntry className="clientCity">
           <Label
             htmlFor="clientCity"
             style={{ color: errors.clientCity ? "#EC5757" : "" }}
@@ -126,6 +129,7 @@ export default function ClientFormInfo({ invoice }: ClientFormInfoProps) {
             City
           </Label>
           <AddressDetailInput
+            id="clientCity"
             style={{
               border: errors.clientCity ? "1px solid #EC5757" : "",
             }}
@@ -139,7 +143,7 @@ export default function ClientFormInfo({ invoice }: ClientFormInfoProps) {
           />
         </FormEntry>
 
-        <FormEntry className="client-postal-code">
+        <FormEntry className="clientPostalCode">
           <Label
             htmlFor="clientPostalCode"
             style={{ color: errors.clientPostalCode ? "#EC5757" : "" }}
@@ -147,6 +151,7 @@ export default function ClientFormInfo({ invoice }: ClientFormInfoProps) {
             Post Code
           </Label>
           <AddressDetailInput
+            id="clientPostalCode"
             style={{
               border: errors.clientPostalCode ? "1px solid #EC5757" : "",
             }}
