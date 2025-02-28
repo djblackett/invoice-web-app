@@ -1,4 +1,4 @@
-import{J as c,K as k,P as w,j as t,d as o,S as d,c as y,s as j,T as C}from"./index-Bo1oAiba.js";import{P as v}from"./InvoiceStatus-BNE0zJRF.js";import{C as $}from"./ClickOutsideProvider-DmYfFG7E.js";function a(e=c){const i=e===c?k:w(e);return function(){const{store:n}=i();return n}}const D=a();function S(e=c){const i=e===c?D:a(e);return function(){return i().dispatch}}const z=S(),l=d`
+import{J as c,K as k,P as w,j as t,d as o,S as d,c as C,s as j,T as y}from"./index-Vii2wdos.js";import{P as $}from"./InvoiceStatus-dDJvJ6wS.js";import{C as v}from"./ClickOutsideProvider-BhYE0xpk.js";function a(e=c){const n=e===c?k:w(e);return function(){const{store:i}=n();return i}}const D=a();function S(e=c){const n=e===c?D:a(e);return function(){return n().dispatch}}const z=S(),l=d`
   background-color: ${({theme:e})=>e.newButton};
   border-color: transparent;
 `,x=d`
@@ -9,17 +9,6 @@ import{J as c,K as k,P as w,j as t,d as o,S as d,c as y,s as j,T as C}from"./ind
   border: 1px solid transparent;
   border-radius: 2px;
   ${e=>e.checked?l:x};
-`,H=o.input.attrs({type:"checkbox"})`
-  // Hide checkbox visually but remain accessible to screen readers.
-  // Source: https://polished.js.org/docs/#hidevisually
-  clip: rect(0 0 0 0);
-  height: 1px;
-  margin: -1px;
-  overflow: hidden;
-  padding: 0;
-  position: absolute;
-  white-space: nowrap;
-  width: 1px;
 `,p=o.svg`
   stroke: #fff;
   stroke-width: 2;
@@ -35,7 +24,7 @@ import{J as c,K as k,P as w,j as t,d as o,S as d,c as y,s as j,T as C}from"./ind
   ${p} {
     visibility: ${e=>e.checked?"visible":"hidden"};
   }
-`;function P({checked:e=!1,...i}){return t.jsxs(L,{className:"styledCheckbox",checked:e,children:[t.jsx(H,{checked:e,...i,readOnly:!0}),t.jsx(R,{checked:e,children:t.jsx(p,{width:"10",height:"8",viewBox:"0 0 10 8",children:t.jsx("path",{d:"M1.5 4.5l2.124 2.124L8.97 1.28"})})})]})}const F=o.div``,O=o.div`
+`;function F({checked:e=!1,...n}){return t.jsx(L,{className:"styledCheckbox",checked:e,...n,children:t.jsx(R,{checked:e,children:t.jsx(p,{width:"10",height:"8",viewBox:"0 0 10 8",children:t.jsx("path",{d:"M1.5 4.5l2.124 2.124L8.97 1.28"})})})})}const P=o.div``,B=o.div`
   cursor: pointer;
   box-sizing: border-box;
   margin-left: 0.5rem;
@@ -45,7 +34,7 @@ import{J as c,K as k,P as w,j as t,d as o,S as d,c as y,s as j,T as C}from"./ind
   /* identical to box height, or 125% */
   letter-spacing: -0.25px;
   color: ${({theme:e})=>e.textPlain};
-`;function h({option:e}){const i=y(j),r=e.toLowerCase(),n=i[r];return t.jsx(F,{children:t.jsxs(O,{children:[t.jsx(P,{checked:n}),t.jsx("span",{style:{marginLeft:"13px",fontFamily:"League Spartan",fontWeight:700},children:e})]})})}h.propTypes={option:v.string.isRequired};const B=o("div")`
+`;function h({option:e}){const n=C(j),r=e.toLowerCase(),i=n[r];return t.jsx(P,{children:t.jsxs(B,{children:[t.jsx(F,{checked:i}),t.jsx("span",{style:{marginLeft:"13px",fontFamily:"League Spartan",fontWeight:700},children:e})]})})}h.propTypes={option:$.string.isRequired};const H=o.div`
   align-self: center;
   box-sizing: border-box;
   background: transparent;
@@ -55,6 +44,7 @@ import{J as c,K as k,P as w,j as t,d as o,S as d,c as y,s as j,T as C}from"./ind
   margin-left: 0;
   position: relative;
   pointer-events: auto;
+  border: none;
 
   @media (min-width: 325px) {
     margin-left: 8px;
@@ -63,24 +53,24 @@ import{J as c,K as k,P as w,j as t,d as o,S as d,c as y,s as j,T as C}from"./ind
   @media (min-width: 350px) {
     margin-left: 16px;
   }
-`,I=o("div")`
+`,I=o.button`
   width: 8px;
   margin: 0 auto;
   z-index: 10;
   background: transparent;
-`,T=o.div.attrs({tabIndex:0})`
+  border: none;
   display: flex;
   z-index: -1;
   justify-content: center;
   align-items: center;
   align-self: center;
   box-sizing: border-box;
-  width: 12px;
+  width: 1.5rem;
   font-weight: 600;
   font-size: 1.2rem;
   color: ${({theme:e})=>e.text};
   border-radius: 6px;
-`,M=o("div")`
+`,O=o("div")`
   position: absolute;
   width: 150px;
   left: -75px;
@@ -95,7 +85,7 @@ import{J as c,K as k,P as w,j as t,d as o,S as d,c as y,s as j,T as C}from"./ind
   @media (min-width: 768px) {
     left: -130px;
   }
-`,q=o("ul")`
+`,T=o("ul")`
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -111,10 +101,9 @@ import{J as c,K as k,P as w,j as t,d as o,S as d,c as y,s as j,T as C}from"./ind
   color: ${({theme:e})=>e.text};
   font-size: 1.2rem;
   font-weight: 700;
-`,E=o.li.attrs({})`
+`,M=o.li.attrs({})`
   display: flex;
   flex-grow: 0;
-
   align-items: center;
   justify-content: center;
   list-style: none;
@@ -128,7 +117,7 @@ import{J as c,K as k,P as w,j as t,d as o,S as d,c as y,s as j,T as C}from"./ind
       border-color: ${({theme:e})=>e.outline};
     }
   }
-`,J=o.button`
+`,q=o.button`
   display: flex;
   align-items: center;
   height: 100%;
@@ -138,4 +127,4 @@ import{J as c,K as k,P as w,j as t,d as o,S as d,c as y,s as j,T as C}from"./ind
   color: ${({theme:e})=>e.text};
   box-sizing: border-box;
   cursor: pointer;
-`;function A({icon:e,isOpen:i,setIsFilterOpen:r,options:n}){const u=z(),b=s=>f=>{f.stopPropagation();const m=s.toLowerCase();u(C(m))},g=()=>{r(!1)};return t.jsx(B,{children:t.jsxs(I,{"data-testid":"filterDropDown",children:[t.jsx(T,{children:e}),t.jsx($,{onOutsideClick:g,children:t.jsx(M,{style:{height:i?"130px":0},children:t.jsx(q,{"data-testid":"draft-filter",children:n.map(s=>t.jsx(E,{onClick:b(s),children:t.jsx(J,{children:t.jsx(h,{option:s})})},`${s}-li`))})})})]})})}export{A as default};
+`;function N({icon:e,isOpen:n,setIsFilterOpen:r,options:i}){const u=z(),b=s=>f=>{f.stopPropagation();const m=s.toLowerCase();u(y(m))},g=()=>{r(!1)};return t.jsxs(H,{children:[t.jsx(I,{"data-testid":"filterDropDown",tabIndex:0,"aria-label":"Filter invoices",children:e}),t.jsx(v,{onOutsideClick:g,children:t.jsx(O,{style:{height:n?"130px":0},children:t.jsx(T,{"data-testid":"draft-filter",children:i.map(s=>t.jsx(M,{children:t.jsx(q,{onClick:b(s),children:t.jsx(h,{option:s})})},`${s}-li`))})})})]})}export{N as default};

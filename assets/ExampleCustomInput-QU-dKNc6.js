@@ -1,4 +1,4 @@
-import{d as r,S as i,a as s,j as t}from"./index-Bo1oAiba.js";import{dateIcon as a}from"./DateAndPayment-BcUGf4t4.js";import"./SlidingMenu-Ch2QatAH.js";import"./InvoiceStatus-BNE0zJRF.js";import"./editPageStyles-CR5p9qIm.js";import"./utilityFunctions-BzhXeHDk.js";import"./useMutation-D5_Wo9KX.js";import"./create-visual-element-DNxE0n5E.js";const d=r.div`
+import{d as e,S as n,a,j as t}from"./index-Vii2wdos.js";import{dateIcon as s}from"./DateAndPayment-Bmif4WOv.js";import"./SlidingMenu-YFg1nRnR.js";import"./InvoiceStatus-dDJvJ6wS.js";import"./editPageStyles-qbJ9KAHt.js";import"./utilityFunctions-DGFcBVMw.js";import"./useMutation-D4RuBIwd.js";import"./create-visual-element-BCqiNlHb.js";const d=e.div`
   display: flex;
   justify-content: space-between;
   align-items: center;
@@ -28,10 +28,10 @@ import{d as r,S as i,a as s,j as t}from"./index-Bo1oAiba.js";import{dateIcon as 
     padding: 0;
   }
 
-  ${o=>o.long&&i`
+  ${o=>o.long&&n`
       width: 100%;
     `}
-`,l=r.input`
+`,l=e.input`
   color: ${({theme:o})=>o.dateText};
   font-family: ${({theme:o})=>o.font};
   font-style: normal;
@@ -49,4 +49,4 @@ import{d as r,S as i,a as s,j as t}from"./index-Bo1oAiba.js";import{dateIcon as 
   &:hover {
     border-color: ${({theme:o})=>o.formFieldOutlineFocus};
   }
-`,p=s.forwardRef(({value:o,onClick:e},n)=>t.jsxs(d,{className:"custom-input",onClick:e,style:{},children:[t.jsx(l,{ref:n,value:o,"data-testid":"invoiceDate"}),a]}));p.displayName="CustomDateInput";export{p as default};
+`,p=a.forwardRef(({value:o,onClick:r},i)=>t.jsxs(d,{className:"custom-input",onClick:r,style:{},children:[t.jsx(l,{ref:i,value:o,"data-testid":"invoiceDate",id:"invoiceDate",readOnly:!0}),s]}));p.displayName="CustomDateInput";export{p as default};

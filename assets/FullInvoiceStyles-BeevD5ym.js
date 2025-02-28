@@ -1,4 +1,4 @@
-import{d as i}from"./index-Bo1oAiba.js";const o=i.div`
+import{d as i}from"./index-Vii2wdos.js";const o=i.div`
   width: 100%;
   max-width: 100%;
   background-color: ${({theme:t})=>t.background};
@@ -33,9 +33,9 @@ import{d as i}from"./index-Bo1oAiba.js";const o=i.div`
   @media (min-width: 1200px) {
     max-width: 730px;
   }
-`,r=i.p`
+`,r=i.h1`
   margin: 0;
-  font-family: "Spartan", sans-serif;
+  font-family: ${({theme:t})=>t.font};
   font-style: normal;
   font-weight: 700;
   font-size: 16px;
@@ -43,7 +43,7 @@ import{d as i}from"./index-Bo1oAiba.js";const o=i.div`
   /* identical to box height, or 150% */
 
   letter-spacing: -0.8px;
-`,a=i.div`
+`,d=i.div`
   display: flex;
 
   flex-direction: column;
@@ -52,7 +52,7 @@ import{d as i}from"./index-Bo1oAiba.js";const o=i.div`
   @media (min-width: 768px) {
     flex-direction: row;
   }
-`,d=i.p`
+`,a=i.p`
   margin: 0;
   color: ${({theme:t})=>t.greyText};
   font-weight: 500;
@@ -123,4 +123,4 @@ import{d as i}from"./index-Bo1oAiba.js";const o=i.div`
     grid-template: repeat(2, 65px) / 1fr 1fr 1fr;
     grid-auto-flow: column;
   }
-`;export{e as A,m as B,o as C,x as D,l as E,p as G,g as I,s as N,a as T,r as a,c as b,f as c,d};
+`;export{e as A,m as B,o as C,x as D,l as E,p as G,g as I,s as N,d as T,r as a,c as b,f as c,a as d};
