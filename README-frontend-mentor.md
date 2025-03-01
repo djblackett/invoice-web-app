@@ -1,6 +1,6 @@
-# Frontend Mentor - Invoice app
+# Frontend Mentor - Invoice App
 
-## The challenge
+## The Challenge
 
 Your challenge is to build out this invoicing application and get it looking as close to the design as possible.
 

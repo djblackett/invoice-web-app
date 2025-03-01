@@ -1,10 +1,11 @@
 # Fullstack Invoice Project
 
 ![License](https://img.shields.io/badge/license-MIT-blue.svg)
-![Build Status](https://github.com/djblackett/invoice-web-app/actions/workflows/frontend-deploy.yml/badge.svg)
-![Node.js Version](https://img.shields.io/badge/node-v22.11.0-brightgreen.svg)
+[![Build Status](https://github.com/djblackett/invoice-web-app/actions/workflows/frontend-deploy.yml/badge.svg)](https://github.com/djblackett/invoice-web-app/actions/workflows/frontend-deploy.yml)
 
-![Frontend screenshot showing the invoice application interface](./frontend-screenshot.png)
+![Node.js Version](https://img.shields.io/badge/node-v22.14.0-brightgreen.svg)
+
+![Frontend screenshot showing the invoice application interface](./diagrams/frontend-screenshot.png)
 
 ## Table of Contents
 
@@ -29,11 +30,11 @@
 
 ## Project Overview
 
-The Fullstack Invoice Project is a robust invoicing application designed as a complete full-stack solution to streamline invoice management. It implements all CRUD operations and user authentication and management.  
+The Fullstack Invoice Project is a robust invoicing application designed as a complete full-stack solution to streamline invoice management. It implements all CRUD operations along with user authentication and management.  
 
-Originally initiated as a **[FrontendMentor](<https://www.frontendmentor.io/challenges/invoice-app-i7KaLTQjl>)** challenge in May 2022 to enhance CSS skills, the project has evolved into a comprehensive application featuring both a dynamic frontend and a scalable backend. The backend leverages and expands on principles from the **[FullStackOpen](<http://fullstackopen.com>)** course, ensuring maintainability and a solid testing foundation.
+Originally initiated as a **[FrontendMentor](https://www.frontendmentor.io/challenges/invoice-app-i7KaLTQjl)** challenge in May 2022 to enhance CSS skills, the project has evolved into a comprehensive application featuring both a dynamic frontend and a scalable backend. The backend leverages and expands on principles from the **[FullStackOpen](https://fullstackopen.com)** course, ensuring maintainability and a solid foundation for testing.
 
-More details on my motivation and approach to writing this app can be found [here](./project-description.md). The specific requirements of the Frontend Mentor challenge can be found [here](./README-frontend-mentor.md).
+More details on my motivation and approach to writing this app can be found in the [project description](./project-description.md). You can also view the specific requirements of the [Frontend Mentor challenge](./README-frontend-mentor.md).
 
 ## Links
 
@@ -49,7 +50,7 @@ More details on my motivation and approach to writing this app can be found [her
 - **Database Management** using Prisma ORM and PostgreSQL
 - **Unit Testing** for frontend and backend
 - **Integration Testing** using Supertest
-- **End-to-End (E2E) Testing** using PlayWright
+- **End-to-End (E2E) Testing** using Playwright
 - **CI/CD Pipelines** built with GitHub Actions
 - **Optimized Docker Containers** utilizing multi step builds
 - **Local Container Orchestration** via Docker Compose
@@ -201,7 +202,7 @@ yarn test:unit
 E2e tests:  
 First, run `docker compose -f docker-compose.dev.yml up` to start all microservices
 
-If you want the e2e tests to be wholly separate from the dev env, switch the backend start commands in `docker-compose.dev.yml`. (switch which one is commented out)  
+To run E2E tests separately from the dev environment, update `docker-compose.dev.yml` by commenting out the backend start command on line 34 and uncommenting the one on line 36.
 
 Then:
 
@@ -218,32 +219,31 @@ For both the frontend and backend, when changes are made to the dev branch via p
 
 If tests pass, the code is merged into dev and docker containers are built and pushed to Docker Hub. These docker images are not currently used, however, because they are intended for use in Kubernetes deployments, which have not been built yet.
 
-Pull requests to main run the same tests plus the end to end tests. The frontend code is built and then run in Vite preview mode so that the e2e tests use the production version of the app. The backend server is also run, along with an ephemeral PostgreSQL, such that the entire stack of the app is traversed when tested.
+Pull requests to main run the same tests plus end-to-end tests. The frontend is built and run in Vite preview mode for e2e tests, while the backend and an ephemeral PostgreSQL database are also started to test the entire stack.
 
 ## Diagrams
 
 ### Architecture Flowchart
 
-This diagram provides a high-level overview of the application's flow. It begins with the user interacting with the frontend, which is built with React (TypeScript). The frontend communicates with the backend via a GraphQL API (using Apollo Client). The backend, implemented with Node.js and Express, processes requests and manages data through Prisma ORM, which connects to a PostgreSQL database. Additionally, a CI/CD pipeline using GitHub Actions automates testing and deployment, with the frontend being deployed to GitHub Pages and the backend to Fly.io.
+This diagram provides a high-level overview of the application's flow. The user interacts with the React (TypeScript) frontend, which communicates with the Node.js/Express backend via a GraphQL API (Apollo Client). The backend uses Prisma ORM to manage data in a PostgreSQL database. A CI/CD pipeline with GitHub Actions automates testing and deployment, deploying the frontend to GitHub Pages and the backend to Fly.io.
 
 ![Application Architecture Diagram](./diagrams/architecture.svg)
 
 ### IoC Backend Architecture
 
-This diagram illustrates the dependency injection flow managed by InversifyJS in our backend. Incoming requests are processed by the Controllers/Resolvers, which delegate business logic to Services that, in turn, interact with Repositories for data operations. The IoC container (InversifyJS) centrally manages and injects these dependencies, promoting a modular, testable, and maintainable architecture.
+This diagram shows how InversifyJS manages dependency injection in our backend. Controllers/Resolvers handle requests, delegate logic to Services, and interact with Repositories for data operations. The IoC container ensures modularity, testability, and maintainability.
 
 ![Inversion of Control backend architecture](./diagrams/ioc-backend.svg)
 
 ### GraphQL Schema
 
-GraphQL schema [diagrams](./diagrams.md) for queries, mutations, and subscriptions
+GraphQL schema diagrams for [queries, mutations, and subscriptions](./diagrams/graphql-schema.md)
 
 ## License
 
-This project is licensed under the MIT License. See the [LICENSE](LICENSE) file for details.
+This project is licensed under the MIT License. This means you are free to use, modify, and distribute the software, provided that you include the original copyright and license notice in any copies or substantial portions of the software.
 
 ## Contact
 
 - **Author:** David Andrea
-- **Email:** <your.email@example.com>
 - **GitHub:** [djblackett](https://github.com/djblackett)
