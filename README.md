@@ -227,7 +227,7 @@ Pull requests to main run the same tests plus end-to-end tests. The frontend is 
 
 This diagram provides a high-level overview of the application's flow. The user interacts with the React (TypeScript) frontend, which communicates with the Node.js/Express backend via a GraphQL API (Apollo Client). The backend uses Prisma ORM to manage data in a PostgreSQL database. A CI/CD pipeline with GitHub Actions automates testing and deployment, deploying the frontend to GitHub Pages and the backend to Fly.io.
 
-![Application Architecture Diagram](./diagrams/architecture.svg)
+<img src="./diagrams/architecture.svg" alt="Architecture Diagram" width="400" />
 
 ### IoC Backend Architecture
 
