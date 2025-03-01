@@ -1,17 +1,18 @@
 # Fullstack Invoice Project
 
 ![License](https://img.shields.io/badge/license-MIT-blue.svg)
-<!-- ![Build Status](https://github.com/djblackett/fullstack-invoice-project/actions/workflows/ci.yml/badge.svg) -->
+![Build Status](https://github.com/djblackett/invoice-web-app/actions/workflows/frontend-deploy.yml/badge.svg)
 ![Node.js Version](https://img.shields.io/badge/node-v22.11.0-brightgreen.svg)
+
+![Frontend screenshot showing the invoice application interface](./frontend-screenshot.png)
 
 ## Table of Contents
 
 - [Fullstack Invoice Project](#fullstack-invoice-project)
   - [Table of Contents](#table-of-contents)
   - [Project Overview](#project-overview)
-  - [Features](#features)
-    - [Currently Implemented](#currently-implemented)
-    - [Planned Features](#planned-features)
+  - [Links](#links)
+  - [Implementation highlights](#implementation-highlights)
   - [Tech Stack](#tech-stack)
     - [Frontend](#frontend)
     - [Backend](#backend)
@@ -22,39 +23,36 @@
     - [Running the Application](#running-the-application)
   - [Testing](#testing)
   - [Deployment](#deployment)
-    <!-- - [Deploying with Docker](#deploying-with-docker) -->
   - [Diagrams](#diagrams)
-  - [Contributing](#contributing)
   - [License](#license)
   - [Contact](#contact)
 
 ## Project Overview
 
-The Fullstack Invoice Project is a robust invoicing application designed as a complete full-stack solution to streamline invoice management. Originally initiated as a **[FrontendMentor](<https://www.frontendmentor.io/challenges/invoice-app-i7KaLTQjl>)** challenge in May 2022 to enhance CSS skills, the project has evolved into a comprehensive application featuring both a dynamic frontend and a scalable backend. The backend leverages and expands on principles from the **[FullStackOpen](<http://fullstackopen.com>)** course, ensuring maintainability and a solid testing foundation.
+The Fullstack Invoice Project is a robust invoicing application designed as a complete full-stack solution to streamline invoice management. It implements all CRUD operations and user authentication and management.  
+
+Originally initiated as a **[FrontendMentor](<https://www.frontendmentor.io/challenges/invoice-app-i7KaLTQjl>)** challenge in May 2022 to enhance CSS skills, the project has evolved into a comprehensive application featuring both a dynamic frontend and a scalable backend. The backend leverages and expands on principles from the **[FullStackOpen](<http://fullstackopen.com>)** course, ensuring maintainability and a solid testing foundation.
 
 More details on my motivation and approach to writing this app can be found [here](./project-description.md). The specific requirements of the Frontend Mentor challenge can be found [here](./README-frontend-mentor.md).
 
-## Features
+## Links
 
-### Currently Implemented
+- [Live demo](https://djblackett.github.io/invoice-web-app/)
+- [Github repository](https://github.com/djblackett/invoice-web-app)
+
+## Implementation highlights
 
 - **Responsive Frontend** using ReactJS and Styled Components
 - **State Management** with Redux Toolkit and React Context
 - **GraphQL Integration** via Apollo Client
 - **Backend Services** built with NodeJS, ExpressJS, and InversifyJS
 - **Database Management** using Prisma ORM and PostgreSQL
-- **Basic Unit Testing** for backend services
-
-### Planned Features
-
-- **Unit Testing** for all backend services
-- **Frontend Refactor** to emphasize presentational vs. container components
-- **Unit Testing** for frontend
-- **Integration Testing**
-- **End-to-End (E2E) Testing**
-- **Enhanced Error Handling**
-- **CI/CD Pipeline** implementation
-- **Optimized Docker Configuration**
+- **Unit Testing** for frontend and backend
+- **Integration Testing** using Supertest
+- **End-to-End (E2E) Testing** using PlayWright
+- **CI/CD Pipelines** built with GitHub Actions
+- **Optimized Docker Containers** utilizing multi step builds
+- **Local Container Orchestration** via Docker Compose
 
 ## Tech Stack
 
@@ -105,14 +103,14 @@ Ensure you have the following installed on your machine:
 2. **Install dependencies for the frontend:**
 
    ```bash
-   cd frontend
+   cd invoice-frontend
    yarn install
    ```
 
 3. **Install dependencies for the backend:**
 
    ```bash
-   cd ../backend
+   cd invoice-backend  # from project root
    yarn install
    ```
 
@@ -137,48 +135,44 @@ Ensure you have the following installed on your machine:
 
 1. **Set up environment variables:**
 
-   Create a `.env` file in both `frontend` and `backend` directories based on the provided `.env.example` files.
+   Create a `.env` file in both `invoice-frontend` and `invoice-backend` directories based on the provided `.env.example` files.
 
 2. **Set up HTTPS certificates:**  
-  Installation example for Ubuntu (x86)  
-  Install mkcert:
+  mkcert can generate https certificates. MacOS and Linux can install mkcert with [Homebrew](https://formulae.brew.sh/formula/mkcert). Windows users can install it with [chocolatey](https://community.chocolatey.org/packages/mkcert) or with Homebrew if using WSL.
+
+After installation, run:
 
    ```bash
-   sudo apt-get update
-   sudo apt-get install libnss3-tools
-   wget -O mkcert https://github.com/FiloSottile/mkcert/releases/download/v1.4.3/mkcert-v1.4.3-linux-amd64
-   chmod +x mkcert
-   sudo mv mkcert /usr/local/bin/
    mkcert -install
    ```
 
    Create certs with mkcert
 
-      ```bash
-      cd invoice-backend  
-      mkdir certs  
-      cd certs
-      mkcert localhost
-      ```
+   ```bash
+   cd invoice-backend  
+   mkdir certs  
+   cd certs
+   mkcert localhost
+   ```
 
    Copy certs to frontend directory
 
-      ```bash
-      cp -r invoice-backend/certs invoice-frontend/certs
-      ```
+   ```bash
+   cp -r invoice-backend/certs invoice-frontend/certs
+   ```
 
 ### Running the Application
 
 1. **Start the application using Docker Compose:**  
-    Shut down demo mode if currently running: `docker compose -f docker-compose.demo.yml down`, then run:
+   Shut down demo mode if currently running: `docker compose -f docker-compose.demo.yml down`, then run:
 
-      ```bash
-      docker compose -f docker-compose.dev.yml up
-      ```
+   ```bash
+   docker compose -f docker-compose.dev.yml up
+   ```
 
 2. **Access the application:**
 
-   Open your browser and navigate to `https://localhost:5173/invoice-web-app/`.
+   Open your browser and navigate to <https://localhost:5173/invoice-web-app/>.
 
 ## Testing
 
@@ -186,82 +180,63 @@ The project includes various levels of testing to ensure reliability and maintai
 
 - **Backend Unit Tests:** Implemented using Vitest.
 - **Frontend Unit Tests:** Implemented using React Testing Library.
-- **Integration Tests:** Verify interactions between backend GraphQL resolvers and a real PostgresQL database.
+- **Integration Tests:** Verify interactions between backend GraphQL resolvers and a real PostgreSQL database.
 - **End-to-End (E2E) Tests:** Implemented with PlayWright and tests normal user flows
 
 To run backend tests:
 
 ```bash
-cd backend
-npm run test:unit
-npm run test:integration
+cd invoice-backend
+yarn test:unit
+yarn test:integration
 ```
 
 To run frontend tests:
 
 ```bash
-cd frontend
-npm run test:unit
-npm run test:e2e
+cd invoice-frontend
+yarn test:unit
+```
+
+E2e tests:  
+First, run `docker compose -f docker-compose.dev.yml up` to start all microservices
+
+If you want the e2e tests to be wholly separate from the dev env, switch the backend start commands in `docker-compose.dev.yml`. (switch which one is commented out)  
+
+Then:
+
+```bash
+cd invoice-frontend
+yarn test:e2e
 ```
 
 ## Deployment
 
-The project is configured for deployment using Fly.io. Continuous Integration and Continuous Deployment (CI/CD) pipelines are set up with GitHub Actions to automate the build, test, and deployment processes.
+The project is configured for deployment using Fly.io and GitHub Pages. Continuous Integration and Continuous Deployment (CI/CD) pipelines are set up with GitHub Actions to automate the build, test, and deployment processes. Upon successful completion of tests, the frontend is built and published to GitHub Pages and the backend to Fly.io.
 
-<!-- ### Deploying with Docker
+For both the frontend and backend, when changes are made to the dev branch via push or merge request, a CI pipeline runs and checks the code with a workflow that runs the frontend unit tests and the backend unit and integration tests. The backend integration tests are tested against an ephemeral PostgreSQL database spun up on the GitHub action workspace.
 
-1. **Build Docker images:**
+If tests pass, the code is merged into dev and docker containers are built and pushed to Docker Hub. These docker images are not currently used, however, because they are intended for use in Kubernetes deployments, which have not been built yet.
 
-   ```bash
-   docker compose build
-   ```
-
-2. **Run containers:**
-
-   ```bash
-   docker-compose up -d
-   ``` -->
+Pull requests to main run the same tests plus the end to end tests. The frontend code is built and then run in Vite preview mode so that the e2e tests use the production version of the app. The backend server is also run, along with an ephemeral PostgreSQL, such that the entire stack of the app is traversed when tested.
 
 ## Diagrams
 
+### Architecture Flowchart
+
+This diagram provides a high-level overview of the application's flow. It begins with the user interacting with the frontend, which is built with React (TypeScript). The frontend communicates with the backend via a GraphQL API (using Apollo Client). The backend, implemented with Node.js and Express, processes requests and manages data through Prisma ORM, which connects to a PostgreSQL database. Additionally, a CI/CD pipeline using GitHub Actions automates testing and deployment, with the frontend being deployed to GitHub Pages and the backend to Fly.io.
+
+![Application Architecture Diagram](./diagrams/architecture.svg)
+
+### IoC Backend Architecture
+
+This diagram illustrates the dependency injection flow managed by InversifyJS in our backend. Incoming requests are processed by the Controllers/Resolvers, which delegate business logic to Services that, in turn, interact with Repositories for data operations. The IoC container (InversifyJS) centrally manages and injects these dependencies, promoting a modular, testable, and maintainable architecture.
+
+![Inversion of Control backend architecture](./diagrams/ioc-backend.svg)
+
 ### GraphQL Schema
 
-Queries:
-![GraphQL Queries](./invoice-backend/graphql-diagrams/queries-visualization-invoicegraph.svg)
-
-Mutations:
-![GraphQL Mutations](./invoice-backend/graphql-diagrams/mutations-visualization-invoicegraph.svg)
-
-Subscriptions:
-![GraphQL Queries](./invoice-backend/graphql-diagrams/subscriptions-visualization-invoicegraph.svg)
-
-## Contributing
-
-Contributions are welcome! Please follow these steps:
-
-1. **Fork the repository.**
-2. **Create a new branch:**
-
-   ```bash
-   git checkout -b feature/YourFeature
-   ```
-
-3. **Commit your changes:**
-
-   ```bash
-   git commit -m "Add YourFeature"
-   ```
-
-4. **Push to the branch:**
-
-   ```bash
-   git push origin feature/YourFeature
-   ```
-
-5. **Open a Pull Request.**
-
-Please ensure your code follows the project's coding standards and includes appropriate tests.
+GraphQL schema [diagrams](./diagrams.md) for queries, mutations, and subscriptions
 
 ## License
 
