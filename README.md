@@ -136,7 +136,7 @@ Ensure you have the following installed on your machine:
 
 1. **Set up environment variables:**
 
-   Create a `.env` file in both `invoice-frontend` and `invoice-backend` directories based on the provided `.env.example` files.
+   Fill in the `.env` files in both `invoice-frontend` and `invoice-backend` directories with Auth0 and testing credentials. All required variables are listed in the `.env` files.
 
 2. **Set up HTTPS certificates:**  
   mkcert can generate https certificates. MacOS and Linux can install mkcert with [Homebrew](https://formulae.brew.sh/formula/mkcert). Windows users can install it with [chocolatey](https://community.chocolatey.org/packages/mkcert) or with Homebrew if using WSL.
