@@ -138,41 +138,37 @@ Ensure you have the following installed on your machine:
    Create a `.env` file in both `invoice-frontend` and `invoice-backend` directories based on the provided `.env.example` files.
 
 2. **Set up HTTPS certificates:**  
-  Installation example for Ubuntu (or WSL)
-  Install mkcert:
+  mkcert can generate https certificates. MacOS and Linux can install mkcert with [Homebrew](https://formulae.brew.sh/formula/mkcert). Windows users can install it with [chocolatey](https://community.chocolatey.org/packages/mkcert) or with Homebrew if using WSL.
+
+After installation, run:
 
    ```bash
-   sudo apt-get update
-   sudo apt-get install libnss3-tools
-   wget -O mkcert https://github.com/FiloSottile/mkcert/releases/download/v1.4.3/mkcert-v1.4.3-linux-amd64
-   chmod +x mkcert
-   sudo mv mkcert /usr/local/bin/
    mkcert -install
    ```
 
    Create certs with mkcert
 
-      ```bash
-      cd invoice-backend  
-      mkdir certs  
-      cd certs
-      mkcert localhost
-      ```
+   ```bash
+   cd invoice-backend  
+   mkdir certs  
+   cd certs
+   mkcert localhost
+   ```
 
    Copy certs to frontend directory
 
-      ```bash
-      cp -r invoice-backend/certs invoice-frontend/certs
-      ```
+   ```bash
+   cp -r invoice-backend/certs invoice-frontend/certs
+   ```
 
 ### Running the Application
 
 1. **Start the application using Docker Compose:**  
-    Shut down demo mode if currently running: `docker compose -f docker-compose.demo.yml down`, then run:
+   Shut down demo mode if currently running: `docker compose -f docker-compose.demo.yml down`, then run:
 
-      ```bash
-      docker compose -f docker-compose.dev.yml up
-      ```
+   ```bash
+   docker compose -f docker-compose.dev.yml up
+   ```
 
 2. **Access the application:**
 
@@ -218,7 +214,9 @@ yarn test:e2e
 
 The project is configured for deployment using Fly.io and GitHub Pages. Continuous Integration and Continuous Deployment (CI/CD) pipelines are set up with GitHub Actions to automate the build, test, and deployment processes. Upon successful completion of tests, the frontend is built and published to GitHub Pages and the backend to Fly.io.
 
-For both the frontend and backend, when changes are made to the dev branch via push or merge request, a CI pipeline runs and checks the code with a workflow that runs the frontend unit tests and the backend unit and integration tests. The backend integration tests are tested against an ephemeral PostgreSQL database spun up on the GitHub action workspace. If tests pass, the code is merged into dev and docker containers are built and pushed to Docker Hub. These docker images are not currently used, however, because they are intended for use in Kubernetes deployments, which have not been built yet.
+For both the frontend and backend, when changes are made to the dev branch via push or merge request, a CI pipeline runs and checks the code with a workflow that runs the frontend unit tests and the backend unit and integration tests. The backend integration tests are tested against an ephemeral PostgreSQL database spun up on the GitHub action workspace.
+
+If tests pass, the code is merged into dev and docker containers are built and pushed to Docker Hub. These docker images are not currently used, however, because they are intended for use in Kubernetes deployments, which have not been built yet.
 
 Pull requests to main run the same tests plus the end to end tests. The frontend code is built and then run in Vite preview mode so that the e2e tests use the production version of the app. The backend server is also run, along with an ephemeral PostgreSQL, such that the entire stack of the app is traversed when tested.
 
