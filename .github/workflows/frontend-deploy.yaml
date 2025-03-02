@@ -199,7 +199,7 @@ jobs:
       - name: Run backend server for e2e tests
         run: |
           cd invoice-backend
-          yarn start:test 2>&1 | tee backend.log &
+          yarn start:test:ci 2>&1 | tee backend.log &
 
 
       - name: GraphQL health check
