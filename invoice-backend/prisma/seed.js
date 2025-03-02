@@ -71,7 +71,7 @@ async function create(invoice) {
     return createdInvoice;
   } catch (error) {
     console.error("Error creating invoice:", error);
-    // return prismaErrorHandler(error);
+    return prismaErrorHandler(error);
   }
 }
 
@@ -97,9 +97,9 @@ const createUserWithAuth0 = async (args) => {
         name: user.name ?? "",
       }));
   } catch (e) {
-    // if (e instanceof PrismaClientKnownRequestError && e.code === "P2002") {
-    //   throw new Error("Unique constraint failed on the fields: (`username`)");
-    // }
+    if (e instanceof PrismaClientKnownRequestError && e.code === "P2002") {
+      throw new Error("Unique constraint failed on the fields: (`username`)");
+    }
     console.error(e);
     throw e;
   }
