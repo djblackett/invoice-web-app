@@ -1,11 +1,12 @@
 # Fullstack Invoice Project
 
 ![License](https://img.shields.io/badge/license-MIT-blue.svg)
-[![Build Status](https://github.com/djblackett/invoice-web-app/actions/workflows/frontend-deploy.yml/badge.svg)](https://github.com/djblackett/invoice-web-app/actions/workflows/frontend-deploy.yml)
+
+[![Build Status](https://github.com/djblackett/invoice-web-app/actions/workflows/frontend-deploy.yaml/badge.svg)](https://github.com/djblackett/invoice-web-app/actions/workflows/frontend-deploy.yaml)
 
 ![Node.js Version](https://img.shields.io/badge/node-v22.14.0-brightgreen.svg)
 
-![Frontend screenshot showing the invoice application interface](./diagrams/frontend-screenshot.png)
+![Frontend screenshot showing the invoice application interface](./diagrams/fm-screenshot.png)
 
 ## Table of Contents
 
@@ -238,6 +239,21 @@ This diagram shows how InversifyJS manages dependency injection in our backend. 
 ### GraphQL Schema
 
 GraphQL schema diagrams for [queries, mutations, and subscriptions](./diagrams/graphql-schema.md)
+
+## Future Trajectory
+
+While the Fullstack Invoice Project is functional and meets its core requirements, there are several areas identified for future improvement:
+
+- **Enhanced Test Coverage:**  
+  Additional unit, integration, and end-to-end tests will be implemented to further improve the app’s reliability and ease of maintenance.
+
+- **Kubernetes Deployment:**  
+  Exploring a Kubernetes-based deployment is on the roadmap. Container orchestration would streamline scaling and provide a more robust production environment.
+
+- **Performance Optimization & Monitoring:**  
+  Future work may include performance tuning and implementing enhanced monitoring to better track and optimize application behavior in production.
+
+These enhancements are part of our long-term vision to continuously refine the project, ensuring it remains robust, scalable, and easy to maintain.
 
 ## License
 
