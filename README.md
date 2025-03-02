@@ -234,7 +234,7 @@ This diagram provides a high-level overview of the application's flow. The user 
 
 This diagram shows how InversifyJS manages dependency injection in our backend. Controllers/Resolvers handle requests, delegate logic to Services, and interact with Repositories for data operations. The IoC container ensures modularity, testability, and maintainability.
 
-![Inversion of Control backend architecture](./diagrams/ioc-backend.svg)
+<img src="./diagrams/ioc-backend.svg" alt="Inversion of Control backend architecture" width="400" />
 
 ### GraphQL Schema
 
