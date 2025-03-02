@@ -13,7 +13,6 @@ import {
 import { PrismaClient } from "@prisma/client";
 import { execSync } from "child_process";
 import { randomUUID } from "crypto";
-import { getTestToken } from "./utils";
 import container from "@/config/inversify.config";
 import TYPES from "@/constants/identifiers";
 
