@@ -1,4 +1,4 @@
-import { Page, Locator } from "@playwright/test";
+import { Page, Locator, expect } from "@playwright/test";
 import InvoiceItem from "./InvoiceItem";
 
 export class NewInvoiceForm {
@@ -227,8 +227,15 @@ export async function createExampleInvoice(newInvoiceForm: NewInvoiceForm) {
   await newInvoiceForm.fillClientCountry("Canada");
 
   // Select invoice date
-  await newInvoiceForm.clickInvoiceDate();
-  await newInvoiceForm.selectInvoiceDate("Thursday, January 30th,");
+  // await newInvoiceForm.clickInvoiceDate();
+  // await newInvoiceForm.selectInvoiceDate("Thursday, January 30th,");
+
+  await findPastDate(
+    newInvoiceForm,
+    newInvoiceForm.page,
+    "January 2025",
+    "Thursday, January 30th,",
+  );
 
   // await newInvoiceForm.fillDate("2025-01-30");
 
@@ -246,4 +253,60 @@ export async function createExampleInvoice(newInvoiceForm: NewInvoiceForm) {
 
   // Save the invoice
   await newInvoiceForm.clickSaveButton();
+}
+
+export async function findPastDate(
+  newInvoiceForm: NewInvoiceForm,
+  page,
+  monthYear: string,
+  dayMonth: string,
+) {
+  const datePicker = newInvoiceForm.invoiceDate;
+
+  await datePicker.click();
+
+  const previousMonthButton = page.getByLabel("Previous Month");
+
+  const monthYearDisplay = page.locator(".react-datepicker__current-month");
+
+  // Must be of form "Choose Tuesday, December 10th,"
+  const specificDate = page.getByLabel(dayMonth);
+
+  const targetMonthYear = monthYear;
+  const maxIterations = 120; // For up to 10 years of navigation (120 months)
+  let currentMonthYear = await monthYearDisplay.textContent();
+  let iterations = 0;
+
+  if (!currentMonthYear) {
+    throw new Error("Failed to retrieve the current month-year display.");
+  }
+
+  // Normalize the text by trimming whitespace
+  currentMonthYear = currentMonthYear.trim();
+
+  // Loop to navigate to the target month-year
+  while (
+    (await monthYearDisplay.textContent()) !== targetMonthYear &&
+    iterations < maxIterations
+  ) {
+    await previousMonthButton.click();
+
+    // Wait for the month-year display to update
+    await expect(monthYearDisplay)
+      .toHaveText(targetMonthYear, { timeout: 5000 })
+      .catch(() => {
+        // If the expectation fails, continue to the next iteration
+      });
+
+    iterations++;
+  }
+
+  if (iterations === maxIterations) {
+    throw new Error(
+      `Failed to navigate to ${targetMonthYear} after ${maxIterations} attempts.`,
+    );
+  }
+
+  await specificDate.click();
+  return datePicker;
 }

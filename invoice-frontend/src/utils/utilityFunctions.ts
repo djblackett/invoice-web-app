@@ -28,31 +28,6 @@ export function getMoney(amount: number) {
   return amount.toFixed(2).replace(/(\d)(?=(\d{3})+\.)/g, "$1,");
 }
 
-export const convertedDate = (paymentDue: string) => {
-  const date = paymentDue.split("-");
-  const dateObj = new Date(
-    Date.UTC(Number(date[0]), Number(date[1]) - 1, Number(date[2])),
-  );
-  const utcDateArr = dateObj.toUTCString().split(" ");
-  return `${utcDateArr[1]}  ${utcDateArr[2]} ${utcDateArr[3]}`;
-};
-
-export const convertDateToString = (date: Date) => {
-  const [month, day, year] = [
-    date.getUTCMonth() + 1,
-    date.getUTCDate(),
-    date.getUTCFullYear(),
-  ];
-  return [year, month, day.toString().padStart(2, "0")].join("-");
-};
-
-export const convertStringToDate = (str: string | undefined) => {
-  if (!str) {
-    return new Date();
-  }
-  return parse(str, "yyyy-MM-dd", new Date(Date.UTC(0, 0, 0))); // Parses as UTC
-};
-
 export const createInvoiceObject = (
   data: FieldValues,
   startDate: Date | null,
@@ -119,4 +94,62 @@ export const createInvoiceObject = (
     "-",
   );
   return newInvoice;
+};
+
+// ChatGPT modified my earlier functions to ensure that the date is correctly converted to local time.
+// I was getting a cryptic off by one error thanks to my AST timezone.
+
+// // Returns a formatted date string (e.g. "Jan 30, 2025") based on local date values.
+// export const convertedDate = (paymentDue: string) => {
+//   const [year, month, day] = paymentDue.split("-").map(Number);
+//   // Create a date in local time.
+//   const dateObj = new Date(year, month - 1, day);
+//   // Use toLocaleDateString or custom formatting as needed.
+//   return dateObj.toLocaleDateString("en-GB", {
+//     month: "short",
+//     day: "2-digit",
+//     year: "numeric",
+//   });
+// };
+
+// // Converts a Date to a string "YYYY-MM-DD" using local time values.
+// export const convertDateToString = (date: Date) => {
+//   const year = date.getFullYear();
+//   const month = (date.getMonth() + 1).toString().padStart(2, "0");
+//   const day = date.getDate().toString().padStart(2, "0");
+//   return `${year}-${month}-${day}`;
+// };
+
+// // Converts a string "YYYY-MM-DD" to a Date, interpreting it as a local date.
+// export const convertStringToDate = (str: string | undefined) => {
+//   if (!str) {
+//     return new Date();
+//   }
+//   const [year, month, day] = str.split("-").map(Number);
+//   return new Date(year, month - 1, day);
+// };
+
+export const convertedDate = (paymentDue: string) => {
+  const date = paymentDue.split("-");
+  const dateObj = new Date(
+    Date.UTC(Number(date[0]), Number(date[1]) - 1, Number(date[2])),
+  );
+  const utcDateArr = dateObj.toUTCString().split(" ");
+  return `${utcDateArr[1]}  ${utcDateArr[2]} ${utcDateArr[3]}`;
+};
+
+export const convertDateToString = (date: Date) => {
+  const [month, day, year] = [
+    date.getUTCMonth() + 1,
+    date.getUTCDate(),
+    date.getUTCFullYear(),
+  ];
+  return [year, month, day.toString().padStart(2, "0")].join("-");
+};
+
+export const convertStringToDate = (str: string | undefined) => {
+  if (!str) {
+    return new Date();
+  }
+  return parse(str, "yyyy-MM-dd", new Date(Date.UTC(0, 0, 0))); // Parses as UTC
 };

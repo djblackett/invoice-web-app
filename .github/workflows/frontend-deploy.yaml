@@ -199,7 +199,7 @@ jobs:
       - name: Run backend server for e2e tests
         run: |
           cd invoice-backend
-          yarn start:test 2>&1 | tee backend.log &
+          yarn start:test:ci 2>&1 | tee backend.log &
 
 
       - name: GraphQL health check
@@ -270,7 +270,7 @@ jobs:
       - name: Enable Corepack and Install Yarn
         run: |
           corepack enable
-          corepack prepare yarn@1.22.22 --activate
+          yarn set version stable
 
       - name: Set up mkcert
         run: |
@@ -293,7 +293,9 @@ jobs:
 
       - name: Build the project
         working-directory: ${{ env.FRONTEND_DIR }}
-        run: yarn build
+        env: 
+          VITE_BACKEND_URL: https://${{ secrets.VITE_BACKEND_URL}}
+        run: yarn vite build
 
       - name: Deploy to GitHub Pages
         uses: peaceiris/actions-gh-pages@v4.0.0

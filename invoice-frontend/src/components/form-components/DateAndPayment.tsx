@@ -12,7 +12,7 @@ type DateAndPaymentProps = {
   invoice?: Invoice;
 };
 
-// todo - fix this component and clean it up
+// TODO - fix this component and clean it up
 export const dateIcon = (
   <svg
     viewBox="0 0 16 16"
@@ -54,6 +54,7 @@ function DateAndPayment({ invoice }: DateAndPaymentProps) {
       <FormEntry isLongOnMobile className="invoice-date">
         <Label htmlFor="invoiceDate">Invoice Date</Label>
         <DatePicker
+          data-testid="visible-date"
           popperProps={{ strategy: "fixed" }}
           fixedHeight={true}
           customInput={<CustomInputWrapper />}

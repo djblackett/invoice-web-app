@@ -33,8 +33,9 @@ services:
       - "8000:8000"
     command: sh -c "npx prisma@6.2.1 generate && npx prisma@6.2.1 db push && npm run dev"
     # use commented out command to run playwright tests in their own DB
-    # command: sh -c "npx prisma@6.2.1 generate && npx prisma@6.2.1 db push && npm run start:test"
+    # command:  sh -c "npx prisma@6.2.1 generate && npx prisma@6.2.1 db push && npm run start:test"
     environment:
+      # - DATABASE_URL=postgresql://postgres:example@db-dev:5432/db-test
       - NODE_ENV=test
       - PORT=8000
       - REQUEST_ORIGIN=https://localhost

@@ -78,7 +78,7 @@ describe("Invoice Resolvers Integration Tests", () => {
     // 3. Override the env var for Prisma
     // process.env.DATABASE_URL = newDatabaseUrl;
 
-    // console.log("Env vars:", process.env.DATABASE_URL);
+    console.log("Env vars:", process.env.DATABASE_URL);
 
     // 5. Instantiate Prisma Client *after* the schema is set up
     prisma = new PrismaClient({
@@ -93,9 +93,12 @@ describe("Invoice Resolvers Integration Tests", () => {
     await prisma.$executeRawUnsafe(
       `SET search_path TO "${schemaName}", public`,
     );
-    await prisma.$connect();
 
-    execSync("npx prisma db push", { stdio: "inherit" });
+    // await prisma.$connect();
+
+    execSync("npx prisma db push", {
+      stdio: "inherit",
+    });
     [app] = await createServer();
     // 4. Run "prisma db push" or "prisma migrate deploy"
     //    This ensures the schema is created and tables are set up
