@@ -1,4 +1,4 @@
-import{d as e,S as r}from"./index-Vii2wdos.js";const a=e.h1`
+import{d as e,S as r}from"./index-DBIgSxWt.js";const a=e.h1`
   font-size: 1.5rem;
   color: ${({theme:t})=>t.text};
 `,n=e.div`

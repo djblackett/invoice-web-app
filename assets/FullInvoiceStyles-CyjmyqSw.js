@@ -1,4 +1,4 @@
-import{d as i}from"./index-Vii2wdos.js";const o=i.div`
+import{d as i}from"./index-DBIgSxWt.js";const o=i.div`
   width: 100%;
   max-width: 100%;
   background-color: ${({theme:t})=>t.background};
