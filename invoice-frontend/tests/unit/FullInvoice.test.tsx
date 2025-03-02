@@ -1,5 +1,4 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
-import React from "react";
 import * as useWindowWidthModule from "../../src/hooks/useWindowWidth";
 import { Invoice } from "../../src/types/types";
 import { render, screen } from "@testing-library/react";
@@ -39,67 +38,86 @@ const sampleInvoice: Invoice = {
 };
 
 describe("FullInvoice Component", () => {
-  beforeEach(() => {
-    // Restore all mocks before each test to ensure isolation
-    vi.restoreAllMocks();
-  });
+  // beforeEach(() => {
+  //   // Restore all mocks before each test to ensure isolation
+  //   vi.restoreAllMocks();
+  // });
 
-  it("renders the invoice correctly", () => {
+  beforeEach(() => {
     // Mock the useWindowWidth hook to return a fixed width
     vi.spyOn(useWindowWidthModule, "default").mockReturnValue(1024);
-
     // Render the component with sample invoice data
     render(<FullInvoice invoice={sampleInvoice} loading={false} />);
+  });
 
-    // Verify that the invoice ID is displayed
-    const invoiceId = `${sampleInvoice.id.substring(0, 6)}`;
+  it("displays the invoice ID", () => {
+    const invoiceId = sampleInvoice.id.substring(0, 6);
     expect(screen.getByText(invoiceId)).toBeInTheDocument();
+  });
 
-    // Verify that the description is displayed
+  it("displays the invoice description", () => {
     expect(screen.getByText(sampleInvoice.description)).toBeInTheDocument();
+  });
 
-    // Verify that the sender's address is displayed
+  it("displays the sender's street address", () => {
     expect(
       screen.getByText(sampleInvoice.senderAddress.street),
     ).toBeInTheDocument();
+  });
+
+  it("displays the sender's city", () => {
     expect(
       screen.getByText(sampleInvoice.senderAddress.city),
     ).toBeInTheDocument();
+  });
+
+  it("displays the sender's post code", () => {
     expect(
       screen.getByText(sampleInvoice.senderAddress.postCode),
     ).toBeInTheDocument();
+  });
 
-    // Verify that the country is displayed twice (once for sender and once for client)
+  it("displays the country twice", () => {
     expect(
       screen.getAllByText(sampleInvoice.senderAddress.country),
     ).toHaveLength(2);
+  });
 
-    // Verify that the invoice date is displayed correctly
-    // const invoiceDate = convertedDate(sampleInvoice.createdAt);
+  it("displays the invoice date", () => {
     expect(screen.getByText(/18 Aug 2021/)).toBeInTheDocument();
+  });
 
-    // Verify that the payment due date is displayed correctly
-    // const paymentDueDate = convertedDate(sampleInvoice.paymentDue);
+  it("displays the payment due date", () => {
     expect(screen.getByText(/19 Aug 2021/)).toBeInTheDocument();
+  });
 
-    // Verify that the client's name is displayed
+  it("displays the client's name", () => {
     expect(screen.getByText(sampleInvoice.clientName)).toBeInTheDocument();
+  });
 
-    // Verify that the client's address is displayed
+  it("displays the client's street address", () => {
     expect(
       screen.getByText(sampleInvoice.clientAddress.street),
     ).toBeInTheDocument();
+  });
+
+  it("displays the client's city", () => {
     expect(
       screen.getByText(sampleInvoice.clientAddress.city),
     ).toBeInTheDocument();
+  });
+
+  it("displays the client's post code", () => {
     expect(
       screen.getByText(sampleInvoice.clientAddress.postCode),
     ).toBeInTheDocument();
+  });
 
-    // Verify that the client's email is displayed
+  it("displays the client's email", () => {
     expect(screen.getByText(sampleInvoice.clientEmail)).toBeInTheDocument();
+  });
 
-    // Verify that the item name is displayed
+  it("displays the item name", () => {
     expect(screen.getByText(sampleInvoice.items[0].name)).toBeInTheDocument();
   });
 
