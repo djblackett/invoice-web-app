@@ -1,9 +1,7 @@
 # Fullstack Invoice Project
 
 ![License](https://img.shields.io/badge/license-MIT-blue.svg)
-
 [![Build Status](https://github.com/djblackett/invoice-web-app/actions/workflows/frontend-deploy.yaml/badge.svg)](https://github.com/djblackett/invoice-web-app/actions/workflows/frontend-deploy.yaml)
-
 ![Node.js Version](https://img.shields.io/badge/node-v22.14.0-brightgreen.svg)
 
 ![Frontend screenshot showing the invoice application interface](./diagrams/fm-screenshot.png)
