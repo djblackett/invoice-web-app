@@ -13,12 +13,12 @@ import {
 } from "vitest";
 
 // Mock the context provider
-vi.mock("@/components/form-components/NewInvoiceContextProvider", () => ({
+vi.mock("@/features/invoices/forms/NewInvoiceContextProvider", () => ({
   useNewInvoiceContext: vi.fn(),
 }));
 
 // Mock the utility function
-vi.mock("@/utils/utilityFunctions", () => ({
+vi.mock("@/features/shared/utils/utilityFunctions", () => ({
   convertStringToDate: vi.fn(),
 }));
 

@@ -128,7 +128,7 @@ export const useNewInvoiceForm = () => {
       selectedPaymentOption,
     );
 
-    // todo - Determine if this is still relevant after refactoring
+    // TODO - Determine if this is still relevant after refactoring
     // Ensure quantity and price are numbers
     // newInvoice.items = newInvoice.items.map((item) => ({
     //   ...item,
