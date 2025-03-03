@@ -24,6 +24,7 @@
   - [Testing](#testing)
   - [Deployment](#deployment)
   - [Diagrams](#diagrams)
+  - [Timesheet](#timesheet)
   - [License](#license)
   - [Contact](#contact)
 
@@ -33,7 +34,7 @@ The Fullstack Invoice Project is a robust invoicing application designed as a co
 
 Originally initiated as a **[FrontendMentor](https://www.frontendmentor.io/challenges/invoice-app-i7KaLTQjl)** challenge in May 2022 to enhance CSS skills, the project has evolved into a comprehensive application featuring both a dynamic frontend and a scalable backend. The backend leverages and expands on principles from the **[FullStackOpen](https://fullstackopen.com)** course, ensuring maintainability and a solid foundation for testing.
 
-More details on my motivation and approach to writing this app can be found in the [project description](./project-description.md). You can also view the specific requirements of the [Frontend Mentor challenge](./README-frontend-mentor.md).
+More details on my motivation and approach to writing this app can be found in the [project description](./docs/project-description.md). You can also view the specific requirements of the [Frontend Mentor challenge](./docs/README-frontend-mentor.md).
 
 ## Links
 
@@ -236,7 +237,11 @@ This diagram shows how InversifyJS manages dependency injection in our backend. 
 
 ### GraphQL Schema
 
-GraphQL schema diagrams for [queries, mutations, and subscriptions](./diagrams/graphql-schema.md)
+GraphQL schema diagrams for [queries, mutations, and subscriptions](./docs/graphql-schema.md)
+
+## Timesheet
+
+For a detailed record of the time spent on this project, see the [project timesheet](./docs/timesheet.md).
 
 ## Future Trajectory
 
