@@ -10,7 +10,7 @@ import { useNewInvoiceContext } from "./NewInvoiceContextProvider.tsx";
 import React, { Suspense } from "react";
 
 const NewInvoiceBottomMenu = React.lazy(
-  () => import("../../../components/menus-toolbars/NewInvoiceBottomMenu.tsx"),
+  () => import("./NewInvoiceBottomMenu.tsx"),
 );
 
 const DateAndPayment = React.lazy(() => import("./DateAndPayment.tsx"));

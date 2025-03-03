@@ -1,9 +1,9 @@
 import PropTypes from "prop-types";
 import styled from "styled-components";
 import { useSelector } from "react-redux";
-import Checkbox from "../buttons/Checkbox";
-import { selectFilter } from "../../features/invoices/store/filterSlice.ts";
-import { FilterOptions, StatusKey } from "../../types/types";
+import Checkbox from "@/features/shared/components/buttons/Checkbox.tsx";
+import { selectFilter } from "../store/filterSlice.ts";
+import { FilterOptions, StatusKey } from "../../../types/types.ts";
 
 const CheckboxContainer = styled.div``;
 

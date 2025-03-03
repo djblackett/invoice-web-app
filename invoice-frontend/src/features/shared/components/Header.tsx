@@ -1,9 +1,9 @@
 import { useAuth } from "@/features/auth/hooks/useAuth.ts";
 import * as m from "motion/react-m";
 import { Link, useLocation } from "react-router-dom";
-import { VITE_REDIRECT_URI } from "@/config/config";
+import { VITE_REDIRECT_URI } from "@/config/config.ts";
 import styled from "styled-components";
-import DemoButton from "../buttons/DemoButton";
+import DemoButton from "@/features/shared/components/buttons/DemoButton.tsx";
 import { ScreenReaderOnly } from "@/features/shared/styles/AppStyles.tsx";
 
 const HeaderContainer = styled.div`

@@ -1,4 +1,4 @@
-import { MemoizedAllInvoicesToolbar } from "../../../components/menus-toolbars/AllInvoicesToolbar.tsx";
+import { MemoizedAllInvoicesToolbar } from "../components/AllInvoicesToolbar.tsx";
 import useWindowWidth from "../../shared/hooks/useWindowWidth.tsx";
 import AllInvoicesView from "../components/AllInvoicesView.tsx";
 import useInvoices from "../hooks/useInvoices.ts";

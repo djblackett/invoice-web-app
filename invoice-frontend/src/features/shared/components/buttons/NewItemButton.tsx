@@ -6,7 +6,7 @@ import {
   useForm,
   useFormContext,
 } from "react-hook-form";
-import { Item } from "../../types/types";
+import { Item } from "../../../../types/types.ts";
 
 const Button = styled.button`
   display: flex;

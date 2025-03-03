@@ -1,7 +1,7 @@
 import { useAuth } from "@/features/auth/hooks/useAuth.ts";
 import { Navigate } from "react-router-dom";
 import { SlidingButton } from "@/features/shared/animations/AnimatedButton.tsx";
-import { LoginLogoutButton } from "@/components/menus-toolbars/Header.tsx";
+import { LoginLogoutButton } from "@/features/shared/components/Header.tsx";
 import TextAnimation from "@/features/shared/animations/AnimatedText.tsx";
 import { ViewContainer } from "@/features/invoices/styles/ViewInvoiceStyles.tsx";
 

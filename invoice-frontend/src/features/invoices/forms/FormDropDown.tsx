@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { SVG } from "../../../components/buttons/NewItemButton.tsx";
+import { SVG } from "@/features/shared/components/buttons/NewItemButton.tsx";
 import {
   Main,
   DropDownHeader,

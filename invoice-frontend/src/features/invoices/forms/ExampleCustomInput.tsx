@@ -1,6 +1,7 @@
 import { CustomDateBox, DateInput } from "@/styles/DateAndPaymentStyles.tsx";
 import { forwardRef } from "react";
-import { dateIcon } from "./DateAndPayment.tsx";
+
+import {dateIcon} from "@/features/invoices/forms/DateComponent.tsx";
 
 export type CustomInputProps = {
   onClick?: () => void;

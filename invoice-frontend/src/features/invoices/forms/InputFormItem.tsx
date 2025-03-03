@@ -13,11 +13,11 @@ import {
   SVG,
   Total,
   TotalBox,
-} from "../../../styles/editFormItemStyles.tsx";
-import NewItemButton from "../../../components/buttons/NewItemButton.tsx";
+} from "@/styles/editFormItemStyles.tsx";
+import NewItemButton from "@/features/shared/components/buttons/NewItemButton.tsx";
 import useWindowWidth from "../../shared/hooks/useWindowWidth.tsx";
-import { Col, Col1 } from "../../../styles/EditFormItemListStyles.ts";
-import { Invoice } from "../../../types/types.ts";
+import { Col, Col1 } from "@/styles/EditFormItemListStyles.ts";
+import { Invoice } from "@/types/types.ts";
 
 type InputFormItemProps = {
   invoice?: Invoice;
@@ -25,7 +25,7 @@ type InputFormItemProps = {
   isEditOpen: boolean;
 };
 
-// todo - can I make this simpler?
+// TODO - can I make this simpler?
 export default function InputFormItem({
   isDraft,
   invoice,

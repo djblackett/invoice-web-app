@@ -1,9 +1,9 @@
 import { ReactElement, SyntheticEvent } from "react";
 import styled from "styled-components";
 import { useDispatch } from "react-redux";
-import CheckboxSelection from "./CheckboxSelection";
-import { changeFilter } from "../../features/invoices/store/filterSlice.ts";
-import { StatusKey } from "../../types/types";
+import CheckboxSelection from "./CheckboxSelection.tsx";
+import { changeFilter } from "../store/filterSlice.ts";
+import { StatusKey } from "../../../types/types.ts";
 import { ClickOutsideProvider } from "@shelf/react-outside-click";
 
 const Main = styled.div`

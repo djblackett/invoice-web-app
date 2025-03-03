@@ -1,10 +1,10 @@
 import styled from "styled-components";
 import PropTypes from "prop-types";
-import EditButton from "../buttons/EditButton";
-import DeleteButton from "../buttons/DeleteButton";
-import MarkAsPaidButton from "../buttons/MarkAsPaidButton";
-import { Invoice } from "../../types/types";
-import { useNewInvoiceContext } from "../../features/invoices/forms/NewInvoiceContextProvider.tsx";
+import EditButton from "@/features/shared/components/buttons/EditButton.tsx";
+import DeleteButton from "@/features/shared/components/buttons/DeleteButton.tsx";
+import MarkAsPaidButton from "@/features/shared/components/buttons/MarkAsPaidButton.tsx";
+import { Invoice } from "../../../types/types.ts";
+import { useNewInvoiceContext } from "../forms/NewInvoiceContextProvider.tsx";
 import { SyntheticEvent, useRef } from "react";
 
 const ButtonsContainer = styled.div`

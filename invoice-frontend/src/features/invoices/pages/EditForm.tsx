@@ -1,6 +1,6 @@
 import { FormProvider } from "react-hook-form";
 import "../../../styles/react-datepicker.css";
-import EditBottomMenu from "../../../components/menus-toolbars/EditBottomMenu.tsx";
+import EditBottomMenu from "../forms/EditBottomMenu.tsx";
 import {
   BillText,
   EditTitle,

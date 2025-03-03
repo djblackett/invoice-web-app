@@ -1,8 +1,8 @@
 import React, { useState, useEffect, Suspense } from "react";
 import { useSelector } from "react-redux";
-import { selectFilter } from "../../features/invoices/store/filterSlice.ts";
-import useWindowWidth from "../../features/shared/hooks/useWindowWidth.tsx";
-import { Invoice } from "../../types/types";
+import { selectFilter } from "../store/filterSlice.ts";
+import useWindowWidth from "../../shared/hooks/useWindowWidth.tsx";
+import { Invoice } from "../../../types/types.ts";
 import {
   GridContainer,
   TitleBox,
@@ -12,11 +12,11 @@ import {
   FilterButton,
   Filter,
   arrowDownSVG,
-} from "../../features/invoices/styles/AllInvoicesToolbarStyles.tsx";
-import NewInvoiceButton from "../buttons/NewInvoiceButton";
-import { useNewInvoiceContext } from "../../features/invoices/forms/NewInvoiceContextProvider.tsx";
+} from "../styles/AllInvoicesToolbarStyles.tsx";
+import NewInvoiceButton from "@/features/shared/components/buttons/NewInvoiceButton.tsx";
+import { useNewInvoiceContext } from "../forms/NewInvoiceContextProvider.tsx";
 
-const FilterDropDown = React.lazy(() => import("./FilterDropDown"));
+const FilterDropDown = React.lazy(() => import("./FilterDropDown.tsx"));
 
 type AllInvoicesToolbarProps = {
   invoiceList: Invoice[];

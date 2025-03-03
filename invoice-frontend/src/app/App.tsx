@@ -1,10 +1,10 @@
 import React, { Suspense, useEffect, useState } from "react";
 import { ThemeProvider } from "styled-components";
 import { useRoutes } from "react-router-dom";
-import Header from "../components/menus-toolbars/Header";
+import Header from "../features/shared/components/Header.tsx";
 import GlobalStyles from "../features/shared/styles/GlobalStyles.ts";
 import { lightTheme, darkTheme } from "../features/shared/styles/Themes.ts";
-import Layout from "../components/Layout";
+import Layout from "../features/shared/components/Layout.tsx";
 import { ApolloProvider } from "@apollo/client";
 import useWindowWidth from "@/features/shared/hooks/useWindowWidth.tsx";
 import useGraphQLClient from "@/features/shared/hooks/useApolloClient.ts";
@@ -15,7 +15,7 @@ import {
 import { LazyMotion } from "motion/react";
 
 const WelcomePage = React.lazy(() => import("@/pages/WelcomePage"));
-const ProtectedRoute = React.lazy(() => import("@/components/ProtectedRoute"));
+const ProtectedRoute = React.lazy(() => import("@/features/shared/components/ProtectedRoute.tsx"));
 const AllInvoices = React.lazy(
   () => import("@/features/invoices/pages/AllInvoices.tsx"),
 );

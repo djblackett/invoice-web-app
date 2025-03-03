@@ -1,14 +1,14 @@
 import PropTypes from "prop-types";
 import { useFormContext } from "react-hook-form";
-import CancelButton from "../buttons/CancelButton";
+import CancelButton from "@/features/shared/components/buttons/CancelButton.tsx";
 import {
   MenuContainer,
   Save,
   SaveAndDraftContainer,
   SaveDraft,
-} from "../../styles/NewInvoiceBottomMenuStyles";
-import { useNewInvoiceContext } from "../../features/invoices/forms/NewInvoiceContextProvider.tsx";
-import { useNewInvoiceForm } from "../../features/invoices/hooks/useNewInvoiceForm.tsx";
+} from "../../../styles/NewInvoiceBottomMenuStyles.tsx";
+import { useNewInvoiceContext } from "./NewInvoiceContextProvider.tsx";
+import { useNewInvoiceForm } from "../hooks/useNewInvoiceForm.tsx";
 
 type NewInvoiceBoottemMenuProps = {
   closeText: string;
