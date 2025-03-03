@@ -15,7 +15,9 @@ import {
 import { LazyMotion } from "motion/react";
 
 const WelcomePage = React.lazy(() => import("@/pages/WelcomePage"));
-const ProtectedRoute = React.lazy(() => import("@/features/shared/components/ProtectedRoute.tsx"));
+const ProtectedRoute = React.lazy(
+  () => import("@/features/shared/components/ProtectedRoute.tsx"),
+);
 const AllInvoices = React.lazy(
   () => import("@/features/invoices/pages/AllInvoices.tsx"),
 );
@@ -25,7 +27,9 @@ const ViewInvoice = React.lazy(
 const Login = React.lazy(() => import("@/features/auth/pages/Login.tsx"));
 
 const loadFeatures = () =>
-  import("../features/shared/animations/motionConfig.ts").then((res) => res.default);
+  import("../features/shared/animations/motionConfig.ts").then(
+    (res) => res.default,
+  );
 
 function App() {
   const [theme, setTheme] = useState("light");

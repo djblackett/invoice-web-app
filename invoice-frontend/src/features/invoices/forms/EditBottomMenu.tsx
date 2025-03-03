@@ -1,7 +1,10 @@
 import PropTypes from "prop-types";
 import { useFormContext } from "react-hook-form";
 import CancelButton from "@/features/shared/components/buttons/CancelButton.tsx";
-import { MenuContainer, Save } from "../../../styles/NewInvoiceBottomMenuStyles.tsx";
+import {
+  MenuContainer,
+  Save,
+} from "../../../styles/NewInvoiceBottomMenuStyles.tsx";
 import { useNewInvoiceForm } from "../hooks/useNewInvoiceForm.tsx";
 import { useNewInvoiceContext } from "./NewInvoiceContextProvider.tsx";
 import { FormType } from "@/types/types.ts";

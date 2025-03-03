@@ -15,9 +15,7 @@ import React from "react";
 
 const EditForm = React.lazy(() => import("./EditForm.tsx"));
 const DeleteModal = React.lazy(() => import("../components/DeleteModal.tsx"));
-const FullInvoice = React.lazy(
-  () => import("../components/FullInvoice.tsx"),
-);
+const FullInvoice = React.lazy(() => import("../components/FullInvoice.tsx"));
 
 function ViewInvoice() {
   const navigate = useNavigate();

@@ -8,7 +8,10 @@ import { useAuth } from "@/features/auth/hooks/useAuth.ts";
 import { Suspense } from "react";
 import React from "react";
 import { useSubscription } from "@apollo/client";
-import { ALL_INVOICES, INVOICE_ADDED } from "@/features/invoices/graphql/invoice.queries.ts";
+import {
+  ALL_INVOICES,
+  INVOICE_ADDED,
+} from "@/features/invoices/graphql/invoice.queries.ts";
 import FadeOut from "@/features/shared/animations/FadeOutText.tsx";
 
 const NewInvoice = React.lazy(() => import("./NewInvoice.tsx"));
