@@ -10,7 +10,7 @@ type DateAndPaymentProps = {
 function DateAndPayment({ invoice }: DateAndPaymentProps) {
   return (
     <DateAndPaymentContainer>
-      <DateComponent />
+      <DateComponent invoice={invoice} />
       <PaymentTerms invoice={invoice} />
     </DateAndPaymentContainer>
   );

@@ -83,20 +83,21 @@ async function globalSetup() {
 
 export default globalSetup;
 
-async function clearDatabase() {
+export async function clearDatabase() {
   const apiRequest = await request.newContext({ ignoreHTTPSErrors: true });
   const endpoint =
     process.env.VITE_BACKEND_URL?.replace("/graphql", "") + "/test-setup";
-  console.log("Endpoint:", endpoint);
+  // console.log("Endpoint:", endpoint);
   const response = await apiRequest.get(endpoint, {
     headers: {
       "Content-Type": "application/json",
     },
   });
 
-  console.log("Response:", response);
+  // console.log("Response:", response);
   if (!response.ok()) {
     throw new Error(`Failed to delete invoices: ${await response.text()}`);
   }
-  console.log("Response:", response);
+  // console.log("Response:", response);
+  console.log("Database cleared");
 }

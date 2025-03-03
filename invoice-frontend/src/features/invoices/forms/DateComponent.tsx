@@ -24,7 +24,11 @@ export const dateIcon = (
   </svg>
 );
 
-export function DateComponent({ invoice }: { invoice?: Invoice }) {
+interface DateComponentProps {
+  invoice?: Invoice;
+}
+
+export function DateComponent({ invoice }: DateComponentProps) {
   const { startDate, setStartDate } = useNewInvoiceContext();
 
   const handleChange = (date: Date | null) => {
