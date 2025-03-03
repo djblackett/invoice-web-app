@@ -1,5 +1,8 @@
 #!/usr/bin/env bash
 
+# This script is used to fix the permissions of the files and directories created by Playwright
+# It is necessary to run this script after running the Playwright tests in the Docker container
+
 # Check if ./test-results directory exists, then chown and chmod
 if [ -d "./test-results" ]; then
   sudo chown -R "$USER":docker ./test-results

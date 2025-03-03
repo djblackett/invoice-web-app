@@ -1,1 +1,23 @@
+# Version control
+.git
+.gitignore
+
+# Environment files
+.env
+.env.local
+
+# Dependencies
 node_modules
+vendor/
+
+# Build artifacts
+dist/
+build/
+*.log
+
+# IDE files
+.vscode/
+.idea/
+
+.DS_Store
+fix-pw-permissions.sh
