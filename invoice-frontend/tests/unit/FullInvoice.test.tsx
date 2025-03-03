@@ -1,8 +1,8 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
-import * as useWindowWidthModule from "../../src/hooks/useWindowWidth";
+import * as useWindowWidthModule from "@/features/shared/hooks/useWindowWidth.tsx";
 import { Invoice } from "../../src/types/types";
 import { render, screen } from "@testing-library/react";
-import FullInvoice from "../../src/components/invoice-components/FullInvoice";
+import FullInvoice from "@/features/invoices/components/FullInvoice.tsx";
 
 // Sample invoice data for testing
 const sampleInvoice: Invoice = {

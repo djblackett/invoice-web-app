@@ -3,7 +3,7 @@ import React from "react";
 import { describe, it, expect } from "vitest";
 import InvoiceCard, {
   InvoiceCardProps,
-} from "../../src/components/invoice-components/InvoiceCard";
+} from "@/features/invoices/components/InvoiceCard.tsx";
 import { Invoice } from "../../src/types/types";
 
 // Sample Invoice data

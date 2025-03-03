@@ -3,14 +3,13 @@ import { render, screen, fireEvent, waitFor } from "../testUtils";
 import { MockedProvider } from "@apollo/client/testing";
 import DeleteModal, {
   DeleteModalProps,
-} from "../../src/components/DeleteModal";
+} from "@/features/invoices/components/DeleteModal.tsx";
 import {
   REMOVE_INVOICE,
   ALL_INVOICES,
-} from "../../src/graphql/invoice.queries";
+} from "@/features/invoices/graphql/invoice.queries.ts";
 import { ThemeProvider } from "styled-components";
-import { lightTheme } from "../../src/styles/Themes";
-import React from "react";
+import { lightTheme } from "@/features/shared/styles/Themes.ts";
 import "@testing-library/jest-dom";
 
 const mocks = [

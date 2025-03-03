@@ -1,10 +1,10 @@
 import { render, screen } from "../testUtils";
 import { describe, it, expect, vi, Mock } from "vitest";
-import AllInvoices from "../../src/pages/AllInvoices";
-import { useAuth } from "@/hooks/useAuth";
+import AllInvoices from "@/features/invoices/pages/AllInvoices.tsx";
+import { useAuth } from "@/features/auth/hooks/useAuth.ts";
 
 // Mock useAuth0 hook
-vi.mock("@/hooks/useAuth");
+vi.mock("@/features/auth/hooks/useAuth");
 
 describe("AllInvoices Component", () => {
   it("renders welcome text with correct font-weight when authenticated", () => {

@@ -1,10 +1,10 @@
 import { render, screen } from "../testUtils";
-import { useAuth } from "@/hooks/useAuth";
+import { useAuth } from "@/features/auth/hooks/useAuth.ts";
 import { describe, it, expect, vi, Mock } from "vitest";
 import WelcomePage from "@/pages/WelcomePage";
 
 // Mock the useAuth0 hook
-vi.mock("@/hooks/useAuth");
+vi.mock("@/features/auth/hooks/useAuth");
 
 describe("WelcomePage", () => {
   it("renders loading state when isLoading is true", () => {

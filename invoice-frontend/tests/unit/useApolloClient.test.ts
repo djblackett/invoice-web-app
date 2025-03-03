@@ -1,5 +1,5 @@
 import { renderHook, waitFor } from "@testing-library/react";
-import useGraphQLClient from "@/hooks/useApolloClient";
+import useGraphQLClient from "@/features/shared/hooks/useApolloClient.ts";
 import { ApolloClient, InMemoryCache } from "@apollo/client";
 import { vi, describe, beforeEach, it, afterAll, expect } from "vitest";
 

@@ -4,9 +4,13 @@ import {
   NewInvoiceForm,
 } from "../pages/newInvoice/newInvoiceForm";
 
-import { TEST_BASE_URL } from "../../global-setup";
+import { clearDatabase, TEST_BASE_URL } from "../../global-setup";
 import { EditForm } from "../pages/edit/editForm";
 import InvoicePage from "../pages/invoice-view/invoice";
+
+test.beforeEach(async () => {
+  await clearDatabase();
+});
 
 test("should show the correct date already in the form when the edit page is opened", async ({
   page,
