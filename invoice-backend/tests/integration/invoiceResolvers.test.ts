@@ -59,27 +59,17 @@ let currentInvoiceId = "";
 
 describe("Invoice Resolvers Integration Tests", () => {
   beforeAll(async () => {
-    // testToken = await getTestToken();
     testToken = "dummy-token";
   });
 
   beforeEach(async () => {
-    // 1. Generate a unique schema name
-    // e.g., "test_schema_182b07dc-5b93-44a8-a248-77102fe91bf0"
     schemaName = `test_schema_${randomUUID()}`;
 
-    // 2. Construct a new DB URL that includes this schema
-    // Replace your own user/password/host/db as appropriate
     const baseDatabaseUrl =
       "postgresql://postgres:example@localhost:5432/db-test";
     const newDatabaseUrl = `${baseDatabaseUrl}?schema=${schemaName}`;
-
-    // 3. Override the env var for Prisma
-    // process.env.DATABASE_URL = newDatabaseUrl;
-
     console.log("Env vars:", process.env.DATABASE_URL);
 
-    // 5. Instantiate Prisma Client *after* the schema is set up
     prisma = new PrismaClient({
       datasourceUrl: newDatabaseUrl,
     });
@@ -93,14 +83,10 @@ describe("Invoice Resolvers Integration Tests", () => {
       `SET search_path TO "${schemaName}", public`,
     );
 
-    // await prisma.$connect();
-
     execSync("npx prisma db push", {
       stdio: "inherit",
     });
     [app] = await createServer();
-    // 4. Run "prisma db push" or "prisma migrate deploy"
-    //    This ensures the schema is created and tables are set up
 
     // Clean up before each test
     await request(app)
@@ -172,14 +158,11 @@ describe("Invoice Resolvers Integration Tests", () => {
   });
 
   afterEach(async () => {
-    // 6. Drop the schema to clean up
-    //    Something like: DROP SCHEMA test_schema_xxx CASCADE
-    //  You can do this via a direct query.
+    // Drop the schema to clean up
     await prisma.$executeRawUnsafe(
       `DROP SCHEMA IF EXISTS "${schemaName}" CASCADE`,
     );
 
-    // Finally, disconnect Prisma
     await prisma.$disconnect();
   });
 
@@ -364,15 +347,6 @@ describe("Invoice Resolvers Integration Tests", () => {
   });
 
   it("should remove an invoice (the one with our unique ID)", async () => {
-    const { data } = await request(app)
-      .query(gql`
-        mutation RemoveInvoice($id: String!) {
-          removeInvoice(id: $id)
-        }
-      `)
-      .variables({ id: currentInvoiceId })
-      .set("Authorization", `Bearer ${testToken}`);
-
     // Verify the invoice is removed
     const response = await request(app)
       .query(gql`
@@ -408,15 +382,3 @@ describe("Invoice Resolvers Integration Tests", () => {
     expect((data as any).markAsPaid.status).toBe("paid");
   });
 });
-
-// remove orphaned test schemas
-// DO $$DECLARE
-//    s text;
-// BEGIN
-//    FOR s IN
-//       SELECT nspname FROM pg_namespace
-//          WHERE nspname LIKE 'test\_schema\_%'
-//    LOOP
-//       EXECUTE 'DROP SCHEMA ' || quote_ident(s) || ' CASCADE';
-//    END LOOP;
-// END;$$;

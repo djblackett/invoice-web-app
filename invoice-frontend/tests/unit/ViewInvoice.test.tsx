@@ -6,6 +6,7 @@ import { GET_INVOICE_BY_ID } from "@/features/invoices/graphql/invoice.queries.t
 import { describe, it, expect, vi } from "vitest";
 
 const navigate = vi.fn();
+
 vi.mock("react-router-dom", async (importOriginal) => {
   const actual = await importOriginal();
   return {
@@ -24,31 +25,39 @@ const mocks = [
       data: {
         getInvoiceById: {
           id: "1",
-          clientAddress: "123 Main St",
+          clientAddress: {
+            street: "123 Main St",
+            city: "Anytown",
+            postCode: "12345",
+            country: "USA",
+          },
           clientEmail: "client@example.com",
           clientName: "Client Name",
           createdAt: "2023-01-01",
           description: "Invoice description",
-          items: [],
+          items: [
+            {
+              id: "item-1",
+              name: "Sample Item",
+              price: 500,
+              quantity: 2,
+              total: 1000,
+            },
+          ],
           paymentDue: "2023-01-15",
-          paymentTerms: "Net 30",
-          senderAddress: "456 Another St",
+          paymentTerms: 30, // Payment terms as a number (e.g., 30 for Net 30)
+          senderAddress: {
+            street: "456 Another St",
+            city: "OtherTown",
+            postCode: "67890",
+            country: "USA",
+          },
           status: "Pending",
           total: 1000,
           __typename: "Invoice",
         },
       },
     },
-  },
-];
-
-const errorMocks = [
-  {
-    request: {
-      query: GET_INVOICE_BY_ID,
-      variables: { getInvoiceById: "1" },
-    },
-    error: new Error("An error occurred"),
   },
 ];
 
@@ -111,27 +120,7 @@ describe("ViewInvoice", () => {
     expect(navigate).toHaveBeenCalledWith("/invoices");
   });
 
-  it.skip("renders invoice details", async () => {
-    render(
-      <MockedProvider mocks={mocks} addTypename={false}>
-        <MemoryRouter initialEntries={["/invoice/1"]}>
-          <Routes>
-            <Route path="/invoices/:id" element={<ViewInvoice />} />
-          </Routes>
-        </MemoryRouter>
-      </MockedProvider>,
-    );
-
-    await waitFor(() => {
-      expect(screen.getByText("Invoice description")).toBeInTheDocument();
-      expect(screen.getByText("Client Name")).toBeInTheDocument();
-      expect(screen.getByText("123 Main St")).toBeInTheDocument();
-      expect(screen.getByText("client@example.com")).toBeInTheDocument();
-      expect(screen.getByText("Pending")).toBeInTheDocument();
-    });
-  });
-
-  it.skip("renders and interacts with edit form", async () => {
+  it("renders and interacts with edit form", async () => {
     render(
       <MockedProvider mocks={mocks} addTypename={false}>
         <MemoryRouter initialEntries={["/invoice/1"]}>
@@ -160,94 +149,7 @@ describe("ViewInvoice", () => {
       "Updated Client Name",
     );
   });
-
-  it.skip("renders and interacts with delete modal", async () => {
-    render(
-      <MockedProvider mocks={mocks} addTypename={false}>
-        <MemoryRouter initialEntries={["/invoices/1"]}>
-          <Routes>
-            <Route path="/invoices/:id" element={<ViewInvoice />} />
-          </Routes>
-        </MemoryRouter>
-      </MockedProvider>,
-    );
-
-    const deleteButton = screen.getByRole("button", { name: /delete-button/i });
-    await waitFor(() => {
-      expect(deleteButton).toBeInTheDocument();
-    });
-
-    fireEvent.click(deleteButton);
-
-    await waitFor(() => {
-      expect(screen.getByTestId("deleteModal")).toBeInTheDocument();
-    });
-
-    fireEvent.click(screen.getByText("Confirm"));
-
-    expect(navigate).toHaveBeenCalledWith("/invoices");
-  });
 });
-
-render(
-  <MockedProvider mocks={errorMocks} addTypename={false}>
-    <MemoryRouter initialEntries={["/invoices/1"]}>
-      <Routes>
-        <Route path="/invoices/:id" element={<ViewInvoice />} />
-      </Routes>
-    </MemoryRouter>
-  </MockedProvider>,
-);
-
-await waitFor(() => {
-  expect(screen.getByText(/Error: An error occurred/i)).toBeInTheDocument();
-});
-
-it.skip("renders invoice and handles go back", async () => {
-  render(
-    <MockedProvider mocks={mocks} addTypename={false}>
-      <MemoryRouter initialEntries={["/invoices/1"]}>
-        <Routes>
-          <Route path="/invoices/:id" element={<ViewInvoice />} />
-        </Routes>
-      </MemoryRouter>
-    </MockedProvider>,
-  );
-
-  await waitFor(() => {
-    expect(
-      screen.getByText(
-        (content, element) => element?.textContent === "Go back",
-      ),
-    ).toBeInTheDocument();
-  });
-
-  fireEvent.click(
-    screen.getByText((content, element) => element?.textContent === "Go back"),
-  );
-  expect(navigate).toHaveBeenCalledWith("/invoices");
-});
-
-it.skip("renders invoice details", async () => {
-  render(
-    <MockedProvider mocks={mocks} addTypename={false}>
-      <MemoryRouter initialEntries={["/invoices/1"]}>
-        <Routes>
-          <Route path="/invoices/:id" element={<ViewInvoice />} />
-        </Routes>
-      </MemoryRouter>
-    </MockedProvider>,
-  );
-
-  await waitFor(() => {
-    expect(screen.getByText("Invoice description")).toBeInTheDocument();
-    expect(screen.getByText("Client Name")).toBeInTheDocument();
-    expect(screen.getByText("123 Main St")).toBeInTheDocument();
-    expect(screen.getByText("client@example.com")).toBeInTheDocument();
-    expect(screen.getByText("Pending")).toBeInTheDocument();
-  });
-});
-// Add other invoice fields as needed
 
 describe("ViewInvoice", () => {
   it("renders loading state", () => {

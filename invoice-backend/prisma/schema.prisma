@@ -67,7 +67,6 @@ model User {
   invoices     Invoice[]
   name         String?
   username     String @unique
-  passwordHash String?
   role         Role   @default(USER)
 }
 

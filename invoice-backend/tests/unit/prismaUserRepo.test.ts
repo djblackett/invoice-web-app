@@ -4,7 +4,7 @@ import prisma from "../../libs/__mocks__/prisma";
 import { DatabaseConnectionMock } from "./database.connection.mock";
 import { PrismaClientKnownRequestError } from "@prisma/client/runtime/library";
 import { PrismaUserRepository } from "@/repositories/implementations/prismaUserRepo";
-import { UserEntity, User, UserIdAndRole } from "@/constants/types";
+import { UserEntity } from "@/constants/types";
 import { DatabaseConnection } from "@/database/prisma.database.connection";
 
 vi.mock("../../libs/prisma");
@@ -15,13 +15,12 @@ const mockUserArgs: UserEntity = {
   passwordHash: "hashedpassword123",
 };
 
-const mockUser: UserIdAndRole = {
+const mockUser = {
   id: "1",
   name: "John Doe",
   username: "johndoe",
   role: "USER",
-  passwordHash: "hashedpassword123",
-};
+} as const;
 
 beforeEach(() => {
   vi.clearAllMocks(); // Clear mocks before each test
@@ -31,11 +30,9 @@ const userRepo = new PrismaUserRepository(
   new DatabaseConnectionMock() as DatabaseConnection,
 );
 
-// Test suite for the PrismaUserRepo class
-// describe("PrismaUserRepo", () => {
 describe("findAllUsers", () => {
   test("should return all users", async () => {
-    prisma.user.findMany.mockResolvedValue([mockUser as UserIdAndRole]);
+    prisma.user.findMany.mockResolvedValue([mockUser]);
 
     const users = await userRepo.getAllUsers();
     expect(users).toStrictEqual([mockUser]);
@@ -52,17 +49,15 @@ describe("findAllUsers", () => {
   test("should handle error when fetching all users", async () => {
     prisma.user.findMany.mockRejectedValue(new Error("Database error"));
 
-    // const result = await ;
-
     expect(userRepo.getAllUsers()).rejects.toThrowError("Database error"); // Check that the error is returned as expected
   });
 });
 
 describe("findUserById", () => {
   test("should return user by ID", async () => {
-    prisma.user.findUniqueOrThrow.mockResolvedValue(mockUser as User);
+    prisma.user.findUniqueOrThrow.mockResolvedValue(mockUser);
 
-    const user = await userRepo.getUserById(1);
+    const user = await userRepo.getUserById("1");
     expect(user).toEqual(mockUser);
   });
 
@@ -85,7 +80,7 @@ describe("findUserById", () => {
       new Error("Failed to fetch user"),
     );
 
-    await expect(userRepo.getUserById(1)).rejects.toThrowError(
+    await expect(userRepo.getUserById("1")).rejects.toThrowError(
       /Failed to fetch user/,
     ); // Check that the error is returned as expected
   });
@@ -93,7 +88,7 @@ describe("findUserById", () => {
 
 describe("createUser", () => {
   test("should create a new user", async () => {
-    prisma.user.create.mockResolvedValue(mockUser as UserIdAndRole);
+    prisma.user.create.mockResolvedValue(mockUser);
 
     const createdUser = await userRepo.createUser(mockUserArgs);
     expect(createdUser).toEqual(mockUser);

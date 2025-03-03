@@ -1,5 +1,3 @@
-/* eslint-disable @typescript-eslint/ban-ts-comment */
-// @ts-nocheck
 import { MockProxy, mock } from "vitest-mock-extended";
 import { getInvoiceResolvers } from "../../../src/resolvers/invoiceResolvers";
 import { InvoiceService } from "../../../src/services/invoice.service";
@@ -10,12 +8,16 @@ import {
   InvoiceCreateArgs,
   GetInvoiceByIdArgs,
   MarkAsPaidArgs,
+  InjectedQueryContext,
+  UserIdAndRole,
+  InvoiceWithCreatedBy,
 } from "../../../src/constants/types";
 import {
   InternalServerException,
   NotFoundException,
   ValidationException,
 } from "@/config/exception.config";
+import { beforeEach, describe, it, expect, vi, test } from "vitest";
 
 let invoiceServiceMock: MockProxy<InvoiceService>;
 let pubsubMock: MockProxy<PubSub>;
@@ -27,7 +29,12 @@ beforeEach(() => {
   pubsubMock = mock<PubSub>();
 
   // Create a mock user if necessary
-  const mockUser: UserIdAndRole = { id: "user1", role: "ADMIN" };
+  const mockUser: UserIdAndRole = {
+    id: "user1",
+    role: "ADMIN",
+    username: "user1",
+    name: "User One",
+  };
 
   // Initialize the mock context with mocked services and user
   mockContext = mock<InjectedQueryContext>({
@@ -96,8 +103,8 @@ describe("Query.allInvoices", () => {
 
     // Invoke the resolver with mock context
     const result = await invoiceResolvers.Query.allInvoices(
-      null, // _root
-      null, // _parent
+      {}, // _root
+      {}, // _parent
       mockContext, // context
     );
 
@@ -110,8 +117,8 @@ describe("Query.allInvoices", () => {
 
     // Invoke the resolver with mock context
     const result = await invoiceResolvers.Query.allInvoices(
-      null, // _root
-      null, // _parent
+      {}, // _root
+      {}, // _parent
       mockContext, // context
     );
 
@@ -124,12 +131,12 @@ describe("Query.allInvoices", () => {
       new InternalServerException("Internal server error"),
     );
 
-    await expect(invoiceResolvers.Query.allInvoices()).rejects.toThrow(
-      GraphQLError,
-    );
+    await expect(
+      invoiceResolvers.Query.allInvoices({}, {}, {}),
+    ).rejects.toThrow(GraphQLError);
 
     try {
-      await invoiceResolvers.Query.allInvoices();
+      await invoiceResolvers.Query.allInvoices({}, {}, {});
     } catch (error: any) {
       expect(error).toBeInstanceOf(GraphQLError);
       expect(error.message).toBe("Failed to retrieve invoices");
@@ -170,7 +177,7 @@ describe("Query.getInvoiceById", () => {
 
     // Invoke the resolver with mock context
     const result = await invoiceResolvers.Query.getInvoiceById(
-      null, // _root
+      {}, // _root
       args,
       mockContext, // context
     );
@@ -189,11 +196,11 @@ describe("Query.getInvoiceById", () => {
     );
 
     await expect(
-      invoiceResolvers.Query.getInvoiceById(null, args, mockContext),
+      invoiceResolvers.Query.getInvoiceById({}, args, mockContext),
     ).rejects.toThrow(GraphQLError);
 
     try {
-      await invoiceResolvers.Query.getInvoiceById(null, args, mockContext);
+      await invoiceResolvers.Query.getInvoiceById({}, args, mockContext);
     } catch (error: any) {
       expect(error).toBeInstanceOf(GraphQLError);
       expect(error.message).toBe("Invoice not found");
@@ -209,11 +216,11 @@ describe("Query.getInvoiceById", () => {
     );
 
     await expect(
-      invoiceResolvers.Query.getInvoiceById(null, args, mockContext),
+      invoiceResolvers.Query.getInvoiceById({}, args, mockContext),
     ).rejects.toThrow(GraphQLError);
 
     try {
-      await invoiceResolvers.Query.getInvoiceById(null, args, mockContext);
+      await invoiceResolvers.Query.getInvoiceById({}, args, mockContext);
     } catch (error: any) {
       expect(error).toBeInstanceOf(GraphQLError);
       expect(error.message).toBe("Failed to retrieve invoice");
@@ -224,7 +231,14 @@ describe("Query.getInvoiceById", () => {
 
 describe("Mutation.addInvoice", () => {
   it("should add a new invoice", async () => {
-    const args: InvoiceCreateArgs = {
+    const args: InvoiceWithCreatedBy = {
+      createdBy: {
+        id: "user1",
+        role: "ADMIN",
+        username: "user1",
+        name: "User One",
+      },
+      createdById: "user1",
       clientAddress: {
         city: "CityE",
         country: "CountryE",
@@ -249,14 +263,14 @@ describe("Mutation.addInvoice", () => {
       total: 150.0,
     };
 
-    const newInvoice: Invoice = {
+    const newInvoice: InvoiceWithCreatedBy = {
       ...args,
     };
 
-    invoiceServiceMock.addInvoice.mockResolvedValue(newInvoice);
+    invoiceServiceMock.addInvoice.mockResolvedValue(newInvoice as any);
 
     const result = await invoiceResolvers.Mutation.addInvoice(
-      null,
+      {},
       args,
       mockContext,
     );
@@ -289,11 +303,11 @@ describe("Mutation.addInvoice", () => {
     invoiceServiceMock.addInvoice.mockRejectedValue(validationError);
 
     await expect(
-      invoiceResolvers.Mutation.addInvoice(null, args, mockContext),
+      invoiceResolvers.Mutation.addInvoice({}, args, mockContext),
     ).rejects.toThrow(GraphQLError);
 
     try {
-      await invoiceResolvers.Mutation.addInvoice(null, args, mockContext);
+      await invoiceResolvers.Mutation.addInvoice({}, args, mockContext);
     } catch (error: any) {
       expect(error).toBeInstanceOf(GraphQLError);
       expect(error.message).toBe("Failed to add invoice");
@@ -332,11 +346,11 @@ describe("Mutation.addInvoice", () => {
     );
 
     await expect(
-      invoiceResolvers.Mutation.addInvoice(null, args, mockContext),
+      invoiceResolvers.Mutation.addInvoice({}, args, mockContext),
     ).rejects.toThrow(GraphQLError);
 
     try {
-      await invoiceResolvers.Mutation.addInvoice(null, args, mockContext);
+      await invoiceResolvers.Mutation.addInvoice({}, args, mockContext);
     } catch (error: any) {
       expect(error).toBeInstanceOf(GraphQLError);
       expect(error.message).toBe("Failed to add invoice");
@@ -382,7 +396,7 @@ describe("Mutation.editInvoice", () => {
     const { id, ...update } = args;
 
     const result = await invoiceResolvers.Mutation.editInvoice(
-      null,
+      {},
       args,
       mockContext,
     );
@@ -397,11 +411,11 @@ describe("Mutation.editInvoice", () => {
     };
 
     await expect(
-      invoiceResolvers.Mutation.editInvoice(null, args, mockContext),
+      invoiceResolvers.Mutation.editInvoice({}, args, mockContext),
     ).rejects.toThrow(GraphQLError);
 
     try {
-      await invoiceResolvers.Mutation.editInvoice(null, args, mockContext);
+      await invoiceResolvers.Mutation.editInvoice({}, args, mockContext);
     } catch (error: any) {
       expect(error).toBeInstanceOf(GraphQLError);
       expect(error.message).toBe("Invoice id is required");
@@ -421,11 +435,11 @@ describe("Mutation.editInvoice", () => {
     );
 
     await expect(
-      invoiceResolvers.Mutation.editInvoice(null, args, mockContext),
+      invoiceResolvers.Mutation.editInvoice({}, args, mockContext),
     ).rejects.toThrow(GraphQLError);
 
     try {
-      await invoiceResolvers.Mutation.editInvoice(null, args, mockContext);
+      await invoiceResolvers.Mutation.editInvoice({}, args, mockContext);
     } catch (error: any) {
       expect(error).toBeInstanceOf(GraphQLError);
       expect(error.message).toBe("Failed to update invoice");
@@ -462,10 +476,10 @@ describe("Mutation.removeInvoice", () => {
       total: 100.0,
     };
 
-    invoiceServiceMock.deleteInvoice.mockResolvedValue(removedInvoice);
+    invoiceServiceMock.deleteInvoice.mockResolvedValue(removedInvoice as any);
 
     const result = await invoiceResolvers.Mutation.removeInvoice(
-      null,
+      {},
       args,
       mockContext,
     );
@@ -481,7 +495,7 @@ describe("Mutation.removeInvoice", () => {
       new NotFoundException("Invoice not found"),
     );
     try {
-      await invoiceResolvers.Mutation.removeInvoice(null, args, mockContext);
+      await invoiceResolvers.Mutation.removeInvoice({}, args, mockContext);
     } catch (error: any) {
       expect(error).toBeInstanceOf(GraphQLError);
       expect(error.message).toBe("Invoice not found");
@@ -498,11 +512,11 @@ describe("Mutation.removeInvoice", () => {
     );
 
     await expect(
-      invoiceResolvers.Mutation.removeInvoice(null, args, mockContext),
+      invoiceResolvers.Mutation.removeInvoice({}, args, mockContext),
     ).rejects.toThrow(GraphQLError);
 
     try {
-      await invoiceResolvers.Mutation.removeInvoice(null, args, mockContext);
+      await invoiceResolvers.Mutation.removeInvoice({}, args, mockContext);
     } catch (error: any) {
       expect(error).toBeInstanceOf(GraphQLError);
       expect(error.message).toBe("Invoice could not be removed");
@@ -539,10 +553,10 @@ describe("Mutation.markAsPaid", () => {
       total: 100.0,
     };
 
-    invoiceServiceMock.markAsPaid.mockResolvedValue(updatedInvoice);
+    invoiceServiceMock.markAsPaid.mockResolvedValue(updatedInvoice as any);
 
     const result = await invoiceResolvers.Mutation.markAsPaid(
-      null,
+      {},
       args,
       mockContext,
     );
@@ -559,11 +573,11 @@ describe("Mutation.markAsPaid", () => {
     );
 
     await expect(
-      invoiceResolvers.Mutation.markAsPaid(null, args, mockContext),
+      invoiceResolvers.Mutation.markAsPaid({}, args, mockContext),
     ).rejects.toThrow(GraphQLError);
 
     try {
-      await invoiceResolvers.Mutation.markAsPaid(null, args, mockContext);
+      await invoiceResolvers.Mutation.markAsPaid({}, args, mockContext);
     } catch (error: any) {
       expect(error).toBeInstanceOf(GraphQLError);
       expect(error.message).toBe("Invoice not found");
@@ -580,11 +594,11 @@ describe("Mutation.markAsPaid", () => {
     );
 
     await expect(
-      invoiceResolvers.Mutation.markAsPaid(null, args, mockContext),
+      invoiceResolvers.Mutation.markAsPaid({}, args, mockContext),
     ).rejects.toThrow(GraphQLError);
 
     try {
-      await invoiceResolvers.Mutation.markAsPaid(null, args, mockContext);
+      await invoiceResolvers.Mutation.markAsPaid({}, args, mockContext);
     } catch (error: any) {
       expect(error).toBeInstanceOf(GraphQLError);
       expect(error.message).toBe("Invoice could not be marked as paid");
@@ -594,7 +608,7 @@ describe("Mutation.markAsPaid", () => {
 });
 
 // todo - come back to this
-describe.skip("Subscription.invoiceAdded", () => {
+describe("Subscription.invoiceAdded", () => {
   it("should subscribe to invoiceAdded events", async () => {
     const asyncIteratorMock = {
       next: vi.fn(),
@@ -607,7 +621,11 @@ describe.skip("Subscription.invoiceAdded", () => {
 
     pubsubMock.asyncIterator.mockReturnValue(asyncIteratorMock);
 
-    const result = await invoiceResolvers.Subscription.invoiceAdded.subscribe();
+    const result = await invoiceResolvers.Subscription.invoiceAdded.subscribe(
+      {},
+      {},
+      mockContext,
+    );
 
     expect(result).toBe(asyncIteratorMock);
     expect(pubsubMock.asyncIterator).toHaveBeenCalledWith("INVOICE_ADDED");
@@ -619,11 +637,15 @@ describe.skip("Subscription.invoiceAdded", () => {
     });
 
     await expect(
-      invoiceResolvers.Subscription.invoiceAdded.subscribe(),
+      invoiceResolvers.Subscription.invoiceAdded.subscribe({}, {}, mockContext),
     ).rejects.toThrow(GraphQLError);
 
     try {
-      await invoiceResolvers.Subscription.invoiceAdded.subscribe();
+      await invoiceResolvers.Subscription.invoiceAdded.subscribe(
+        {},
+        {},
+        mockContext,
+      );
     } catch (error: any) {
       expect(error).toBeInstanceOf(GraphQLError);
       expect(error.message).toBe("Failed to subscribe to invoiceAdded");
