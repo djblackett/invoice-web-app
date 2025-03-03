@@ -1,11 +1,11 @@
 import express from "express";
-import {BaseContext} from "@apollo/server";
-import {Context as GraphQLWSContext} from "graphql-ws";
-import {PrismaClient} from "@prisma/client";
-import {Container} from "inversify";
-import {InvoiceService} from "@/services/invoice.service";
-import {UserService} from "@/services/user.service";
-import {PubSub} from "graphql-subscriptions";
+import { BaseContext } from "@apollo/server";
+import { Context as GraphQLWSContext } from "graphql-ws";
+import { PrismaClient } from "@prisma/client";
+import { Container } from "inversify";
+import { InvoiceService } from "@/services/invoice.service";
+import { UserService } from "@/services/user.service";
+import { PubSub } from "graphql-subscriptions";
 
 export interface Invoice {
   createdBy?: UserIdAndRole;

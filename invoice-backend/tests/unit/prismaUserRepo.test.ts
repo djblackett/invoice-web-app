@@ -3,8 +3,8 @@ import { beforeEach, describe, expect, test, vi } from "vitest";
 import prisma from "../../libs/__mocks__/prisma";
 import { DatabaseConnectionMock } from "./database.connection.mock";
 import { PrismaClientKnownRequestError } from "@prisma/client/runtime/library";
-import { PrismaUserRepository } from "../../src/repositories/implementations/prismaUserRepo";
-import { UserEntity, User, UserIdAndRole } from "../../src/constants/types";
+import { PrismaUserRepository } from "@/repositories/implementations/prismaUserRepo";
+import { UserEntity, User, UserIdAndRole } from "@/constants/types";
 import { DatabaseConnection } from "@/database/prisma.database.connection";
 
 vi.mock("../../libs/prisma");
@@ -20,6 +20,7 @@ const mockUser: UserIdAndRole = {
   name: "John Doe",
   username: "johndoe",
   role: "USER",
+  passwordHash: "hashedpassword123",
 };
 
 beforeEach(() => {
@@ -34,7 +35,7 @@ const userRepo = new PrismaUserRepository(
 // describe("PrismaUserRepo", () => {
 describe("findAllUsers", () => {
   test("should return all users", async () => {
-    prisma.user.findMany.mockResolvedValue([mockUser as User]);
+    prisma.user.findMany.mockResolvedValue([mockUser as UserIdAndRole]);
 
     const users = await userRepo.getAllUsers();
     expect(users).toStrictEqual([mockUser]);
@@ -73,6 +74,7 @@ describe("findUserById", () => {
       }),
     );
 
+    // @ts-expect-error - Testing for error
     await expect(userRepo.getUserById(8000)).rejects.toThrowError(
       /User not found/,
     );
@@ -91,7 +93,7 @@ describe("findUserById", () => {
 
 describe("createUser", () => {
   test("should create a new user", async () => {
-    prisma.user.create.mockResolvedValue(mockUser as User);
+    prisma.user.create.mockResolvedValue(mockUser as UserIdAndRole);
 
     const createdUser = await userRepo.createUser(mockUserArgs);
     expect(createdUser).toEqual(mockUser);

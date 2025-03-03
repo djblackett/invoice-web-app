@@ -1,5 +1,5 @@
 import { Role } from "@prisma/client";
-import { ValidationException } from "../config/exception.config";
+import { ValidationException } from "@/config/exception.config";
 import {
   CreateUserDTO,
   Invoice,
@@ -8,7 +8,7 @@ import {
   UserDTO,
   UserEntity,
 
-} from "../constants/types";
+} from "@/constants/types";
 import {invoiceListZod, invoiceZod, userCreateZod, userZod} from "@/constants/zodSchemas";
 
 export const validateInvoiceData = (inputs: unknown) => {
