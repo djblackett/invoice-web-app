@@ -1,7 +1,7 @@
 import ItemList from "./ItemList.tsx";
-import useWindowWidth from "../../../hooks/useWindowWidth.tsx";
+import useWindowWidth from "../../shared/hooks/useWindowWidth.tsx";
 import { Invoice } from "../../../types/types.ts";
-import { convertedDate } from "../../../utils/utilityFunctions.ts";
+import { convertedDate } from "../../shared/utils/utilityFunctions.ts";
 import {
   Address,
   AddressEntry,

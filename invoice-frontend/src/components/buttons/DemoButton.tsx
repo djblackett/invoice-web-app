@@ -1,5 +1,5 @@
 import { ALL_INVOICES } from "@/features/invoices/graphql/invoice.queries.ts";
-import { useAuth } from "@/hooks/useAuth";
+import { useAuth } from "@/features/auth/hooks/useAuth.ts";
 import { useApolloClient } from "@apollo/client";
 import { flushSync } from "react-dom";
 import styled from "styled-components";

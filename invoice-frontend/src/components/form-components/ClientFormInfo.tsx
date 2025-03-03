@@ -10,7 +10,7 @@ import {
 } from "../../styles/editPageStyles";
 import AddressBox from "./AddressBox";
 import LongFormEntry from "./LongFormEntry";
-import useWindowWidth from "../../hooks/useWindowWidth";
+import useWindowWidth from "../../features/shared/hooks/useWindowWidth.tsx";
 import { Invoice } from "../../types/types";
 import { useNewInvoiceContext } from "./NewInvoiceContextProvider";
 

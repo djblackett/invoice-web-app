@@ -1,4 +1,4 @@
-import useWindowWidth from "@/hooks/useWindowWidth";
+import useWindowWidth from "@/features/shared/hooks/useWindowWidth.tsx";
 import { motion } from "motion/react";
 
 interface SidebarProps {

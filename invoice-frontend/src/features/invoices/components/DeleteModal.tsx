@@ -1,19 +1,19 @@
 import { useNavigate, useParams } from "react-router-dom";
 import React from "react";
-import DeleteButton from "./buttons/DeleteButton";
-import CancelButton from "./buttons/CancelButton";
+import DeleteButton from "../../../components/buttons/DeleteButton.tsx";
+import CancelButton from "../../../components/buttons/CancelButton.tsx";
 import { useMutation } from "@apollo/client";
-import { REMOVE_INVOICE, ALL_INVOICES } from "../features/invoices/graphql/invoice.queries.ts";
+import { REMOVE_INVOICE, ALL_INVOICES } from "../graphql/invoice.queries.ts";
 import {
   ModalContainer,
   Confirm,
   ButtonContainer,
-} from "../styles/DeleteModalStyles";
-import { DarkenScreen } from "../styles/editPageStyles";
-import { Description } from "../styles/FullInvoiceStyles";
+} from "../../../styles/DeleteModalStyles.tsx";
+import { DarkenScreen } from "../../../styles/editPageStyles.ts";
+import { Description } from "../../../styles/FullInvoiceStyles.tsx";
 import { toast, Theme } from "react-toastify";
 import { ClickOutsideProvider } from "@shelf/react-outside-click";
-import { Invoice } from "src/types/types";
+import { Invoice } from "@/types/types.ts";
 
 export type DeleteModalProps = {
   isModalOpen: boolean;

@@ -1,6 +1,6 @@
 import styled from "styled-components";
 import React, { SyntheticEvent, useMemo } from "react";
-import useWindowWidth from "../../../hooks/useWindowWidth.tsx";
+import useWindowWidth from "../../shared/hooks/useWindowWidth.tsx";
 import ToolbarButtons from "../../../components/menus-toolbars/ToolbarButtons.tsx";
 import InvoiceStatus from "./InvoiceStatus.tsx";
 import { Invoice } from "../../../types/types.ts";

@@ -15,7 +15,7 @@ import {
   TotalBox,
 } from "../../styles/editFormItemStyles";
 import NewItemButton from "../buttons/NewItemButton";
-import useWindowWidth from "../../hooks/useWindowWidth";
+import useWindowWidth from "../../features/shared/hooks/useWindowWidth.tsx";
 import { Col, Col1 } from "../../styles/EditFormItemListStyles";
 import { Invoice } from "../../types/types";
 

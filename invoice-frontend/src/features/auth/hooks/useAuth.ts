@@ -1,5 +1,5 @@
 import { createContext, useContext } from "react";
-import { User } from "../types/types";
+import { User } from "../../../types/types.ts";
 import {
   User as Auth0User,
   GetTokenSilentlyOptions,

@@ -1,4 +1,4 @@
-import { AuthContext } from "@/hooks/useAuth";
+import { AuthContext } from "@/features/auth/hooks/useAuth.ts";
 import {
   useAuth0,
   Auth0Provider as OriginalAuth0Provider,

@@ -2,11 +2,11 @@ import React from "react";
 import { createRoot } from "react-dom/client";
 import { Provider as ReduxProvider } from "react-redux";
 import { HashRouter } from "react-router-dom";
-import "./styles/index.css";
+import "./features/shared/styles/index.css";
 import store from "./app/store";
 import App from "./app/App";
-import { DemoAuthProvider } from "./auth/DemoAuthProvider";
-import { Auth0ProviderWrapper } from "./auth/Auth0ProviderWrapper";
+import { DemoAuthProvider } from "./features/auth/components/DemoAuthProvider.tsx";
+import { Auth0ProviderWrapper } from "./features/auth/components/Auth0ProviderWrapper.tsx";
 import {
   VITE_AUDIENCE,
   VITE_CLIENT_ID,

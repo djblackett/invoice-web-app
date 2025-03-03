@@ -1,14 +1,14 @@
 import { render, screen, fireEvent } from "@testing-library/react";
 import React from "react";
 import { describe, it, expect, vi } from "vitest";
-import useWindowWidth from "../../src/hooks/useWindowWidth";
+import useWindowWidth from "@/features/shared/hooks/useWindowWidth.tsx";
 import { Invoice } from "../../src/types/types";
 import InvoiceToolbar, {
   InvoiceToolBarProps,
 } from "@/features/invoices/components/InvoiceToolbar.tsx";
 import { NewInvoiceProvider } from "../../src/components/form-components/NewInvoiceContextProvider";
 import { ThemeProvider } from "styled-components";
-import { lightTheme } from "../../src/styles/Themes";
+import { lightTheme } from "@/features/shared/styles/Themes.ts";
 import { ApolloClient, ApolloProvider, InMemoryCache } from "@apollo/client";
 import "@testing-library/jest-dom";
 

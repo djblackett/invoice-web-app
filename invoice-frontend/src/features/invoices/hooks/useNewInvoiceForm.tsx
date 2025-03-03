@@ -8,7 +8,7 @@ import {
   GET_INVOICE_BY_ID,
 } from "../graphql/invoice.queries.ts";
 import { v4 as uuidv4 } from "uuid";
-import { createInvoiceObject } from "../../../utils/utilityFunctions.ts";
+import { createInvoiceObject } from "../../shared/utils/utilityFunctions.ts";
 import { FormType } from "../../../types/types.ts";
 import { useNewInvoiceContext } from "../../../components/form-components/NewInvoiceContextProvider.tsx";
 import { flushSync } from "react-dom";

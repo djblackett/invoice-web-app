@@ -5,7 +5,7 @@ import FormEntry from "./FormEntry";
 import { DateAndPaymentContainer, Label } from "../../styles/editPageStyles";
 import { Invoice } from "src/types/types";
 import { useNewInvoiceContext } from "./NewInvoiceContextProvider";
-import { convertStringToDate } from "@/utils/utilityFunctions";
+import { convertStringToDate } from "@/features/shared/utils/utilityFunctions.ts";
 import CustomInputWrapper from "./LazyCustomInputWrapper";
 
 type DateAndPaymentProps = {

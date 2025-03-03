@@ -1,6 +1,6 @@
 import styled from "styled-components";
 import PropTypes from "prop-types";
-import { getMoney } from "../../../utils/utilityFunctions.ts";
+import { getMoney } from "../../shared/utils/utilityFunctions.ts";
 import { Item } from "../../../types/types.ts";
 
 const ItemContainer = styled.div`

@@ -1,7 +1,7 @@
 import React, { useState, useEffect, Suspense } from "react";
 import { useSelector } from "react-redux";
 import { selectFilter } from "../../features/invoices/store/filterSlice.ts";
-import useWindowWidth from "../../hooks/useWindowWidth";
+import useWindowWidth from "../../features/shared/hooks/useWindowWidth.tsx";
 import { Invoice } from "../../types/types";
 import {
   GridContainer,

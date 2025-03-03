@@ -1,7 +1,7 @@
 import React, { ReactElement } from "react";
 import { render, RenderOptions } from "@testing-library/react";
 import { ThemeProvider } from "styled-components";
-import { lightTheme } from "../src/styles/Themes";
+import { lightTheme } from "@/features/shared/styles/Themes.ts";
 import { MemoryRouter } from "react-router-dom";
 import store from "@/app/store";
 import { Provider as ReduxProvider } from "react-redux";
