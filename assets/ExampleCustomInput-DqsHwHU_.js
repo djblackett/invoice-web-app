@@ -1,4 +1,4 @@
-import{d as e,S as n,a,j as t}from"./index-DBIgSxWt.js";import{dateIcon as s}from"./DateAndPayment-BeOzGrVL.js";import"./SlidingMenu-BHfrU-bz.js";import"./InvoiceStatus-CD3fxQNr.js";import"./editPageStyles-C0vc-1a1.js";import"./utilityFunctions-CnxIGzby.js";import"./useMutation-BXA06Uoi.js";import"./create-visual-element-BP_b6XKt.js";const d=e.div`
+import{d as e,S as n,a,j as t}from"./index-BHpCqAvw.js";import{d as s}from"./DateAndPayment-CCQEV843.js";import"./editPageStyles-CIiWgP95.js";import"./InvoiceStatus-X2YV5iHT.js";import"./utilityFunctions-3T_76R2k.js";import"./SlidingMenu-CcZflWRe.js";import"./useMutation-Ce8spnmH.js";import"./create-visual-element-DXarKZ9X.js";const d=e.div`
   display: flex;
   justify-content: space-between;
   align-items: center;
