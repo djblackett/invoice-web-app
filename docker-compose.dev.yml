@@ -35,7 +35,6 @@ services:
     # use commented out command to run playwright tests in their own DB
     # command:  sh -c "npx prisma@6.2.1 generate && npx prisma@6.2.1 db push && npm run start:test"
     environment:
-      # - DATABASE_URL=postgresql://postgres:example@db-dev:5432/db-test
       - NODE_ENV=test
       - PORT=8000
       - REQUEST_ORIGIN=https://localhost
@@ -106,30 +105,12 @@ services:
     environment:
       NODE_ENV: development
       TEST_ENV: docker
-      TEST_BASE_URL: http://proxy-dev/invoice-web-app/
-      VITE_BACKEND_URL: http://proxy-dev/graphql/
+      TEST_BASE_URL: http://frontend-dev/invoice-web-app/
+      VITE_BACKEND_URL: http://backend-dev/graphql/
     networks:
       - my_network_dev
     stdin_open: true
     tty: true
-
-  proxy-dev:
-    image: nginx:1.25.2
-    hostname: proxy-dev
-    container_name: proxy-dev
-    depends_on:
-      backend-dev:
-        condition: service_started
-      frontend-dev:
-        condition: service_started
-    tty: true
-    stdin_open: true
-    volumes:
-      - ./nginx.dev.conf:/etc/nginx/nginx.conf
-    ports:
-      - "80:80"
-    networks:
-      - my_network_dev
 
 networks:
   my_network_dev:
