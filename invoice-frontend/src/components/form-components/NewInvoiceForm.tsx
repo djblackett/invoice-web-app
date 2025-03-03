@@ -5,7 +5,7 @@ import EditFormItemList from "./EditFormItemList";
 import FormErrorList from "./FormErrorList";
 import ClientFormInfo from "./ClientFormInfo";
 import Description from "./Description";
-import { useNewInvoiceForm } from "../../hooks/useNewInvoiceForm";
+import { useNewInvoiceForm } from "../../features/invoices/hooks/useNewInvoiceForm.tsx";
 import { useNewInvoiceContext } from "./NewInvoiceContextProvider";
 import React, { Suspense } from "react";
 

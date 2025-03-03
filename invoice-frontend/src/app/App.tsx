@@ -13,8 +13,8 @@ import { LazyMotion } from "motion/react";
 
 const WelcomePage = React.lazy(() => import("@/pages/WelcomePage"));
 const ProtectedRoute = React.lazy(() => import("@/components/ProtectedRoute"));
-const AllInvoices = React.lazy(() => import("@/pages/AllInvoices"));
-const ViewInvoice = React.lazy(() => import("@/pages/ViewInvoice"));
+const AllInvoices = React.lazy(() => import("@/features/invoices/pages/AllInvoices.tsx"));
+const ViewInvoice = React.lazy(() => import("@/features/invoices/pages/ViewInvoice.tsx"));
 const Login = React.lazy(() => import("@/pages/Login"));
 
 const loadFeatures = () =>

@@ -7,7 +7,7 @@ import DeleteModal, {
 import {
   REMOVE_INVOICE,
   ALL_INVOICES,
-} from "../../src/graphql/invoice.queries";
+} from "@/features/invoices/graphql/invoice.queries.ts";
 import { ThemeProvider } from "styled-components";
 import { lightTheme } from "../../src/styles/Themes";
 import React from "react";

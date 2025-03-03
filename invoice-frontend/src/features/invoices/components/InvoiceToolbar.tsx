@@ -1,9 +1,9 @@
 import styled from "styled-components";
 import React, { SyntheticEvent, useMemo } from "react";
-import useWindowWidth from "../../hooks/useWindowWidth";
-import ToolbarButtons from "../menus-toolbars/ToolbarButtons";
-import InvoiceStatus from "./InvoiceStatus";
-import { Invoice } from "../../types/types";
+import useWindowWidth from "../../../hooks/useWindowWidth.tsx";
+import ToolbarButtons from "../../../components/menus-toolbars/ToolbarButtons.tsx";
+import InvoiceStatus from "./InvoiceStatus.tsx";
+import { Invoice } from "../../../types/types.ts";
 import { toast } from "react-toastify";
 
 const Toolbar = styled.div`

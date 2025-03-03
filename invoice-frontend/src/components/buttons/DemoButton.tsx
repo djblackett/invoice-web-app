@@ -1,4 +1,4 @@
-import { ALL_INVOICES } from "@/graphql/invoice.queries";
+import { ALL_INVOICES } from "@/features/invoices/graphql/invoice.queries.ts";
 import { useAuth } from "@/hooks/useAuth";
 import { useApolloClient } from "@apollo/client";
 import { flushSync } from "react-dom";

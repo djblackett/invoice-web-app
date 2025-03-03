@@ -1,22 +1,22 @@
 import { Suspense, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
-import InvoiceToolbar from "../components/invoice-components/InvoiceToolbar";
+import InvoiceToolbar from "../components/InvoiceToolbar.tsx";
 import {
   arrowLeft,
   GoBack,
   GoBackButton,
   Icon,
   ViewContainer,
-} from "../styles/ViewInvoiceStyles";
-import { NewInvoiceProvider } from "../components/form-components/NewInvoiceContextProvider";
+} from "../../../styles/ViewInvoiceStyles.tsx";
+import { NewInvoiceProvider } from "../../../components/form-components/NewInvoiceContextProvider.tsx";
 import { useQuery } from "@apollo/client";
-import { GET_INVOICE_BY_ID } from "../graphql/invoice.queries";
+import { GET_INVOICE_BY_ID } from "../graphql/invoice.queries.ts";
 import React from "react";
 
-const EditForm = React.lazy(() => import("./EditForm"));
-const DeleteModal = React.lazy(() => import("../components/DeleteModal"));
+const EditForm = React.lazy(() => import("./EditForm.tsx"));
+const DeleteModal = React.lazy(() => import("../../../components/DeleteModal.tsx"));
 const FullInvoice = React.lazy(
-  () => import("../components/invoice-components/FullInvoice"),
+  () => import("../components/FullInvoice.tsx"),
 );
 
 function ViewInvoice() {

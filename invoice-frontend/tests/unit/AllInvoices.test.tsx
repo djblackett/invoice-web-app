@@ -1,6 +1,6 @@
 import { render, screen } from "../testUtils";
 import { describe, it, expect, vi, Mock } from "vitest";
-import AllInvoices from "../../src/pages/AllInvoices";
+import AllInvoices from "@/features/invoices/pages/AllInvoices.tsx";
 import { useAuth } from "@/hooks/useAuth";
 
 // Mock useAuth0 hook

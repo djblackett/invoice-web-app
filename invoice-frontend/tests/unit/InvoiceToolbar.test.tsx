@@ -5,7 +5,7 @@ import useWindowWidth from "../../src/hooks/useWindowWidth";
 import { Invoice } from "../../src/types/types";
 import InvoiceToolbar, {
   InvoiceToolBarProps,
-} from "../../src/components/invoice-components/InvoiceToolbar";
+} from "@/features/invoices/components/InvoiceToolbar.tsx";
 import { NewInvoiceProvider } from "../../src/components/form-components/NewInvoiceContextProvider";
 import { ThemeProvider } from "styled-components";
 import { lightTheme } from "../../src/styles/Themes";

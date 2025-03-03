@@ -1,8 +1,8 @@
 import styled from "styled-components";
 import { useMemo } from "react";
-import InvoiceStatus from "./InvoiceStatus";
-import { getMoney } from "../../utils/utilityFunctions";
-import { Invoice } from "../../types/types";
+import InvoiceStatus from "./InvoiceStatus.tsx";
+import { getMoney } from "../../../utils/utilityFunctions.ts";
+import { Invoice } from "../../../types/types.ts";
 import * as m from "motion/react-m";
 
 const Card = styled(m.div)`

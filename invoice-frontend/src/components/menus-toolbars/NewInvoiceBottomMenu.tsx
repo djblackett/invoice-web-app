@@ -8,7 +8,7 @@ import {
   SaveDraft,
 } from "../../styles/NewInvoiceBottomMenuStyles";
 import { useNewInvoiceContext } from "../form-components/NewInvoiceContextProvider";
-import { useNewInvoiceForm } from "../../hooks/useNewInvoiceForm";
+import { useNewInvoiceForm } from "../../features/invoices/hooks/useNewInvoiceForm.tsx";
 
 type NewInvoiceBoottemMenuProps = {
   closeText: string;

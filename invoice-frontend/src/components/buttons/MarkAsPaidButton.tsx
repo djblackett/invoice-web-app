@@ -3,7 +3,7 @@ import { toast, Theme } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { Invoice } from "../../types/types";
 import { useMutation } from "@apollo/client";
-import { MARK_AS_PAID } from "../../graphql/invoice.queries";
+import { MARK_AS_PAID } from "../../features/invoices/graphql/invoice.queries.ts";
 import { MutableRefObject } from "react";
 
 const Button = styled.button`

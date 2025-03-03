@@ -1,6 +1,6 @@
 import { render, screen } from "../testUtils";
 import { describe, it, expect, vi } from "vitest";
-import EditForm from "../../src/pages/EditForm";
+import EditForm from "@/features/invoices/pages/EditForm.tsx";
 import { Invoice } from "../../src/types/types";
 import { NewInvoiceProvider } from "@/components/form-components/NewInvoiceContextProvider";
 

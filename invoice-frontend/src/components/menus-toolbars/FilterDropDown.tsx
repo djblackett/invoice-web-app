@@ -2,7 +2,7 @@ import { ReactElement, SyntheticEvent } from "react";
 import styled from "styled-components";
 import { useDispatch } from "react-redux";
 import CheckboxSelection from "./CheckboxSelection";
-import { changeFilter } from "../../features/invoices/filterSlice";
+import { changeFilter } from "../../features/invoices/store/filterSlice.ts";
 import { StatusKey } from "../../types/types";
 import { ClickOutsideProvider } from "@shelf/react-outside-click";
 

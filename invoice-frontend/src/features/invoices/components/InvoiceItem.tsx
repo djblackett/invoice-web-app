@@ -1,7 +1,7 @@
 import styled from "styled-components";
 import PropTypes from "prop-types";
-import { getMoney } from "../../utils/utilityFunctions";
-import { Item } from "../../types/types";
+import { getMoney } from "../../../utils/utilityFunctions.ts";
+import { Item } from "../../../types/types.ts";
 
 const ItemContainer = styled.div`
   display: grid;

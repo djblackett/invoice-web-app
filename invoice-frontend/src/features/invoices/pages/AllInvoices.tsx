@@ -1,17 +1,17 @@
-import { MemoizedAllInvoicesToolbar } from "../components/menus-toolbars/AllInvoicesToolbar";
-import useWindowWidth from "../hooks/useWindowWidth";
-import AllInvoicesView from "../components/AllInvoicesView";
-import useInvoices from "../hooks/useInvoices";
-import { AllInvoicesContainer } from "../styles/AllInvoicesStyles";
-import { NewInvoiceProvider } from "../components/form-components/NewInvoiceContextProvider";
-import { useAuth } from "@/hooks/useAuth";
+import { MemoizedAllInvoicesToolbar } from "../../../components/menus-toolbars/AllInvoicesToolbar.tsx";
+import useWindowWidth from "../../../hooks/useWindowWidth.tsx";
+import AllInvoicesView from "../../../components/AllInvoicesView.tsx";
+import useInvoices from "../hooks/useInvoices.ts";
+import { AllInvoicesContainer } from "../../../styles/AllInvoicesStyles.tsx";
+import { NewInvoiceProvider } from "../../../components/form-components/NewInvoiceContextProvider.tsx";
+import { useAuth } from "@/hooks/useAuth.ts";
 import { Suspense } from "react";
 import React from "react";
 import { useSubscription } from "@apollo/client";
-import { ALL_INVOICES, INVOICE_ADDED } from "@/graphql/invoice.queries";
-import FadeOut from "@/animation/FadeOutText";
+import { ALL_INVOICES, INVOICE_ADDED } from "@/features/invoices/graphql/invoice.queries.ts";
+import FadeOut from "@/animation/FadeOutText.tsx";
 
-const NewInvoice = React.lazy(() => import("./NewInvoice"));
+const NewInvoice = React.lazy(() => import("./NewInvoice.tsx"));
 
 function AllInvoices() {
   const width = useWindowWidth();

@@ -1,7 +1,7 @@
 import { Link, LinkProps } from "react-router-dom";
 import styled from "styled-components";
-import InvoiceGrid from "./invoice-components/InvoiceGrid";
-import InvoiceCard from "./invoice-components/InvoiceCard";
+import InvoiceGrid from "../features/invoices/components/InvoiceGrid.tsx";
+import InvoiceCard from "../features/invoices/components/InvoiceCard.tsx";
 import EmptyList from "./EmptyList";
 import { Invoice } from "../types/types";
 import { Grid } from "react-loader-spinner";

@@ -6,11 +6,11 @@ import {
   ALL_INVOICES,
   EDIT_INVOICE,
   GET_INVOICE_BY_ID,
-} from "../graphql/invoice.queries";
+} from "../graphql/invoice.queries.ts";
 import { v4 as uuidv4 } from "uuid";
-import { createInvoiceObject } from "../utils/utilityFunctions";
-import { FormType } from "../types/types";
-import { useNewInvoiceContext } from "../components/form-components/NewInvoiceContextProvider";
+import { createInvoiceObject } from "../../../utils/utilityFunctions.ts";
+import { FormType } from "../../../types/types.ts";
+import { useNewInvoiceContext } from "../../../components/form-components/NewInvoiceContextProvider.tsx";
 import { flushSync } from "react-dom";
 import { useParams } from "react-router-dom";
 

@@ -1,23 +1,23 @@
 import { FormProvider } from "react-hook-form";
-import "../styles/react-datepicker.css";
-import EditBottomMenu from "../components/menus-toolbars/EditBottomMenu";
+import "../../../styles/react-datepicker.css";
+import EditBottomMenu from "../../../components/menus-toolbars/EditBottomMenu.tsx";
 import {
   BillText,
   EditTitle,
   FormContainerDarkenModal,
-} from "../styles/editPageStyles";
-import CompanyFormInfo from "../components/form-components/CompanyFormInfo";
-import ClientFormInfo from "../components/form-components/ClientFormInfo";
-import DateAndPayment from "../components/form-components/DateAndPayment";
-import FormErrorList from "../components/form-components/FormErrorList";
-import EditFormItemList from "../components/form-components/EditFormItemList";
-import { Invoice } from "../types/types";
+} from "../../../styles/editPageStyles.ts";
+import CompanyFormInfo from "../../../components/form-components/CompanyFormInfo.tsx";
+import ClientFormInfo from "../../../components/form-components/ClientFormInfo.tsx";
+import DateAndPayment from "../../../components/form-components/DateAndPayment.tsx";
+import FormErrorList from "../../../components/form-components/FormErrorList.tsx";
+import EditFormItemList from "../../../components/form-components/EditFormItemList.tsx";
+import { Invoice } from "../../../types/types.ts";
 
-import Description from "../components/form-components/Description";
-import { useNewInvoiceForm } from "../hooks/useNewInvoiceForm";
-import { useNewInvoiceContext } from "../components/form-components/NewInvoiceContextProvider";
+import Description from "../../../components/form-components/Description.tsx";
+import { useNewInvoiceForm } from "../hooks/useNewInvoiceForm.tsx";
+import { useNewInvoiceContext } from "../../../components/form-components/NewInvoiceContextProvider.tsx";
 import { AnimatePresence } from "motion/react";
-import Sidebar from "@/animation/SlidingMenu";
+import Sidebar from "@/animation/SlidingMenu.tsx";
 
 type EditFormProps = {
   invoice: Invoice;
