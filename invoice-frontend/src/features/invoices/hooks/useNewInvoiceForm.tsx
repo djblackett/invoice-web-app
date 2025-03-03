@@ -10,7 +10,7 @@ import {
 import { v4 as uuidv4 } from "uuid";
 import { createInvoiceObject } from "../../shared/utils/utilityFunctions.ts";
 import { FormType } from "../../../types/types.ts";
-import { useNewInvoiceContext } from "../../../components/form-components/NewInvoiceContextProvider.tsx";
+import { useNewInvoiceContext } from "../forms/NewInvoiceContextProvider.tsx";
 import { flushSync } from "react-dom";
 import { useParams } from "react-router-dom";
 

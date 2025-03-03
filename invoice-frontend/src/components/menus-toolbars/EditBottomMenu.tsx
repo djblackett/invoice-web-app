@@ -3,7 +3,7 @@ import { useFormContext } from "react-hook-form";
 import CancelButton from "../buttons/CancelButton";
 import { MenuContainer, Save } from "../../styles/NewInvoiceBottomMenuStyles";
 import { useNewInvoiceForm } from "../../features/invoices/hooks/useNewInvoiceForm.tsx";
-import { useNewInvoiceContext } from "../form-components/NewInvoiceContextProvider";
+import { useNewInvoiceContext } from "../../features/invoices/forms/NewInvoiceContextProvider.tsx";
 import { FormType } from "@/types/types";
 
 type EditBottomMenuProps = {

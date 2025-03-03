@@ -4,7 +4,7 @@ import EditButton from "../buttons/EditButton";
 import DeleteButton from "../buttons/DeleteButton";
 import MarkAsPaidButton from "../buttons/MarkAsPaidButton";
 import { Invoice } from "../../types/types";
-import { useNewInvoiceContext } from "../form-components/NewInvoiceContextProvider";
+import { useNewInvoiceContext } from "../../features/invoices/forms/NewInvoiceContextProvider.tsx";
 import { SyntheticEvent, useRef } from "react";
 
 const ButtonsContainer = styled.div`

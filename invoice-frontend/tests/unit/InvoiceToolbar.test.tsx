@@ -6,7 +6,7 @@ import { Invoice } from "../../src/types/types";
 import InvoiceToolbar, {
   InvoiceToolBarProps,
 } from "@/features/invoices/components/InvoiceToolbar.tsx";
-import { NewInvoiceProvider } from "../../src/components/form-components/NewInvoiceContextProvider";
+import { NewInvoiceProvider } from "@/features/invoices/forms/NewInvoiceContextProvider.tsx";
 import { ThemeProvider } from "styled-components";
 import { lightTheme } from "@/features/shared/styles/Themes.ts";
 import { ApolloClient, ApolloProvider, InMemoryCache } from "@apollo/client";

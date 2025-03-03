@@ -13,11 +13,11 @@ import {
   SVG,
   Total,
   TotalBox,
-} from "../../styles/editFormItemStyles";
-import NewItemButton from "../buttons/NewItemButton";
-import useWindowWidth from "../../features/shared/hooks/useWindowWidth.tsx";
-import { Col, Col1 } from "../../styles/EditFormItemListStyles";
-import { Invoice } from "../../types/types";
+} from "../../../styles/editFormItemStyles.tsx";
+import NewItemButton from "../../../components/buttons/NewItemButton.tsx";
+import useWindowWidth from "../../shared/hooks/useWindowWidth.tsx";
+import { Col, Col1 } from "../../../styles/EditFormItemListStyles.ts";
+import { Invoice } from "../../../types/types.ts";
 
 type InputFormItemProps = {
   invoice?: Invoice;

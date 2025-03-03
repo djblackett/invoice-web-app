@@ -1,5 +1,5 @@
 import React, { createContext, FC, ReactNode, useState } from "react";
-import { FormType, Item } from "../../types/types";
+import { FormType, Item } from "../../../types/types.ts";
 import { useForm, UseFormReturn } from "react-hook-form";
 
 interface AppContextType {

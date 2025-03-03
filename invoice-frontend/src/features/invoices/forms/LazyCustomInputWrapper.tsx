@@ -1,7 +1,7 @@
 import React, { forwardRef, Suspense } from "react";
-import type { CustomInputProps } from "./ExampleCustomInput";
+import type { CustomInputProps } from "./ExampleCustomInput.tsx";
 
-const LazyCustomInput = React.lazy(() => import("./ExampleCustomInput"));
+const LazyCustomInput = React.lazy(() => import("./ExampleCustomInput.tsx"));
 
 const CustomInputWrapper = forwardRef<HTMLInputElement, CustomInputProps>(
   (props, ref) => {

@@ -1,12 +1,12 @@
-import InputFormItem from "./InputFormItem";
+import InputFormItem from "./InputFormItem.tsx";
 import {
   ItemsContainer,
   ItemTitle,
   ListContainer,
-} from "../../styles/EditFormItemListStyles";
-import { Invoice } from "../../types/types";
-import { useNewInvoiceContext } from "./NewInvoiceContextProvider";
-import { ItemsHeader } from "./ItemsHeader";
+} from "../../../styles/EditFormItemListStyles.ts";
+import { Invoice } from "../../../types/types.ts";
+import { useNewInvoiceContext } from "./NewInvoiceContextProvider.tsx";
+import { ItemsHeader } from "./ItemsHeader.tsx";
 
 type EditFormItemListProps = {
   invoice?: Invoice;

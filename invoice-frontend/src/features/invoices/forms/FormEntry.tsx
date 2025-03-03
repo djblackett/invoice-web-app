@@ -1,6 +1,6 @@
 import React, { CSSProperties } from "react";
-import { OppositeWidthContainer } from "../../styles/FormEntryStyles";
-import { FormEntryContainer } from "./LongFormEntry";
+import { OppositeWidthContainer } from "../../../styles/FormEntryStyles.tsx";
+import { FormEntryContainer } from "./LongFormEntry.tsx";
 
 type FormEntryProps = {
   children: React.ReactNode;

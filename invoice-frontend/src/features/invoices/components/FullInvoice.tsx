@@ -16,7 +16,7 @@ import {
   NamePlusAddress,
   TopEntry,
   TopRow,
-} from "../../../styles/FullInvoiceStyles.tsx";
+} from "../styles/FullInvoiceStyles.tsx";
 
 export type FullInvoiceProps = {
   invoice: Invoice;

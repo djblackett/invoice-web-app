@@ -1,14 +1,14 @@
 import React, { useState, useEffect } from "react";
-import { SVG } from "../buttons/NewItemButton";
+import { SVG } from "../../../components/buttons/NewItemButton.tsx";
 import {
   Main,
   DropDownHeader,
   DropDownList,
   ListItem,
   ItemButton,
-} from "../../styles/FormDropDownStyles";
-import { useNewInvoiceContext } from "./NewInvoiceContextProvider";
-import { Invoice } from "src/types/types";
+} from "../../../styles/FormDropDownStyles.tsx";
+import { useNewInvoiceContext } from "./NewInvoiceContextProvider.tsx";
+import { Invoice } from "@/types/types.ts";
 
 const options = ["Net 1 Day", "Net 7 Days", "Net 14 Days", "Net 30 Days"];
 

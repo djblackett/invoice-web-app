@@ -7,8 +7,8 @@ import {
   GoBackButton,
   Icon,
   ViewContainer,
-} from "../../../styles/ViewInvoiceStyles.tsx";
-import { NewInvoiceProvider } from "../../../components/form-components/NewInvoiceContextProvider.tsx";
+} from "../styles/ViewInvoiceStyles.tsx";
+import { NewInvoiceProvider } from "../forms/NewInvoiceContextProvider.tsx";
 import { useQuery } from "@apollo/client";
 import { GET_INVOICE_BY_ID } from "../graphql/invoice.queries.ts";
 import React from "react";

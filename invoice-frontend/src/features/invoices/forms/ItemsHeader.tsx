@@ -1,4 +1,4 @@
-import { ItemsHeaderStyled, Col1, Col } from "@/styles/EditFormItemListStyles";
+import { ItemsHeaderStyled, Col1, Col } from "@/styles/EditFormItemListStyles.ts";
 
 interface ItemsHeaderProps {
   className?: string;

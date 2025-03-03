@@ -25,7 +25,7 @@ const ViewInvoice = React.lazy(
 const Login = React.lazy(() => import("@/features/auth/pages/Login.tsx"));
 
 const loadFeatures = () =>
-  import("../animation/motionConfig").then((res) => res.default);
+  import("../features/shared/animations/motionConfig.ts").then((res) => res.default);
 
 function App() {
   const [theme, setTheme] = useState("light");

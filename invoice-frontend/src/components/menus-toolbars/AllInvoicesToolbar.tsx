@@ -12,9 +12,9 @@ import {
   FilterButton,
   Filter,
   arrowDownSVG,
-} from "../../styles/AllInvoicesToolbarStyles";
+} from "../../features/invoices/styles/AllInvoicesToolbarStyles.tsx";
 import NewInvoiceButton from "../buttons/NewInvoiceButton";
-import { useNewInvoiceContext } from "../form-components/NewInvoiceContextProvider";
+import { useNewInvoiceContext } from "../../features/invoices/forms/NewInvoiceContextProvider.tsx";
 
 const FilterDropDown = React.lazy(() => import("./FilterDropDown"));
 

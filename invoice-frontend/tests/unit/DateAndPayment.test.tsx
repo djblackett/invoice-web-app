@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/ban-ts-comment */
 import { render, screen } from "../testUtils";
-import DateAndPayment from "@/components/form-components/DateAndPayment";
-import { useNewInvoiceContext } from "@/components/form-components/NewInvoiceContextProvider";
+import DateAndPayment from "@/features/invoices/forms/DateAndPayment.tsx";
+import { useNewInvoiceContext } from "@/features/invoices/forms/NewInvoiceContextProvider.tsx";
 import {
   afterEach,
   beforeEach,

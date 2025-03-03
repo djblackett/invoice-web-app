@@ -1,8 +1,8 @@
-import NewInvoiceForm from "../../../components/form-components/NewInvoiceForm.tsx";
+import NewInvoiceForm from "../forms/NewInvoiceForm.tsx";
 import "../../../styles/react-datepicker.css";
 import { EditTitle, FormContainerDarkenModal } from "../../../styles/editPageStyles.ts";
-import { useNewInvoiceContext } from "../../../components/form-components/NewInvoiceContextProvider.tsx";
-import Sidebar from "@/animation/SlidingMenu.tsx";
+import { useNewInvoiceContext } from "../forms/NewInvoiceContextProvider.tsx";
+import Sidebar from "@/features/shared/animations/SlidingMenu.tsx";
 import { AnimatePresence } from "motion/react";
 
 function NewInvoice() {

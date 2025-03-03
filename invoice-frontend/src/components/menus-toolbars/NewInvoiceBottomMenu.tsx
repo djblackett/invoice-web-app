@@ -7,7 +7,7 @@ import {
   SaveAndDraftContainer,
   SaveDraft,
 } from "../../styles/NewInvoiceBottomMenuStyles";
-import { useNewInvoiceContext } from "../form-components/NewInvoiceContextProvider";
+import { useNewInvoiceContext } from "../../features/invoices/forms/NewInvoiceContextProvider.tsx";
 import { useNewInvoiceForm } from "../../features/invoices/hooks/useNewInvoiceForm.tsx";
 
 type NewInvoiceBoottemMenuProps = {

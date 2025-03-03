@@ -1,5 +1,5 @@
 import { useFormContext } from "react-hook-form";
-import FormEntry from "./FormEntry";
+import FormEntry from "./FormEntry.tsx";
 import {
   AddressDetailInput,
   CountryInput,
@@ -7,12 +7,12 @@ import {
   Label,
   StreetAddressInput,
   Input,
-} from "../../styles/editPageStyles";
-import AddressBox from "./AddressBox";
-import LongFormEntry from "./LongFormEntry";
-import useWindowWidth from "../../features/shared/hooks/useWindowWidth.tsx";
-import { Invoice } from "../../types/types";
-import { useNewInvoiceContext } from "./NewInvoiceContextProvider";
+} from "../../../styles/editPageStyles.ts";
+import AddressBox from "./AddressBox.tsx";
+import LongFormEntry from "./LongFormEntry.tsx";
+import useWindowWidth from "../../shared/hooks/useWindowWidth.tsx";
+import { Invoice } from "../../../types/types.ts";
+import { useNewInvoiceContext } from "./NewInvoiceContextProvider.tsx";
 
 type ClientFormInfoProps = {
   invoice?: Invoice;

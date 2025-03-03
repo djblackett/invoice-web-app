@@ -1,9 +1,9 @@
 import { useAuth } from "@/features/auth/hooks/useAuth.ts";
 import { Navigate } from "react-router-dom";
-import { SlidingButton } from "@/animation/AnimatedButton.tsx";
+import { SlidingButton } from "@/features/shared/animations/AnimatedButton.tsx";
 import { LoginLogoutButton } from "@/components/menus-toolbars/Header.tsx";
-import TextAnimation from "@/animation/AnimatedText.tsx";
-import { ViewContainer } from "@/styles/ViewInvoiceStyles.tsx";
+import TextAnimation from "@/features/shared/animations/AnimatedText.tsx";
+import { ViewContainer } from "@/features/invoices/styles/ViewInvoiceStyles.tsx";
 
 const Login = () => {
   const { isAuthenticated, isLoading, loginWithRedirect } = useAuth();

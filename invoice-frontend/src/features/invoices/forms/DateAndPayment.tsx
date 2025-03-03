@@ -1,12 +1,12 @@
 import { useEffect } from "react";
 import DatePicker from "react-datepicker";
-import PaymentTermsDropdown from "./FormDropDown";
-import FormEntry from "./FormEntry";
-import { DateAndPaymentContainer, Label } from "../../styles/editPageStyles";
-import { Invoice } from "src/types/types";
-import { useNewInvoiceContext } from "./NewInvoiceContextProvider";
+import PaymentTermsDropdown from "./FormDropDown.tsx";
+import FormEntry from "./FormEntry.tsx";
+import { DateAndPaymentContainer, Label } from "../../../styles/editPageStyles.ts";
+import { Invoice } from "@/types/types.ts";
+import { useNewInvoiceContext } from "./NewInvoiceContextProvider.tsx";
 import { convertStringToDate } from "@/features/shared/utils/utilityFunctions.ts";
-import CustomInputWrapper from "./LazyCustomInputWrapper";
+import CustomInputWrapper from "./LazyCustomInputWrapper.tsx";
 
 type DateAndPaymentProps = {
   invoice?: Invoice;

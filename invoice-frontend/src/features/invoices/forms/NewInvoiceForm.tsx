@@ -1,19 +1,19 @@
 import { FormProvider } from "react-hook-form";
-import { BillText } from "../../styles/editPageStyles";
-import CompanyFormInfo from "./CompanyFormInfo";
-import EditFormItemList from "./EditFormItemList";
-import FormErrorList from "./FormErrorList";
-import ClientFormInfo from "./ClientFormInfo";
-import Description from "./Description";
-import { useNewInvoiceForm } from "../../features/invoices/hooks/useNewInvoiceForm.tsx";
-import { useNewInvoiceContext } from "./NewInvoiceContextProvider";
+import { BillText } from "../../../styles/editPageStyles.ts";
+import CompanyFormInfo from "./CompanyFormInfo.tsx";
+import EditFormItemList from "./EditFormItemList.tsx";
+import FormErrorList from "./FormErrorList.tsx";
+import ClientFormInfo from "./ClientFormInfo.tsx";
+import Description from "./Description.tsx";
+import { useNewInvoiceForm } from "../hooks/useNewInvoiceForm.tsx";
+import { useNewInvoiceContext } from "./NewInvoiceContextProvider.tsx";
 import React, { Suspense } from "react";
 
 const NewInvoiceBottomMenu = React.lazy(
-  () => import("../menus-toolbars/NewInvoiceBottomMenu"),
+  () => import("../../../components/menus-toolbars/NewInvoiceBottomMenu.tsx"),
 );
 
-const DateAndPayment = React.lazy(() => import("./DateAndPayment"));
+const DateAndPayment = React.lazy(() => import("./DateAndPayment.tsx"));
 
 export default function NewInvoiceForm() {
   const { methods } = useNewInvoiceForm();

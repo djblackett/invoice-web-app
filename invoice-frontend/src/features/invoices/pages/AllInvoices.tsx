@@ -2,14 +2,14 @@ import { MemoizedAllInvoicesToolbar } from "../../../components/menus-toolbars/A
 import useWindowWidth from "../../shared/hooks/useWindowWidth.tsx";
 import AllInvoicesView from "../components/AllInvoicesView.tsx";
 import useInvoices from "../hooks/useInvoices.ts";
-import { AllInvoicesContainer } from "../../../styles/AllInvoicesStyles.tsx";
-import { NewInvoiceProvider } from "../../../components/form-components/NewInvoiceContextProvider.tsx";
+import { AllInvoicesContainer } from "../styles/AllInvoicesStyles.tsx";
+import { NewInvoiceProvider } from "../forms/NewInvoiceContextProvider.tsx";
 import { useAuth } from "@/features/auth/hooks/useAuth.ts";
 import { Suspense } from "react";
 import React from "react";
 import { useSubscription } from "@apollo/client";
 import { ALL_INVOICES, INVOICE_ADDED } from "@/features/invoices/graphql/invoice.queries.ts";
-import FadeOut from "@/animation/FadeOutText.tsx";
+import FadeOut from "@/features/shared/animations/FadeOutText.tsx";
 
 const NewInvoice = React.lazy(() => import("./NewInvoice.tsx"));
 

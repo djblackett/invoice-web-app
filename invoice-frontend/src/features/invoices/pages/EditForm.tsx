@@ -6,18 +6,18 @@ import {
   EditTitle,
   FormContainerDarkenModal,
 } from "../../../styles/editPageStyles.ts";
-import CompanyFormInfo from "../../../components/form-components/CompanyFormInfo.tsx";
-import ClientFormInfo from "../../../components/form-components/ClientFormInfo.tsx";
-import DateAndPayment from "../../../components/form-components/DateAndPayment.tsx";
-import FormErrorList from "../../../components/form-components/FormErrorList.tsx";
-import EditFormItemList from "../../../components/form-components/EditFormItemList.tsx";
+import CompanyFormInfo from "../forms/CompanyFormInfo.tsx";
+import ClientFormInfo from "../forms/ClientFormInfo.tsx";
+import DateAndPayment from "../forms/DateAndPayment.tsx";
+import FormErrorList from "../forms/FormErrorList.tsx";
+import EditFormItemList from "../forms/EditFormItemList.tsx";
 import { Invoice } from "../../../types/types.ts";
 
-import Description from "../../../components/form-components/Description.tsx";
+import Description from "../forms/Description.tsx";
 import { useNewInvoiceForm } from "../hooks/useNewInvoiceForm.tsx";
-import { useNewInvoiceContext } from "../../../components/form-components/NewInvoiceContextProvider.tsx";
+import { useNewInvoiceContext } from "../forms/NewInvoiceContextProvider.tsx";
 import { AnimatePresence } from "motion/react";
-import Sidebar from "@/animation/SlidingMenu.tsx";
+import Sidebar from "@/features/shared/animations/SlidingMenu.tsx";
 
 type EditFormProps = {
   invoice: Invoice;

@@ -1,6 +1,6 @@
 import { useFormContext } from "react-hook-form";
 import PropTypes from "prop-types";
-import { ErrorList, ErrorText } from "../../styles/editPageStyles";
+import { ErrorList, ErrorText } from "../../../styles/editPageStyles.ts";
 
 type FormErrorListProps = {
   isEditOpen: boolean;
