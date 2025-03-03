@@ -5,8 +5,11 @@ import {
   NewInvoiceForm,
 } from "../pages/newInvoice/newInvoiceForm";
 
-import { TEST_BASE_URL } from "../../global-setup";
+import { clearDatabase, TEST_BASE_URL } from "../../global-setup";
 
+test.beforeEach(async () => {
+  await clearDatabase();
+});
 test("Should create a new invoice and be visible in invoices list", async ({
   page,
 }) => {

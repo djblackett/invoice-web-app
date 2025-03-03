@@ -1,5 +1,5 @@
 import { render, screen } from "@testing-library/react";
-import EmptyList from "../../src/components/EmptyList";
+import EmptyList from "@/features/invoices/components/EmptyList.tsx";
 import { describe, it, expect } from "vitest";
 
 describe("EmptyList component", () => {

@@ -1,24 +1,35 @@
 import React, { Suspense, useEffect, useState } from "react";
 import { ThemeProvider } from "styled-components";
 import { useRoutes } from "react-router-dom";
-import Header from "../components/menus-toolbars/Header";
-import GlobalStyles from "../styles/GlobalStyles";
-import { lightTheme, darkTheme } from "../styles/Themes";
-import Layout from "../components/Layout";
+import Header from "../features/shared/components/Header.tsx";
+import GlobalStyles from "../features/shared/styles/GlobalStyles.ts";
+import { lightTheme, darkTheme } from "../features/shared/styles/Themes.ts";
+import Layout from "../features/shared/components/Layout.tsx";
 import { ApolloProvider } from "@apollo/client";
-import useWindowWidth from "@/hooks/useWindowWidth";
-import useGraphQLClient from "@/hooks/useApolloClient";
-import { Main, StyledToastContainer } from "@/styles/AppStyles";
+import useWindowWidth from "@/features/shared/hooks/useWindowWidth.tsx";
+import useGraphQLClient from "@/features/shared/hooks/useApolloClient.ts";
+import {
+  Main,
+  StyledToastContainer,
+} from "@/features/shared/styles/AppStyles.tsx";
 import { LazyMotion } from "motion/react";
 
 const WelcomePage = React.lazy(() => import("@/pages/WelcomePage"));
-const ProtectedRoute = React.lazy(() => import("@/components/ProtectedRoute"));
-const AllInvoices = React.lazy(() => import("@/pages/AllInvoices"));
-const ViewInvoice = React.lazy(() => import("@/pages/ViewInvoice"));
-const Login = React.lazy(() => import("@/pages/Login"));
+const ProtectedRoute = React.lazy(
+  () => import("@/features/shared/components/ProtectedRoute.tsx"),
+);
+const AllInvoices = React.lazy(
+  () => import("@/features/invoices/pages/AllInvoices.tsx"),
+);
+const ViewInvoice = React.lazy(
+  () => import("@/features/invoices/pages/ViewInvoice.tsx"),
+);
+const Login = React.lazy(() => import("@/features/auth/pages/Login.tsx"));
 
 const loadFeatures = () =>
-  import("../animation/motionConfig").then((res) => res.default);
+  import("../features/shared/animations/motionConfig.ts").then(
+    (res) => res.default,
+  );
 
 function App() {
   const [theme, setTheme] = useState("light");

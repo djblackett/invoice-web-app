@@ -8,12 +8,12 @@ vi.mock("@/config/config", () => ({
 }));
 
 // Mock the useWindowWidth hook
-vi.mock("@/hooks/useWindowWidth", () => ({
+vi.mock("@/features/shared/hooks/useWindowWidth", () => ({
   default: () => 1024,
 }));
 
 // Mock the useGraphQLClient hook
-vi.mock("@/hooks/useApolloClient", () => ({
+vi.mock("@/features/shared/hooks/useApolloClient", () => ({
   default: () => ({
     // Mocked Apollo Client
   }),

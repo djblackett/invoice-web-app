@@ -1,9 +1,9 @@
 import { render, screen, fireEvent } from "../testUtils";
-import { useAuth } from "@/hooks/useAuth";
-import Login from "@/pages/Login";
+import { useAuth } from "@/features/auth/hooks/useAuth.ts";
+import Login from "@/features/auth/pages/Login.tsx";
 import { describe, it, expect, vi, beforeEach, Mock, beforeAll } from "vitest";
 
-vi.mock("@/hooks/useAuth");
+vi.mock("@/features/auth/hooks/useAuth");
 // Mock the configuration module before importing the module that uses it.
 vi.mock("@/config/config", () => ({
   BACKEND_URL: "http://localhost:4000",
