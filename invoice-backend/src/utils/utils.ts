@@ -3,15 +3,13 @@ import { ValidationException } from "../config/exception.config";
 import {
   CreateUserDTO,
   Invoice,
-  invoiceListZod,
   InvoiceWithCreatedBy,
-  invoiceZod,
   ReturnedUser,
-  userCreateZod,
   UserDTO,
   UserEntity,
-  userZod,
+
 } from "../constants/types";
+import {invoiceListZod, invoiceZod, userCreateZod, userZod} from "@/constants/zodSchemas";
 
 export const validateInvoiceData = (inputs: unknown) => {
   const validationResult = invoiceZod.safeParse(inputs);

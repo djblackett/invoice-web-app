@@ -2,15 +2,10 @@ import "reflect-metadata";
 import { beforeEach, describe, expect, test, vi } from "vitest";
 import prisma from "../../libs/__mocks__/prisma";
 import { DatabaseConnectionMock } from "./database.connection.mock";
-import { IDatabaseConnection } from "../../src/database/database.connection";
 import { PrismaClientKnownRequestError } from "@prisma/client/runtime/library";
 import { PrismaUserRepository } from "../../src/repositories/implementations/prismaUserRepo";
-import {
-  UserEntity,
-  LoggedInUser,
-  ReturnedUser,
-  User,
-} from "../../src/constants/types";
+import { UserEntity, User, UserIdAndRole } from "../../src/constants/types";
+import { DatabaseConnection } from "@/database/prisma.database.connection";
 
 vi.mock("../../libs/prisma");
 
@@ -20,15 +15,11 @@ const mockUserArgs: UserEntity = {
   passwordHash: "hashedpassword123",
 };
 
-const mockUser: ReturnedUser = {
+const mockUser: UserIdAndRole = {
   id: "1",
   name: "John Doe",
   username: "johndoe",
-};
-
-const mockLoggedInUser: LoggedInUser = {
-  id: "1",
-  username: "johndoe",
+  role: "USER",
 };
 
 beforeEach(() => {
@@ -36,7 +27,7 @@ beforeEach(() => {
 });
 
 const userRepo = new PrismaUserRepository(
-  new DatabaseConnectionMock() as IDatabaseConnection,
+  new DatabaseConnectionMock() as DatabaseConnection,
 );
 
 // Test suite for the PrismaUserRepo class
@@ -116,41 +107,6 @@ describe("createUser", () => {
 
     await expect(userRepo.createUser(mockUserArgs)).rejects.toThrowError(
       "Unique constraint failed on the fields: (`username`)",
-    );
-  });
-});
-
-describe("loginUser", () => {
-  test.skip("should return user by username", async () => {
-    prisma.user.findUniqueOrThrow.mockResolvedValue({
-      ...mockLoggedInUser,
-      role: "USER",
-    } as User);
-
-    const user = await userRepo.getUserByUsername("johndoe");
-    expect(user).toEqual(mockLoggedInUser);
-  });
-
-  test.skip("should handle error when user not found by username", async () => {
-    prisma.user.findUniqueOrThrow.mockRejectedValue(
-      new PrismaClientKnownRequestError("Incorrect username or password", {
-        code: "P2025",
-        clientVersion: "5.19.0",
-      }),
-    );
-
-    await expect(userRepo.getUserByUsername("johndoe")).rejects.toThrowError(
-      /Incorrect username or password/,
-    );
-  });
-
-  test.skip("should handle error when login fails", async () => {
-    prisma.user.findUniqueOrThrow.mockRejectedValue(
-      new Error("Database error"),
-    );
-
-    await expect(userRepo.getUserByUsername("johndoe")).rejects.toThrowError(
-      /Database error/,
     );
   });
 });
