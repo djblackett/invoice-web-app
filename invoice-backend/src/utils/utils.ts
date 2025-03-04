@@ -7,9 +7,13 @@ import {
   ReturnedUser,
   UserDTO,
   UserEntity,
-
 } from "@/constants/types";
-import {invoiceListZod, invoiceZod, userCreateZod, userZod} from "@/constants/zodSchemas";
+import {
+  invoiceListZod,
+  invoiceZod,
+  userCreateZod,
+  userZod,
+} from "@/constants/zodSchemas";
 
 export const validateInvoiceData = (inputs: unknown) => {
   const validationResult = invoiceZod.safeParse(inputs);

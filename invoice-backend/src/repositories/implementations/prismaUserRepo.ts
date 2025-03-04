@@ -2,9 +2,9 @@ import { inject, injectable } from "inversify";
 import { IUserRepo } from "../userRepo";
 import { DatabaseConnection } from "../../database/prisma.database.connection";
 import {
-  UserEntity,
   ReturnedUser,
   UserDTO,
+  UserEntity,
   UserIdAndRole,
 } from "../../constants/types";
 import { PrismaClientKnownRequestError } from "@prisma/client/runtime/library";
@@ -116,7 +116,6 @@ export class PrismaUserRepository implements IUserRepo {
         data: {
           name: userArgs.name ?? "",
           username: userArgs.username,
-          passwordHash: userArgs.passwordHash,
           role: "USER",
         },
       });
