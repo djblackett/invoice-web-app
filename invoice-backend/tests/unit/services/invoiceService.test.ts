@@ -303,7 +303,7 @@ describe("InvoiceService", () => {
       InvoiceUtils.validateInvoiceData,
       true,
     );
-    validateInvoiceDataMock.mockReturnValue(updatedInvoice);
+    validateInvoiceDataMock.mockReturnValue(updatedInvoice as any);
     mockInvoiceRepo.update.mockResolvedValue(updatedInvoice);
 
     // Act
@@ -335,7 +335,7 @@ describe("InvoiceService", () => {
       InvoiceUtils.validateInvoiceData,
       true,
     );
-    validateInvoiceDataMock.mockReturnValue(paidInvoice);
+    validateInvoiceDataMock.mockReturnValue(paidInvoice as any);
 
     // Act
     const result = await invoiceService.markAsPaid(id);
@@ -440,7 +440,9 @@ describe("InvoiceService", () => {
     });
 
     // Act & Assert
+
     await expect(
+      // @ts-expect-error - We are testing the error case
       invoiceService.updateInvoice(id, invoiceUpdates),
     ).rejects.toThrow("Validation error during update");
     expect(mockInvoiceRepo.findById).toHaveBeenCalledWith(id);

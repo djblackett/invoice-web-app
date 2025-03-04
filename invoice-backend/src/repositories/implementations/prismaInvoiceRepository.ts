@@ -1,14 +1,14 @@
 import { Prisma, Role } from "@prisma/client";
 import { inject, injectable } from "inversify";
-import { Invoice, InvoiceWithCreatedBy } from "../../constants/types";
-import { DatabaseConnection } from "../../database/prisma.database.connection";
+import { Invoice, InvoiceWithCreatedBy } from "@/constants/types";
+import { DatabaseConnection } from "@/database/prisma.database.connection";
 import { IInvoiceRepo } from "../InvoiceRepo";
 import {
   BadRequestException,
   InternalServerException,
   NotFoundException,
   ValidationException,
-} from "../../config/exception.config";
+} from "@/config/exception.config";
 
 @injectable()
 export class PrismaInvoiceRepository implements IInvoiceRepo {

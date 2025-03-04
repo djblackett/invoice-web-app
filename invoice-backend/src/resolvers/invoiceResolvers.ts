@@ -12,8 +12,8 @@ export function getInvoiceResolvers() {
   return {
     Query: {
       allInvoices: async (
-        _root: never,
-        _parent: never,
+        _root: object,
+        _parent: object,
         context: InjectedQueryContext,
       ) => {
         try {
@@ -50,7 +50,7 @@ export function getInvoiceResolvers() {
       },
 
       getInvoiceById: async (
-        _root: never,
+        _root: object,
         args: GetInvoiceByIdArgs,
         context: InjectedQueryContext,
       ) => {
@@ -84,7 +84,7 @@ export function getInvoiceResolvers() {
     },
     Mutation: {
       addInvoice: async (
-        _root: never,
+        _root: object,
         args: InvoiceCreateArgs,
         context: InjectedQueryContext,
       ) => {
@@ -148,7 +148,7 @@ export function getInvoiceResolvers() {
       },
 
       removeInvoice: async (
-        _root: never,
+        _root: object,
         args: GetInvoiceByIdArgs,
         context: InjectedQueryContext,
       ) => {
@@ -182,7 +182,7 @@ export function getInvoiceResolvers() {
         }
       },
       deleteAllInvoices: async (
-        _root: never,
+        _root: object,
         _args: GetInvoiceByIdArgs,
         context: InjectedQueryContext,
       ) => {
@@ -220,7 +220,7 @@ export function getInvoiceResolvers() {
       },
 
       deleteInvoicesByUserId: async (
-        _root: never,
+        _root: object,
         _args: GetInvoiceByIdArgs,
         context: InjectedQueryContext,
       ) => {

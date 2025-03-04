@@ -3,7 +3,7 @@ import {
   ReturnedUser,
   UserDTO,
   UserIdAndRole,
-} from "../constants/types";
+} from "@/constants/types";
 
 export interface IUserRepo {
   createUser: (userArgs: UserEntity) => Promise<UserIdAndRole>;

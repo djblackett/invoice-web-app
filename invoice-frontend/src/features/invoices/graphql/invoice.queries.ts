@@ -256,7 +256,9 @@ export const GET_INVOICE_BY_ID = gql`
 
 export const REMOVE_INVOICE = gql`
   mutation RemoveInvoice($removeInvoiceId: String!) {
-    removeInvoice(id: $removeInvoiceId)
+    removeInvoice(id: $removeInvoiceId) {
+      acknowledged
+    }
   }
 `;
 

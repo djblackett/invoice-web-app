@@ -32,15 +32,3 @@ test.describe("New Invoice tab should open and contain correct labels", () => {
     await expect(newInvoicePage).toContainText(/Save as draft/i);
   });
 });
-
-// it("New invoice form renders correctly", () => {
-
-//   const tree = renderer
-//     .create(<NewInvoice
-//       isNewOpen
-//       setIsNewOpen={jest.fn()}
-//       padding="0px"
-//       setPadding={jest.fn()} />)
-//     .toJSON();
-//   expect(tree).toMatchSnapshot();
-// });

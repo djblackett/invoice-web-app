@@ -1,4 +1,3 @@
-import { Dispatch, SetStateAction } from "react";
 import { User as Auth0User } from "@auth0/auth0-react";
 
 export type StatusKey = "draft" | "paid" | "pending";
@@ -72,37 +71,6 @@ export interface Item {
   price: number;
   quantity: number;
   total: number;
-}
-
-export interface ReduxInvoiceState {
-  invoices: {
-    data: Invoice[];
-  };
-}
-
-export type ScrollPosition = {
-  x: number;
-  y: number;
-};
-
-// Type the props for AllInvoices component
-export type AllInvoicesProps = {
-  setScrollPosition: Dispatch<SetStateAction<ScrollPosition>>;
-};
-
-export interface FormData {
-  items?: {
-    name: string;
-    quantity: number;
-    price: number;
-  }[];
-  projectDescription: string;
-  clientName: string;
-  clientEmail: string;
-  clientStreetAddress: string;
-  clientCity: string;
-  clientPostalCode: string;
-  clientCountry: string;
 }
 
 export enum Role {

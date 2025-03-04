@@ -31,7 +31,12 @@ type DeleteProps = {
 
 function DeleteButton({ handleClick }: DeleteProps) {
   return (
-    <Button onClick={handleClick} type="button" aria-label="delete-button">
+    <Button
+      onClick={handleClick}
+      type="button"
+      aria-label="delete-button"
+      data-testid="deleteButton"
+    >
       Delete
     </Button>
   );
