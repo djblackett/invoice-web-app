@@ -2,7 +2,7 @@
 
 This document details the time I have spent working on this project. While the 2022 entries are less granular due to fewer intermediate commits, the 2023 records are much more detailed. For additional verification, you can cross-reference these estimates with my commit history and GitHub Actions run logs—these figures represent conservative estimates of my efforts.
 
-Total time spent: 376.5 hours
+Total time spent: 380.5 hours
 
 | Date         | Time (hours) | What did I do?                                                                                                                                                                                                                                                                                                                                                        |
 | ------------ | ------------ | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
@@ -222,7 +222,8 @@ Total time spent: 376.5 hours
 | 2025-02-27   | 2            | Accessibility on frontend - aria-labels and tab-index                                                                                                                                                                                                                                                                                                                 |
 | 2025-02-28   | 2            | Major update to README, add screenshot, architecture diagrams                                                                                                                                                                                                                                                                                                         |
 | 2025-03-01   | 2            | add more instructions and diagrams to README + debug and attempt to fix date error                                                                                                                                                                                                                                                                                    |
-| 2025-03-02   | 2            | debug date off by 1 error and debug CI tests - had to create 2 separate test startup commands for backend                                                                                                                                                                                                                                                             |
-|              |              |                                                                                                                                                                                                                                                                                                                                                                       |
-| Total Hours: |              |                                                                                                                                                                                                                                                                                                                                                                       |
-| 376.5        |              |
+| 2025-03-02   | 2            | debug date off by 1 error and debug CI tests - had to create 2 separate test startup commands for backend
+| 2025-04-03 | 4 | Finish cleaning up the code base and debugging an obscure bug. It ended up being that migrations were not applied to the test db as I thought they were |
+|            |   |              |
+| Total Hours: |              |           |
+| 380.5        |              |   |
