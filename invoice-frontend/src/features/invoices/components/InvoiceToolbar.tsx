@@ -3,8 +3,8 @@ import React, { SyntheticEvent, useMemo } from "react";
 import useWindowWidth from "../../shared/hooks/useWindowWidth.tsx";
 import ToolbarButtons from "./ToolbarButtons.tsx";
 import InvoiceStatus from "./InvoiceStatus.tsx";
-import { Invoice } from "../../../types/types.ts";
 import { toast } from "react-toastify";
+import { Invoice } from "@/features/invoices/types/invoiceTypes.ts";
 
 const Toolbar = styled.div`
   height: 88px;

@@ -17,7 +17,8 @@ import {
 import NewItemButton from "@/features/shared/components/buttons/NewItemButton.tsx";
 import useWindowWidth from "../../shared/hooks/useWindowWidth.tsx";
 import { Col, Col1 } from "@/styles/EditFormItemListStyles.ts";
-import { Invoice } from "@/types/types.ts";
+
+import { Invoice } from "@/features/invoices/types/invoiceTypes.ts";
 
 type InputFormItemProps = {
   invoice?: Invoice;

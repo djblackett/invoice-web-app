@@ -1,6 +1,7 @@
 import { ReactNode, useState } from "react";
 import { AuthContext } from "../hooks/useAuth.ts";
-import { Role } from "@/types/types.ts";
+
+import { Role } from "@/features/users/types/userTypes.ts";
 
 const demoUser = {
   id: "demoId",

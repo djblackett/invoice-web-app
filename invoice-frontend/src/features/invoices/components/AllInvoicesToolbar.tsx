@@ -2,7 +2,6 @@ import React, { useState, useEffect, Suspense } from "react";
 import { useSelector } from "react-redux";
 import { selectFilter } from "../store/filterSlice.ts";
 import useWindowWidth from "../../shared/hooks/useWindowWidth.tsx";
-import { Invoice } from "../../../types/types.ts";
 import {
   GridContainer,
   TitleBox,
@@ -15,6 +14,7 @@ import {
 } from "../styles/AllInvoicesToolbarStyles.tsx";
 import NewInvoiceButton from "@/features/shared/components/buttons/NewInvoiceButton.tsx";
 import { useNewInvoiceContext } from "../forms/NewInvoiceContextProvider.tsx";
+import { Invoice } from "@/features/invoices/types/invoiceTypes.ts";
 
 const FilterDropDown = React.lazy(() => import("./FilterDropDown.tsx"));
 

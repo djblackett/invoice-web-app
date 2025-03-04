@@ -8,7 +8,8 @@ import {
   ItemButton,
 } from "../../../styles/FormDropDownStyles.tsx";
 import { useNewInvoiceContext } from "./NewInvoiceContextProvider.tsx";
-import { Invoice } from "@/types/types.ts";
+
+import { Invoice } from "@/features/invoices/types/invoiceTypes.ts";
 
 const options = ["Net 1 Day", "Net 7 Days", "Net 14 Days", "Net 30 Days"];
 

@@ -1,7 +1,7 @@
-import { Invoice } from "@/types/types.ts";
 import FormEntry from "@/features/invoices/forms/FormEntry.tsx";
 import { Label } from "@/styles/editPageStyles.ts";
 import PaymentTermsDropdown from "@/features/invoices/forms/FormDropDown.tsx";
+import { Invoice } from "@/features/invoices/types/invoiceTypes.ts";
 
 export function PaymentTerms(props: { invoice: Invoice | undefined }) {
   return (

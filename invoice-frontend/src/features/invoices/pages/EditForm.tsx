@@ -11,13 +11,13 @@ import ClientFormInfo from "../forms/ClientFormInfo.tsx";
 import DateAndPayment from "../forms/DateAndPayment.tsx";
 import FormErrorList from "../forms/FormErrorList.tsx";
 import EditFormItemList from "../forms/EditFormItemList.tsx";
-import { Invoice } from "../../../types/types.ts";
 
 import Description from "../forms/Description.tsx";
 import { useNewInvoiceForm } from "../hooks/useNewInvoiceForm.tsx";
 import { useNewInvoiceContext } from "../forms/NewInvoiceContextProvider.tsx";
 import { AnimatePresence } from "motion/react";
 import Sidebar from "@/features/shared/animations/SlidingMenu.tsx";
+import { Invoice } from "@/features/invoices/types/invoiceTypes.ts";
 
 type EditFormProps = {
   invoice: Invoice;

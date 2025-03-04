@@ -1,7 +1,8 @@
 import styled from "styled-components";
 import InvoiceItem from "./InvoiceItem.tsx";
 import { getMoney } from "../../shared/utils/utilityFunctions.ts";
-import { Invoice } from "../../../types/types.ts";
+
+import { Invoice } from "@/features/invoices/types/invoiceTypes.ts";
 
 const ListContainer = styled.div`
   display: grid;

@@ -3,7 +3,8 @@ import { useSelector } from "react-redux";
 import { ALL_INVOICES } from "../graphql/invoice.queries.ts";
 import { selectFilter } from "../store/filterSlice.ts";
 import { useMemo } from "react";
-import { StatusKey } from "../../../types/types.ts";
+
+import { StatusKey } from "@/features/invoices/types/invoiceTypes.ts";
 
 const useInvoices = () => {
   const filter = useSelector(selectFilter);

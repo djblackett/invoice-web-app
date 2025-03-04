@@ -1,6 +1,5 @@
 import ItemList from "./ItemList.tsx";
 import useWindowWidth from "../../shared/hooks/useWindowWidth.tsx";
-import { Invoice } from "../../../types/types.ts";
 import { convertedDate } from "../../shared/utils/utilityFunctions.ts";
 import {
   Address,
@@ -17,6 +16,7 @@ import {
   TopEntry,
   TopRow,
 } from "../styles/FullInvoiceStyles.tsx";
+import { Invoice } from "@/features/invoices/types/invoiceTypes.ts";
 
 export type FullInvoiceProps = {
   invoice: Invoice;

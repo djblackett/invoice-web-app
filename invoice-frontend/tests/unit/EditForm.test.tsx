@@ -1,8 +1,8 @@
 import { render, screen } from "../testUtils";
 import { describe, it, expect, vi } from "vitest";
 import EditForm from "@/features/invoices/pages/EditForm.tsx";
-import { Invoice } from "../../src/types/types";
 import { NewInvoiceProvider } from "@/features/invoices/forms/NewInvoiceContextProvider.tsx";
+import { Invoice } from "@/features/invoices/types/invoiceTypes.ts";
 
 // Mock hooks
 vi.mock("../hooks/useResponsive", () => ({

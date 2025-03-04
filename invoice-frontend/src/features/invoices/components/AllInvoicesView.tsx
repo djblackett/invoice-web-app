@@ -3,9 +3,9 @@ import styled from "styled-components";
 import InvoiceGrid from "./InvoiceGrid.tsx";
 import InvoiceCard from "./InvoiceCard.tsx";
 import EmptyList from "./EmptyList.tsx";
-import { Invoice } from "../../../types/types.ts";
 import { Grid } from "react-loader-spinner";
 import { memo } from "react";
+import { Invoice } from "@/features/invoices/types/invoiceTypes.ts";
 
 interface StyledLinkProps extends LinkProps {
   $isMobile: boolean;

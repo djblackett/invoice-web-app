@@ -3,9 +3,9 @@ import PropTypes from "prop-types";
 import EditButton from "@/features/shared/components/buttons/EditButton.tsx";
 import DeleteButton from "@/features/shared/components/buttons/DeleteButton.tsx";
 import MarkAsPaidButton from "@/features/shared/components/buttons/MarkAsPaidButton.tsx";
-import { Invoice } from "../../../types/types.ts";
 import { useNewInvoiceContext } from "../forms/NewInvoiceContextProvider.tsx";
 import { SyntheticEvent, useRef } from "react";
+import { Invoice } from "@/features/invoices/types/invoiceTypes.ts";
 
 const ButtonsContainer = styled.div`
   display: flex;

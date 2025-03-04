@@ -1,10 +1,10 @@
 import { createContext, useContext } from "react";
-import { User } from "../../../types/types.ts";
 import {
   User as Auth0User,
   GetTokenSilentlyOptions,
   LogoutOptions,
 } from "@auth0/auth0-react";
+import { User } from "@/features/users/types/userTypes.ts";
 
 interface IAuthContext {
   isAuthenticated: boolean;

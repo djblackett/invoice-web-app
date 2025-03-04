@@ -1,8 +1,8 @@
 import { Label, Input } from "../../../styles/editPageStyles.ts";
 import LongFormEntry from "./LongFormEntry.tsx";
-import { Invoice } from "../../../types/types.ts";
 import { useFormContext } from "react-hook-form";
 import { useNewInvoiceContext } from "./NewInvoiceContextProvider.tsx";
+import { Invoice } from "@/features/invoices/types/invoiceTypes.ts";
 
 interface DescriptionProps {
   invoice?: Invoice;

@@ -5,7 +5,8 @@ import FormEntry from "@/features/invoices/forms/FormEntry.tsx";
 import { Label } from "@/styles/editPageStyles.ts";
 import DatePicker from "react-datepicker";
 import CustomInputWrapper from "@/features/invoices/forms/LazyCustomInputWrapper.tsx";
-import { Invoice } from "@/types/types";
+
+import { Invoice } from "@/features/invoices/types/invoiceTypes.ts";
 
 export const dateIcon = (
   <svg
