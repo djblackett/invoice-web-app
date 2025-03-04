@@ -1,20 +1,5 @@
 import * as m from "motion/react-m";
 import styled from "styled-components";
-
-export const DarkenScreen = styled.div`
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  position: fixed;
-  min-height: 100%;
-  top: 0;
-  bottom: 0;
-  left: 0;
-  right: 0;
-  background-color: rgba(0, 0, 0, 0.5);
-  z-index: 100;
-`;
-
 export const ModalContainer = styled(m.div)`
   display: flex;
   position: absolute;
@@ -42,17 +27,6 @@ export const Confirm = styled.h1`
   margin: 0;
   margin-bottom: 13px;
 `;
-
-export const Description = styled.p`
-  font-weight: 500;
-  font-size: 12px;
-  line-height: 22px;
-  /* or 183% */
-
-  letter-spacing: 0.25px;
-  color: ${({ theme }) => theme.greyText};
-`;
-
 export const ButtonContainer = styled.div`
   display: flex;
   align-self: flex-end;

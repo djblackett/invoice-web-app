@@ -18,7 +18,7 @@ import { Invoice } from "@/types/types.ts";
 export type DeleteModalProps = {
   isModalOpen: boolean;
   setIsModalOpen: React.Dispatch<React.SetStateAction<boolean>>;
-  invoice: Invoice;
+  invoice: Partial<Invoice>;
 };
 
 function DeleteModal({

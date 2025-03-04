@@ -1,7 +1,5 @@
 import { render, screen, fireEvent } from "@testing-library/react";
-import React from "react";
 import { describe, it, expect, vi } from "vitest";
-import useWindowWidth from "@/features/shared/hooks/useWindowWidth.tsx";
 import { Invoice } from "../../src/types/types";
 import InvoiceToolbar, {
   InvoiceToolBarProps,
@@ -108,13 +106,5 @@ describe("InvoiceToolbar component", () => {
     const toolbar = screen.getByTestId("invoice-toolbar");
 
     expect(toolbar).toHaveStyle({ display: "flex" });
-  });
-
-  it.skip("applies display 'contents' when width is less than 600", () => {
-    vi.mocked(useWindowWidth).mockReturnValue(500); // Mock for smaller width
-    setup({ invoice: sampleInvoice, setIsModalOpen: mockSetIsModalOpen });
-    const toolbar = screen.getByTestId("invoice-toolbar");
-
-    expect(toolbar).toHaveStyle({ display: "contents" });
   });
 });

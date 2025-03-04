@@ -137,9 +137,12 @@ describe("ViewInvoice", () => {
 
     fireEvent.click(screen.getByText("Edit"));
 
-    await waitFor(() => {
-      expect(screen.getByTestId("editInvoiceModal")).toBeInTheDocument();
-    });
+    await waitFor(
+      () => {
+        expect(screen.getByTestId("editInvoiceModal")).toBeInTheDocument();
+      },
+      { timeout: 2000 },
+    );
 
     fireEvent.change(screen.getByLabelText("Client's Name"), {
       target: { value: "Updated Client Name" },

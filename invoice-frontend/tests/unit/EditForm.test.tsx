@@ -61,16 +61,6 @@ describe("EditForm", () => {
     expect(container.firstChild).toBeNull();
   });
 
-  it.skip("hides the modal when isNewInvoiceOpen is false", () => {
-    render(
-      <NewInvoiceProvider initialState={{ isNewInvoiceOpen: false }}>
-        <EditForm invoice={mockInvoice} />
-      </NewInvoiceProvider>,
-    );
-    const darkenScreen = screen.getByTestId("editInvoiceModal");
-    expect(darkenScreen).toHaveStyle("visibility: hidden");
-  });
-
   it("displays the modal when isNewInvoiceOpen is true", () => {
     renderEditForm(mockInvoice);
     const darkenScreen = screen.getByTestId("editInvoiceModal");

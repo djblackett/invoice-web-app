@@ -1,5 +1,5 @@
 import { describe, it, expect, vi, afterEach } from "vitest";
-import { render, screen, fireEvent, waitFor } from "../testUtils";
+import { render, screen, fireEvent } from "../testUtils";
 import { MockedProvider } from "@apollo/client/testing";
 import DeleteModal, {
   DeleteModalProps,
@@ -70,29 +70,6 @@ describe("DeleteModal", () => {
 
     fireEvent.click(screen.getByText("Cancel"));
     expect(defaultProps.setIsModalOpen).toHaveBeenCalledWith(false);
-  });
-
-  it.skip("displays error message when deleteInvoice mutation fails", async () => {
-    const errorMocks = [
-      {
-        request: {
-          query: REMOVE_INVOICE,
-          variables: { removeInvoiceId: "-1" },
-        },
-        error: new Error("An error occurred"),
-      },
-    ];
-
-    render(
-      <MockedProvider mocks={errorMocks} addTypename={false}>
-        <DeleteModal {...defaultProps} />
-      </MockedProvider>,
-    );
-
-    fireEvent.click(screen.getByText("Delete"));
-    await waitFor(() =>
-      expect(screen.getByText(/An error occurred/)).toBeInTheDocument(),
-    );
   });
 
   it("does not render modal when isModalOpen is false", () => {
