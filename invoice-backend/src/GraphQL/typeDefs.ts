@@ -126,7 +126,7 @@ const typeDefs = gql`
       total: Float
     ): Invoice
 
-    removeInvoice(id: String!): String
+    removeInvoice(id: String!): deleteResult
 
     deleteAllInvoices: deleteResult
 

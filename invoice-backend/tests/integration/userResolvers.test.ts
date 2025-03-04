@@ -212,25 +212,6 @@ describe("Integration Tests", () => {
     expect(getUserById.id).toBe(userId);
   });
 
-  // TODO - Should this actually return null? Ort should it throw an error?
-  it.skip("should return null for a non-existent user ID", async () => {
-    const invalidUserId = 9999; // Assuming this ID doesn't exist
-
-    const { data } = await request(app)
-      .query(gql`
-        query GetUserById($id: String!) {
-          getUserById(id: $id) {
-            id
-            username
-          }
-        }
-      `)
-      .set("Authorization", `Bearer ${testToken}`)
-      .variables({ id: invalidUserId });
-
-    expect((data as any).getUserById).toBeNull();
-  });
-
   it("should create a new user", async () => {
     const newUser = {
       name: "Test User",

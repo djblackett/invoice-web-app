@@ -79,6 +79,8 @@ describe("Invoice Resolvers Integration Tests", () => {
     child.bind<PrismaClient>(TYPES.PrismaClient).toConstantValue(prisma);
     console.log("Connected to Prisma", newDatabaseUrl);
 
+    // process.env.DATABASE_URL = newDatabaseUrl;
+
     await prisma.$executeRawUnsafe(
       `SET search_path TO "${schemaName}", public`,
     );
@@ -86,6 +88,7 @@ describe("Invoice Resolvers Integration Tests", () => {
     execSync("npx prisma db push", {
       stdio: "inherit",
     });
+
     [app] = await createServer();
 
     // Clean up before each test
@@ -347,6 +350,18 @@ describe("Invoice Resolvers Integration Tests", () => {
   });
 
   it("should remove an invoice (the one with our unique ID)", async () => {
+    // Delete the invoice
+    await request(app)
+      .query(gql`
+        mutation RemoveInvoice($id: String!) {
+          removeInvoice(id: $id) {
+            acknowledged
+          }
+        }
+      `)
+      .set("Authorization", `Bearer ${testToken}`)
+      .variables({ id: currentInvoiceId });
+
     // Verify the invoice is removed
     const response = await request(app)
       .query(gql`
@@ -382,3 +397,15 @@ describe("Invoice Resolvers Integration Tests", () => {
     expect((data as any).markAsPaid.status).toBe("paid");
   });
 });
+
+// remove orphaned test schemas
+// DO $$DECLARE
+//    s text;
+// BEGIN
+//    FOR s IN
+//       SELECT nspname FROM pg_namespace
+//          WHERE nspname LIKE 'test\_schema\_%'
+//    LOOP
+//       EXECUTE 'DROP SCHEMA ' || quote_ident(s) || ' CASCADE';
+//    END LOOP;
+// END;$$;

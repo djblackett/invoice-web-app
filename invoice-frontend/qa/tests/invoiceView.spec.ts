@@ -46,8 +46,6 @@ test("Should mark invoice as paid", async ({ invoiceMainPage }) => {
     .click();
 });
 
-// TODO - should edit an invoice and save the changes
-
 test("Should delete an invoice", async ({ invoiceMainPage }) => {
   await invoiceMainPage.gotoPage();
 

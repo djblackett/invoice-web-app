@@ -48,5 +48,4 @@ test("should select the chosen date in the date picker", async ({ page }) => {
     "Choose Tuesday, December 10th,",
   );
   await expect(await datePicker).toHaveValue("12/10/2024");
-  // await expect(await page.getByTestId("visible-date")).toHaveText("12/10/2024");
 });
