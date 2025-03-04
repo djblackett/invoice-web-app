@@ -7,7 +7,8 @@ import {
 } from "../../../styles/NewInvoiceBottomMenuStyles.tsx";
 import { useNewInvoiceForm } from "../hooks/useNewInvoiceForm.tsx";
 import { useNewInvoiceContext } from "./NewInvoiceContextProvider.tsx";
-import { FormType } from "@/types/types.ts";
+
+import { FormType } from "@/features/invoices/types/invoiceTypes.ts";
 
 type EditBottomMenuProps = {
   closeText: string;

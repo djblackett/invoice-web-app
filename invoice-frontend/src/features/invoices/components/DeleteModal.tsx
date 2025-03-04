@@ -13,7 +13,8 @@ import { DarkenScreen } from "../../../styles/editPageStyles.ts";
 import { Description } from "../styles/FullInvoiceStyles.tsx";
 import { toast, Theme } from "react-toastify";
 import { ClickOutsideProvider } from "@shelf/react-outside-click";
-import { Invoice } from "@/types/types.ts";
+
+import { Invoice } from "@/features/invoices/types/invoiceTypes.ts";
 
 export type DeleteModalProps = {
   isModalOpen: boolean;

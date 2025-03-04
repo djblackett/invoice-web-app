@@ -1,10 +1,10 @@
 import styled from "styled-components";
 import { toast, Theme } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
-import { Invoice } from "../../../../types/types.ts";
 import { useMutation } from "@apollo/client";
 import { MARK_AS_PAID } from "../../../invoices/graphql/invoice.queries.ts";
 import { MutableRefObject } from "react";
+import { Invoice } from "@/features/invoices/types/invoiceTypes.ts";
 
 const Button = styled.button`
   background-color: ${({ theme }) => theme.newButton};

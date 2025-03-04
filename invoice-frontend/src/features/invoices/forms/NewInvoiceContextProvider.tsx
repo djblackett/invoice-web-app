@@ -1,6 +1,6 @@
 import React, { createContext, FC, ReactNode, useState } from "react";
-import { FormType, Item } from "../../../types/types.ts";
 import { useForm, UseFormReturn } from "react-hook-form";
+import { FormType, Item } from "@/features/invoices/types/invoiceTypes.ts";
 
 interface AppContextType {
   isDraft: boolean;

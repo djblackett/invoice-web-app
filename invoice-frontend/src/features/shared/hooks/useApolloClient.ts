@@ -42,7 +42,6 @@ const useGraphQLClient = () => {
         let token;
 
         // Demo mode does not require authentication
-        // TODO - use the user object to specify if user or admin in token for backend
         if (isDemo) {
           token = "demo-token" + (user?.role === 1 ? "-admin" : "");
         } else {

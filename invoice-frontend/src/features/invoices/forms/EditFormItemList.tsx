@@ -4,9 +4,9 @@ import {
   ItemTitle,
   ListContainer,
 } from "../../../styles/EditFormItemListStyles.ts";
-import { Invoice } from "../../../types/types.ts";
 import { useNewInvoiceContext } from "./NewInvoiceContextProvider.tsx";
 import { ItemsHeader } from "./ItemsHeader.tsx";
+import { Invoice } from "@/features/invoices/types/invoiceTypes.ts";
 
 type EditFormItemListProps = {
   invoice?: Invoice;

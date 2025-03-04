@@ -2,8 +2,8 @@ import styled from "styled-components";
 import { useMemo } from "react";
 import InvoiceStatus from "./InvoiceStatus.tsx";
 import { getMoney } from "../../shared/utils/utilityFunctions.ts";
-import { Invoice } from "../../../types/types.ts";
 import * as m from "motion/react-m";
+import { Invoice } from "@/features/invoices/types/invoiceTypes.ts";
 
 const Card = styled(m.div)`
   min-height: 134px;

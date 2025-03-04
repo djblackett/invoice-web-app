@@ -9,10 +9,10 @@ import {
 } from "../graphql/invoice.queries.ts";
 import { v4 as uuidv4 } from "uuid";
 import { createInvoiceObject } from "../../shared/utils/utilityFunctions.ts";
-import { FormType } from "../../../types/types.ts";
 import { useNewInvoiceContext } from "../forms/NewInvoiceContextProvider.tsx";
 import { flushSync } from "react-dom";
 import { useParams } from "react-router-dom";
+import { FormType } from "@/features/invoices/types/invoiceTypes.ts";
 
 export const useNewInvoiceForm = () => {
   const { id } = useParams();

@@ -1,5 +1,6 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
-import { Filter, StatusKey } from "../../../types/types.ts";
+
+import { Filter, StatusKey } from "@/features/invoices/types/invoiceTypes.ts";
 
 const initialState: Filter = {
   filter: { draft: false, paid: false, pending: false },

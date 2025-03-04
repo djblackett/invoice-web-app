@@ -4,7 +4,8 @@ import { describe, it, expect } from "vitest";
 import InvoiceCard, {
   InvoiceCardProps,
 } from "@/features/invoices/components/InvoiceCard.tsx";
-import { Invoice } from "../../src/types/types";
+
+import { Invoice } from "@/features/invoices/types/invoiceTypes.ts";
 
 // Sample Invoice data
 const sampleInvoice: Invoice = {

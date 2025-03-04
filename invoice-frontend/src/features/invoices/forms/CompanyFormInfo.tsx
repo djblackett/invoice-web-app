@@ -10,8 +10,8 @@ import {
 import AddressBox from "./AddressBox.tsx";
 import LongFormEntry from "./LongFormEntry.tsx";
 import useWindowWidth from "../../shared/hooks/useWindowWidth.tsx";
-import { Invoice } from "../../../types/types.ts";
 import { useNewInvoiceContext } from "./NewInvoiceContextProvider.tsx";
+import { Invoice } from "@/features/invoices/types/invoiceTypes.ts";
 
 export const CityPostContainer = styled.div`
   display: contents;

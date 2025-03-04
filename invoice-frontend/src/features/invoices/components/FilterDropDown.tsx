@@ -3,8 +3,8 @@ import styled from "styled-components";
 import { useDispatch } from "react-redux";
 import CheckboxSelection from "./CheckboxSelection.tsx";
 import { changeFilter } from "../store/filterSlice.ts";
-import { StatusKey } from "../../../types/types.ts";
 import { ClickOutsideProvider } from "@shelf/react-outside-click";
+import { StatusKey } from "@/features/invoices/types/invoiceTypes.ts";
 
 const Main = styled.div`
   align-self: center;

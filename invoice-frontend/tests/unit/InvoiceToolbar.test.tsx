@@ -1,6 +1,5 @@
 import { render, screen, fireEvent } from "@testing-library/react";
 import { describe, it, expect, vi } from "vitest";
-import { Invoice } from "../../src/types/types";
 import InvoiceToolbar, {
   InvoiceToolBarProps,
 } from "@/features/invoices/components/InvoiceToolbar.tsx";
@@ -9,6 +8,7 @@ import { ThemeProvider } from "styled-components";
 import { lightTheme } from "@/features/shared/styles/Themes.ts";
 import { ApolloClient, ApolloProvider, InMemoryCache } from "@apollo/client";
 import "@testing-library/jest-dom";
+import { Invoice } from "@/features/invoices/types/invoiceTypes.ts";
 
 // Mock useWindowWidth hook
 vi.mock("../src/hooks/useWindowWidth", () => ({
