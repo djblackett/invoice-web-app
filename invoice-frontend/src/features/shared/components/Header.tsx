@@ -210,8 +210,6 @@ const sun = (
   </svg>
 );
 
-const isDemoMode = import.meta.env.VITE_DEMO_MODE === "true";
-
 type HeaderProps = {
   theme: string;
   themeToggler: () => void;
@@ -274,9 +272,9 @@ function Header({ themeToggler, theme }: HeaderProps) {
         <AvatarBox data-testid="avatar">
           <img
             src={
-              isDemoMode
-                ? `${import.meta.env.BASE_URL}assets/image-avatar.jpg`
-                : user?.picture
+              isAuthenticated
+                ? user?.picture
+                : `${import.meta.env.BASE_URL}assets/image-avatar.jpg`
             }
             alt="user avatar"
             style={{
