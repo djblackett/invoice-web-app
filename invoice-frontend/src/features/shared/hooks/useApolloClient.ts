@@ -68,7 +68,7 @@ const useGraphQLClient = () => {
     const addressWithoutProtocol = VITE_BACKEND_URL.replace(/https?:\/\//, "");
 
     let wsProtocol;
-    if (isDemo || isProduction) {
+    if (isDemo) {
       wsProtocol = "ws://";
     } else {
       wsProtocol = "wss://";
