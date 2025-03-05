@@ -62,6 +62,7 @@ function MarkAsPaidButton({ invoice, editButtonRef }: MarkPaidProps) {
           draggable: true,
           progress: undefined,
           theme: (colorMode as Theme) || undefined,
+          toastId: "mark-as-paid-success-toast",
         });
       }
     } else {
@@ -78,6 +79,7 @@ function MarkAsPaidButton({ invoice, editButtonRef }: MarkPaidProps) {
         draggable: false,
         progress: undefined,
         theme: (colorMode as Theme) || undefined,
+        toastId: "mark-as-paid-error-toast",
       });
     }
   };
