@@ -5,10 +5,7 @@ import {
   Box,
   deleteIcon,
   ItemContainer,
-  ItemName,
   MobileHelperContainer,
-  Price,
-  Quantity,
   SmallBoxContainer,
   SVG,
   Total,
@@ -19,6 +16,9 @@ import useWindowWidth from "../../shared/hooks/useWindowWidth.tsx";
 import { Col, Col1 } from "@/styles/EditFormItemListStyles.ts";
 
 import { Invoice } from "@/features/invoices/types/invoiceTypes.ts";
+import ItemQuantity from "./Quantity.tsx";
+import ItemPrice from "./Price.tsx";
+import ItemName from "./ItemName.tsx";
 
 type InputFormItemProps = {
   invoice?: Invoice;
@@ -28,19 +28,17 @@ type InputFormItemProps = {
 
 // TODO - can I make this simpler?
 export default function InputFormItem({
-  isDraft,
   invoice,
   isEditOpen,
 }: InputFormItemProps) {
-  const { formState, register, watch, clearErrors, setError, reset } =
-    useFormContext();
+  const { formState, watch, clearErrors, setError, reset } = useFormContext();
 
   const { fields, remove, append } = useFieldArray({
     name: "items",
     rules: { required: true, minLength: 1 },
   });
 
-  const { errors, isSubmitting } = formState;
+  const { isSubmitting } = formState;
 
   const watchItems = watch("items", []);
   const width = useWindowWidth();
@@ -82,55 +80,16 @@ export default function InputFormItem({
     <ItemContainer>
       <Box style={{ width: "100%", marginBottom: "1.5rem" }}>
         <Col1 style={{ marginBottom: "1rem" }}>Item Name</Col1>
-        <ItemName
-          {...register(`items[${index}].name`, { required: !isDraft })}
-          placeholder="Item name"
-          defaultValue={invoice ? invoice?.items?.[index]?.name : ""}
-          type="text"
-          style={{
-            border:
-              Array.isArray(errors.items) && errors?.items?.[index]?.name
-                ? "1px solid #EC5757"
-                : "",
-          }}
-        />
+        <ItemName index={index} invoice={invoice} />
       </Box>
       <SmallBoxContainer>
         <Box>
           <Col style={{ marginBottom: "0.625rem" }}>Qty.</Col>
-          <Quantity
-            {...register(`items[${index}].quantity`, {
-              required: !isDraft,
-              max: 100,
-            })}
-            placeholder="0"
-            type="text"
-            style={{
-              border:
-                Array.isArray(errors.items) && errors?.items?.[index]?.quantity
-                  ? "1px solid #EC5757"
-                  : "",
-            }}
-            defaultValue={invoice ? invoice?.items?.[index]?.quantity : ""}
-          />
+          <ItemQuantity index={index} invoice={invoice} />
         </Box>
         <Box>
           <Col style={{ marginBottom: "0.625rem" }}>Price</Col>
-          <Price
-            {...register(`items[${index}].price`, {
-              required: !isDraft,
-              max: 100000,
-            })}
-            placeholder="0.00"
-            type="text"
-            defaultValue={invoice ? invoice?.items?.[index]?.price : ""}
-            style={{
-              border:
-                Array.isArray(errors.items) && errors?.items?.[index]?.price
-                  ? "1px solid #EC5757"
-                  : "",
-            }}
-          />
+          <ItemPrice index={index} invoice={invoice} />
         </Box>
         <TotalBox style={{ width: "fit-content" }}>
           <Col style={{ marginBottom: "0.625rem" }}>Total</Col>
@@ -154,49 +113,9 @@ export default function InputFormItem({
   const tabletAndDesktopRender = (index: number) => (
     <ItemContainer>
       <MobileHelperContainer>
-        <ItemName
-          {...register(`items[${index}].name`, { required: !isDraft })}
-          placeholder="Item name"
-          defaultValue={invoice ? invoice?.items?.[index]?.name : ""}
-          type="text"
-          style={{
-            border:
-              Array.isArray(errors.items) && errors?.items?.[index]?.name
-                ? "1px solid #EC5757"
-                : "",
-          }}
-        />
-        <Quantity
-          {...register(`items[${index}].quantity`, {
-            required: !isDraft,
-            max: 100,
-          })}
-          placeholder="0"
-          type="text"
-          style={{
-            border:
-              Array.isArray(errors.items) && errors?.items?.[index]?.quantity
-                ? "1px solid #EC5757"
-                : "",
-          }}
-          defaultValue={invoice ? invoice?.items?.[index]?.quantity : 0}
-        />
-        <Price
-          {...register(`items[${index}].price`, {
-            required: !isDraft,
-            max: 100000,
-          })}
-          placeholder="0.00"
-          type="text"
-          defaultValue={invoice ? invoice?.items?.[index]?.price : 0}
-          style={{
-            border:
-              Array.isArray(errors.items) && errors?.items?.[index]?.price
-                ? "1px solid #EC5757"
-                : "",
-          }}
-        />
-
+        <ItemName index={index} invoice={invoice} />
+        <ItemQuantity index={index} invoice={invoice} />
+        <ItemPrice index={index} invoice={invoice} />
         <Total>
           {(
             Number(watchItems?.[index]?.quantity) *
