@@ -1,4 +1,4 @@
-import{J as c,K as k,P as w,j as t,d as o,S as d,c as C,s as j,T as y}from"./index-uPmbC9xO.js";import{P as $}from"./InvoiceStatus-CwJx0wq7.js";import{C as v}from"./ClickOutsideProvider-DzPxsaVF.js";function a(e=c){const n=e===c?k:w(e);return function(){const{store:i}=n();return i}}const D=a();function S(e=c){const n=e===c?D:a(e);return function(){return n().dispatch}}const z=S(),l=d`
+import{H as c,J as k,K as w,j as t,d as o,P as d,c as C,s as j,S as y}from"./index-DZPRBcbd.js";import{P as $}from"./InvoiceStatus-s2ERXa1g.js";import{C as v}from"./ClickOutsideProvider-Cw5cTWNy.js";function a(e=c){const n=e===c?k:w(e);return function(){const{store:i}=n();return i}}const D=a();function S(e=c){const n=e===c?D:a(e);return function(){return n().dispatch}}const z=S(),l=d`
   background-color: ${({theme:e})=>e.newButton};
   border-color: transparent;
 `,x=d`
@@ -24,7 +24,7 @@ import{J as c,K as k,P as w,j as t,d as o,S as d,c as C,s as j,T as y}from"./ind
   ${p} {
     visibility: ${e=>e.checked?"visible":"hidden"};
   }
-`;function F({checked:e=!1,...n}){return t.jsx(L,{className:"styledCheckbox",checked:e,...n,children:t.jsx(R,{checked:e,children:t.jsx(p,{width:"10",height:"8",viewBox:"0 0 10 8",children:t.jsx("path",{d:"M1.5 4.5l2.124 2.124L8.97 1.28"})})})})}const P=o.div``,B=o.div`
+`;function F({checked:e=!1,...n}){return t.jsx(L,{className:"styledCheckbox",checked:e,...n,children:t.jsx(R,{checked:e,children:t.jsx(p,{width:"10",height:"8",viewBox:"0 0 10 8",children:t.jsx("path",{d:"M1.5 4.5l2.124 2.124L8.97 1.28"})})})})}const P=o.div``,H=o.div`
   cursor: pointer;
   box-sizing: border-box;
   margin-left: 0.5rem;
@@ -34,7 +34,7 @@ import{J as c,K as k,P as w,j as t,d as o,S as d,c as C,s as j,T as y}from"./ind
   /* identical to box height, or 125% */
   letter-spacing: -0.25px;
   color: ${({theme:e})=>e.textPlain};
-`;function h({option:e}){const n=C(j),r=e.toLowerCase(),i=n[r];return t.jsx(P,{children:t.jsxs(B,{children:[t.jsx(F,{checked:i}),t.jsx("span",{style:{marginLeft:"13px",fontFamily:"League Spartan",fontWeight:700},children:e})]})})}h.propTypes={option:$.string.isRequired};const H=o.div`
+`;function h({option:e}){const n=C(j),r=e.toLowerCase(),i=n[r];return t.jsx(P,{children:t.jsxs(H,{children:[t.jsx(F,{checked:i}),t.jsx("span",{style:{marginLeft:"13px",fontFamily:"League Spartan",fontWeight:700},children:e})]})})}h.propTypes={option:$.string.isRequired};const B=o.div`
   align-self: center;
   box-sizing: border-box;
   background: transparent;
@@ -85,7 +85,7 @@ import{J as c,K as k,P as w,j as t,d as o,S as d,c as C,s as j,T as y}from"./ind
   @media (min-width: 768px) {
     left: -130px;
   }
-`,T=o("ul")`
+`,M=o("ul")`
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -101,7 +101,7 @@ import{J as c,K as k,P as w,j as t,d as o,S as d,c as C,s as j,T as y}from"./ind
   color: ${({theme:e})=>e.text};
   font-size: 1.2rem;
   font-weight: 700;
-`,M=o.li.attrs({})`
+`,T=o.li.attrs({})`
   display: flex;
   flex-grow: 0;
   align-items: center;
@@ -127,4 +127,4 @@ import{J as c,K as k,P as w,j as t,d as o,S as d,c as C,s as j,T as y}from"./ind
   color: ${({theme:e})=>e.text};
   box-sizing: border-box;
   cursor: pointer;
-`;function N({icon:e,isOpen:n,setIsFilterOpen:r,options:i}){const u=z(),b=s=>f=>{f.stopPropagation();const m=s.toLowerCase();u(y(m))},g=()=>{r(!1)};return t.jsxs(H,{children:[t.jsx(I,{"data-testid":"filterDropDown",tabIndex:0,"aria-label":"Filter invoices",children:e}),t.jsx(v,{onOutsideClick:g,children:t.jsx(O,{style:{height:n?"130px":0},children:t.jsx(T,{"data-testid":"draft-filter",children:i.map(s=>t.jsx(M,{children:t.jsx(q,{onClick:b(s),children:t.jsx(h,{option:s})})},`${s}-li`))})})})]})}export{N as default};
+`;function N({icon:e,isOpen:n,setIsFilterOpen:r,options:i}){const u=z(),b=s=>f=>{f.stopPropagation();const m=s.toLowerCase();u(y(m))},g=()=>{r(!1)};return t.jsxs(B,{children:[t.jsx(I,{"data-testid":"filterDropDown",tabIndex:0,"aria-label":"Filter invoices",children:e}),t.jsx(v,{onOutsideClick:g,children:t.jsx(O,{style:{height:n?"130px":0},children:t.jsx(M,{"data-testid":"draft-filter",children:i.map(s=>t.jsx(T,{children:t.jsx(q,{onClick:b(s),children:t.jsx(h,{option:s})})},`${s}-li`))})})})]})}export{N as default};
