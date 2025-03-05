@@ -22,33 +22,12 @@ export class InvoiceMainPage extends BasePage {
   public async runAccessibilityTest(): Promise<void> {
     const accessibilityScanResults = await new AxeBuilder({
       page: this.page,
-    })
-      // Exclude the rule that checks for a missing <h1> tag
-      // .disableRules("page-has-heading-one")
-      .analyze();
+    }).analyze();
 
     accessibilityScanResults.violations.forEach((violation) => {
       console.log(violation.description);
     });
-    // TODO - Fix accessibility issues
-    // if (accessibilityScanResults.violations.length > 0) {
-    //   const formattedViolations = accessibilityScanResults.violations
-    //     .map((violation, index) => {
-    //       const nodes = violation.nodes
-    //         .map((node) => node.target.join(", "))
-    //         .join(", ");
-    //       return `
-    //       ${index + 1}. **${violation.id}** (${violation.impact})
-    //          - **Description:** ${violation.description}
-    //          - **Help:** ${violation.help} (${violation.helpUrl})
-    //          - **Affected Elements:** ${nodes}
-    //       `;
-    //     })
-    //     .join("\n");
 
-    //   throw new Error(
-    //     `Accessibility violations found:\n${formattedViolations}`,
-    // );
     expect(accessibilityScanResults.violations).toEqual([]);
   }
 }
