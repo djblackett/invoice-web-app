@@ -70,13 +70,12 @@ export const useNewInvoiceForm = () => {
 
   // Create a new invoice (all fields required)
   const onSubmit: SubmitHandler<FormType> = async (data) => {
-    console.log("Submitting form");
+    // flushSync required due to react-hook-form integration
     flushSync(() => setIsDraft(false));
 
     data = getValues();
 
     if (!data.items) {
-      console.log("No items");
       setError("items", { type: "custom", message: "An item must be added" });
       return;
     }
@@ -114,7 +113,6 @@ export const useNewInvoiceForm = () => {
 
   // Create a new draft invoice (all fields not required)
   const onSubmitDraft: SubmitHandler<FormType> = async () => {
-    console.log("Submitting draft");
     clearErrors();
     const data = getValues();
 
@@ -127,14 +125,6 @@ export const useNewInvoiceForm = () => {
       startDate,
       selectedPaymentOption,
     );
-
-    // TODO - Determine if this is still relevant after refactoring
-    // Ensure quantity and price are numbers
-    // newInvoice.items = newInvoice.items.map((item) => ({
-    //   ...item,
-    //   quantity: Number(item.quantity) || 0,
-    //   price: Number(item.price) || 0,
-    // }));
 
     newInvoice.status = "draft";
 
@@ -149,12 +139,10 @@ export const useNewInvoiceForm = () => {
     } catch (error) {
       console.error(error);
     }
-    // }
   };
 
   // Update an existing invoice (all fields required)
   const onSubmitUpdate: SubmitHandler<FormType> = async (data) => {
-    console.log("Submitting update");
     const isValid = await trigger();
     if (isValid) {
       const newInvoice = createInvoiceObject(
