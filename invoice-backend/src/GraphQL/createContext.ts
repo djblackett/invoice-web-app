@@ -13,18 +13,13 @@ import { PubSub } from "graphql-subscriptions";
 import { Role } from "@prisma/client";
 import { NODE_ENV } from "@/config/server.config";
 import { Logger } from "@/config/logger.config";
+import { Context } from "graphql-ws";
 
 const logger = container.get<Logger>(TYPES.Logger);
 
 const client = jwksClient({
   jwksUri: `${process.env.DOMAIN}/.well-known/jwks.json`,
 });
-
-/**
- * Promisified function to retrieve the signing key as a string.
- * @param kid - The Key ID from the JWT header.
- * @returns A promise that resolves to the public key string.
- */
 
 function getSigningKeyAsync(kid: string): Promise<string> {
   return new Promise((resolve, reject) => {
@@ -53,13 +48,7 @@ const options: VerifyOptions = {
   algorithms: ["RS256"],
 };
 
-/**
- * Verifies a JWT and extracts the user's email from a custom namespaced claim.
- * @param token - The JWT string to verify.
- * @param options - Verification options including audience, issuer, and algorithms.
- * @returns A promise that resolves to the user's email.
- */
-export async function verifyTokenAndGetEmail(
+export async function retrieveUserFromToken(
   token: string,
   options: VerifyOptions,
 ): Promise<UserIdAndRole> {
@@ -154,67 +143,10 @@ export async function createContext({
     // This branch handles subscription requests, which are initiated through WebSocket connections.
     logger.info("Subscription request");
 
-    // Extract the token from the connection parameters (assuming it is passed as an authorization header)
-    const authHeader = (connection?.connectionParams?.Authorization ||
-      connection?.connectionParams?.authorization) as string | undefined;
-
-    let user = null;
-    let token = null;
-    if (authHeader && authHeader.startsWith("Bearer ")) {
-      token = authHeader.split(" ")[1];
-      if (token !== "demo-token" && token !== "demo-token-admin") {
-        try {
-          try {
-            user = await verifyTokenAndGetEmail(token, options);
-          } catch (error) {
-            logger.error("Token verification failed:" + JSON.stringify(error));
-            user = null;
-          }
-        } catch (error) {
-          console.error("Subscription token verification failed:", error);
-          user = null;
-        }
-      } else if (token === "demo-token") {
-        user = {
-          id: "demoId",
-          role: Role.USER,
-          username: "demo-user@example.com",
-          name: "demo-user",
-        };
-      } else {
-        user = {
-          id: "demoAdminId",
-          role: Role.ADMIN,
-          username: "demo-admin@example.com",
-          name: "demo-admin",
-        };
-      }
-    }
-
-    const childContainer = container.createChild();
-
-    if (user) {
-      childContainer
-        .bind<UserIdAndRole>(TYPES.UserContext)
-        .toConstantValue(user);
-    }
-
-    const invoiceService = childContainer.get<InvoiceService>(
-      TYPES.InvoiceService,
-    );
-    const userService = childContainer.get<UserService>(TYPES.UserService);
-    const pubsub = childContainer.get<PubSub>(TYPES.PubSub);
-
-    return {
-      user,
-      invoiceService,
-      userService,
-      pubsub,
-      container: childContainer,
-      connection,
-    };
+    return await createSubscriptionContext(connection);
   }
 
+  // Regular http requests
   const authHeader = req && req.headers ? req.headers.authorization : undefined;
 
   try {
@@ -231,7 +163,7 @@ export async function createContext({
     if (authHeader && authHeader.startsWith("Bearer ")) {
       token = authHeader.split(" ")[1];
       if (token !== "demo-token" && token !== "demo-token-admin") {
-        user = await verifyTokenAndGetEmail(token, options);
+        user = await retrieveUserFromToken(token, options);
         if (!user) {
           throw new Error("User not found");
         }
@@ -323,4 +255,63 @@ export async function createContext({
     console.error("Error in createContext function:", error.message, error);
     return { user: null, container };
   }
+}
+
+async function createSubscriptionContext(connection: Context) {
+  const authHeader = (connection?.connectionParams?.Authorization ||
+    connection?.connectionParams?.authorization) as string | undefined;
+
+  let user = null;
+  let token = null;
+  if (authHeader && authHeader.startsWith("Bearer ")) {
+    token = authHeader.split(" ")[1];
+    if (token !== "demo-token" && token !== "demo-token-admin") {
+      try {
+        try {
+          user = await retrieveUserFromToken(token, options);
+        } catch (error) {
+          logger.error("Token verification failed:" + JSON.stringify(error));
+          user = null;
+        }
+      } catch (error) {
+        console.error("Subscription token verification failed:", error);
+        user = null;
+      }
+    } else if (token === "demo-token") {
+      user = {
+        id: "demoId",
+        role: Role.USER,
+        username: "demo-user@example.com",
+        name: "demo-user",
+      };
+    } else {
+      user = {
+        id: "demoAdminId",
+        role: Role.ADMIN,
+        username: "demo-admin@example.com",
+        name: "demo-admin",
+      };
+    }
+  }
+
+  const childContainer = container.createChild();
+
+  if (user) {
+    childContainer.bind<UserIdAndRole>(TYPES.UserContext).toConstantValue(user);
+  }
+
+  const invoiceService = childContainer.get<InvoiceService>(
+    TYPES.InvoiceService,
+  );
+  const userService = childContainer.get<UserService>(TYPES.UserService);
+  const pubsub = childContainer.get<PubSub>(TYPES.PubSub);
+
+  return {
+    user,
+    invoiceService,
+    userService,
+    pubsub,
+    container: childContainer,
+    connection,
+  };
 }
