@@ -9,12 +9,9 @@ const AnimatedText = styled.h1`
   letter-spacing: -1px;
   line-height: 1.2;
   text-align: center;
-  margin: 20% 0 40px;
+  margin-top: 20%;
+  margin-left: 0;
   color: ${({ theme }) => theme.text};
-
-  @media (min-width: 1200px) {
-    margin-left: 103px;
-  }
 `;
 
 type TextAnimationProps = {
