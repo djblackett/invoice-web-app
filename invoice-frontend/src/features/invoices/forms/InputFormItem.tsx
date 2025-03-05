@@ -26,7 +26,6 @@ type InputFormItemProps = {
   isEditOpen: boolean;
 };
 
-// TODO - can I make this simpler?
 export default function InputFormItem({
   invoice,
   isEditOpen,
