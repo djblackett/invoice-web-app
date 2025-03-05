@@ -25,6 +25,8 @@ export const createApp = async () => {
     const database = container.get(DatabaseConnection);
     await database.initConnection();
 
+    app.set("trust proxy", 1);
+
     app.get("/health", (_req: Request, res: Response) => {
       res.status(200).send("OK");
     });
