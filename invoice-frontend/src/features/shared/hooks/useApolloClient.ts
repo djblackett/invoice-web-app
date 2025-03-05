@@ -13,7 +13,6 @@ import { getMainDefinition } from "@apollo/client/utilities";
 import { loadDevMessages, loadErrorMessages } from "@apollo/client/dev";
 
 const isDemo = import.meta.env.VITE_DEMO_MODE === "true";
-const isProduction = import.meta.env.MODE === "production";
 
 const useGraphQLClient = () => {
   const VITE_BACKEND_URL = import.meta.env.VITE_BACKEND_URL || "";
