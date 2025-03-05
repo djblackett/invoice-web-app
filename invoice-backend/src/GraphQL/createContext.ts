@@ -15,9 +15,9 @@ import { NODE_ENV } from "@/config/server.config";
 import { Logger } from "@/config/logger.config";
 
 const logger = container.get<Logger>(TYPES.Logger);
-// todo - use env vars
+
 const client = jwksClient({
-  jwksUri: "https://dev-n4e4qk7s3kbzusrs.us.auth0.com/.well-known/jwks.json",
+  jwksUri: `${process.env.DOMAIN}/.well-known/jwks.json`,
 });
 
 /**
@@ -47,10 +47,9 @@ function getSigningKeyAsync(kid: string): Promise<string> {
   });
 }
 
-// todo - move to config
 const options: VerifyOptions = {
-  audience: "https://invoice-web-app/",
-  issuer: "https://dev-n4e4qk7s3kbzusrs.us.auth0.com/",
+  audience: process.env.AUDIENCE,
+  issuer: process.env.DOMAIN,
   algorithms: ["RS256"],
 };
 
@@ -173,7 +172,7 @@ export async function createContext({
           }
         } catch (error) {
           console.error("Subscription token verification failed:", error);
-          // Optionally throw an error or set user to null depending on your needs.
+          user = null;
         }
       } else if (token === "demo-token") {
         user = {
@@ -192,8 +191,6 @@ export async function createContext({
       }
     }
 
-    // Optionally, you can also initialize services for subscriptions.
-    // For example, you might want to create a child container as in the HTTP request branch.
     const childContainer = container.createChild();
 
     if (user) {
@@ -236,7 +233,6 @@ export async function createContext({
       if (token !== "demo-token" && token !== "demo-token-admin") {
         user = await verifyTokenAndGetEmail(token, options);
         if (!user) {
-          // return { user: null, container };
           throw new Error("User not found");
         }
       } else if (token === "demo-token") {

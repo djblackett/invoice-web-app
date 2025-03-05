@@ -607,7 +607,6 @@ describe("Mutation.markAsPaid", () => {
   });
 });
 
-// todo - come back to this
 describe("Subscription.invoiceAdded", () => {
   it("should subscribe to invoiceAdded events", async () => {
     const asyncIteratorMock = {

@@ -9,7 +9,6 @@ import TYPES from "@/constants/identifiers";
 
 const logger = container.get<Logger>(TYPES.Logger);
 
-export const SECRET = process.env.SECRET || "";
 export const PORT = Number(process.env.PORT) || 8000;
 let DATABASE_URL = process.env.DATABASE_URL || "";
 
@@ -20,11 +19,6 @@ if (process.env.DEMO_MODE === "true") {
 export { DATABASE_URL };
 export const CERT_DIR = process.env.CERT_DIR || "../certs";
 export const NODE_ENV = process.env.NODE_ENV;
-
-if (!SECRET) {
-  logger.error("Server env secret not set");
-  throw new Error("Server env secret not set");
-}
 
 if (!PORT) {
   logger.error("Server env port not set");

@@ -9,7 +9,6 @@ type FormEntryProps = {
   style?: CSSProperties;
 };
 
-// todo - double check the mobile layout here
 function FormEntry({
   className,
   isLongOnMobile,
@@ -19,25 +18,14 @@ function FormEntry({
   // mobile view gets a longer component, hence the awkward naming scheme here
   if (isLongOnMobile) {
     return (
-      <OppositeWidthContainer
-        // onChange={handleChange}
-        // isDirty={isDirty}
-        className={className}
-        style={{ ...style }}
-      >
+      <OppositeWidthContainer className={className} style={{ ...style }}>
         {children}
       </OppositeWidthContainer>
     );
   }
 
   return (
-    <FormEntryContainer
-      // onChange={handleChange}
-      // isDirty={isDirty}
-      className={className}
-    >
-      {children}
-    </FormEntryContainer>
+    <FormEntryContainer className={className}>{children}</FormEntryContainer>
   );
 }
 
