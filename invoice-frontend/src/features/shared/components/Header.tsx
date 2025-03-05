@@ -5,6 +5,7 @@ import { VITE_REDIRECT_URI } from "@/config/config.ts";
 import styled from "styled-components";
 import DemoButton from "@/features/shared/components/buttons/DemoButton.tsx";
 import { ScreenReaderOnly } from "@/features/shared/styles/AppStyles.tsx";
+import Avatar from "./Avatar";
 
 const HeaderContainer = styled.div`
   width: 100%;
@@ -72,24 +73,6 @@ const BottomColorBoxForLogo = styled.div`
   bottom: 0;
   width: 100%;
   border-radius: 20px 0 20px 0;
-`;
-
-const AvatarBox = styled.div`
-  height: 100%;
-  width: 80px;
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  align-items: center;
-  border-left: 1px solid #494e6e;
-  padding-top: 5px;
-  padding-bottom: 5px;
-
-  @media (min-width: 1200px) {
-    border-left: initial;
-    width: 100%;
-    border-top: 1px solid #494e6e;
-  }
 `;
 
 const DarkLightBox = styled.button`
@@ -210,15 +193,13 @@ const sun = (
   </svg>
 );
 
-const isDemoMode = import.meta.env.VITE_DEMO_MODE === "true";
-
 type HeaderProps = {
   theme: string;
   themeToggler: () => void;
 };
 
 function Header({ themeToggler, theme }: HeaderProps) {
-  const { user, logout, isAuthenticated } = useAuth();
+  const { logout, isAuthenticated } = useAuth();
   const location = useLocation();
 
   const logoutWithRedirect = () =>
@@ -271,22 +252,7 @@ function Header({ themeToggler, theme }: HeaderProps) {
         >
           {theme === "light" ? moon : sun}
         </DarkLightBox>
-        <AvatarBox data-testid="avatar">
-          <img
-            src={
-              isDemoMode
-                ? `${import.meta.env.BASE_URL}assets/image-avatar.jpg`
-                : user?.picture
-            }
-            alt="user avatar"
-            style={{
-              borderRadius: "50%",
-              height: "48px",
-              width: "48px",
-            }}
-            referrerPolicy="no-referrer"
-          />
-        </AvatarBox>
+        <Avatar />
       </DarkModeProfileContainer>
     </HeaderContainer>
   );

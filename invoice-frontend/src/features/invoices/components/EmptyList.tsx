@@ -6,10 +6,10 @@ const EmptyListContainer = styled.div`
   display: flex;
   flex-direction: column;
   align-items: center;
-  margin-top: 6.3rem;
+  margin-top: 2rem;
 
   @media (min-width: 768px) {
-    margin-top: 4rem;
+    margin-top: 0;
   }
 `;
 
