@@ -13,6 +13,7 @@ import { getMainDefinition } from "@apollo/client/utilities";
 import { loadDevMessages, loadErrorMessages } from "@apollo/client/dev";
 
 const isDemo = import.meta.env.VITE_DEMO_MODE === "true";
+const isProduction = import.meta.env.MODE === "production";
 
 const useGraphQLClient = () => {
   const VITE_BACKEND_URL = import.meta.env.VITE_BACKEND_URL || "";
@@ -66,12 +67,17 @@ const useGraphQLClient = () => {
 
     const addressWithoutProtocol = VITE_BACKEND_URL.replace(/https?:\/\//, "");
 
+    let wsProtocol;
+    if (isDemo || isProduction) {
+      wsProtocol = "ws://";
+    } else {
+      wsProtocol = "wss://";
+    }
+
     // WebSocket Link for subscriptions
     const wsLink = new GraphQLWsLink(
       createClient({
-        url: isDemo
-          ? `ws://${addressWithoutProtocol}`
-          : `wss://${addressWithoutProtocol}`,
+        url: `${wsProtocol}${addressWithoutProtocol}`,
         connectionParams: async () => {
           try {
             const options = {
