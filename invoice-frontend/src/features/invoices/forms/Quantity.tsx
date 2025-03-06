@@ -35,7 +35,7 @@ function ItemQuantity({ index, invoice }: ItemQuantityProps) {
       />
 
       {Array.isArray(errors.items) && errors?.items?.[index]?.quantity && (
-        <div
+        <span
           style={{
             position: "absolute",
             top: "100%",
@@ -46,11 +46,12 @@ function ItemQuantity({ index, invoice }: ItemQuantityProps) {
             color: "#721c24",
             border: "1px solid #f5c6cb",
             borderRadius: "4px",
-            whiteSpace: "nowrap",
+            whiteSpace: "pre-line",
+            textWrap: "nowrap",
           }}
         >
           {errors?.items?.[index]?.quantity?.message}
-        </div>
+        </span>
       )}
     </div>
   );

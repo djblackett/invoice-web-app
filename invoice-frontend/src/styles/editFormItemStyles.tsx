@@ -79,7 +79,9 @@ export const ItemName = styled(Input)`
 `;
 
 export const Quantity = styled(Input).attrs({ pattern: "\\d+" })`
-  width: 64px;
+  min-width: 60px;
+  width: auto;
+  max-width: 64px;
   margin: 0;
   color: ${({ theme }) => theme.textPlain};
   padding: 0;
@@ -90,10 +92,21 @@ export const Quantity = styled(Input).attrs({ pattern: "\\d+" })`
   /* identical to box height, or 125% */
   text-align: left;
   letter-spacing: -0.25px;
+  flex-grow: 1;
+
+  @media (min-width: 325px) {
+    max-width: 64px;
+    min-width: 0;
+  }
+
+  @media (min-width: 400px) {
+    max-width: 100px;
+  }
 
   @media (min-width: 600px) {
     text-align: center;
     width: 46px;
+    max-width: 46px;
     display: inline;
     padding: 0;
   }
@@ -101,13 +114,24 @@ export const Quantity = styled(Input).attrs({ pattern: "\\d+" })`
 
 export const Price = styled(Quantity).attrs({ pattern: "[0-9.]*" })`
   width: 80px;
+  width: fit-content;
   padding-left: 1.25rem;
   text-align: left;
 
   @media (min-width: 325px) {
+    width: auto;
+    min-width: 100px;
+    max-width: 120px;
+  }
+
+  @media (min-width: 400px) {
+    max-width: 150px;
+  }
+
+  @media (min-width: 600px) {
     width: 100px;
-    padding-left: 1.25rem;
-    text-align: left;
+    text-align: center;
+    padding: 0;
   }
 `;
 
@@ -190,6 +214,7 @@ export const Box = styled.div`
 
 export const TotalBox = styled(Box)`
   text-align: right;
+
   @media (min-width: 325px) {
     align-items: flex-start;
     text-align: initial;
