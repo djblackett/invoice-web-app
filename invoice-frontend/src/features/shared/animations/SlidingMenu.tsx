@@ -69,6 +69,7 @@ const Sidebar = ({ children }: SidebarProps) => {
           left: 0,
           width: `${sidebarWidth}px`,
           height: "100%",
+          minHeight: "100vh",
           color: "#ecf0f1",
           padding: "20px",
           zIndex: 1001, // Above the overlay

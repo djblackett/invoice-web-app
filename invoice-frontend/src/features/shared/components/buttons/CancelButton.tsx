@@ -15,11 +15,15 @@ const Button = styled.button`
   /* identical to box height, or 125% */
   letter-spacing: -0.25px;
   scale: 0.9;
-  flex-shrink: 2;
+  flex-shrink: 1;
+  flex-grow: 1;
+  width: auto;
+  max-width: 150px;
+  margin-left: 0.25rem;
 
   @media (min-width: 325px) {
-    scale: none;
-    margin: 0.25rem;
+    scale: 1;
+    margin-left: 0;
   }
 
   &:hover {
