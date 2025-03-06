@@ -175,8 +175,6 @@ export default function ClientFormInfo({ invoice }: ClientFormInfoProps) {
         {width >= 768 && (
           <FormEntry className="client-country">{clientCountry}</FormEntry>
         )}
-
-        {/* // todo figure out the layout for mobile - hook-form doesn't like the way I set this up */}
       </AddressBox>
     </>
   );
