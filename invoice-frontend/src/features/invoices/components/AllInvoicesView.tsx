@@ -6,6 +6,7 @@ import EmptyList from "./EmptyList.tsx";
 import { Grid } from "react-loader-spinner";
 import { memo } from "react";
 import { Invoice } from "@/features/invoices/types/invoiceTypes.ts";
+import BreathingText from "@/features/shared/animations/BreathingText.tsx";
 
 interface StyledLinkProps extends LinkProps {
   $isMobile: boolean;
@@ -47,7 +48,7 @@ const AllInvoicesView = ({
           wrapperClass="grid-wrapper"
         />
         {process.env.NODE_ENV === "production" && (
-          <h1>Waking up the backend containers</h1>
+          <BreathingText text={"Waking up the backend containers"} />
         )}
       </>
     );

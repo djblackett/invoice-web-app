@@ -1,6 +1,6 @@
 import FormEntry from "@/features/invoices/forms/FormEntry.tsx";
 import { Label } from "@/styles/editPageStyles.ts";
-import PaymentTermsDropdown from "@/features/invoices/forms/FormDropDown.tsx";
+import PaymentTermsDropdown from "@/features/invoices/forms/PaymentTermsDropdown";
 import { Invoice } from "@/features/invoices/types/invoiceTypes.ts";
 
 export function PaymentTerms(props: { invoice: Invoice | undefined }) {
