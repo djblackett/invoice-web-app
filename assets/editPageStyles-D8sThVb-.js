@@ -1,4 +1,4 @@
-import{d as e,P as r}from"./index-CquupEEF.js";const a=e.h1`
+import{d as e,P as r}from"./index-hC3IUwHf.js";const a=e.h1`
   font-size: 1.5rem;
   color: ${({theme:t})=>t.text};
 `,n=e.div`
