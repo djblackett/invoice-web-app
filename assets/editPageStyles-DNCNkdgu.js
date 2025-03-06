@@ -1,4 +1,4 @@
-import{d as e,P as r}from"./index-6PDlD84C.js";const a=e.h1`
+import{d as e,P as r}from"./index-BWbkvAE2.js";const a=e.h1`
   font-size: 1.5rem;
   color: ${({theme:t})=>t.text};
 `,n=e.div`
@@ -85,7 +85,7 @@ import{d as e,P as r}from"./index-6PDlD84C.js";const a=e.h1`
     width: 100%;
   }
 `,p=e(o)`
-  width: 100%;
+  width: 99%;
 
   @media (min-width: 768px) {
     max-width: 152px;

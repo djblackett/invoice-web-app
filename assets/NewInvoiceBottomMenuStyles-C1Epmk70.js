@@ -1,4 +1,4 @@
-import{d as t}from"./index-6PDlD84C.js";const o=t.div`
+import{d as t}from"./index-BWbkvAE2.js";const o=t.div`
   width: 100%;
   max-width: 100vw;
   min-width: 100vw;

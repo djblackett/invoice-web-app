@@ -1,4 +1,4 @@
-import{d as o,M as s,j as t,E as r,u as l,N as c,F as d}from"./index-6PDlD84C.js";import{V as p}from"./ViewInvoiceStyles-BhYVX0FZ.js";const x=o(s)`
+import{d as o,M as s,j as t,E as r,u as l,N as c,F as d}from"./index-BWbkvAE2.js";import{V as p}from"./ViewInvoiceStyles-BQBgr9tS.js";const x=o(s)`
   justify-self: center;
   align-self: center;
   height: fit-content;

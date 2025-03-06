@@ -1,0 +1,1 @@
+import{u as s,j as e,N as t}from"./index-BWbkvAE2.js";function n(){const{isAuthenticated:i,isLoading:r}=s();return r?e.jsx("h1",{children:"Loading"}):i?e.jsx(t,{to:"/invoices",replace:!0}):e.jsx(t,{to:"login",replace:!0})}export{n as default};
