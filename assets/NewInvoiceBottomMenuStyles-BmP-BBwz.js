@@ -1,32 +1,55 @@
-import{d as t}from"./index-hC3IUwHf.js";const o=t.div`
+import{d as t}from"./index-6PDlD84C.js";const o=t.div`
   width: 100%;
   max-width: 100vw;
+  min-width: 100vw;
+  position: absolute;
+
+  left: -26px;
+  /* right: -32px; */
+  bottom: -1.8rem;
   display: flex;
+  height: 91px;
+
   flex-direction: row;
   align-items: center;
   justify-content: center;
-  padding: 0;
-  margin-top: 2.6rem;
+
+  padding-left: 0;
+  padding-right: 0;
   margin-bottom: 4rem;
-  align-self: center;
+  margin-left: 0;
+  margin-right: 0;
+
   transform: scale(0.9);
 
   @media (min-width: 325px) {
+    position: static;
     justify-content: space-between;
     transform: scale(1);
+    left: 0;
+    right: 0;
+    bottom: initial;
+    max-width: 100%;
+    min-width: 100vw;
+    margin-bottom: 1rem;
+    margin-left: -32px;
+    padding-left: 8px;
+    padding-right: 8px;
+    padding-bottom: 2rem;
   }
 
   @media (min-width: 768px) {
     margin-bottom: 0;
   }
-`,e=t.input`
+`,i=t.input`
   border-radius: 24px;
   background-color: #7c5dfa;
   border: none;
-  height: 44px;
+  height: 48px;
   width: 90px;
   display: flex;
   flex-shrink: 1;
+  flex-grow: 1;
   align-items: center;
   justify-content: center;
   text-align: center;
@@ -37,6 +60,11 @@ import{d as t}from"./index-hC3IUwHf.js";const o=t.div`
   /* identical to box height, or 125% */
   letter-spacing: -0.25px;
   color: #ffffff;
+  scale: 0.9;
+
+  @media (min-width: 325px) {
+    scale: 1;
+  }
 
   @media (min-width: 1200px) {
     height: 48px;
@@ -46,24 +74,33 @@ import{d as t}from"./index-hC3IUwHf.js";const o=t.div`
   &:hover {
     background-color: #9277ff;
   }
-`,r=t(e)`
+`,r=t(i)`
   background-color: #373b53;
   color: #888eb0;
   margin-right: 8px;
-  width: 133px;
-  padding-left: 16px;
-  padding-right: 16px;
+  margin-left: 8px;
+  width: min-content;
+  max-width: 150px;
+  padding: 16px 24px 17px 24px;
+  flex-grow: 1;
 
   &:hover {
     background-color: #0c0e16;
   }
-`,a=t(e)`
-  background-color: ${({theme:i})=>i.buttonBackground};
+`,a=t(i)`
+  background-color: ${({theme:e})=>e.buttonBackground};
   border-radius: 24px;
   cursor: pointer;
-  width: fit-content;
   white-space: nowrap;
-  width: 133px;
+  width: auto;
+  max-width: 150px;
+  flex-grow: 1;
+  padding: 16px 24px 17px 24px;
+  /* margin-right: -32px; */
+
+  @media (min-width: 325px) {
+    margin-right: 0;
+  }
 
   @media (min-width: 1200px) {
     width: 150px;
