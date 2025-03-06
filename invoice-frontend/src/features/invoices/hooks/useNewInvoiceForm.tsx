@@ -113,6 +113,7 @@ export const useNewInvoiceForm = () => {
 
   // Create a new draft invoice (all fields not required)
   const onSubmitDraft: SubmitHandler<FormType> = async () => {
+    // Need to filter errors to avoid triggering the required=true errors but still show other errors
     clearErrors();
     const data = getValues();
 

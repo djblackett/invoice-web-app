@@ -11,6 +11,10 @@ interface StyledLinkProps extends LinkProps {
   $isMobile: boolean;
 }
 
+const WakeUp = styled.h1`
+  text-align: center;
+`;
+
 const StyledLink = styled(Link)<StyledLinkProps>`
   width: ${(props) => (props.$isMobile ? "100%" : "50%")};
   min-width: ${(props) => (props.$isMobile ? "auto" : "730px")};
@@ -47,7 +51,7 @@ const AllInvoicesView = ({
           wrapperClass="grid-wrapper"
         />
         {process.env.NODE_ENV === "production" && (
-          <h1>Waking up the backend containers</h1>
+          <WakeUp>Waking up the backend containers</WakeUp>
         )}
       </>
     );

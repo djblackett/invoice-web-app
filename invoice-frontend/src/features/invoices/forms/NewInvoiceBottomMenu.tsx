@@ -31,7 +31,7 @@ function NewInvoiceBottomMenu({
     reset();
   };
 
-  // todo - revisit this and fix types
+  // TODO - fix these types - ongoing issue that doesn't affect app functionality
   return (
     <MenuContainer>
       <CancelButton
