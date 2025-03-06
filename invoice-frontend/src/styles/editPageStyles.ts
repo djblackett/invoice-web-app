@@ -103,7 +103,7 @@ export const StreetAddressInput = styled(Input)`
 `;
 
 export const AddressDetailInput = styled(Input)`
-  width: 100%;
+  width: 99%;
 
   @media (min-width: 768px) {
     max-width: 152px;

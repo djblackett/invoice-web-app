@@ -9,6 +9,7 @@ import {
 } from "../../../styles/NewInvoiceBottomMenuStyles.tsx";
 import { useNewInvoiceContext } from "./NewInvoiceContextProvider.tsx";
 import { useNewInvoiceForm } from "../hooks/useNewInvoiceForm.tsx";
+import useWindowWidth from "@/features/shared/hooks/useWindowWidth.tsx";
 
 type NewInvoiceBoottemMenuProps = {
   closeText: string;
@@ -31,6 +32,8 @@ function NewInvoiceBottomMenu({
     reset();
   };
 
+  const width = useWindowWidth();
+
   // TODO - fix these types - ongoing issue that doesn't affect app functionality
   return (
     <MenuContainer>
@@ -42,7 +45,7 @@ function NewInvoiceBottomMenu({
       <SaveAndDraftContainer>
         <SaveDraft
           type="button"
-          value="Save as draft"
+          value={width > 325 ? "Save as draft" : "Draft"}
           onClick={onSubmitDraft}
         />
         <Save type="button" value="Save" onClick={handleSubmit(onSubmit)} />

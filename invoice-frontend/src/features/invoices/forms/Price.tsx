@@ -45,7 +45,8 @@ function ItemPrice({ index, invoice }: ItemPriceProps) {
             color: "#721c24",
             border: "1px solid #f5c6cb",
             borderRadius: "4px",
-            whiteSpace: "nowrap",
+            // whiteSpace: "nowrap",
+            textWrap: "balance",
           }}
         >
           {errors?.items?.[index]?.price?.message}

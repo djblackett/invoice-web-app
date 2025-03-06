@@ -5,7 +5,7 @@ function BreathingText({ text }: { text: string }) {
     <motion.h1
       animate={{ opacity: [1, 0.3, 1] }}
       transition={{
-        duration: 1,
+        duration: 3,
         repeat: Infinity,
         ease: "easeInOut",
       }}
