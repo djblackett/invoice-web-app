@@ -22,6 +22,7 @@ const Button = styled.button`
   @media (min-width: 300px) {
     scale: 1;
     margin: 0.25rem;
+    flex-grow: 1;
   }
 `;
 
