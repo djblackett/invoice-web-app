@@ -6,14 +6,11 @@ import EmptyList from "./EmptyList.tsx";
 import { Grid } from "react-loader-spinner";
 import { memo } from "react";
 import { Invoice } from "@/features/invoices/types/invoiceTypes.ts";
+import BreathingText from "@/features/shared/animations/BreathingText.tsx";
 
 interface StyledLinkProps extends LinkProps {
   $isMobile: boolean;
 }
-
-const WakeUp = styled.h1`
-  text-align: center;
-`;
 
 const StyledLink = styled(Link)<StyledLinkProps>`
   width: ${(props) => (props.$isMobile ? "100%" : "50%")};
@@ -51,7 +48,7 @@ const AllInvoicesView = ({
           wrapperClass="grid-wrapper"
         />
         {process.env.NODE_ENV === "production" && (
-          <WakeUp>Waking up the backend containers</WakeUp>
+          <BreathingText text={"Waking up the backend containers"} />
         )}
       </>
     );
