@@ -71,7 +71,9 @@ export default function InputFormItem({
         })),
       });
     } else if (!isEditOpen) {
-      reset({ items: [] });
+      reset({
+        items: [{ name: "", price: 0, quantity: 0, total: 0 }],
+      });
     }
   }, [invoice, isEditOpen, reset]);
 
