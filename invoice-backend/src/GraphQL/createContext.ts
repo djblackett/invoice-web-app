@@ -18,8 +18,11 @@ import { Context } from "graphql-ws";
 const logger = container.get<Logger>(TYPES.Logger);
 
 const client = jwksClient({
-  jwksUri: `${process.env.DOMAIN}/.well-known/jwks.json`,
+  jwksUri: `${process.env.DOMAIN}.well-known/jwks.json`,
 });
+
+logger.info(`Domain: ${process.env.DOMAIN}`);
+logger.info(`Audience: ${process.env.AUDIENCE}`);
 
 function getSigningKeyAsync(kid: string): Promise<string> {
   return new Promise((resolve, reject) => {
