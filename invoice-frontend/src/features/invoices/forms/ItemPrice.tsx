@@ -13,18 +13,8 @@ function ItemPrice({ index, invoice }: ItemPriceProps) {
   const { errors } = formState;
   const { isDraft } = useNewInvoiceContext();
 
-  const isPatternError = () => {
-    if (errors.items && errors.items instanceof Array) {
-      return errors.items.some(
-        (itemField) =>
-          itemField &&
-          Object.values(itemField).some(
-            (errorDetail) => errorDetail?.type === "pattern",
-          ),
-      );
-    }
-    return false;
-  };
+  const isPatternError = () =>
+    errors?.items?.[index]?.price?.type === "pattern";
 
   return (
     <div style={{ position: "relative" }}>
@@ -60,8 +50,8 @@ function ItemPrice({ index, invoice }: ItemPriceProps) {
             color: "#721c24",
             border: "1px solid #f5c6cb",
             borderRadius: "4px",
-            // whiteSpace: "nowrap",
-            textWrap: "balance",
+            whiteSpace: "prewrap",
+            // textWrap: "nowrap",
           }}
         >
           {errors?.items?.[index]?.price?.message}
