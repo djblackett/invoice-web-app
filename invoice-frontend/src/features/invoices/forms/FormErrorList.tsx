@@ -1,6 +1,7 @@
 import { useFormContext } from "react-hook-form";
 import PropTypes from "prop-types";
 import { ErrorList, ErrorText } from "../../../styles/editPageStyles.ts";
+import { errorTypeCollector } from "../hooks/useNewInvoiceForm.tsx";
 
 type FormErrorListProps = {
   isEditOpen: boolean;
@@ -11,16 +12,14 @@ function FormErrorList({ isEditOpen }: FormErrorListProps) {
     formState: { errors },
   } = useFormContext();
 
-  const isFieldErrors = () =>
-    Object.keys(errors).find(
-      (item) => item !== "myFieldArray" && item !== "items",
-    );
-  // console.log(errors);
   return (
     <ErrorList>
       <ErrorText
         style={{
-          visibility: isFieldErrors() && isEditOpen ? "visible" : "hidden",
+          visibility:
+            errorTypeCollector(errors).includes("required") && isEditOpen
+              ? "visible"
+              : "hidden",
         }}
       >
         - All fields must be added
@@ -41,15 +40,3 @@ export default FormErrorList;
 FormErrorList.propTypes = {
   isEditOpen: PropTypes.bool.isRequired,
 };
-
-// {
-//   "items": [
-//     {
-//       "price": {
-//         "type": "pattern",
-//         "message": "Only numbers are allowed - max 2 decimal places",
-//         "ref": {}
-//       }
-//     }
-//   ]
-// }
