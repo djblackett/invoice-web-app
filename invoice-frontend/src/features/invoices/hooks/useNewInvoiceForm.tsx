@@ -256,9 +256,7 @@ export const errorTypeCollector = (errors) => {
   // collect errors from the items array
   if (errors.items && errors.items instanceof Array) {
     errors.items.forEach((itemError) => {
-      console.log(typeof itemError);
       if (itemError && typeof itemError === "object") {
-        console.log(Object.keys(itemError));
         Object.keys(itemError).forEach((fieldName) => {
           const errorDetail = itemError[fieldName];
           if (errorDetail?.type) {

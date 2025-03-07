@@ -16,8 +16,8 @@ import useWindowWidth from "../../shared/hooks/useWindowWidth.tsx";
 import { Col, Col1 } from "@/styles/EditFormItemListStyles.ts";
 
 import { Invoice } from "@/features/invoices/types/invoiceTypes.ts";
-import ItemQuantity from "./Quantity.tsx";
-import ItemPrice from "./Price.tsx";
+import ItemQuantity from "./ItemQuantity.tsx";
+import ItemPrice from "./ItemPrice.tsx";
 import ItemName from "./ItemName.tsx";
 
 type InputFormItemProps = {

@@ -76,6 +76,7 @@ const NewInvoiceProvider: FC<NewInvoiceProviderProps> = ({
 
   const methods = useForm<FormType>({
     mode: "onChange",
+    criteriaMode: "all",
   });
 
   const value: AppContextType = {

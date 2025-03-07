@@ -1,7 +1,7 @@
 import { Price } from "@/styles/editFormItemStyles";
-import { isDraft } from "@reduxjs/toolkit";
 import { useFormContext } from "react-hook-form";
 import { Invoice } from "../types/invoiceTypes";
+import { useNewInvoiceContext } from "./NewInvoiceContextProvider";
 
 interface ItemPriceProps {
   index: number;
@@ -11,6 +11,21 @@ interface ItemPriceProps {
 function ItemPrice({ index, invoice }: ItemPriceProps) {
   const { register, formState } = useFormContext();
   const { errors } = formState;
+  const { isDraft } = useNewInvoiceContext();
+
+  const isPatternError = () => {
+    if (errors.items && errors.items instanceof Array) {
+      return errors.items.some(
+        (itemField) =>
+          itemField &&
+          Object.values(itemField).some(
+            (errorDetail) => errorDetail?.type === "pattern",
+          ),
+      );
+    }
+    return false;
+  };
+
   return (
     <div style={{ position: "relative" }}>
       <Price
@@ -33,7 +48,7 @@ function ItemPrice({ index, invoice }: ItemPriceProps) {
               : "",
         }}
       />
-      {Array.isArray(errors.items) && errors?.items?.[index]?.price && (
+      {Array.isArray(errors.items) && isPatternError() && (
         <div
           style={{
             position: "absolute",

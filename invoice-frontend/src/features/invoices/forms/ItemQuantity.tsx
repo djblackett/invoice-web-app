@@ -1,7 +1,7 @@
 import { Quantity } from "@/styles/editFormItemStyles";
-import { isDraft } from "@reduxjs/toolkit";
 import { useFormContext } from "react-hook-form";
 import { Invoice } from "../types/invoiceTypes";
+import { useNewInvoiceContext } from "./NewInvoiceContextProvider";
 
 interface ItemQuantityProps {
   index: number;
@@ -10,6 +10,20 @@ interface ItemQuantityProps {
 function ItemQuantity({ index, invoice }: ItemQuantityProps) {
   const { register, formState } = useFormContext();
   const { errors } = formState;
+  const { isDraft } = useNewInvoiceContext();
+
+  const isPatternError = () => {
+    if (errors.items && errors.items instanceof Array) {
+      return errors.items.some(
+        (itemField) =>
+          itemField &&
+          Object.values(itemField).some(
+            (errorDetail) => errorDetail?.type === "pattern",
+          ),
+      );
+    }
+    return false;
+  };
 
   return (
     <div style={{ position: "relative" }}>
@@ -34,7 +48,7 @@ function ItemQuantity({ index, invoice }: ItemQuantityProps) {
         defaultValue={invoice ? invoice?.items?.[index]?.quantity : 0}
       />
 
-      {Array.isArray(errors.items) && errors?.items?.[index]?.quantity && (
+      {Array.isArray(errors.items) && isPatternError() && (
         <span
           style={{
             position: "absolute",
