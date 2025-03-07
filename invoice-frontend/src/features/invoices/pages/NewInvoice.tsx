@@ -7,23 +7,26 @@ import {
 import { useNewInvoiceContext } from "../forms/NewInvoiceContextProvider.tsx";
 import Sidebar from "@/features/shared/animations/SlidingMenu.tsx";
 import { AnimatePresence } from "motion/react";
+import { ClickOutsideProvider } from "@shelf/react-outside-click";
 
 function NewInvoice() {
-  const { isNewInvoiceOpen } = useNewInvoiceContext();
+  const { isNewInvoiceOpen, setIsNewInvoiceOpen } = useNewInvoiceContext();
 
   // DarkenScreen appears when newInvoice tab is open
   return (
     <>
-      <AnimatePresence>
-        {isNewInvoiceOpen ? (
-          <Sidebar key="sidebar-parent">
-            <FormContainerDarkenModal data-testid="newInvoicePage">
-              <EditTitle>New Invoice</EditTitle>
-              <NewInvoiceForm />
-            </FormContainerDarkenModal>
-          </Sidebar>
-        ) : null}
-      </AnimatePresence>
+      <ClickOutsideProvider onOutsideClick={() => setIsNewInvoiceOpen(false)}>
+        <AnimatePresence>
+          {isNewInvoiceOpen ? (
+            <Sidebar key="sidebar-parent">
+              <FormContainerDarkenModal data-testid="newInvoicePage">
+                <EditTitle>New Invoice</EditTitle>
+                <NewInvoiceForm />
+              </FormContainerDarkenModal>
+            </Sidebar>
+          ) : null}
+        </AnimatePresence>
+      </ClickOutsideProvider>
     </>
   );
 }
