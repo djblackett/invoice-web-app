@@ -71,7 +71,11 @@ function DeleteModal({
             be undone.`}
           </Description>
           <ButtonContainer>
-            <CancelButton handleClick={closeModal} text="Cancel" />
+            <CancelButton
+              handleClick={closeModal}
+              text="Cancel"
+              style={{ margin: "0.25rem" }}
+            />
             <DeleteButton handleClick={handleClick} />
           </ButtonContainer>
         </ModalContainer>
