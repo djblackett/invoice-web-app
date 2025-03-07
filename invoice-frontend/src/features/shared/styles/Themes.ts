@@ -37,6 +37,7 @@ export const darkTheme = {
   elements: "hsl(209, 23%, 22%)",
   outline: "#7C5DFA",
   greyText: "#DFE3FA",
+  font: "League Spartan",
   formBackground: "#141625",
   formFieldOutline: "#252945",
   formFieldOutlineFocus: "#9277FF",
