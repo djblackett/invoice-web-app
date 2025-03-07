@@ -22,7 +22,8 @@ function NewInvoiceBottomMenu({
 }: NewInvoiceBoottemMenuProps) {
   const { clearErrors, reset, handleSubmit } = useFormContext();
 
-  const { setIsNewInvoiceOpen } = useNewInvoiceContext();
+  const { setIsNewInvoiceOpen, setStartDate, setSelectedPaymentOption } =
+    useNewInvoiceContext();
 
   const { onSubmit, onSubmitDraft } = useNewInvoiceForm();
 
@@ -30,6 +31,8 @@ function NewInvoiceBottomMenu({
     clearErrors();
     setIsNewInvoiceOpen(false);
     reset();
+    setStartDate(new Date());
+    setSelectedPaymentOption(1);
   };
 
   const width = useWindowWidth();
