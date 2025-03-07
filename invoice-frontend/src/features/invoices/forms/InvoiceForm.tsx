@@ -1,20 +1,13 @@
-import { FormProvider } from "react-hook-form";
-import { BillText } from "../../../styles/editPageStyles.ts";
+import { useNewInvoiceContext } from "./NewInvoiceContextProvider.tsx";
+import { BillText, EditTitle } from "@/styles/editPageStyles";
+import { Suspense } from "react";
+import ClientFormInfo from "./ClientFormInfo.tsx";
 import CompanyFormInfo from "./CompanyFormInfo.tsx";
+import Description from "./Description.tsx";
 import EditFormItemList from "./EditFormItemList.tsx";
 import FormErrorList from "./FormErrorList.tsx";
-import ClientFormInfo from "./ClientFormInfo.tsx";
-import Description from "./Description.tsx";
-import { useNewInvoiceForm } from "../hooks/useNewInvoiceForm.tsx";
-import { useNewInvoiceContext } from "./NewInvoiceContextProvider.tsx";
-import React, { Suspense } from "react";
 import styled from "styled-components";
-
-const NewInvoiceBottomMenu = React.lazy(
-  () => import("./NewInvoiceBottomMenu.tsx"),
-);
-
-const DateAndPayment = React.lazy(() => import("./DateAndPayment.tsx"));
+import React from "react";
 
 const Form = styled.form`
   position: relative;
@@ -25,13 +18,19 @@ const Form = styled.form`
     padding-bottom: 0;
   }
 `;
-export default function NewInvoiceForm() {
-  const { methods } = useNewInvoiceForm();
 
+const NewInvoiceBottomMenu = React.lazy(
+  () => import("./NewInvoiceBottomMenu.tsx"),
+);
+
+const DateAndPayment = React.lazy(() => import("./DateAndPayment.tsx"));
+
+const InvoiceForm = () => {
   const { isNewInvoiceOpen } = useNewInvoiceContext();
 
   return (
-    <FormProvider {...methods}>
+    <>
+      <EditTitle>New Invoice</EditTitle>
       <Form style={{ zIndex: 1, position: "relative" }}>
         <BillText>Bill From</BillText>
         <CompanyFormInfo />
@@ -48,6 +47,8 @@ export default function NewInvoiceForm() {
           />
         </Suspense>
       </Form>
-    </FormProvider>
+    </>
   );
-}
+};
+
+export default InvoiceForm;
