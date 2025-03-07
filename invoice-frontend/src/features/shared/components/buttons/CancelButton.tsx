@@ -1,6 +1,5 @@
 import styled from "styled-components";
 import Proptypes from "prop-types";
-import { style } from "motion/react-m";
 
 const Button = styled.button`
   display: inline;
