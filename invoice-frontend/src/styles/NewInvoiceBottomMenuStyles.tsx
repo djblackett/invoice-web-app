@@ -33,15 +33,22 @@ export const MenuContainer = styled.div`
     bottom: initial;
     max-width: 100%;
     min-width: 100vw;
-    margin-bottom: 1rem;
+    margin-bottom: 2rem;
     margin-left: -32px;
     padding-left: 8px;
     padding-right: 8px;
     padding-bottom: 2rem;
   }
 
+  @media (min-width: 400px) {
+    min-width: auto;
+    margin-left: 0;
+  }
+
   @media (min-width: 768px) {
     margin-bottom: 0;
+    min-width: auto;
+    margin-left: 0;
   }
 `;
 

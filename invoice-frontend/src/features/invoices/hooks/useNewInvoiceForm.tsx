@@ -1,4 +1,9 @@
-import { useFieldArray, SubmitHandler } from "react-hook-form";
+import {
+  useFieldArray,
+  SubmitHandler,
+  FieldErrors,
+  FieldValues,
+} from "react-hook-form";
 import { useEffect } from "react";
 import { useMutation } from "@apollo/client";
 import {
@@ -64,7 +69,6 @@ export const useNewInvoiceForm = () => {
     setSelectedPaymentOption(1);
     reset();
     clearErrors();
-
     setIsNewInvoiceOpen(false);
   };
 
@@ -114,6 +118,78 @@ export const useNewInvoiceForm = () => {
   // Create a new draft invoice (all fields not required)
   const onSubmitDraft: SubmitHandler<FormType> = async () => {
     // Need to filter errors to avoid triggering the required=true errors but still show other errors
+
+    // const otherErrors = errorTypes.filter((error) => error !== "required");
+    // if (otherErrors.length > 0) {
+    // }
+
+    // Trigger validation to update errors
+    // await trigger();
+
+    // Re-calculate errors directly from the current form state
+    const currentErrors = methods.formState.errors;
+    const currentErrorTypes = errorTypeCollector(currentErrors);
+
+    console.log("currentErrors", currentErrors);
+    console.log(currentErrorTypes);
+    // Filter out only non-required errors
+    const nonRequiredErrors = currentErrorTypes.filter(
+      (errorType) => errorType !== "required",
+    );
+
+    if (nonRequiredErrors.length > 0) {
+      // There are errors other than "required", so prevent submission.
+      console.error(
+        "Draft submission blocked due to errors:",
+        nonRequiredErrors,
+      );
+      clearErrorsByType(currentErrors, "required");
+      reset(undefined, { keepValues: true });
+
+      // reapply the leftover errors to the form
+
+      for (const key in currentErrors) {
+        if (currentErrors[key]?.type) {
+          setError(key, {
+            type: currentErrors[key].type,
+            message: currentErrors[key].message,
+          });
+        }
+      }
+
+      // if (currentErrors.items) {
+      //   currentErrors.items.forEach((itemError, index) => {
+      //     if (itemError?.type) {
+      //       setError(`items[${index}]`, {
+      //         type: itemError.type,
+      //         message: itemError.message,
+      //       });
+      //     }
+      //   });
+      // }
+
+      if (currentErrors.items) {
+        currentErrors.items.forEach((itemError, index) => {
+          // Iterate over all keys in the item error object (e.g., "price", "quantity", etc.)
+          for (const key in itemError) {
+            if (itemError[key]?.type) {
+              setError(`items[${index}].${key}`, {
+                type: itemError[key].type,
+                message: itemError[key].message,
+              });
+            }
+          }
+        });
+      }
+
+      // errors.forEach((errorType) => {
+      //   setError(errorType, { type: errorType });
+      // });
+
+      // console.log("currentErrors", currentErrors);
+      return;
+    }
+
     clearErrors();
     const data = getValues();
 
@@ -183,3 +259,74 @@ export const useNewInvoiceForm = () => {
     onSubmitUpdate,
   };
 };
+
+// function errorTypeCollector(errors: FieldErrors<FieldValues>) {
+//   const errorTypes: string[] = [];
+//   if (!errors?.items) {
+//     return [];
+//   }
+
+//   errors.items.forEach((itemError: any) => {
+//     Object.keys(itemError).forEach((key) => {
+//       if (itemError[key]?.type) {
+//         errorTypes.push(itemError[key].type);
+//         console.log(itemError[key].type);
+//       }
+//     });
+//   });
+//   // console.log(errorTypes);
+//   return errorTypes;
+// }
+
+const errorTypeCollector = (errors: FieldErrors<FieldValues>) => {
+  const errorTypes: string[] = [];
+  if (!errors) {
+    return [];
+  }
+
+  // *******************
+
+  //  must iterate through items array and and those errors too!!!
+  // *********************
+
+  for (const key in errors) {
+    if (errors[key]?.type) {
+      errorTypes.push(errors[key].type);
+    }
+  }
+
+  if (errors.items) {
+    errors.items.forEach((itemError) => {
+      Object.keys(itemError).forEach((key) => {
+        if (itemError[key]?.type) {
+          errorTypes.push(itemError[key].type);
+        }
+      });
+    });
+  }
+
+  console.log(errorTypes);
+  return errorTypes;
+};
+
+function clearErrorsByType(errors: FieldErrors<FieldValues>, type: string) {
+  if (!errors) {
+    return;
+  }
+
+  for (const key in errors) {
+    if (errors[key]?.type === type) {
+      delete errors[key];
+    }
+  }
+
+  if (errors.items) {
+    errors.items.forEach((itemError) => {
+      Object.keys(itemError).forEach((key) => {
+        if (itemError[key]?.type === type) {
+          delete itemError[key];
+        }
+      });
+    });
+  }
+}

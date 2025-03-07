@@ -5,6 +5,7 @@ import { ErrorList, ErrorText } from "../../../styles/editPageStyles.ts";
 type FormErrorListProps = {
   isEditOpen: boolean;
 };
+
 function FormErrorList({ isEditOpen }: FormErrorListProps) {
   const {
     formState: { errors },
@@ -14,15 +15,12 @@ function FormErrorList({ isEditOpen }: FormErrorListProps) {
     Object.keys(errors).find(
       (item) => item !== "myFieldArray" && item !== "items",
     );
-
+  // console.log(errors);
   return (
     <ErrorList>
       <ErrorText
         style={{
-          visibility:
-            (isFieldErrors() || errors.items) && isEditOpen
-              ? "visible"
-              : "hidden",
+          visibility: isFieldErrors() && isEditOpen ? "visible" : "hidden",
         }}
       >
         - All fields must be added
@@ -43,3 +41,15 @@ export default FormErrorList;
 FormErrorList.propTypes = {
   isEditOpen: PropTypes.bool.isRequired,
 };
+
+// {
+//   "items": [
+//     {
+//       "price": {
+//         "type": "pattern",
+//         "message": "Only numbers are allowed - max 2 decimal places",
+//         "ref": {}
+//       }
+//     }
+//   ]
+// }
