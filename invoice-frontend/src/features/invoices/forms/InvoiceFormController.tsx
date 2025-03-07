@@ -13,9 +13,7 @@ export default function InvoiceFormController() {
   };
   return (
     <ClickOutsideProvider onOutsideClick={handleClose}>
-      <div onClick={cacheFormData}>
-        <InvoiceForm />
-      </div>
+      <InvoiceForm />
     </ClickOutsideProvider>
   );
 }

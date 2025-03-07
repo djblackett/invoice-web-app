@@ -18,6 +18,8 @@ import { useNewInvoiceContext } from "../forms/NewInvoiceContextProvider.tsx";
 import { flushSync } from "react-dom";
 import { useParams } from "react-router-dom";
 import { FormType } from "@/features/invoices/types/invoiceTypes.ts";
+import defaultValues from "../forms/defaultValues.ts";
+import useFormCaching from "./useFormCaching.ts";
 
 export const useNewInvoiceForm = () => {
   const { id } = useParams();
@@ -40,6 +42,8 @@ export const useNewInvoiceForm = () => {
   });
 
   const watcher = watch();
+
+  const { clearCache } = useFormCaching();
 
   // Mutation definitions
   const [addInvoice] = useMutation(ADD_INVOICE, {
@@ -67,7 +71,8 @@ export const useNewInvoiceForm = () => {
 
   const handleFormReset = () => {
     setSelectedPaymentOption(1);
-    reset();
+    clearCache();
+    reset(defaultValues);
     clearErrors();
     setIsNewInvoiceOpen(false);
   };

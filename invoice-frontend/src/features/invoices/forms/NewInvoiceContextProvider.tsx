@@ -81,7 +81,7 @@ const NewInvoiceProvider: FC<NewInvoiceProviderProps> = ({
         price: 0,
         quantity: 0,
         total: 0,
-        id: "4294650e-1e61-473b-ba82-0ee2afdeb98c",
+        id: "",
       },
     ] as [Item],
     country: "",

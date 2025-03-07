@@ -1,12 +1,15 @@
 import { useEffect } from "react";
 import { useFormContext } from "react-hook-form";
+import { useNewInvoiceContext } from "../forms/NewInvoiceContextProvider";
 
 /* ChatGPT provided this custom hook */
 
 const useFormCaching = () => {
-  const { getValues, reset } = useFormContext();
+  const { getValues } = useFormContext();
+  const { methods } = useNewInvoiceContext();
+  const { reset } = methods;
 
-  // Restore cached form data on mount
+  //   Restore cached form data on mount
   useEffect(() => {
     const cachedData = localStorage.getItem("cachedForm");
     if (cachedData) {
@@ -20,7 +23,11 @@ const useFormCaching = () => {
     localStorage.setItem("cachedForm", JSON.stringify(currentValues));
   };
 
-  return { cacheFormData };
+  const clearCache = () => {
+    localStorage.removeItem("cachedForm");
+  };
+
+  return { cacheFormData, clearCache };
 };
 
 export default useFormCaching;
