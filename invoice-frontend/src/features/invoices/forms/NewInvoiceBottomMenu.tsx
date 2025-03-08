@@ -73,7 +73,7 @@ function NewInvoiceBottomMenu({
 
   const width = useWindowWidth();
 
-  // TODO - fix these types - ongoing issue that doesn't affect app functionality
+  // TODO - fix these types - Code works fine, but I can't please TypeScript
   return (
     <MenuContainer>
       <CancelButton

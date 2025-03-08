@@ -20,6 +20,8 @@ import { useParams } from "react-router-dom";
 import { FormType } from "@/features/invoices/types/invoiceTypes.ts";
 import defaultValues from "../forms/defaultValues.ts";
 import useFormCaching from "./useFormCaching.ts";
+import { Theme, toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
 export const useNewInvoiceForm = () => {
   const { id } = useParams();
@@ -46,6 +48,7 @@ export const useNewInvoiceForm = () => {
   const editInvoiceCache = useFormCaching("cachedEditForm");
   const newInvoiceCache = useFormCaching("cachedNewInvoiceForm");
 
+  const colorMode = localStorage.getItem("theme");
   // Mutation definitions
   const [addInvoice] = useMutation(ADD_INVOICE, {
     refetchQueries: [{ query: ALL_INVOICES }],
@@ -137,10 +140,17 @@ export const useNewInvoiceForm = () => {
 
     if (nonRequiredErrors.length > 0) {
       // There are errors other than "required", so prevent submission.
-      console.error(
-        "Draft submission blocked due to errors:",
-        nonRequiredErrors,
-      );
+      toast.error("Please fix the errors before saving as draft", {
+        position: "top-right",
+        autoClose: 2000,
+        hideProgressBar: true,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: false,
+        progress: undefined,
+        theme: (colorMode as Theme) || undefined,
+        toastId: "save-draft-error-toast",
+      });
       clearErrorsByType(currentErrors, "required");
       reset(undefined, { keepValues: true });
 
@@ -163,7 +173,7 @@ export const useNewInvoiceForm = () => {
           if (itemError && typeof itemError === "object") {
             Object.keys(itemError).forEach((fieldName) => {
               const errorDetail = itemError[fieldName];
-              console.log("errorDetail", errorDetail);
+
               if (errorDetail?.type) {
                 setError(`items[${index}].${fieldName}`, {
                   type: errorDetail.type,
