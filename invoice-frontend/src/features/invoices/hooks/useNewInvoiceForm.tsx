@@ -18,6 +18,8 @@ import { useNewInvoiceContext } from "../forms/NewInvoiceContextProvider.tsx";
 import { flushSync } from "react-dom";
 import { useParams } from "react-router-dom";
 import { FormType } from "@/features/invoices/types/invoiceTypes.ts";
+import defaultValues from "../forms/defaultValues.ts";
+import useFormCaching from "./useFormCaching.ts";
 
 export const useNewInvoiceForm = () => {
   const { id } = useParams();
@@ -40,6 +42,9 @@ export const useNewInvoiceForm = () => {
   });
 
   const watcher = watch();
+
+  const editInvoiceCache = useFormCaching("cachedEditForm");
+  const newInvoiceCache = useFormCaching("cachedNewInvoiceForm");
 
   // Mutation definitions
   const [addInvoice] = useMutation(ADD_INVOICE, {
@@ -66,8 +71,10 @@ export const useNewInvoiceForm = () => {
   });
 
   const handleFormReset = () => {
+    newInvoiceCache.clearCache();
     setSelectedPaymentOption(1);
-    reset();
+    reset(defaultValues);
+
     clearErrors();
     setIsNewInvoiceOpen(false);
   };
@@ -107,6 +114,7 @@ export const useNewInvoiceForm = () => {
             ...newInvoice,
           },
         });
+
         handleFormReset();
         replace([{ id: uuidv4(), name: "", quantity: 0, price: 0, total: 0 }]);
       } catch (error) {
@@ -216,6 +224,7 @@ export const useNewInvoiceForm = () => {
             ...newInvoice,
           },
         });
+        editInvoiceCache.clearCache();
         setIsNewInvoiceOpen(false);
       } catch (error) {
         console.error(error);

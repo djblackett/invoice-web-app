@@ -9,6 +9,7 @@ import { useNewInvoiceForm } from "../hooks/useNewInvoiceForm.tsx";
 import { useNewInvoiceContext } from "./NewInvoiceContextProvider.tsx";
 
 import { FormType } from "@/features/invoices/types/invoiceTypes.ts";
+import useFormCaching from "../hooks/useFormCaching.ts";
 
 type EditBottomMenuProps = {
   closeText: string;
@@ -24,9 +25,11 @@ function EditBottomMenu({
   const { reset } = useFormContext();
 
   const { setIsNewInvoiceOpen } = useNewInvoiceContext();
+  const editFormCache = useFormCaching("cachedEditForm");
 
   const closeMenu = () => {
     setIsNewInvoiceOpen(false);
+    editFormCache.clearCache();
     reset();
   };
 

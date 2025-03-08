@@ -1,32 +1,28 @@
-import NewInvoiceForm from "../forms/NewInvoiceForm.tsx";
+import InvoiceFormController from "../forms/InvoiceFormController.tsx";
 import "../../../styles/react-datepicker.css";
-import {
-  EditTitle,
-  FormContainerDarkenModal,
-} from "../../../styles/editPageStyles.ts";
+import { FormContainerDarkenModal } from "../../../styles/editPageStyles.ts";
 import { useNewInvoiceContext } from "../forms/NewInvoiceContextProvider.tsx";
 import Sidebar from "@/features/shared/animations/SlidingMenu.tsx";
 import { AnimatePresence } from "motion/react";
-import { ClickOutsideProvider } from "@shelf/react-outside-click";
+import { FormProvider } from "react-hook-form";
 
 function NewInvoice() {
-  const { isNewInvoiceOpen, setIsNewInvoiceOpen } = useNewInvoiceContext();
+  const { isNewInvoiceOpen, methods } = useNewInvoiceContext();
 
   // DarkenScreen appears when newInvoice tab is open
   return (
     <>
-      <ClickOutsideProvider onOutsideClick={() => setIsNewInvoiceOpen(false)}>
-        <AnimatePresence>
-          {isNewInvoiceOpen ? (
-            <Sidebar key="sidebar-parent">
-              <FormContainerDarkenModal data-testid="newInvoicePage">
-                <EditTitle>New Invoice</EditTitle>
-                <NewInvoiceForm />
-              </FormContainerDarkenModal>
-            </Sidebar>
-          ) : null}
-        </AnimatePresence>
-      </ClickOutsideProvider>
+      <AnimatePresence>
+        {isNewInvoiceOpen ? (
+          <Sidebar key="sidebar-parent">
+            <FormContainerDarkenModal data-testid="newInvoicePage">
+              <FormProvider {...methods}>
+                <InvoiceFormController />
+              </FormProvider>
+            </FormContainerDarkenModal>
+          </Sidebar>
+        ) : null}
+      </AnimatePresence>
     </>
   );
 }

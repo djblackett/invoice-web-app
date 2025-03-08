@@ -13,7 +13,7 @@ import { useQuery } from "@apollo/client";
 import { GET_INVOICE_BY_ID } from "../graphql/invoice.queries.ts";
 import React from "react";
 
-const EditForm = React.lazy(() => import("./EditForm.tsx"));
+const EditForm = React.lazy(() => import("./EditInvoice.tsx"));
 const DeleteModal = React.lazy(() => import("../components/DeleteModal.tsx"));
 const FullInvoice = React.lazy(() => import("../components/FullInvoice.tsx"));
 

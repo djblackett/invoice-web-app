@@ -1,6 +1,6 @@
 import { render, screen } from "../testUtils";
 import { describe, it, expect, vi } from "vitest";
-import EditForm from "@/features/invoices/pages/EditForm.tsx";
+import EditInvoice from "@/features/invoices/pages/EditInvoice";
 import { NewInvoiceProvider } from "@/features/invoices/forms/NewInvoiceContextProvider.tsx";
 import { Invoice } from "@/features/invoices/types/invoiceTypes.ts";
 
@@ -41,18 +41,18 @@ describe("EditForm", () => {
   const renderEditForm = (invoice: Invoice) => {
     return render(
       <NewInvoiceProvider initialState={{ isNewInvoiceOpen: true }}>
-        <EditForm invoice={invoice} />
+        <EditInvoice invoice={invoice} />
       </NewInvoiceProvider>,
     );
   };
 
-  it("renders correctly when invoice is provided", () => {
+  it("renders correctly when invoice is provided", async () => {
     renderEditForm(mockInvoice);
-    expect(screen.getByText(/Edit/i)).toBeInTheDocument();
-    expect(screen.getByText(/Bill From/i)).toBeInTheDocument();
-    expect(screen.getByText(/Bill To/i)).toBeInTheDocument();
-    expect(screen.getByText(/Save Changes/i)).toBeInTheDocument();
-    expect(screen.getByText(/Cancel/i)).toBeInTheDocument();
+    expect(await screen.findByText(/Edit/i)).toBeInTheDocument();
+    expect(await screen.findByText(/Bill From/i)).toBeInTheDocument();
+    expect(await screen.findByText(/Bill To/i)).toBeInTheDocument();
+    expect(await screen.findByText(/Save Changes/i)).toBeInTheDocument();
+    expect(await screen.findByText(/Cancel/i)).toBeInTheDocument();
   });
 
   it("does not render when no invoice is provided", () => {
@@ -61,9 +61,10 @@ describe("EditForm", () => {
     expect(container.firstChild).toBeNull();
   });
 
-  it("displays the modal when isNewInvoiceOpen is true", () => {
+  it("displays the modal when isNewInvoiceOpen is true", async () => {
     renderEditForm(mockInvoice);
-    const darkenScreen = screen.getByTestId("editInvoiceModal");
+    const darkenScreen = await screen.findByTestId("editInvoiceModal");
+    console.log(darkenScreen);
     expect(darkenScreen).toHaveStyle("visibility: visible");
   });
 });

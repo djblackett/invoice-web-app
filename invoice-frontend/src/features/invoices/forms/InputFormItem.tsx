@@ -60,6 +60,9 @@ export default function InputFormItem({
 
   // populate the form with the items from the invoice
   useEffect(() => {
+    // Assuming you're using a distinct key for the edit form cache
+    const cachedData = localStorage.getItem("cachedEditInvoiceForm");
+    if (cachedData) return; // Skip resetting if cached data exists
     if (invoice && isEditOpen) {
       reset({
         items: invoice.items.map((i) => ({
@@ -70,11 +73,12 @@ export default function InputFormItem({
           total: i.total,
         })),
       });
-    } else if (!isEditOpen) {
-      reset({
-        items: [{ name: "", price: 0, quantity: 0, total: 0 }],
-      });
     }
+    // else if (!isEditOpen) {
+    //   reset({
+    //     items: [{ name: "", price: 0, quantity: 0, total: 0 }],
+    //   });
+    // }
   }, [invoice, isEditOpen, reset]);
 
   const mobileRender = (index: number) => (

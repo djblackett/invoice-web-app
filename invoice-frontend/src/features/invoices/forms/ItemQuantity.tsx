@@ -12,18 +12,8 @@ function ItemQuantity({ index, invoice }: ItemQuantityProps) {
   const { errors } = formState;
   const { isDraft } = useNewInvoiceContext();
 
-  const isPatternError = () => {
-    if (errors.items && errors.items instanceof Array) {
-      return errors.items.some(
-        (itemField) =>
-          itemField &&
-          Object.values(itemField).some(
-            (errorDetail) => errorDetail?.type === "pattern",
-          ),
-      );
-    }
-    return false;
-  };
+  const isPatternError = () =>
+    errors?.items?.[index]?.quantity?.type === "pattern";
 
   return (
     <div style={{ position: "relative" }}>
