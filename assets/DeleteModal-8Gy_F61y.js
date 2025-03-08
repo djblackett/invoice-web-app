@@ -1,4 +1,4 @@
-import{d as t,M as p,k as u,l as x,j as e,g as f,Q as g,aP as h}from"./index-BWbkvAE2.js";import{D as C}from"./ViewInvoice-Cms-UkGB.js";import{C as v}from"./CancelButton-NaRJCHAX.js";import{D as j}from"./editPageStyles-DNCNkdgu.js";import{D as b}from"./FullInvoiceStyles-Bck70bO2.js";import{C as y}from"./ClickOutsideProvider-CmmilUjk.js";import{u as k}from"./useMutation-_I7cgxcJ.js";import"./InvoiceStatus-CWJt63NW.js";import"./ViewInvoiceStyles-BQBgr9tS.js";const D=t(p)`
+import{d as t,M as p,k as u,l as x,j as e,g as f,Q as g,aO as h}from"./index-D-4_CnQ0.js";import{D as C}from"./ViewInvoice-BXtqcTqX.js";import{C as v}from"./CancelButton-C2trzFJA.js";import{D as j}from"./editPageStyles-DTDH6kVP.js";import{D as b}from"./FullInvoiceStyles-_8xcfVj7.js";import{C as y}from"./ClickOutsideProvider-pXjcxJT2.js";import{u as k}from"./useMutation-CPEfX0WL.js";import"./InvoiceStatus-C7nIYE3L.js";import"./ViewInvoiceStyles-jvhYjpB9.js";const D=t(p)`
   display: flex;
   position: absolute;
   top: 20%;
@@ -27,4 +27,4 @@ import{d as t,M as p,k as u,l as x,j as e,g as f,Q as g,aP as h}from"./index-BWb
   align-self: flex-end;
   justify-content: center;
 `;function S({isModalOpen:o,setIsModalOpen:n,invoice:i}){const s=localStorage.getItem("theme"),a=u(),{id:l}=x(),[c]=k(h,{refetchQueries:[{query:f}],onCompleted:()=>{a("/")},onError:m=>{console.error(m.graphQLErrors[0]),g.error("An error occurred!",{position:"top-center",autoClose:3e3,hideProgressBar:!1,closeOnClick:!0,pauseOnHover:!0,draggable:!0,progress:void 0,theme:s||void 0,toastId:"delete-error-toast"})}}),d=async()=>{await c({variables:{removeInvoiceId:l}})},r=()=>n(!1);return e.jsx(j,{style:{display:o?"flex":"none"},children:e.jsx(y,{onOutsideClick:r,children:e.jsxs(D,{children:[e.jsx(I,{children:"Confirm Deletion"}),e.jsx(b,{children:`Are you sure you want to delete invoice #${i.id}? This action cannot
-            be undone.`}),e.jsxs(M,{children:[e.jsx(v,{handleClick:r,text:"Cancel"}),e.jsx(C,{handleClick:d})]})]})})})}export{S as default};
+            be undone.`}),e.jsxs(M,{children:[e.jsx(v,{handleClick:r,text:"Cancel",style:{margin:"0.25rem"}}),e.jsx(C,{handleClick:d})]})]})})})}export{S as default};

@@ -1,4 +1,4 @@
-import{j as r,d as n}from"./index-BWbkvAE2.js";import{P as e}from"./InvoiceStatus-CWJt63NW.js";const s=n.button`
+import{j as n,d as p}from"./index-D-4_CnQ0.js";import{P as e}from"./InvoiceStatus-C7nIYE3L.js";const s=p.button`
   display: inline;
   background-color: ${({theme:t})=>t.editButton};
   border-radius: 24px;
@@ -16,6 +16,7 @@ import{j as r,d as n}from"./index-BWbkvAE2.js";import{P as e}from"./InvoiceStatu
   flex-grow: 1;
   width: auto;
   max-width: 150px;
+  max-height: 48px;
   margin-left: 0.25rem;
 
   @media (min-width: 325px) {
@@ -26,4 +27,4 @@ import{j as r,d as n}from"./index-BWbkvAE2.js";import{P as e}from"./InvoiceStatu
   &:hover {
     background-color: ${({theme:t})=>t.editButtonHover};
   }
-`;function p({handleClick:t,text:o,justifySelf:i}){return r.jsx(s,{style:{justifySelf:i||"auto"},onClick:t,type:"button",children:o})}p.propTypes={handleClick:e.func.isRequired,text:e.string.isRequired,justifySelf:e.string};export{p as C};
+`;function a({handleClick:t,text:i,justifySelf:o,style:r}){return n.jsx(s,{style:{justifySelf:o||"auto",...r},onClick:t,type:"button",children:i})}a.propTypes={handleClick:e.func.isRequired,text:e.string.isRequired,justifySelf:e.string};export{a as C};

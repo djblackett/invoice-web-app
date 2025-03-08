@@ -1,4 +1,4 @@
-import{d as t}from"./index-BWbkvAE2.js";const o=t.div`
+import{d as t}from"./index-D-4_CnQ0.js";const o=t.div`
   width: 100%;
   max-width: 100vw;
   min-width: 100vw;
@@ -31,15 +31,22 @@ import{d as t}from"./index-BWbkvAE2.js";const o=t.div`
     bottom: initial;
     max-width: 100%;
     min-width: 100vw;
-    margin-bottom: 1rem;
+    margin-bottom: 2rem;
     margin-left: -32px;
     padding-left: 8px;
     padding-right: 8px;
     padding-bottom: 2rem;
   }
 
+  @media (min-width: 400px) {
+    min-width: auto;
+    margin-left: 0;
+  }
+
   @media (min-width: 768px) {
     margin-bottom: 0;
+    min-width: auto;
+    margin-left: 0;
   }
 `,i=t.input`
   border-radius: 24px;
@@ -112,4 +119,4 @@ import{d as t}from"./index-BWbkvAE2.js";const o=t.div`
     display: flex;
     flex-direction: row;
   }
-`;export{o as M,a as S,d as a,r as b};
+`;export{o as M,d as S,r as a,a as b};
