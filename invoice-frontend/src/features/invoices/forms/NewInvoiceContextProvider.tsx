@@ -74,33 +74,9 @@ const NewInvoiceProvider: FC<NewInvoiceProviderProps> = ({
     setSelectedPaymentOption(option);
   };
 
-  const defaultValues = {
-    items: [
-      {
-        name: "",
-        price: 0,
-        quantity: 0,
-        total: 0,
-        id: "",
-      },
-    ] as [Item],
-    country: "",
-    streetAddress: "",
-    city: "",
-    postalCode: "",
-    clientCountry: "",
-    clientName: "",
-    clientEmail: "",
-    clientStreetAddress: "",
-    clientCity: "",
-    clientPostalCode: "",
-    projectDescription: "",
-  };
-
   const methods = useForm<FormType>({
     mode: "onChange",
     criteriaMode: "all",
-    defaultValues,
   });
 
   const value: AppContextType = {

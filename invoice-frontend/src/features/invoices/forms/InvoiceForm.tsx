@@ -9,7 +9,7 @@ import FormErrorList from "./FormErrorList.tsx";
 import styled from "styled-components";
 import React from "react";
 
-const Form = styled.form`
+export const Form = styled.form`
   position: relative;
   z-index: 1;
   padding-bottom: 6rem;
