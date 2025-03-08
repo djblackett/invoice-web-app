@@ -19,6 +19,7 @@ import { Invoice } from "@/features/invoices/types/invoiceTypes.ts";
 import ItemQuantity from "./ItemQuantity.tsx";
 import ItemPrice from "./ItemPrice.tsx";
 import ItemName from "./ItemName.tsx";
+import { useNewInvoiceContext } from "./NewInvoiceContextProvider.tsx";
 
 type InputFormItemProps = {
   invoice?: Invoice;
@@ -38,6 +39,8 @@ export default function InputFormItem({
   });
 
   const { isSubmitting } = formState;
+
+  const { isCacheActive } = useNewInvoiceContext();
 
   const watchItems = watch("items", []);
   const width = useWindowWidth();
@@ -61,10 +64,25 @@ export default function InputFormItem({
   // populate the form with the items from the invoice
   useEffect(() => {
     // Assuming you're using a distinct key for the edit form cache
-    const cachedData = localStorage.getItem("cachedEditInvoiceForm");
-    if (cachedData) return; // Skip resetting if cached data exists
-    if (invoice && isEditOpen) {
+    const cachedEditData = localStorage.getItem("cachedEditInvoiceForm");
+    if (cachedEditData) return; // Skip resetting if cached data exists
+    if (invoice && isEditOpen && !isCacheActive) {
       reset({
+        country: invoice.senderAddress.country,
+        streetAddress: invoice.senderAddress.street,
+        city: invoice.senderAddress.city,
+        postalCode: invoice.senderAddress.postCode,
+        clientEmail: invoice.clientEmail,
+        clientName: invoice.clientName,
+        clientCountry: invoice.clientAddress.country,
+        clientStreetAddress: invoice.clientAddress.street,
+        clientCity: invoice.clientAddress.city,
+        clientPostalCode: invoice.clientAddress.postCode,
+        description: invoice.description,
+        paymentDue: invoice.paymentDue,
+        paymentTerms: invoice.paymentTerms,
+        status: invoice.status,
+        total: invoice.total,
         items: invoice.items.map((i) => ({
           id: i.id,
           name: i.name,
@@ -73,12 +91,11 @@ export default function InputFormItem({
           total: i.total,
         })),
       });
+    } else if (!invoice && !isCacheActive && !isEditOpen) {
+      reset({
+        items: [{ name: "", price: 0, quantity: 0, total: 0 }],
+      });
     }
-    // else if (!isEditOpen) {
-    //   reset({
-    //     items: [{ name: "", price: 0, quantity: 0, total: 0 }],
-    //   });
-    // }
   }, [invoice, isEditOpen, reset]);
 
   const mobileRender = (index: number) => (

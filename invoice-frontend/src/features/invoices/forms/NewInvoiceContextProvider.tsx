@@ -17,6 +17,8 @@ interface AppContextType {
   isPaymentOpen: boolean;
   handleChangeSelectedOption: (option: number) => void;
   methods: UseFormReturn<FormType>;
+  isCacheActive: boolean;
+  setIsCacheActive: React.Dispatch<React.SetStateAction<boolean>>;
 }
 
 interface InitialState {
@@ -65,6 +67,7 @@ const NewInvoiceProvider: FC<NewInvoiceProviderProps> = ({
     useState<boolean>(isNewInvoiceOpen);
   const [isPaymentOpenState, setIsPaymentOpen] =
     useState<boolean>(isPaymentOpen);
+  const [isCacheActive, setIsCacheActive] = useState(false);
 
   const handlePaymentClick = () => {
     setIsPaymentOpen(!isPaymentOpenState);
@@ -94,6 +97,8 @@ const NewInvoiceProvider: FC<NewInvoiceProviderProps> = ({
     isPaymentOpen: isPaymentOpenState,
     handleChangeSelectedOption,
     methods,
+    isCacheActive,
+    setIsCacheActive,
   };
 
   return <AppContext.Provider value={value}>{children}</AppContext.Provider>;
