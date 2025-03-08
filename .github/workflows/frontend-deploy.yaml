@@ -176,12 +176,12 @@ jobs:
       - name: Lint backend
         run: |
           cd invoice-backend
-          yarn lint
+          yarn lint:fix
 
       - name: Lint frontend
         run: |
           cd invoice-frontend
-          yarn lint
+          yarn lint:fix
 
       - name: Initialize Prisma
         run: |

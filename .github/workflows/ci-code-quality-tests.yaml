@@ -165,24 +165,24 @@ jobs:
           cat localhost.pem > localhost-fullchain.pem
           cat "$(mkcert -CAROOT)/rootCA.pem" >> localhost-fullchain.pem
 
-      # - name: Restore Cache
-      #   uses: actions/cache@v4.2.0
-      #   with:
-      #     path: invoice-backend/node_modules
-      #     key: ${{ runner.os }}-node-${{ hashFiles('invoice-backend/yarn.lock') }}
-      #     restore-keys: |
-      #       ${{ runner.os }}-node-
+      - name: Restore Cache
+        uses: actions/cache@v4.2.0
+        with:
+          path: invoice-backend/node_modules
+          key: ${{ runner.os }}-node-${{ hashFiles('invoice-backend/yarn.lock') }}
+          restore-keys: |
+            ${{ runner.os }}-node-
 
       - name: Install Backend Dependencies
         run: |
           cd invoice-backend
           yarn install --frozen-lockfile
 
-      # - name: Save Backend Cache
-      #   uses: actions/cache@v4.2.0
-      #   with:
-      #     path: invoice-backend/node_modules
-      #     key: ${{ runner.os }}-backend-yarn-${{ hashFiles('invoice-backend/yarn.lock') }}
+      - name: Save Backend Cache
+        uses: actions/cache@v4.2.0
+        with:
+          path: invoice-backend/node_modules
+          key: ${{ runner.os }}-backend-yarn-${{ hashFiles('invoice-backend/yarn.lock') }}
 
       - name: Wait for PostgreSQL to be Ready
         run: |
