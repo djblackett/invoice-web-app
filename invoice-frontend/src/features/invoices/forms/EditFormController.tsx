@@ -14,7 +14,6 @@ export default function EditFormController({ invoice }: EditFormProps) {
 
   const handleClose = () => {
     cacheFormData();
-    console.log(localStorage.getItem("cacheEditForm"));
     setIsNewInvoiceOpen(false);
   };
   return (
