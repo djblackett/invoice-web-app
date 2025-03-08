@@ -126,6 +126,7 @@ export const useNewInvoiceForm = () => {
   // Create a new draft invoice (all fields not required)
   const onSubmitDraft: SubmitHandler<FormType> = async () => {
     // Re-calculate errors directly from the current form state
+    await trigger();
     const currentErrors = methods.formState.errors;
     const currentErrorTypes = errorTypeCollector(currentErrors);
 
