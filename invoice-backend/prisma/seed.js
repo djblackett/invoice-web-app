@@ -98,12 +98,34 @@ const createUserWithAuth0 = async (args) => {
       }));
   } catch (e) {
     if (e instanceof PrismaClientKnownRequestError && e.code === "P2002") {
+      console.error(e);
       throw new Error("Unique constraint failed on the fields: (`username`)");
     }
     console.error(e);
     throw e;
   }
 };
+
+async function getUserByIdSafely(id) {
+  try {
+    const user = await this.prisma.user.findUnique({
+      select: {
+        id: true,
+        name: true,
+        username: true,
+        role: true,
+      },
+      where: {
+        id,
+      },
+    });
+    return user ? { ...user, name: user.name ?? "" } : null;
+  } catch (e) {
+    console.error(e);
+    // throw new Error("Failed to fetch user");
+    return null;
+  }
+}
 
 const user = {
   id: "user1",
@@ -396,7 +418,12 @@ const data = [
 
 async function main() {
   await prisma.$connect();
-  await createUserWithAuth0(user);
+
+  const dbUser = getUserByIdSafely(user.id);
+
+  if (!dbUser) {
+    dbUser = await createUserWithAuth0(user);
+  }
   const promises = data.map((invoice) => create(invoice));
   await Promise.all(promises);
   await prisma.$disconnect();
