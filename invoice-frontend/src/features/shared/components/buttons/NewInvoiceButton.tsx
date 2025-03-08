@@ -14,6 +14,7 @@ const PrimaryButton = styled.button`
   align-items: center;
   cursor: pointer;
   padding-left: 0.5rem;
+  font-family: ${({ theme }) => theme.font};
 
   &:hover {
     background-color: #9277ff;

@@ -19,6 +19,7 @@ const Button = styled.button`
   flex-grow: 1;
   width: auto;
   max-width: 150px;
+  max-height: 48px;
   margin-left: 0.25rem;
 
   @media (min-width: 325px) {
@@ -35,11 +36,17 @@ type CancelButtonProps = {
   handleClick: () => void;
   justifySelf?: string;
   text: string;
+  style?: React.CSSProperties;
 };
-function CancelButton({ handleClick, text, justifySelf }: CancelButtonProps) {
+function CancelButton({
+  handleClick,
+  text,
+  justifySelf,
+  style,
+}: CancelButtonProps) {
   return (
     <Button
-      style={{ justifySelf: justifySelf || "auto" }}
+      style={{ justifySelf: justifySelf || "auto", ...style }}
       onClick={handleClick}
       type="button"
     >

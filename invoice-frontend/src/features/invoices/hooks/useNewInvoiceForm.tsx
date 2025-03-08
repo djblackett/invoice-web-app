@@ -1,4 +1,9 @@
-import { useFieldArray, SubmitHandler } from "react-hook-form";
+import {
+  useFieldArray,
+  SubmitHandler,
+  FieldErrors,
+  FieldValues,
+} from "react-hook-form";
 import { useEffect } from "react";
 import { useMutation } from "@apollo/client";
 import {
@@ -13,6 +18,8 @@ import { useNewInvoiceContext } from "../forms/NewInvoiceContextProvider.tsx";
 import { flushSync } from "react-dom";
 import { useParams } from "react-router-dom";
 import { FormType } from "@/features/invoices/types/invoiceTypes.ts";
+import defaultValues from "../forms/defaultValues.ts";
+import useFormCaching from "./useFormCaching.ts";
 
 export const useNewInvoiceForm = () => {
   const { id } = useParams();
@@ -35,6 +42,9 @@ export const useNewInvoiceForm = () => {
   });
 
   const watcher = watch();
+
+  const editInvoiceCache = useFormCaching("cachedEditForm");
+  const newInvoiceCache = useFormCaching("cachedNewInvoiceForm");
 
   // Mutation definitions
   const [addInvoice] = useMutation(ADD_INVOICE, {
@@ -61,16 +71,17 @@ export const useNewInvoiceForm = () => {
   });
 
   const handleFormReset = () => {
+    newInvoiceCache.clearCache();
     setSelectedPaymentOption(1);
-    reset();
-    clearErrors();
+    reset(defaultValues);
 
+    clearErrors();
     setIsNewInvoiceOpen(false);
   };
 
   // Create a new invoice (all fields required)
   const onSubmit: SubmitHandler<FormType> = async (data) => {
-    // flushSync required due to react-hook-form integration
+    // flushSync required due to 3rd party library react-hook-form integration
     flushSync(() => setIsDraft(false));
 
     data = getValues();
@@ -103,6 +114,7 @@ export const useNewInvoiceForm = () => {
             ...newInvoice,
           },
         });
+
         handleFormReset();
         replace([{ id: uuidv4(), name: "", quantity: 0, price: 0, total: 0 }]);
       } catch (error) {
@@ -113,7 +125,58 @@ export const useNewInvoiceForm = () => {
 
   // Create a new draft invoice (all fields not required)
   const onSubmitDraft: SubmitHandler<FormType> = async () => {
-    // Need to filter errors to avoid triggering the required=true errors but still show other errors
+    // Re-calculate errors directly from the current form state
+    const currentErrors = methods.formState.errors;
+    const currentErrorTypes = errorTypeCollector(currentErrors);
+
+    // Filter out only non-required errors
+    const nonRequiredErrors = currentErrorTypes.filter(
+      (errorType) => errorType !== "required",
+    );
+
+    if (nonRequiredErrors.length > 0) {
+      // There are errors other than "required", so prevent submission.
+      console.error(
+        "Draft submission blocked due to errors:",
+        nonRequiredErrors,
+      );
+      clearErrorsByType(currentErrors, "required");
+      reset(undefined, { keepValues: true });
+
+      // reapply the leftover errors to the form
+      for (const key in currentErrors) {
+        if (currentErrors[key]?.type) {
+          setError(key, {
+            type: currentErrors[key].type,
+            message: currentErrors[key].message,
+          });
+        }
+      }
+
+      if (currentErrors.items) {
+        const itemsArray = Array.isArray(currentErrors.items)
+          ? currentErrors.items
+          : Object.values(currentErrors.items);
+
+        itemsArray.forEach((itemError, index) => {
+          if (itemError && typeof itemError === "object") {
+            Object.keys(itemError).forEach((fieldName) => {
+              const errorDetail = itemError[fieldName];
+              console.log("errorDetail", errorDetail);
+              if (errorDetail?.type) {
+                setError(`items[${index}].${fieldName}`, {
+                  type: errorDetail.type,
+                  message: errorDetail.message,
+                });
+              }
+            });
+          }
+        });
+      }
+      return;
+    }
+
+    // draft submission is allowed
     clearErrors();
     const data = getValues();
 
@@ -135,6 +198,7 @@ export const useNewInvoiceForm = () => {
           ...newInvoice,
         },
       });
+
       handleFormReset();
       replace([{ id: uuidv4(), name: "", quantity: 0, price: 0, total: 0 }]);
     } catch (error) {
@@ -160,6 +224,7 @@ export const useNewInvoiceForm = () => {
             ...newInvoice,
           },
         });
+        editInvoiceCache.clearCache();
         setIsNewInvoiceOpen(false);
       } catch (error) {
         console.error(error);
@@ -183,3 +248,55 @@ export const useNewInvoiceForm = () => {
     onSubmitUpdate,
   };
 };
+
+export const errorTypeCollector = (errors) => {
+  const errorTypes = [];
+  if (!errors) {
+    return [];
+  }
+
+  // collect errors from the main form fields
+  for (const key in errors) {
+    if (errors[key]?.type) {
+      errorTypes.push(errors[key].type);
+    }
+  }
+
+  // collect errors from the items array
+  if (errors.items && errors.items instanceof Array) {
+    errors.items.forEach((itemError) => {
+      if (itemError && typeof itemError === "object") {
+        Object.keys(itemError).forEach((fieldName) => {
+          const errorDetail = itemError[fieldName];
+          if (errorDetail?.type) {
+            errorTypes.push(errorDetail.type);
+          }
+        });
+      }
+    });
+  }
+
+  return Array.from(new Set(errorTypes));
+};
+
+function clearErrorsByType(errors: FieldErrors<FieldValues>, type: string) {
+  if (!errors) {
+    return;
+  }
+
+  for (const key in errors) {
+    if (errors[key]?.type === type) {
+      delete errors[key];
+    }
+  }
+
+  if (errors.items) {
+    errors.items.forEach((itemError) => {
+      Object.keys(itemError).forEach((key) => {
+        if (itemError[key]?.type === type) {
+          delete itemError[key];
+        }
+      });
+    });
+  }
+}

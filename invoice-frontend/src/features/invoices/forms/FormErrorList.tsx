@@ -1,26 +1,23 @@
 import { useFormContext } from "react-hook-form";
 import PropTypes from "prop-types";
 import { ErrorList, ErrorText } from "../../../styles/editPageStyles.ts";
+import { errorTypeCollector } from "../hooks/useNewInvoiceForm.tsx";
 
 type FormErrorListProps = {
   isEditOpen: boolean;
 };
+
 function FormErrorList({ isEditOpen }: FormErrorListProps) {
   const {
     formState: { errors },
   } = useFormContext();
-
-  const isFieldErrors = () =>
-    Object.keys(errors).find(
-      (item) => item !== "myFieldArray" && item !== "items",
-    );
 
   return (
     <ErrorList>
       <ErrorText
         style={{
           visibility:
-            (isFieldErrors() || errors.items) && isEditOpen
+            errorTypeCollector(errors).includes("required") && isEditOpen
               ? "visible"
               : "hidden",
         }}

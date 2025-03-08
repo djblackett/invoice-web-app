@@ -1,7 +1,7 @@
 import { ItemName as Name } from "@/styles/editFormItemStyles.tsx";
-import { isDraft } from "@reduxjs/toolkit";
 import { useFormContext } from "react-hook-form";
 import { Invoice } from "../types/invoiceTypes";
+import { useNewInvoiceContext } from "./NewInvoiceContextProvider";
 
 interface ItemNameProps {
   index: number;
@@ -11,6 +11,7 @@ interface ItemNameProps {
 function ItemName({ index, invoice }: ItemNameProps) {
   const { register, formState } = useFormContext();
   const { errors } = formState;
+  const { isDraft } = useNewInvoiceContext();
 
   return (
     <Name
