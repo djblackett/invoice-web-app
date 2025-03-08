@@ -187,6 +187,26 @@ export class NewInvoiceForm {
     }
   }
 
+  async addFirstItem(
+    description: string,
+    quantity: number,
+    price: number,
+  ): Promise<void> {
+    try {
+      const newItemLocator = this.itemsContainer
+        .locator('[data-testid="invoice-item"]')
+        .last();
+      await newItemLocator.waitFor({ state: "visible", timeout: 5000 });
+
+      const newItem = new InvoiceItem(newItemLocator);
+      await newItem.fillDescription(description);
+      await newItem.fillQuantity(quantity);
+      await newItem.fillPrice(price);
+    } catch (error) {
+      throw new Error(`Failed to add item "${description}": ${error}`);
+    }
+  }
+
   async addMultipleItems(
     items: { description: string; quantity: number; price: number }[],
   ): Promise<void> {
@@ -246,7 +266,7 @@ export async function createExampleInvoice(newInvoiceForm: NewInvoiceForm) {
   await newInvoiceForm.fillProjectDescription("Purchase treasure maps");
 
   // Add first item
-  await newInvoiceForm.addItem("Large Treasure Map", 3, 199.96);
+  await newInvoiceForm.addFirstItem("Large Treasure Map", 3, 199.96);
 
   // Add second item
   await newInvoiceForm.addItem("Extra Large Treasure Map", 1, 99.99); // Example values
