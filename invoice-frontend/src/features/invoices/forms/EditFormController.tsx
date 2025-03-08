@@ -10,9 +10,10 @@ interface EditFormProps {
 
 export default function EditFormController({ invoice }: EditFormProps) {
   const { cacheFormData } = useFormCaching("cachedEditForm");
-  const { setIsNewInvoiceOpen } = useNewInvoiceContext();
+  const { setIsNewInvoiceOpen, setIsCacheActive } = useNewInvoiceContext();
 
   const handleClose = () => {
+    setIsCacheActive(true);
     cacheFormData();
     setIsNewInvoiceOpen(false);
   };

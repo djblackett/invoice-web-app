@@ -5,9 +5,10 @@ import { useNewInvoiceContext } from "./NewInvoiceContextProvider.tsx";
 
 export default function InvoiceFormController() {
   const { cacheFormData } = useFormCaching("cachedNewInvoiceForm");
-  const { setIsNewInvoiceOpen } = useNewInvoiceContext();
+  const { setIsNewInvoiceOpen, setIsCacheActive } = useNewInvoiceContext();
 
   const handleClose = () => {
+    setIsCacheActive(true);
     cacheFormData();
     setIsNewInvoiceOpen(false);
   };

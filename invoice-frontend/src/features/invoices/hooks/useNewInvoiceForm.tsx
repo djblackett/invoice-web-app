@@ -18,7 +18,7 @@ import { useNewInvoiceContext } from "../forms/NewInvoiceContextProvider.tsx";
 import { flushSync } from "react-dom";
 import { useParams } from "react-router-dom";
 import { FormType } from "@/features/invoices/types/invoiceTypes.ts";
-import defaultValues from "../forms/defaultValues.ts";
+import blankDefaultValues from "../forms/defaultValues.ts";
 import useFormCaching from "./useFormCaching.ts";
 import { Theme, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
@@ -33,6 +33,7 @@ export const useNewInvoiceForm = () => {
     selectedPaymentOption,
     setSelectedPaymentOption,
     methods,
+    setIsCacheActive,
   } = useNewInvoiceContext();
 
   const { control, trigger, reset, watch, setError, clearErrors, getValues } =
@@ -49,6 +50,7 @@ export const useNewInvoiceForm = () => {
   const newInvoiceCache = useFormCaching("cachedNewInvoiceForm");
 
   const colorMode = localStorage.getItem("theme");
+
   // Mutation definitions
   const [addInvoice] = useMutation(ADD_INVOICE, {
     refetchQueries: [{ query: ALL_INVOICES }],
@@ -76,7 +78,7 @@ export const useNewInvoiceForm = () => {
   const handleFormReset = () => {
     newInvoiceCache.clearCache();
     setSelectedPaymentOption(1);
-    reset(defaultValues);
+    reset(blankDefaultValues);
 
     clearErrors();
     setIsNewInvoiceOpen(false);
@@ -118,7 +120,9 @@ export const useNewInvoiceForm = () => {
           },
         });
 
+        setIsCacheActive(false);
         handleFormReset();
+
         replace([{ id: uuidv4(), name: "", quantity: 0, price: 0, total: 0 }]);
       } catch (error) {
         console.error(error);
@@ -210,6 +214,7 @@ export const useNewInvoiceForm = () => {
         },
       });
 
+      setIsCacheActive(false);
       handleFormReset();
       replace([{ id: uuidv4(), name: "", quantity: 0, price: 0, total: 0 }]);
     } catch (error) {
@@ -236,6 +241,7 @@ export const useNewInvoiceForm = () => {
           },
         });
         editInvoiceCache.clearCache();
+        setIsCacheActive(false);
         setIsNewInvoiceOpen(false);
       } catch (error) {
         console.error(error);

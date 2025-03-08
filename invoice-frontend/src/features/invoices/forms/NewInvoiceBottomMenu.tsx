@@ -11,7 +11,7 @@ import { useNewInvoiceContext } from "./NewInvoiceContextProvider.tsx";
 import { useNewInvoiceForm } from "../hooks/useNewInvoiceForm.tsx";
 import useWindowWidth from "@/features/shared/hooks/useWindowWidth.tsx";
 import useFormCaching from "../hooks/useFormCaching.ts";
-import { Item } from "../types/invoiceTypes.ts";
+import blankDefaultValues from "./defaultValues.ts";
 
 type NewInvoiceBoottemMenuProps = {
   closeText: string;
@@ -28,6 +28,7 @@ function NewInvoiceBottomMenu({
     setIsNewInvoiceOpen,
     setStartDate,
     setSelectedPaymentOption,
+    setIsCacheActive,
     methods,
   } = useNewInvoiceContext();
 
@@ -36,36 +37,15 @@ function NewInvoiceBottomMenu({
   const { onSubmit, onSubmitDraft } = useNewInvoiceForm();
   const { clearCache } = useFormCaching("cachedNewInvoiceForm");
 
-  const defaultValues = {
-    items: [
-      {
-        name: "",
-        price: 0,
-        quantity: 0,
-        total: 0,
-        id: "",
-      },
-    ] as [Item],
-    country: "",
-    streetAddress: "",
-    city: "",
-    postalCode: "",
-    clientCountry: "",
-    clientName: "",
-    clientEmail: "",
-    clientStreetAddress: "",
-    clientCity: "",
-    clientPostalCode: "",
-    projectDescription: "",
-  };
-
   const closeMenu = () => {
+    setIsCacheActive(false);
     clearCache();
+    
     clearErrors();
 
     setIsNewInvoiceOpen(false);
 
-    reset(defaultValues);
+    reset(blankDefaultValues);
 
     setStartDate(new Date());
     setSelectedPaymentOption(1);

@@ -1,37 +1,27 @@
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 import { useFormContext } from "react-hook-form";
+import { useNewInvoiceContext } from "../forms/NewInvoiceContextProvider";
 
-/* ChatGPT provided this custom hook */
+/* ChatGPT provided this custom hook, but I had to fix several parts of it */
 
 const useFormCaching = (cacheKey: string) => {
-  const { watch, getValues, reset } = useFormContext();
-  const formValues = watch();
-  const [isCacheEnabled, setIsCacheEnabled] = useState(true);
+  const { getValues, reset } = useFormContext();
+  const { isCacheActive, setIsCacheActive } = useNewInvoiceContext();
 
-  // Auto-save effect: Only runs when caching is enabled.
-  useEffect(() => {
-    if (isCacheEnabled) {
-      localStorage.setItem(cacheKey, JSON.stringify(formValues));
-    }
-  }, [formValues, isCacheEnabled, cacheKey]);
-
-  // Function to manually cache form data (if needed)
   const cacheFormData = () => {
     const currentValues = getValues();
     localStorage.setItem(cacheKey, JSON.stringify(currentValues));
   };
 
-  // Clear cache and disable auto-caching temporarily
   const clearCache = () => {
     localStorage.removeItem(cacheKey);
-    setIsCacheEnabled(false);
-    setTimeout(() => setIsCacheEnabled(true), 1000);
+    setIsCacheActive(false);
   };
 
-  // Restore cache on mount
+  // Restore cache on mount if cache is active
   useEffect(() => {
     const cachedData = localStorage.getItem(cacheKey);
-    if (cachedData) {
+    if (cachedData && isCacheActive) {
       reset(JSON.parse(cachedData));
     }
   }, [reset, cacheKey]);
