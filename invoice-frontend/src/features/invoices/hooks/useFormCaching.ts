@@ -1,31 +1,40 @@
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { useFormContext } from "react-hook-form";
-import { useNewInvoiceContext } from "../forms/NewInvoiceContextProvider";
 
 /* ChatGPT provided this custom hook */
 
-const useFormCaching = () => {
-  const { getValues } = useFormContext();
-  const { methods } = useNewInvoiceContext();
-  const { reset } = methods;
+const useFormCaching = (cacheKey: string) => {
+  const { watch, getValues, reset } = useFormContext();
+  const formValues = watch();
+  const [isCacheEnabled, setIsCacheEnabled] = useState(true);
 
-  //   Restore cached form data on mount
+  // Auto-save effect: Only runs when caching is enabled.
   useEffect(() => {
-    const cachedData = localStorage.getItem("cachedForm");
+    if (isCacheEnabled) {
+      localStorage.setItem(cacheKey, JSON.stringify(formValues));
+    }
+  }, [formValues, isCacheEnabled, cacheKey]);
+
+  // Function to manually cache form data (if needed)
+  const cacheFormData = () => {
+    const currentValues = getValues();
+    localStorage.setItem(cacheKey, JSON.stringify(currentValues));
+  };
+
+  // Clear cache and disable auto-caching temporarily
+  const clearCache = () => {
+    localStorage.removeItem(cacheKey);
+    setIsCacheEnabled(false);
+    setTimeout(() => setIsCacheEnabled(true), 1000);
+  };
+
+  // Restore cache on mount
+  useEffect(() => {
+    const cachedData = localStorage.getItem(cacheKey);
     if (cachedData) {
       reset(JSON.parse(cachedData));
     }
-  }, [reset]);
-
-  // Example function to cache form values
-  const cacheFormData = () => {
-    const currentValues = getValues();
-    localStorage.setItem("cachedForm", JSON.stringify(currentValues));
-  };
-
-  const clearCache = () => {
-    localStorage.removeItem("cachedForm");
-  };
+  }, [reset, cacheKey]);
 
   return { cacheFormData, clearCache };
 };

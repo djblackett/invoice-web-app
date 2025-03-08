@@ -4,7 +4,7 @@ import useFormCaching from "../hooks/useFormCaching.ts";
 import { useNewInvoiceContext } from "./NewInvoiceContextProvider.tsx";
 
 export default function InvoiceFormController() {
-  const { cacheFormData } = useFormCaching();
+  const { cacheFormData } = useFormCaching("cachedNewInvoiceForm");
   const { setIsNewInvoiceOpen } = useNewInvoiceContext();
 
   const handleClose = () => {

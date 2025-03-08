@@ -9,11 +9,12 @@ interface EditFormProps {
 }
 
 export default function EditFormController({ invoice }: EditFormProps) {
-  const { cacheFormData } = useFormCaching();
+  const { cacheFormData } = useFormCaching("cachedEditForm");
   const { setIsNewInvoiceOpen } = useNewInvoiceContext();
 
   const handleClose = () => {
     cacheFormData();
+    console.log(localStorage.getItem("cacheEditForm"));
     setIsNewInvoiceOpen(false);
   };
   return (

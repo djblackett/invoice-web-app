@@ -34,7 +34,7 @@ function NewInvoiceBottomMenu({
   const { reset } = methods;
 
   const { onSubmit, onSubmitDraft } = useNewInvoiceForm();
-  const { clearCache } = useFormCaching();
+  const { clearCache } = useFormCaching("cachedNewInvoiceForm");
 
   const defaultValues = {
     items: [
