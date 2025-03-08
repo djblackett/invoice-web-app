@@ -42,6 +42,7 @@ function ItemQuantity({ index, invoice }: ItemQuantityProps) {
         <span
           style={{
             position: "absolute",
+            zIndex: 1,
             top: "100%",
             left: "0",
             marginTop: "4px",
