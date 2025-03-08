@@ -1,6 +1,6 @@
 import { render, screen } from "../testUtils";
 import { describe, it, expect, vi } from "vitest";
-import EditForm from "@/features/invoices/pages/EditForm.tsx";
+import EditInvoice from "@/features/invoices/pages/EditInvoice";
 import { NewInvoiceProvider } from "@/features/invoices/forms/NewInvoiceContextProvider.tsx";
 import { Invoice } from "@/features/invoices/types/invoiceTypes.ts";
 
@@ -41,7 +41,7 @@ describe("EditForm", () => {
   const renderEditForm = (invoice: Invoice) => {
     return render(
       <NewInvoiceProvider initialState={{ isNewInvoiceOpen: true }}>
-        <EditForm invoice={invoice} />
+        <EditInvoice invoice={invoice} />
       </NewInvoiceProvider>,
     );
   };
