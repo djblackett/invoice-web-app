@@ -40,7 +40,7 @@ function NewInvoiceBottomMenu({
   const closeMenu = () => {
     setIsCacheActive(false);
     clearCache();
-    
+
     clearErrors();
 
     setIsNewInvoiceOpen(false);

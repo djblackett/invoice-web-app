@@ -131,11 +131,9 @@ describe("ViewInvoice", () => {
       </MockedProvider>,
     );
 
-    await waitFor(() => {
-      expect(screen.getByText("Edit")).toBeInTheDocument();
-    });
+    expect(await screen.findByText("Edit")).toBeInTheDocument();
 
-    fireEvent.click(screen.getByText("Edit"));
+    fireEvent.click(await screen.findByText("Edit"));
 
     await waitFor(
       () => {
