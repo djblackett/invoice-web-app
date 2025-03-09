@@ -1,5 +1,5 @@
 import { DateAndPaymentContainer } from "@/styles/editPageStyles.ts";
-import { DateComponent } from "@/features/invoices/forms/DateComponent.tsx";
+import { DateComponent } from "@/features/invoices/forms/date/DateComponent.tsx";
 import { PaymentTerms } from "@/features/invoices/forms/PaymentTerms.tsx";
 import { Invoice } from "@/features/invoices/types/invoiceTypes.ts";
 

@@ -4,13 +4,13 @@ import CancelButton from "@/features/shared/components/buttons/CancelButton.tsx"
 import {
   MenuContainer,
   Save,
-} from "../../../styles/NewInvoiceBottomMenuStyles.tsx";
-import { useNewInvoiceForm } from "../hooks/useNewInvoiceForm.tsx";
-import { useNewInvoiceContext } from "./NewInvoiceContextProvider.tsx";
+} from "../../../../styles/NewInvoiceBottomMenuStyles.tsx";
+import { useNewInvoiceForm } from "../../hooks/useNewInvoiceForm.tsx";
+import { useNewInvoiceContext } from "../NewInvoiceContextProvider.tsx";
 
 import { FormType } from "@/features/invoices/types/invoiceTypes.ts";
-import useFormCaching from "../hooks/useFormCaching.ts";
-import { invoiceDefaultValues } from "./defaultValues.ts";
+import useFormCaching from "../../hooks/useFormCaching.ts";
+import { invoiceDefaultValues } from "../defaultValues.ts";
 
 type EditBottomMenuProps = {
   closeText: string;

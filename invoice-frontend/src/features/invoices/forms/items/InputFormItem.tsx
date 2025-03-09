@@ -12,14 +12,14 @@ import {
   TotalBox,
 } from "@/styles/editFormItemStyles.tsx";
 import NewItemButton from "@/features/shared/components/buttons/NewItemButton.tsx";
-import useWindowWidth from "../../shared/hooks/useWindowWidth.tsx";
+import useWindowWidth from "../../../shared/hooks/useWindowWidth.tsx";
 import { Col, Col1 } from "@/styles/EditFormItemListStyles.ts";
 
 import { Invoice } from "@/features/invoices/types/invoiceTypes.ts";
 import ItemQuantity from "./ItemQuantity.tsx";
 import ItemPrice from "./ItemPrice.tsx";
 import ItemName from "./ItemName.tsx";
-import { useNewInvoiceContext } from "./NewInvoiceContextProvider.tsx";
+import { useNewInvoiceContext } from "../NewInvoiceContextProvider.tsx";
 
 type InputFormItemProps = {
   invoice?: Invoice;

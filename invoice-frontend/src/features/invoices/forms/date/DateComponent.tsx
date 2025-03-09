@@ -4,7 +4,7 @@ import { convertStringToDate } from "@/features/shared/utils/utilityFunctions.ts
 import FormEntry from "@/features/invoices/forms/FormEntry.tsx";
 import { Label } from "@/styles/editPageStyles.ts";
 import DatePicker from "react-datepicker";
-import CustomInputWrapper from "@/features/invoices/forms/LazyCustomInputWrapper.tsx";
+import CustomInputWrapper from "@/features/invoices/forms/date/LazyCustomInputWrapper.tsx";
 
 import { Invoice } from "@/features/invoices/types/invoiceTypes.ts";
 

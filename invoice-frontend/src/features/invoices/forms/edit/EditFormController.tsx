@@ -1,8 +1,8 @@
 import { ClickOutsideProvider } from "@shelf/react-outside-click";
-import useFormCaching from "../hooks/useFormCaching.ts";
-import { useNewInvoiceContext } from "./NewInvoiceContextProvider.tsx";
+import useFormCaching from "../../hooks/useFormCaching.ts";
+import { useNewInvoiceContext } from "../NewInvoiceContextProvider.tsx";
 import EditForm from "./EditForm.tsx";
-import { Invoice } from "../types/invoiceTypes.ts";
+import { Invoice } from "../../types/invoiceTypes.ts";
 
 interface EditFormProps {
   invoice: Invoice;

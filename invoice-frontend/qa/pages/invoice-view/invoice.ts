@@ -9,7 +9,7 @@ class InvoicePage {
   readonly goBackButton: Locator;
 
   constructor(page: Page) {
-    this.editButton = page.getByRole("button", { name: "Edit" });
+    this.editButton = page.getByRole("button", { name: "edit" });
     this.cancelButton = page.getByRole("button", { name: "Cancel" });
     this.deleteButton = page.getByRole("button", { name: "Delete" }).first();
     this.deleteButtonSecond = page
@@ -20,7 +20,7 @@ class InvoicePage {
   }
 
   /**
-   * Clicks the Edit button.
+   * Clicks the edit button.
    */
   async clickEditButton(): Promise<void> {
     await this.editButton.click();
@@ -80,7 +80,7 @@ class InvoicePage {
 export default InvoicePage;
 
 /*
-await page.getByRole('button', { name: 'Edit' }).click();
+await page.getByRole('button', { name: 'edit' }).click();
   await page.getByRole('button', { name: 'Cancel' }).click();
   await page.getByRole('button', { name: 'Delete' }).click();
   await page.getByRole('button', { name: 'Cancel' }).click();
