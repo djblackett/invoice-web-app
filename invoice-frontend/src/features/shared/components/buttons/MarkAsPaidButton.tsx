@@ -6,7 +6,7 @@ import { MARK_AS_PAID } from "../../../invoices/graphql/invoice.queries.ts";
 import { MutableRefObject } from "react";
 import { Invoice } from "@/features/invoices/types/invoiceTypes.ts";
 
-const Button = styled.button`
+export const Button = styled.button`
   background-color: ${({ theme }) => theme.newButton};
   border-radius: 24px;
   padding: 16px 19px 17px 19px;

@@ -12,6 +12,7 @@ import { NewInvoiceProvider } from "../forms/NewInvoiceContextProvider.tsx";
 import { useQuery } from "@apollo/client";
 import { GET_INVOICE_BY_ID } from "../graphql/invoice.queries.ts";
 import React from "react";
+import { Button } from "@/features/shared/components/buttons/MarkAsPaidButton.tsx";
 
 const EditForm = React.lazy(() => import("./EditInvoice.tsx"));
 const DeleteModal = React.lazy(() => import("../components/DeleteModal.tsx"));
@@ -38,7 +39,21 @@ function ViewInvoice() {
   }
 
   if (error) {
-    return <p>Error: {error.message}</p>;
+    return (
+      <>
+        <p
+          style={{
+            marginTop: "8rem",
+            marginBottom: "2rem",
+            textAlign: "center",
+          }}
+        >
+          Error: {error.message} <br />
+          Invoice may have been deleted <br />
+        </p>
+        <Button onClick={goBack}>Go back</Button>
+      </>
+    );
   }
 
   return (
