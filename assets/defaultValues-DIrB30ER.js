@@ -1,4 +1,4 @@
-import{d as t}from"./index-D5T2xZ-E.js";const o=t.div`
+import{d as i}from"./index-BDPPYVrj.js";const x=i.div`
   width: 100%;
   max-width: 100vw;
   min-width: 100vw;
@@ -48,7 +48,7 @@ import{d as t}from"./index-D5T2xZ-E.js";const o=t.div`
     min-width: auto;
     margin-left: 0;
   }
-`,i=t.input`
+`,m=i.input`
   border-radius: 24px;
   background-color: #7c5dfa;
   border: none;
@@ -81,7 +81,7 @@ import{d as t}from"./index-D5T2xZ-E.js";const o=t.div`
   &:hover {
     background-color: #9277ff;
   }
-`,r=t(i)`
+`,g=i(m)`
   background-color: #373b53;
   color: #888eb0;
   margin-right: 8px;
@@ -94,8 +94,8 @@ import{d as t}from"./index-D5T2xZ-E.js";const o=t.div`
   &:hover {
     background-color: #0c0e16;
   }
-`,a=t(i)`
-  background-color: ${({theme:e})=>e.buttonBackground};
+`,h=i(m)`
+  background-color: ${({theme:t})=>t.buttonBackground};
   border-radius: 24px;
   cursor: pointer;
   white-space: nowrap;
@@ -112,11 +112,11 @@ import{d as t}from"./index-D5T2xZ-E.js";const o=t.div`
   @media (min-width: 1200px) {
     width: 150px;
   }
-`,d=t.div`
+`,f=i.div`
   display: contents;
 
   @media (min-width: 768px) {
     display: flex;
     flex-direction: row;
   }
-`;export{o as M,d as S,r as a,a as b};
+`,u={items:[{name:"",price:0,quantity:0,total:0,id:""}],country:"",streetAddress:"",city:"",postalCode:"",clientCountry:"",clientName:"",clientEmail:"",clientStreetAddress:"",clientCity:"",clientPostalCode:"",projectDescription:""},w=t=>{var n,r,a,d,o,s,l,p;return{country:(n=t.senderAddress)==null?void 0:n.country,streetAddress:(r=t.senderAddress)==null?void 0:r.street,city:(a=t.senderAddress)==null?void 0:a.city,postalCode:(d=t.senderAddress)==null?void 0:d.postCode,clientEmail:t.clientEmail,clientName:t.clientName,clientCountry:(o=t.clientAddress)==null?void 0:o.country,clientStreetAddress:(s=t.clientAddress)==null?void 0:s.street,clientCity:(l=t.clientAddress)==null?void 0:l.city,clientPostalCode:(p=t.clientAddress)==null?void 0:p.postCode,projectDescription:t.description,paymentDue:t.paymentDue,paymentTerms:t.paymentTerms,status:t.status,total:t.total,items:t.items.map(e=>({id:e.id,name:e.name,quantity:e.quantity,price:e.price,total:e.total}))}};export{x as M,f as S,g as a,u as b,h as c,w as i};

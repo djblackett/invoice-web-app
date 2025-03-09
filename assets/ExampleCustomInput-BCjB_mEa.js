@@ -1,4 +1,4 @@
-import{d as e,P as n,a,j as t}from"./index-D5T2xZ-E.js";import{d as s}from"./DateAndPayment-CA-mqyEh.js";import"./editPageStyles-8CkNNUZa.js";import"./InvoiceStatus-B_uNhklQ.js";import"./utilityFunctions-Cvv3Mn6A.js";import"./SlidingMenu-BV479-BV.js";import"./ReactToastify-PWHrxTTo.js";import"./create-visual-element-CIJEEXC4.js";const d=e.div`
+import{d as e,P as i,a,j as t}from"./index-BDPPYVrj.js";import{d as s}from"./DateAndPayment-Dv5Hftmq.js";import"./editPageStyles-D1VLfA_2.js";import"./InvoiceStatus-CrQ1-WiF.js";import"./utilityFunctions-B1AL52ua.js";import"./SlidingMenu-CdKtrjLx.js";import"./create-visual-element-DJVVUq-i.js";const d=e.div`
   display: flex;
   justify-content: space-between;
   align-items: center;
@@ -28,7 +28,7 @@ import{d as e,P as n,a,j as t}from"./index-D5T2xZ-E.js";import{d as s}from"./Dat
     padding: 0;
   }
 
-  ${o=>o.long&&n`
+  ${o=>o.long&&i`
       width: 100%;
     `}
 `,l=e.input`
@@ -49,4 +49,4 @@ import{d as e,P as n,a,j as t}from"./index-D5T2xZ-E.js";import{d as s}from"./Dat
   &:hover {
     border-color: ${({theme:o})=>o.formFieldOutlineFocus};
   }
-`,p=a.forwardRef(({value:o,onClick:r},i)=>t.jsxs(d,{className:"custom-input",onClick:r,style:{},children:[t.jsx(l,{ref:i,value:o,"data-testid":"invoiceDate",id:"invoiceDate",readOnly:!0}),s]}));p.displayName="CustomDateInput";export{p as default};
+`,c=a.forwardRef(({value:o,onClick:r},n)=>t.jsxs(d,{className:"custom-input",onClick:r,style:{},children:[t.jsx(l,{ref:n,value:o,"data-testid":"invoiceDate",id:"invoiceDate",readOnly:!0}),s]}));c.displayName="CustomDateInput";export{c as default};
