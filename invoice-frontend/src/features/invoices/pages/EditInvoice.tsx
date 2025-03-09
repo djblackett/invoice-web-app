@@ -5,7 +5,7 @@ import { useNewInvoiceContext } from "../forms/NewInvoiceContextProvider.tsx";
 import { AnimatePresence } from "motion/react";
 import Sidebar from "@/features/shared/animations/SlidingMenu.tsx";
 import { Invoice } from "@/features/invoices/types/invoiceTypes.ts";
-import EditFormController from "../forms/EditFormController.tsx";
+import EditFormController from "@/features/invoices/forms/edit/EditFormController.tsx";
 
 type EditFormProps = {
   invoice: Invoice;

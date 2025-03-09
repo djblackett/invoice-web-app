@@ -1,5 +1,5 @@
 import React, { CSSProperties } from "react";
-import { OppositeWidthContainer } from "../../../styles/FormEntryStyles.tsx";
+import { OppositeWidthContainer } from "@/styles/FormEntryStyles.tsx";
 import { FormEntryContainer } from "./LongFormEntry.tsx";
 
 type FormEntryProps = {

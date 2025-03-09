@@ -1,11 +1,11 @@
-import { useNewInvoiceContext } from "./NewInvoiceContextProvider.tsx";
-import { BillText, EditTitle } from "@/styles/editPageStyles";
+import { useNewInvoiceContext } from "../NewInvoiceContextProvider.tsx";
+import { BillText, EditTitle } from "@/styles/editPageStyles.ts";
 import { Suspense } from "react";
-import ClientFormInfo from "./ClientFormInfo.tsx";
-import CompanyFormInfo from "./CompanyFormInfo.tsx";
-import Description from "./Description.tsx";
-import EditFormItemList from "./EditFormItemList.tsx";
-import FormErrorList from "./FormErrorList.tsx";
+import ClientFormInfo from "../ClientFormInfo.tsx";
+import CompanyFormInfo from "../CompanyFormInfo.tsx";
+import Description from "../Description.tsx";
+import EditFormItemList from "../items/EditFormItemList.tsx";
+import FormErrorList from "../FormErrorList.tsx";
 import styled from "styled-components";
 import React from "react";
 
@@ -23,7 +23,7 @@ const NewInvoiceBottomMenu = React.lazy(
   () => import("./NewInvoiceBottomMenu.tsx"),
 );
 
-const DateAndPayment = React.lazy(() => import("./DateAndPayment.tsx"));
+const DateAndPayment = React.lazy(() => import("../date/DateAndPayment.tsx"));
 
 const InvoiceForm = () => {
   const { isNewInvoiceOpen } = useNewInvoiceContext();

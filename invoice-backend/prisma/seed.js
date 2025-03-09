@@ -419,7 +419,7 @@ const data = [
 async function main() {
   await prisma.$connect();
 
-  const dbUser = getUserByIdSafely(user.id);
+  let dbUser = getUserByIdSafely(user.id);
 
   if (!dbUser) {
     dbUser = await createUserWithAuth0(user);

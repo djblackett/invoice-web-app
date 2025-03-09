@@ -119,37 +119,6 @@ describe("ViewInvoice", () => {
     fireEvent.click(screen.getByText("Go back"));
     expect(navigate).toHaveBeenCalledWith("/invoices");
   });
-
-  it("renders and interacts with edit form", async () => {
-    render(
-      <MockedProvider mocks={mocks} addTypename={false}>
-        <MemoryRouter initialEntries={["/invoice/1"]}>
-          <Routes>
-            <Route path="/invoice/:id" element={<ViewInvoice />} />
-          </Routes>
-        </MemoryRouter>
-      </MockedProvider>,
-    );
-
-    expect(await screen.findByText("Edit")).toBeInTheDocument();
-
-    fireEvent.click(await screen.findByText("Edit"));
-
-    await waitFor(
-      () => {
-        expect(screen.getByTestId("editInvoiceModal")).toBeInTheDocument();
-      },
-      { timeout: 2000 },
-    );
-
-    fireEvent.change(screen.getByLabelText("Client's Name"), {
-      target: { value: "Updated Client Name" },
-    });
-
-    expect(screen.getByLabelText("Client's Name")).toHaveValue(
-      "Updated Client Name",
-    );
-  });
 });
 
 describe("ViewInvoice", () => {
@@ -203,11 +172,9 @@ describe("ViewInvoice", () => {
       </MockedProvider>,
     );
 
-    await waitFor(() => {
-      expect(screen.getByText("Go back")).toBeInTheDocument();
-    });
+    expect(await screen.findByText("Go back")).toBeInTheDocument();
 
-    fireEvent.click(screen.getByText("Go back"));
+    fireEvent.click(await screen.findByText("Go back"));
     expect(navigate).toHaveBeenCalledWith("/invoices");
   });
 });

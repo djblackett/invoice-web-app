@@ -1,7 +1,7 @@
 import { ItemName as Name } from "@/styles/editFormItemStyles.tsx";
 import { useFormContext } from "react-hook-form";
-import { Invoice } from "../types/invoiceTypes";
-import { useNewInvoiceContext } from "./NewInvoiceContextProvider";
+import { Invoice } from "../../types/invoiceTypes.ts";
+import { useNewInvoiceContext } from "../NewInvoiceContextProvider.tsx";
 
 interface ItemNameProps {
   index: number;

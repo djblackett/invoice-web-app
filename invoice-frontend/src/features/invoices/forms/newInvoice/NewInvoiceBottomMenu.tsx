@@ -6,14 +6,15 @@ import {
   Save,
   SaveAndDraftContainer,
   SaveDraft,
-} from "../../../styles/NewInvoiceBottomMenuStyles.tsx";
-import { useNewInvoiceContext } from "./NewInvoiceContextProvider.tsx";
-import { useNewInvoiceForm } from "../hooks/useNewInvoiceForm.tsx";
+} from "@/styles/NewInvoiceBottomMenuStyles.tsx";
+import { useNewInvoiceContext } from "../NewInvoiceContextProvider.tsx";
 import useWindowWidth from "@/features/shared/hooks/useWindowWidth.tsx";
-import useFormCaching from "../hooks/useFormCaching.ts";
-import blankDefaultValues from "./defaultValues.ts";
+import useFormCaching from "../../hooks/useFormCaching.ts";
+import blankDefaultValues from "../defaultValues.ts";
+import { useSubmitDraft } from "../../hooks/useSubmitDraft.ts";
+import { useSubmitNewInvoice } from "../../hooks/useSubmitNewInvoice.ts";
 
-type NewInvoiceBoottemMenuProps = {
+type NewInvoiceBottemMenuProps = {
   closeText: string;
   justifyCancel?: string;
 };
@@ -21,7 +22,7 @@ type NewInvoiceBoottemMenuProps = {
 function NewInvoiceBottomMenu({
   closeText,
   justifyCancel,
-}: NewInvoiceBoottemMenuProps) {
+}: NewInvoiceBottemMenuProps) {
   const { clearErrors, handleSubmit } = useFormContext();
 
   const {
@@ -34,7 +35,10 @@ function NewInvoiceBottomMenu({
 
   const { reset } = methods;
 
-  const { onSubmit, onSubmitDraft } = useNewInvoiceForm();
+  // TODO - fix these types - Code works fine, but I can't please TypeScript
+  const onSubmit = useSubmitNewInvoice();
+  const onSubmitDraft = useSubmitDraft();
+
   const { clearCache } = useFormCaching("cachedNewInvoiceForm");
 
   const closeMenu = () => {
@@ -53,7 +57,6 @@ function NewInvoiceBottomMenu({
 
   const width = useWindowWidth();
 
-  // TODO - fix these types - Code works fine, but I can't please TypeScript
   return (
     <MenuContainer>
       <CancelButton
@@ -65,7 +68,7 @@ function NewInvoiceBottomMenu({
         <SaveDraft
           type="button"
           value={width > 325 ? "Save as draft" : "Draft"}
-          onClick={onSubmitDraft}
+          onClick={() => onSubmitDraft()}
         />
         <Save type="button" value="Save" onClick={handleSubmit(onSubmit)} />
       </SaveAndDraftContainer>

@@ -1,19 +1,19 @@
-import { BillText, EditTitle } from "@/styles/editPageStyles";
-import ClientFormInfo from "./ClientFormInfo";
-import CompanyFormInfo from "./CompanyFormInfo";
-import Description from "./Description";
-import EditFormItemList from "./EditFormItemList";
-import FormErrorList from "./FormErrorList";
-import { Invoice } from "../types/invoiceTypes";
-import { useNewInvoiceContext } from "./NewInvoiceContextProvider";
+import { BillText, EditTitle } from "@/styles/editPageStyles.ts";
+import ClientFormInfo from "../ClientFormInfo.tsx";
+import CompanyFormInfo from "../CompanyFormInfo.tsx";
+import Description from "../Description.tsx";
+import EditFormItemList from "../items/EditFormItemList.tsx";
+import FormErrorList from "../FormErrorList.tsx";
+import { Invoice } from "../../types/invoiceTypes.ts";
+import { useNewInvoiceContext } from "../NewInvoiceContextProvider.tsx";
 import React from "react";
-import { Form } from "./InvoiceForm.tsx";
+import { Form } from "@/features/invoices/forms/newInvoice/InvoiceForm.tsx";
 
 interface EditFormProps {
   invoice: Invoice;
 }
 
-const DateAndPayment = React.lazy(() => import("./DateAndPayment.tsx"));
+const DateAndPayment = React.lazy(() => import("../date/DateAndPayment.tsx"));
 
 const EditBottomMenu = React.lazy(() => import("./EditBottomMenu.tsx"));
 
@@ -21,7 +21,7 @@ function EditForm({ invoice }: EditFormProps) {
   const { isNewInvoiceOpen } = useNewInvoiceContext();
   return (
     <>
-      <EditTitle>
+      <EditTitle data-testid="edit-title">
         Edit <span style={{ color: "#7E88C3" }}>#</span>
         {invoice && invoice.id.substring(0, 6)}
       </EditTitle>

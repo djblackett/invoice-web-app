@@ -1,4 +1,4 @@
-import InvoiceFormController from "../forms/InvoiceFormController.tsx";
+import InvoiceFormController from "@/features/invoices/forms/newInvoice/InvoiceFormController.tsx";
 import "../../../styles/react-datepicker.css";
 import { FormContainerDarkenModal } from "../../../styles/editPageStyles.ts";
 import { useNewInvoiceContext } from "../forms/NewInvoiceContextProvider.tsx";

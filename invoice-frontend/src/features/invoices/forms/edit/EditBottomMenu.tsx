@@ -1,16 +1,13 @@
 import PropTypes from "prop-types";
 import { useFormContext } from "react-hook-form";
 import CancelButton from "@/features/shared/components/buttons/CancelButton.tsx";
-import {
-  MenuContainer,
-  Save,
-} from "../../../styles/NewInvoiceBottomMenuStyles.tsx";
-import { useNewInvoiceForm } from "../hooks/useNewInvoiceForm.tsx";
-import { useNewInvoiceContext } from "./NewInvoiceContextProvider.tsx";
+import { MenuContainer, Save } from "@/styles/NewInvoiceBottomMenuStyles.tsx";
+import { useNewInvoiceContext } from "../NewInvoiceContextProvider.tsx";
 
 import { FormType } from "@/features/invoices/types/invoiceTypes.ts";
-import useFormCaching from "../hooks/useFormCaching.ts";
-import { invoiceDefaultValues } from "./defaultValues.ts";
+import useFormCaching from "../../hooks/useFormCaching.ts";
+import { invoiceDefaultValues } from "../defaultValues.ts";
+import { useSubmitEditedInvoice } from "../../hooks/useSubmitEditedInvoice.ts";
 
 type EditBottomMenuProps = {
   closeText: string;
@@ -36,7 +33,7 @@ function EditBottomMenu({
   };
 
   const { handleSubmit } = useFormContext<FormType>();
-  const { onSubmitUpdate } = useNewInvoiceForm();
+  const { onSubmitUpdate } = useSubmitEditedInvoice();
 
   return (
     <MenuContainer>

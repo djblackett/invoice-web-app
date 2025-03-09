@@ -8,7 +8,9 @@ import { StatusKey } from "@/features/invoices/types/invoiceTypes.ts";
 
 const useInvoices = () => {
   const filter = useSelector(selectFilter);
-  const { data, loading, error } = useQuery(ALL_INVOICES);
+  const { data, loading, error } = useQuery(ALL_INVOICES, {
+    errorPolicy: "all",
+  });
 
   const invoiceList = useMemo(() => {
     if (!data) return [];
