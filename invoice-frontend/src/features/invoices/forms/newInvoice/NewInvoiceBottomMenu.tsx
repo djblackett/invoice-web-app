@@ -35,23 +35,16 @@ function NewInvoiceBottomMenu({
   } = useNewInvoiceContext();
 
   const { reset } = methods;
-
-  // TODO - fix these types - Code works fine, but I can't please TypeScript
   const onSubmit = useSubmitNewInvoice();
   const onSubmitDraft = useSubmitDraft();
-
   const { clearCache } = useFormCaching("cachedNewInvoiceForm");
 
   const closeMenu = () => {
     setIsCacheActive(false);
     clearCache();
-
     clearErrors();
-
     setIsNewInvoiceOpen(false);
-
     reset(blankDefaultValues);
-
     setStartDate(new Date());
     setSelectedPaymentOption(1);
   };
