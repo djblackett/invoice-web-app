@@ -1,7 +1,7 @@
 import { renderHook, act } from "@testing-library/react-hooks";
 import { beforeEach, describe, expect, it, Mock, vi } from "vitest";
 import { useAddInvoice } from "../../../src/features/invoices/hooks/useAddInvoice";
-import { gql, useMutation } from "@apollo/client";
+import { useMutation } from "@apollo/client";
 import { Invoice } from "@/features/invoices/types/invoiceTypes";
 
 vi.mock("@apollo/client", () => ({
