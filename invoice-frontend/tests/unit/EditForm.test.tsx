@@ -1,5 +1,5 @@
-import { render, screen } from "../testUtils";
-import { describe, it, expect, vi } from "vitest";
+import { cleanup, render, screen } from "../testUtils";
+import { describe, it, expect, vi, afterEach } from "vitest";
 import EditInvoice from "@/features/invoices/pages/EditInvoice";
 import { NewInvoiceProvider } from "@/features/invoices/forms/NewInvoiceContextProvider.tsx";
 import { Invoice } from "@/features/invoices/types/invoiceTypes.ts";
@@ -46,12 +46,34 @@ describe("EditForm", () => {
     );
   };
 
-  it("renders correctly when invoice is provided", async () => {
+  afterEach(() => {
+    cleanup();
+    vi.clearAllMocks();
+    vi.resetModules();
+  });
+
+  it("should render the edit title", async () => {
     renderEditForm(mockInvoice);
-    expect(await screen.findByText(/Edit/i)).toBeInTheDocument();
+    expect(await screen.findByTestId("edit-title")).toBeInTheDocument();
+  });
+
+  it("should render the bill from text", async () => {
+    renderEditForm(mockInvoice);
     expect(await screen.findByText(/Bill From/i)).toBeInTheDocument();
+  });
+
+  it("should render the bill to text", async () => {
+    renderEditForm(mockInvoice);
     expect(await screen.findByText(/Bill To/i)).toBeInTheDocument();
+  });
+
+  it("should render the save changes button", async () => {
+    renderEditForm(mockInvoice);
     expect(await screen.findByText(/Save Changes/i)).toBeInTheDocument();
+  });
+
+  it("should render the cancel button", async () => {
+    renderEditForm(mockInvoice);
     expect(await screen.findByText(/Cancel/i)).toBeInTheDocument();
   });
 

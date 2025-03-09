@@ -21,7 +21,7 @@ function EditForm({ invoice }: EditFormProps) {
   const { isNewInvoiceOpen } = useNewInvoiceContext();
   return (
     <>
-      <EditTitle>
+      <EditTitle data-testid="edit-title">
         Edit <span style={{ color: "#7E88C3" }}>#</span>
         {invoice && invoice.id.substring(0, 6)}
       </EditTitle>

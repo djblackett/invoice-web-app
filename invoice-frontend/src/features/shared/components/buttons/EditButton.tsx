@@ -42,7 +42,12 @@ const EditButton = forwardRef<HTMLButtonElement, EditButtonProps>(
       toggleEditTab(!isEditOpen);
     };
     return (
-      <Button onClick={handleClick} ref={ref}>
+      <Button
+        onClick={handleClick}
+        ref={ref}
+        data-testid="edit-button"
+        aria-label="Edit button"
+      >
         Edit
       </Button>
     );
