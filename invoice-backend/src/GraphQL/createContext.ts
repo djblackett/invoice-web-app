@@ -31,10 +31,12 @@ function getSigningKeyAsync(kid: string): Promise<string> {
       (err: Error | null, key: SigningKey | undefined) => {
         if (err) {
           console.error("Error fetching signing key:", err);
+          logger.error(err);
           return reject(err);
         }
         if (!key) {
           const error = new Error("Signing key not found");
+          logger.error(error);
           console.error(error);
           return reject(error);
         }
@@ -47,6 +49,7 @@ function getSigningKeyAsync(kid: string): Promise<string> {
 
 const options: VerifyOptions = {
   audience: process.env.AUDIENCE,
+  // Make sure issuer has the trailing "/"
   issuer: process.env.DOMAIN,
   algorithms: ["RS256"],
 };
