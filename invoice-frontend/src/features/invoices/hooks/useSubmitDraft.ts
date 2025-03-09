@@ -1,9 +1,13 @@
 import { createInvoiceObject } from "@/features/shared/utils/utilityFunctions";
-import { SubmitHandler, useFieldArray } from "react-hook-form";
+import { FieldPath, SubmitHandler, useFieldArray } from "react-hook-form";
 import { toast } from "react-toastify";
 import { useNewInvoiceContext } from "../forms/NewInvoiceContextProvider";
 import { FormType } from "../types/invoiceTypes";
-import { errorTypeCollector, clearErrorsByType } from "../utils/errorUtils";
+import {
+  errorTypeCollector,
+  clearErrorsByType,
+  FormErrors,
+} from "../utils/errorUtils";
 import { useHandleFormReset } from "./useHandleFormReset";
 import { v4 as uuidv4 } from "uuid";
 import { useAddInvoice } from "./useAddInvoice";
@@ -24,7 +28,9 @@ export const useSubmitDraft = () => {
     // Re-calculate errors directly from the current form state
     await trigger();
     const currentErrors = methods.formState.errors;
-    const currentErrorTypes = errorTypeCollector(currentErrors);
+    const currentErrorTypes = errorTypeCollector(
+      currentErrors as unknown as FormErrors,
+    );
 
     // Filter out only non-required errors
     const nonRequiredErrors = currentErrorTypes.filter(
@@ -50,10 +56,11 @@ export const useSubmitDraft = () => {
 
       // reapply the leftover errors to the form
       for (const key in currentErrors) {
-        if (currentErrors[key]?.type) {
-          setError(key, {
-            type: currentErrors[key].type,
-            message: currentErrors[key].message,
+        const errorKey = key as keyof FormType;
+        if (currentErrors[errorKey]?.type) {
+          setError(errorKey, {
+            type: currentErrors[errorKey].type,
+            message: currentErrors[errorKey].message,
           });
         }
       }
@@ -66,13 +73,18 @@ export const useSubmitDraft = () => {
         itemsArray.forEach((itemError, index) => {
           if (itemError && typeof itemError === "object") {
             Object.keys(itemError).forEach((fieldName) => {
-              const errorDetail = itemError[fieldName];
+              const errorDetail = (
+                itemError as Record<string, { type: string; message?: string }>
+              )[fieldName];
 
               if (errorDetail?.type) {
-                setError(`items[${index}].${fieldName}`, {
-                  type: errorDetail.type,
-                  message: errorDetail.message,
-                });
+                setError(
+                  `items[${index}].${fieldName}` as FieldPath<FormType>,
+                  {
+                    type: errorDetail.type,
+                    message: errorDetail.message,
+                  },
+                );
               }
             });
           }

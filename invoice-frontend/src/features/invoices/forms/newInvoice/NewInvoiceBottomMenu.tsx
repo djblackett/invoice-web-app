@@ -1,5 +1,5 @@
 import PropTypes from "prop-types";
-import { useFormContext } from "react-hook-form";
+import { SubmitHandler, useFormContext } from "react-hook-form";
 import CancelButton from "@/features/shared/components/buttons/CancelButton.tsx";
 import {
   MenuContainer,
@@ -23,7 +23,8 @@ function NewInvoiceBottomMenu({
   closeText,
   justifyCancel,
 }: NewInvoiceBottemMenuProps) {
-  const { clearErrors, handleSubmit } = useFormContext();
+  const { clearErrors, handleSubmit } =
+    useFormContext<typeof blankDefaultValues>();
 
   const {
     setIsNewInvoiceOpen,
@@ -68,9 +69,19 @@ function NewInvoiceBottomMenu({
         <SaveDraft
           type="button"
           value={width > 325 ? "Save as draft" : "Draft"}
-          onClick={() => onSubmitDraft()}
+          onClick={handleSubmit(
+            onSubmitDraft as unknown as SubmitHandler<
+              typeof blankDefaultValues
+            >,
+          )}
         />
-        <Save type="button" value="Save" onClick={handleSubmit(onSubmit)} />
+        <Save
+          type="button"
+          value="Save"
+          onClick={handleSubmit(
+            onSubmit as unknown as SubmitHandler<typeof blankDefaultValues>,
+          )}
+        />
       </SaveAndDraftContainer>
     </MenuContainer>
   );
