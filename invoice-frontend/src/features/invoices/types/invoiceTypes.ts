@@ -35,6 +35,9 @@ export interface FormType {
 }
 
 export interface Invoice {
+  createdBy?: User;
+  createdById?: string;
+  clientAddressId?: string;
   clientAddress: ClientAddress;
   clientEmail: string;
   clientName: string;
@@ -45,6 +48,7 @@ export interface Invoice {
   paymentDue: string;
   paymentTerms: number;
   senderAddress: SenderAddress;
+  senderAddressId?: string;
   status: string;
   total: number;
 }
@@ -69,4 +73,11 @@ export interface Item {
   price: number;
   quantity: number;
   total: number;
+}
+
+export interface User {
+  id: string;
+  role: "USER" | "ADMIN";
+  username?: string;
+  name: string;
 }

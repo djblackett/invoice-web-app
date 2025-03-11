@@ -166,6 +166,7 @@ function InvoiceCard({ invoice }: InvoiceCardProps) {
         duration: 0.4,
         scale: { type: "spring", visualDuration: 0.4, bounce: 0.5 },
       }}
+      data-testid="invoice-card"
     >
       <IDNumber>
         <span style={{ color: "#7E88C3" }}>#</span>

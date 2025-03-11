@@ -6,6 +6,7 @@ import { MemoryRouter } from "react-router-dom";
 import store from "@/app/store";
 import { Provider as ReduxProvider } from "react-redux";
 import { MockedProvider, MockedResponse } from "@apollo/client/testing";
+import { NewInvoiceProvider } from "@/features/invoices/forms/NewInvoiceContextProvider";
 
 interface CustomRenderOptions extends RenderOptions {
   route?: string;
@@ -26,7 +27,9 @@ const AllProviders = ({
     <ReduxProvider store={store}>
       <MockedProvider mocks={mocks} addTypename={addTypename}>
         <ThemeProvider theme={lightTheme}>
-          <MemoryRouter>{children}</MemoryRouter>
+          <MemoryRouter>
+            <NewInvoiceProvider>{children}</NewInvoiceProvider>
+          </MemoryRouter>
         </ThemeProvider>
       </MockedProvider>
     </ReduxProvider>
