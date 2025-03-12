@@ -10,19 +10,33 @@ vi.mock("@auth0/auth0-react", () => ({
   }),
 }));
 
+// Correct way to mock import.meta.env
+vi.stubGlobal("import", {
+  meta: {
+    env: {
+      VITE_BACKEND_URL: "http://localhost:4000/graphql",
+    },
+  },
+});
+
 describe("useGraphQLClient", () => {
-  const originalEnv = process.env;
+  // const originalEnv = process.env;
+  vi.stubEnv("VITE_BACKEND_URL", "http://localhost:4000");
+  // import.meta.env.VITE_BACKEND_URL = "http://localhost:4000";
 
   beforeEach(() => {
     vi.resetModules();
-    process.env = {
-      ...originalEnv,
-      VITE_BACKEND_URL: "http://localhost:4000/graphql",
-    };
+    vi.stubGlobal("import", {
+      meta: {
+        env: {
+          VITE_BACKEND_URL: "http://localhost:4000/graphql",
+        },
+      },
+    });
   });
 
   afterAll(() => {
-    process.env = originalEnv;
+    vi.unstubAllGlobals();
   });
 
   it("should initialize Apollo Client", () => {
@@ -32,13 +46,16 @@ describe("useGraphQLClient", () => {
   });
 
   it("should throw error if VITE_BACKEND_URL is not set", () => {
-    delete process.env.VITE_BACKEND_URL;
+    // vi.stubGlobal("import", { meta: { env: {} } });
+    import.meta.env.VITE_BACKEND_URL = null;
+    vi.stubEnv("VITE_BACKEND_URL", undefined);
     expect(() => renderHook(() => useGraphQLClient())).toThrow(
       "Backend URL was not set during frontend build process",
     );
   });
 
   it("should include authorization header", async () => {
+    vi.stubEnv("VITE_BACKEND_URL", "http://localhost:4000");
     const { result } = renderHook(() => useGraphQLClient());
 
     await waitFor(() => !!result.current);

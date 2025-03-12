@@ -49,7 +49,7 @@ export function DateComponent({ invoice }: DateComponentProps) {
     <FormEntry isLongOnMobile className="invoice-date">
       <Label htmlFor="invoiceDate">Invoice Date</Label>
       <DatePicker
-        data-testid="visible-date"
+        data-testid="visibleDate"
         popperProps={{ strategy: "fixed" }}
         fixedHeight={true}
         customInput={<CustomInputWrapper />}

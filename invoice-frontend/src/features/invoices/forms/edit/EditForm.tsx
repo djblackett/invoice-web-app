@@ -19,6 +19,9 @@ const EditBottomMenu = React.lazy(() => import("./EditBottomMenu.tsx"));
 
 function EditForm({ invoice }: EditFormProps) {
   const { isNewInvoiceOpen } = useNewInvoiceContext();
+
+  if (!invoice) return null;
+
   return (
     <>
       <EditTitle data-testid="edit-title">

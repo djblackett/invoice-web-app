@@ -3,11 +3,7 @@ import styled from "styled-components";
 import { useSelector } from "react-redux";
 import Checkbox from "@/features/shared/components/buttons/Checkbox.tsx";
 import { selectFilter } from "../store/filterSlice.ts";
-
-import {
-  FilterOptions,
-  StatusKey,
-} from "@/features/invoices/types/invoiceTypes.ts";
+import { FilterOptions, StatusKey } from "../types/invoiceTypes.ts";
 
 const CheckboxContainer = styled.div``;
 

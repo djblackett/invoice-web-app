@@ -1,5 +1,5 @@
-import { render, screen } from "../testUtils";
-import { describe, it, expect, vi, Mock } from "vitest";
+import { cleanup, render, screen } from "../testUtils";
+import { describe, it, expect, vi, Mock, afterEach, beforeEach } from "vitest";
 import AllInvoices from "@/features/invoices/pages/AllInvoices.tsx";
 import { useAuth } from "@/features/auth/hooks/useAuth.ts";
 
@@ -7,6 +7,16 @@ import { useAuth } from "@/features/auth/hooks/useAuth.ts";
 vi.mock("@/features/auth/hooks/useAuth");
 
 describe("AllInvoices Component", () => {
+  beforeEach(() => {
+    vi.resetAllMocks();
+  });
+
+  afterEach(() => {
+    cleanup();
+    vi.clearAllMocks();
+    vi.resetModules();
+  });
+
   it("renders welcome text with correct font-weight when authenticated", () => {
     // Mock authenticated user
     (useAuth as Mock).mockReturnValue({

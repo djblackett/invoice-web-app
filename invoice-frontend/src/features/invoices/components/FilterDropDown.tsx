@@ -46,20 +46,6 @@ const DropDownContainer = styled.button`
   border-radius: 6px;
 `;
 
-// const DropDownHeader = styled.span.attrs({})`
-//   display: flex;
-//   z-index: -1;
-//   justify-content: center;
-//   align-items: center;
-//   align-self: center;
-//   box-sizing: border-box;
-//   width: 12px;
-//   font-weight: 600;
-//   font-size: 1.2rem;
-//   color: ${({ theme }) => theme.text};
-//   border-radius: 6px;
-// `;
-
 const DropDownListContainer = styled("div")`
   position: absolute;
   width: 150px;
@@ -69,7 +55,6 @@ const DropDownListContainer = styled("div")`
   border-radius: 8px;
   overflow: hidden;
   box-shadow: ${({ theme }) => theme.filterShadow};
-
   transition: height 250ms;
 
   @media (min-width: 768px) {
@@ -153,7 +138,7 @@ export default function FilterDropDown({
   return (
     <Main>
       <DropDownContainer
-        data-testid="filterDropDown"
+        data-testid="filterDropdown"
         tabIndex={0}
         aria-label="Filter invoices"
       >
@@ -164,7 +149,10 @@ export default function FilterDropDown({
           <DropDownList data-testid="draft-filter">
             {options.map((option: string) => (
               <ListItem key={`${option}-li`}>
-                <ItemButton onClick={clickCallback(option)}>
+                <ItemButton
+                  onClick={clickCallback(option)}
+                  data-testid={`${option.toLowerCase()}-checkbox`}
+                >
                   <CheckboxSelection option={option} />
                 </ItemButton>
               </ListItem>

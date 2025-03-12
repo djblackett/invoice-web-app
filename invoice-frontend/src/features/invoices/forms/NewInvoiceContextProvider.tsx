@@ -63,10 +63,12 @@ const NewInvoiceProvider: FC<NewInvoiceProviderProps> = ({
   const [itemsState, setItems] = useState<Item[]>(items);
   const [selectedPaymentOptionState, setSelectedPaymentOption] =
     useState<number>(selectedPaymentOption);
-  const [isNewInvoiceOpenState, setIsNewInvoiceOpen] =
-    useState<boolean>(isNewInvoiceOpen);
-  const [isPaymentOpenState, setIsPaymentOpen] =
-    useState<boolean>(isPaymentOpen);
+  const [isNewInvoiceOpenState, setIsNewInvoiceOpen] = useState<boolean>(
+    initialState?.isNewInvoiceOpen || isNewInvoiceOpen,
+  );
+  const [isPaymentOpenState, setIsPaymentOpen] = useState<boolean>(
+    initialState?.isPaymentOpen || isPaymentOpen,
+  );
   const [isCacheActive, setIsCacheActive] = useState(false);
 
   const handlePaymentClick = () => {

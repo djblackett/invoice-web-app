@@ -64,7 +64,11 @@ function PaymentTermsDropdown({ invoice }: PaymentTermsProps) {
 
   return (
     <Main>
-      <DropDownHeader onClick={handlePaymentClick} tabIndex={-1}>
+      <DropDownHeader
+        data-testid="dropdownHeader"
+        onClick={handlePaymentClick}
+        tabIndex={-1}
+      >
         <h2>{selected}</h2>
         <SVG>{arrowDown}</SVG>
       </DropDownHeader>
