@@ -3,6 +3,7 @@ import pluginJs from "@eslint/js";
 import tseslint from "typescript-eslint";
 import pluginReact from "eslint-plugin-react";
 import eslintPluginPrettierRecommended from "eslint-plugin-prettier/recommended";
+import reactCompiler from "eslint-plugin-react-compiler";
 
 /** @type {import('eslint').Linter.Config[]} */
 export default [
@@ -28,7 +29,7 @@ export default [
   pluginJs.configs.recommended,
   ...tseslint.configs.recommended,
   eslintPluginPrettierRecommended,
-
+  { plugins: { "react-compiler": reactCompiler } },
   {
     rules: {
       "array-callback-return": "off",
@@ -43,6 +44,7 @@ export default [
       "@typescript-eslint/no-unused-vars": ["warn"],
       "@typescript-eslint/no-explicit-any": "off",
       "no-unsafe-return": "off",
+      "react-compiler/react-compiler": "error",
     },
   },
 ];
