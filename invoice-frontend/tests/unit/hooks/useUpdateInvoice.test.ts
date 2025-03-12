@@ -1,5 +1,6 @@
 import { describe, it, expect, vi, beforeEach, Mock, afterEach } from "vitest";
-import { renderHook, act, cleanup } from "@testing-library/react-hooks";
+import { cleanup } from "@testing-library/react-hooks";
+import { act } from "react";
 import { useUpdateInvoice } from "../../../src/features/invoices/hooks/useUpdateInvoice";
 import { GET_INVOICE_BY_ID } from "../../../src/features/invoices/graphql/invoice.queries";
 import {
@@ -9,6 +10,7 @@ import {
   MutationHookOptions,
 } from "@apollo/client";
 import { Invoice } from "../../../src/features/invoices/types/invoiceTypes";
+import { renderHook } from "@testing-library/react";
 
 vi.mock("@apollo/client", () => {
   return {
