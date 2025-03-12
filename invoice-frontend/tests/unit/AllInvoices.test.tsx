@@ -2,7 +2,6 @@ import { cleanup, render, screen } from "../testUtils";
 import { describe, it, expect, vi, Mock, afterEach, beforeEach } from "vitest";
 import AllInvoices from "@/features/invoices/pages/AllInvoices.tsx";
 import { useAuth } from "@/features/auth/hooks/useAuth.ts";
-import { before } from "node:test";
 
 // Mock useAuth0 hook
 vi.mock("@/features/auth/hooks/useAuth");

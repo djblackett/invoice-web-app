@@ -1,4 +1,4 @@
-import { cleanup, render, screen } from "../testUtils";
+import { render, screen } from "../testUtils";
 import DateAndPayment from "@/features/invoices/forms/date/DateAndPayment.tsx";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 

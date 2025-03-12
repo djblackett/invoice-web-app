@@ -2,7 +2,7 @@ import React, { ReactElement } from "react";
 import { render, RenderOptions } from "@testing-library/react";
 import { ThemeProvider } from "styled-components";
 import { lightTheme } from "@/features/shared/styles/Themes.ts";
-import { MemoryRouter } from "react-router-dom";
+import { HashRouter } from "react-router-dom";
 import store from "@/app/store";
 import { Provider as ReduxProvider } from "react-redux";
 import { MockedProvider, MockedResponse } from "@apollo/client/testing";
@@ -27,9 +27,9 @@ const AllProviders = ({
     <ReduxProvider store={store}>
       <MockedProvider mocks={mocks} addTypename={addTypename}>
         <ThemeProvider theme={lightTheme}>
-          <MemoryRouter>
+          <HashRouter>
             <NewInvoiceProvider>{children}</NewInvoiceProvider>
-          </MemoryRouter>
+          </HashRouter>
         </ThemeProvider>
       </MockedProvider>
     </ReduxProvider>
