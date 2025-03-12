@@ -1,5 +1,5 @@
-import { describe, it, expect, vi, beforeEach, Mock } from "vitest";
-import { renderHook, act } from "@testing-library/react-hooks";
+import { describe, it, expect, vi, beforeEach, Mock, afterEach } from "vitest";
+import { renderHook, act, cleanup } from "@testing-library/react-hooks";
 import { useUpdateInvoice } from "../../../src/features/invoices/hooks/useUpdateInvoice";
 import { GET_INVOICE_BY_ID } from "../../../src/features/invoices/graphql/invoice.queries";
 import {
@@ -18,6 +18,12 @@ vi.mock("@apollo/client", () => {
 });
 
 describe("useUpdateInvoice", () => {
+  afterEach(() => {
+    cleanup();
+    vi.clearAllMocks();
+    vi.resetModules();
+  });
+
   let mockUpdateInvoice: (options: {
     variables: Partial<Invoice>; //{ id: string; amount: number; description: string };
   }) => Promise<void>;

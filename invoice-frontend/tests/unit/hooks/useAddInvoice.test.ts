@@ -1,5 +1,5 @@
-import { renderHook, act } from "@testing-library/react-hooks";
-import { beforeEach, describe, expect, it, Mock, vi } from "vitest";
+import { renderHook, act, cleanup } from "@testing-library/react-hooks";
+import { afterEach, beforeEach, describe, expect, it, Mock, vi } from "vitest";
 import { useAddInvoice } from "../../../src/features/invoices/hooks/useAddInvoice";
 import { useMutation } from "@apollo/client";
 import { Invoice } from "@/features/invoices/types/invoiceTypes";
@@ -15,6 +15,12 @@ describe("useAddInvoice hook", () => {
   beforeEach(() => {
     addInvoiceMock.mockReset();
     (useMutation as unknown as Mock).mockReturnValue([addInvoiceMock]);
+  });
+
+  afterEach(() => {
+    cleanup();
+    vi.clearAllMocks();
+    vi.resetModules();
   });
 
   it("should call addInvoice with the correct variables", async () => {

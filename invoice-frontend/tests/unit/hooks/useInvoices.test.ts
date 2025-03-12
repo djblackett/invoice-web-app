@@ -1,5 +1,5 @@
-import { describe, it, expect, vi, beforeEach } from "vitest";
-import { renderHook } from "@testing-library/react";
+import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
+import { cleanup, renderHook } from "@testing-library/react";
 import useInvoices from "../../../src/features/invoices/hooks/useInvoices.ts";
 import { useQuery } from "@apollo/client";
 import { useSelector } from "react-redux";
@@ -21,6 +21,12 @@ vi.mock("../graphql/invoice.queries.ts", () => ({
 describe("useInvoices", () => {
   beforeEach(() => {
     vi.resetAllMocks();
+  });
+
+  afterEach(() => {
+    cleanup();
+    vi.clearAllMocks();
+    vi.resetModules();
   });
 
   it("should return empty array when no data is available", () => {

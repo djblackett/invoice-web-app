@@ -17,6 +17,9 @@ export default function EditFormController({ invoice }: EditFormProps) {
     cacheFormData();
     setIsNewInvoiceOpen(false);
   };
+
+  if (!invoice) return null;
+
   return (
     <ClickOutsideProvider onOutsideClick={handleClose}>
       <EditForm invoice={invoice} />
