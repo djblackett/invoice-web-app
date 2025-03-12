@@ -8,6 +8,7 @@ import {
 } from "react-hook-form";
 
 import { Item } from "@/features/invoices/types/invoiceTypes.ts";
+import data from "../../../../../tests/data/invoices";
 
 const Button = styled.button`
   display: flex;
@@ -65,6 +66,7 @@ function NewItemButton({ items, append }: NewItemButtonProps) {
 
   return (
     <Button
+      data-testid="newItemButton"
       onClick={handleClick}
       type="button"
       style={{

@@ -1,4 +1,3 @@
-import PropTypes from "prop-types";
 import { SubmitHandler, useFormContext } from "react-hook-form";
 import CancelButton from "@/features/shared/components/buttons/CancelButton.tsx";
 import {
@@ -60,6 +59,7 @@ function NewInvoiceBottomMenu({
       />
       <SaveAndDraftContainer>
         <SaveDraft
+          data-testid="saveDraft"
           type="button"
           value={width > 325 ? "Save as draft" : "Draft"}
           onClick={handleSubmit(
@@ -81,8 +81,3 @@ function NewInvoiceBottomMenu({
 }
 
 export default NewInvoiceBottomMenu;
-
-NewInvoiceBottomMenu.propTypes = {
-  closeText: PropTypes.string.isRequired,
-  justifyCancel: PropTypes.string,
-};
