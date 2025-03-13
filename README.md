@@ -6,6 +6,8 @@
 
 ![Frontend screenshot showing the invoice application interface](./diagrams/fm-screenshot.png)
 
+![Screenshot showing dark mode on multiple mobile views in a row](./diagrams/fm-mobile-dark.png)
+
 ## Table of Contents
 
 - [Fullstack Invoice Project](#fullstack-invoice-project)
