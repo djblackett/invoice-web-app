@@ -57,13 +57,15 @@ export function clearErrorsByType(
     }
   }
 
-  if (Array.isArray(errors.items)) {
+  if (Array.isArray(errors.items) && errors.items.length > 0) {
     errors.items.forEach((itemError: ItemError) => {
-      Object.keys(itemError).forEach((key: string) => {
-        if (itemError[key]?.type === type) {
-          delete itemError[key];
-        }
-      });
+      if (itemError && typeof itemError === "object") {
+        Object.keys(itemError).forEach((key: string) => {
+          if (itemError[key]?.type === type) {
+            delete itemError[key];
+          }
+        });
+      }
     });
   }
 }

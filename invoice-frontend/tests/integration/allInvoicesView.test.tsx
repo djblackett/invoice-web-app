@@ -53,7 +53,7 @@ describe("First integration test", () => {
     expect(wakingUpMessage).toBeInTheDocument();
   });
 
-  // This test is failing because the filter logic is happening further up the component tree
+  // TODO - This test is failing because the filter logic is happening further up the component tree
   // Will need to mock the useInvoices hook to test this
   it.skip("should render only the list of pending invoices", async () => {
     const pendingInvoices = invoices.filter(

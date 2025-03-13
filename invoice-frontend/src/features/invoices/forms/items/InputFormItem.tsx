@@ -1,6 +1,5 @@
 import { useFieldArray, useFormContext } from "react-hook-form";
 import { useEffect, useRef } from "react";
-import PropTypes from "prop-types";
 import {
   Box,
   deleteIcon,
@@ -167,8 +166,3 @@ export default function InputFormItem({
     </>
   );
 }
-
-InputFormItem.propTypes = {
-  isDraft: PropTypes.bool.isRequired,
-  isEditOpen: PropTypes.bool,
-};

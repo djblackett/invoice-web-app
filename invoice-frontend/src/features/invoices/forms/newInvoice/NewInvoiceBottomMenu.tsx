@@ -1,4 +1,5 @@
-import { SubmitHandler, useFormContext } from "react-hook-form";
+import PropTypes from "prop-types";
+import { useFormContext } from "react-hook-form";
 import CancelButton from "@/features/shared/components/buttons/CancelButton.tsx";
 import {
   MenuContainer,
@@ -22,8 +23,7 @@ function NewInvoiceBottomMenu({
   closeText,
   justifyCancel,
 }: NewInvoiceBottemMenuProps) {
-  const { clearErrors, handleSubmit } =
-    useFormContext<typeof blankDefaultValues>();
+  const { clearErrors, handleSubmit } = useFormContext();
 
   const {
     setIsNewInvoiceOpen,
@@ -34,16 +34,23 @@ function NewInvoiceBottomMenu({
   } = useNewInvoiceContext();
 
   const { reset } = methods;
+
+  // TODO - fix these types - Code works fine, but I can't please TypeScript
   const onSubmit = useSubmitNewInvoice();
   const onSubmitDraft = useSubmitDraft();
+
   const { clearCache } = useFormCaching("cachedNewInvoiceForm");
 
   const closeMenu = () => {
     setIsCacheActive(false);
     clearCache();
+
     clearErrors();
+
     setIsNewInvoiceOpen(false);
+
     reset(blankDefaultValues);
+
     setStartDate(new Date());
     setSelectedPaymentOption(1);
   };
@@ -62,22 +69,17 @@ function NewInvoiceBottomMenu({
           data-testid="saveDraft"
           type="button"
           value={width > 325 ? "Save as draft" : "Draft"}
-          onClick={handleSubmit(
-            onSubmitDraft as unknown as SubmitHandler<
-              typeof blankDefaultValues
-            >,
-          )}
+          onClick={() => onSubmitDraft()}
         />
-        <Save
-          type="button"
-          value="Save"
-          onClick={handleSubmit(
-            onSubmit as unknown as SubmitHandler<typeof blankDefaultValues>,
-          )}
-        />
+        <Save type="button" value="Save" onClick={handleSubmit(onSubmit)} />
       </SaveAndDraftContainer>
     </MenuContainer>
   );
 }
 
 export default NewInvoiceBottomMenu;
+
+NewInvoiceBottomMenu.propTypes = {
+  closeText: PropTypes.string.isRequired,
+  justifyCancel: PropTypes.string,
+};

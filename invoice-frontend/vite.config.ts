@@ -7,18 +7,11 @@ import fs from "fs";
 import { visualizer } from "rollup-plugin-visualizer";
 
 const isDemoMode = process.env.VITE_DEMO_MODE === "true";
-const ReactCompilerConfig = {
-  target: "19", //"18", // '17' | '18' |
-};
 
 // https://vitejs.dev/config/
 export default defineConfig({
   plugins: [
-    react({
-      babel: {
-        plugins: [["babel-plugin-react-compiler", ReactCompilerConfig]],
-      },
-    }),
+    react(),
     tsconfigPaths(),
     visualizer({ filename: "bundle-visualization.html" }),
   ],
