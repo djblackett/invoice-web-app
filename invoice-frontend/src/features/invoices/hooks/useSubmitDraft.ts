@@ -1,6 +1,7 @@
 import { createInvoiceObject } from "@/features/shared/utils/utilityFunctions";
 import { FieldPath, SubmitHandler, useFieldArray } from "react-hook-form";
 import { toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 import { useNewInvoiceContext } from "../forms/NewInvoiceContextProvider";
 import { FormType } from "../types/invoiceTypes";
 import {

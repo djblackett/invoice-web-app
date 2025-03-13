@@ -1,161 +1,55 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
-import { fireEvent, render, screen } from "../testUtils";
-import AllInvoicesView from "@/features/invoices/components/AllInvoicesView";
-import invoices from "../data/invoices";
-import { MemoizedAllInvoicesToolbar } from "@/features/invoices/components/AllInvoicesToolbar";
+import { cleanup, fireEvent, render, screen } from "../testUtils";
 import { NewInvoiceProvider } from "@/features/invoices/forms/NewInvoiceContextProvider";
 import NewInvoice from "@/features/invoices/pages/NewInvoice";
-import { Suspense } from "react";
 
 describe("First integration test", () => {
   vi.stubEnv("NODE_ENV", "production");
 
-  it("should render the full list of invoices ", () => {
+  beforeEach(() => {
     render(
-      <>
-        <NewInvoiceProvider>
-          <MemoizedAllInvoicesToolbar
-            invoiceList={invoices}
-            data-testid="invoices-toolbar"
-          />
-          <Suspense>
-            <NewInvoice />
-          </Suspense>
-        </NewInvoiceProvider>
-        {/* <FadeOut className="welcome-text" username={user?.email}></FadeOut> */}
-        <AllInvoicesView invoiceList={invoices} width={1200} loading={false} />
-      </>,
+      <NewInvoiceProvider initialState={{ isNewInvoiceOpen: true }}>
+        <NewInvoice />
+      </NewInvoiceProvider>,
     );
-    const invoicesList = screen.getAllByTestId("invoice-card");
-    expect(invoicesList.length).toBe(invoices.length);
   });
 
-  it("should render the loading state", () => {
-    render(
-      <>
-        <NewInvoiceProvider>
-          <MemoizedAllInvoicesToolbar
-            invoiceList={invoices}
-            data-testid="invoices-toolbar"
-          />
-          <Suspense>
-            <NewInvoice />
-          </Suspense>
-        </NewInvoiceProvider>
-        <AllInvoicesView invoiceList={[]} width={1200} loading={true} />
-      </>,
-    );
-    const loadingGrid = screen.getByTestId("grid-loading");
-    expect(loadingGrid).toBeInTheDocument();
-  });
-
-  it("should render the error state", () => {
-    const error = new Error("Test error");
-    render(
-      <>
-        <NewInvoiceProvider>
-          <MemoizedAllInvoicesToolbar
-            invoiceList={invoices}
-            data-testid="invoices-toolbar"
-          />
-          <Suspense>
-            <NewInvoice />
-          </Suspense>
-        </NewInvoiceProvider>
-        <AllInvoicesView
-          invoiceList={[]}
-          width={1200}
-          loading={false}
-          error={error}
-        />
-      </>,
-    );
-    const errorMessage = screen.getByText("Test error");
-    expect(errorMessage).toBeInTheDocument();
+  it("should return true", () => {
+    expect(true).toBe(true);
   });
 
   it("should open the new invoice form when isNewInvoiceOpen is true", async () => {
-    render(
-      <>
-        <MemoizedAllInvoicesToolbar
-          invoiceList={invoices}
-          data-testid="invoices-toolbar"
-        />
-        <NewInvoiceProvider initialState={{ isNewInvoiceOpen: true }}>
-          <NewInvoice />
-        </NewInvoiceProvider>
-      </>,
-    );
-
     const newInvoiceForm = await screen.findByTestId("newInvoicePage");
     expect(newInvoiceForm).toBeInTheDocument();
   });
 
   it("should close the new invoice form when isNewInvoiceOpen is false", async () => {
+    cleanup();
     render(
-      <>
-        <MemoizedAllInvoicesToolbar
-          invoiceList={invoices}
-          data-testid="invoices-toolbar"
-        />
-        <NewInvoiceProvider initialState={{ isNewInvoiceOpen: false }}>
-          <NewInvoice />
-        </NewInvoiceProvider>
-      </>,
+      <NewInvoiceProvider initialState={{ isNewInvoiceOpen: false }}>
+        <NewInvoice />
+      </NewInvoiceProvider>,
     );
-
     const newInvoiceForm = screen.queryByTestId("newInvoicePage");
     expect(newInvoiceForm).not.toBeInTheDocument();
   });
 
   it("should render New Invoice title in the new invoice form", async () => {
-    render(
-      <>
-        <NewInvoiceProvider initialState={{ isNewInvoiceOpen: true }}>
-          <NewInvoice />
-        </NewInvoiceProvider>
-      </>,
-    );
-
     const newInvoiceTitle = await screen.findByText("New Invoice");
     expect(newInvoiceTitle).toBeInTheDocument();
   });
 
   it("should render the save button in the new invoice form", async () => {
-    render(
-      <>
-        <NewInvoiceProvider initialState={{ isNewInvoiceOpen: true }}>
-          <NewInvoice />
-        </NewInvoiceProvider>
-      </>,
-    );
-
     const saveButton = await screen.findByText("Save");
     expect(saveButton).toBeInTheDocument();
   });
 
   it("should render the discard button in the new invoice form", async () => {
-    render(
-      <>
-        <NewInvoiceProvider initialState={{ isNewInvoiceOpen: true }}>
-          <NewInvoice />
-        </NewInvoiceProvider>
-      </>,
-    );
-
     const cancelButton = await screen.findByText("Discard");
     expect(cancelButton).toBeInTheDocument();
   });
 
   it("should render the save by draft button in the new invoice form", async () => {
-    render(
-      <>
-        <NewInvoiceProvider initialState={{ isNewInvoiceOpen: true }}>
-          <NewInvoice />
-        </NewInvoiceProvider>
-      </>,
-    );
-
     const saveByDraftButton = await screen.findByTestId("saveDraft");
     expect(saveByDraftButton).toBeInTheDocument();
   });

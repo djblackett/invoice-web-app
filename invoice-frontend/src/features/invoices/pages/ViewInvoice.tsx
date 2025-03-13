@@ -56,10 +56,6 @@ function ViewInvoice() {
     );
   }
 
-  if (!invoice) {
-    return null;
-  }
-
   return (
     <ViewContainer role="main">
       <NewInvoiceProvider>
