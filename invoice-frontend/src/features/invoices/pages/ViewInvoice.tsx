@@ -59,7 +59,20 @@ function ViewInvoice() {
   return (
     <ViewContainer role="main">
       <NewInvoiceProvider>
-        <Suspense fallback={<div>Loading...</div>}>
+        <Suspense
+          fallback={
+            <div
+              style={{
+                position: "absolute",
+                top: "4rem",
+                alignSelf: "center",
+                justifySelf: "flex-start",
+              }}
+            >
+              Loading...
+            </div>
+          }
+        >
           <EditInvoice invoice={invoice} />
         </Suspense>
         <GoBackButton onClick={goBack}>
