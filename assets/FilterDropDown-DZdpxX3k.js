@@ -1,30 +1,30 @@
-import{H as c,J as k,K as w,j as t,d as o,P as d,c as C,s as j,S as y}from"./index-CVvZd7Vw.js";import{P as $}from"./InvoiceStatus-DMPMZ9Zu.js";import{C as v}from"./ClickOutsideProvider-VguuWJjs.js";function a(e=c){const n=e===c?k:w(e);return function(){const{store:i}=n();return i}}const S=a();function D(e=c){const n=e===c?S:a(e);return function(){return n().dispatch}}const z=D(),l=d`
+import{j as t,d as o,P as d,g as f,s as m,S as k,T as w}from"./index-BirL1DeV.js";import{P as j}from"./InvoiceStatus-BUfEMt-8.js";import{C as y}from"./ClickOutsideProvider-DwVlAV23.js";const l=d`
   background-color: ${({theme:e})=>e.newButton};
   border-color: transparent;
-`,x=d`
+`,c=d`
   background-color: ${({theme:e})=>e.editButtonHover};
-`,L=o.div`
+`,C=o.div`
   display: inline-block;
   vertical-align: middle;
   border: 1px solid transparent;
   border-radius: 2px;
-  ${e=>e.checked?l:x};
-`,p=o.svg`
+  ${e=>e.checked?l:c};
+`,a=o.svg`
   stroke: #fff;
   stroke-width: 2;
   fill: none;
   fill-rule: evenodd;
-`,R=o.div`
+`,v=o.div`
   display: inline-block;
   width: 16px;
   height: 16px;
   border-radius: 2px;
   transition: all 200ms;
-  ${e=>e.checked?l:x};
-  ${p} {
+  ${e=>e.checked?l:c};
+  ${a} {
     visibility: ${e=>e.checked?"visible":"hidden"};
   }
-`;function F({checked:e=!1,...n}){return t.jsx(L,{className:"styledCheckbox",checked:e,...n,children:t.jsx(R,{checked:e,children:t.jsx(p,{width:"10",height:"8",viewBox:"0 0 10 8",children:t.jsx("path",{d:"M1.5 4.5l2.124 2.124L8.97 1.28"})})})})}const P=o.div``,H=o.div`
+`;function $({checked:e=!1,...n}){return t.jsx(C,{className:"styledCheckbox",checked:e,...n,children:t.jsx(v,{checked:e,children:t.jsx(a,{width:"10",height:"8",viewBox:"0 0 10 8",children:t.jsx("path",{d:"M1.5 4.5l2.124 2.124L8.97 1.28"})})})})}const z=o.div``,D=o.div`
   cursor: pointer;
   box-sizing: border-box;
   margin-left: 0.5rem;
@@ -34,7 +34,7 @@ import{H as c,J as k,K as w,j as t,d as o,P as d,c as C,s as j,S as y}from"./ind
   /* identical to box height, or 125% */
   letter-spacing: -0.25px;
   color: ${({theme:e})=>e.textPlain};
-`;function h({option:e}){const n=C(j),s=e.toLowerCase(),i=n[s];return t.jsx(P,{children:t.jsxs(H,{children:[t.jsx(F,{checked:i}),t.jsx("span",{style:{marginLeft:"13px",fontFamily:"League Spartan",fontWeight:700},children:e})]})})}h.propTypes={option:$.string.isRequired};const B=o.div`
+`;function x({option:e}){const n=f(m),r=e.toLowerCase(),s=n[r];return t.jsx(z,{children:t.jsxs(D,{children:[t.jsx($,{checked:s}),t.jsx("span",{style:{marginLeft:"13px",fontFamily:"League Spartan",fontWeight:700},children:e})]})})}x.propTypes={option:j.string.isRequired};const L=o.div`
   align-self: center;
   box-sizing: border-box;
   background: transparent;
@@ -53,7 +53,7 @@ import{H as c,J as k,K as w,j as t,d as o,P as d,c as C,s as j,S as y}from"./ind
   @media (min-width: 350px) {
     margin-left: 16px;
   }
-`,I=o.button`
+`,S=o.button`
   width: 8px;
   margin: 0 auto;
   z-index: 10;
@@ -70,7 +70,7 @@ import{H as c,J as k,K as w,j as t,d as o,P as d,c as C,s as j,S as y}from"./ind
   font-size: 1.2rem;
   color: ${({theme:e})=>e.text};
   border-radius: 6px;
-`,O=o("div")`
+`,F=o("div")`
   position: absolute;
   width: 150px;
   left: -75px;
@@ -84,7 +84,7 @@ import{H as c,J as k,K as w,j as t,d as o,P as d,c as C,s as j,S as y}from"./ind
   @media (min-width: 768px) {
     left: -130px;
   }
-`,M=o("ul")`
+`,P=o("ul")`
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -100,7 +100,7 @@ import{H as c,J as k,K as w,j as t,d as o,P as d,c as C,s as j,S as y}from"./ind
   color: ${({theme:e})=>e.text};
   font-size: 1.2rem;
   font-weight: 700;
-`,T=o.li.attrs({})`
+`,B=o.li.attrs({})`
   display: flex;
   flex-grow: 0;
   align-items: center;
@@ -116,7 +116,7 @@ import{H as c,J as k,K as w,j as t,d as o,P as d,c as C,s as j,S as y}from"./ind
       border-color: ${({theme:e})=>e.outline};
     }
   }
-`,q=o.button`
+`,I=o.button`
   display: flex;
   align-items: center;
   height: 100%;
@@ -126,4 +126,4 @@ import{H as c,J as k,K as w,j as t,d as o,P as d,c as C,s as j,S as y}from"./ind
   color: ${({theme:e})=>e.text};
   box-sizing: border-box;
   cursor: pointer;
-`;function N({icon:e,isOpen:n,setIsFilterOpen:s,options:i}){const u=z(),b=r=>f=>{f.stopPropagation();const m=r.toLowerCase();u(y(m))},g=()=>{s(!1)};return t.jsxs(B,{children:[t.jsx(I,{"data-testid":"filterDropdown",tabIndex:0,"aria-label":"Filter invoices",children:e}),t.jsx(v,{onOutsideClick:g,children:t.jsx(O,{style:{height:n?"130px":0},children:t.jsx(M,{"data-testid":"draft-filter",children:i.map(r=>t.jsx(T,{children:t.jsx(q,{onClick:b(r),"data-testid":`${r.toLowerCase()}-checkbox`,children:t.jsx(h,{option:r})})},`${r}-li`))})})})]})}export{N as default};
+`;function R({icon:e,isOpen:n,setIsFilterOpen:r,options:s}){const p=k(),h=i=>g=>{g.stopPropagation();const u=i.toLowerCase();p(w(u))},b=()=>{r(!1)};return t.jsxs(L,{children:[t.jsx(S,{"data-testid":"filterDropdown",tabIndex:0,"aria-label":"Filter invoices",children:e}),t.jsx(y,{onOutsideClick:b,children:t.jsx(F,{style:{height:n?"130px":0},children:t.jsx(P,{"data-testid":"draft-filter",children:s.map(i=>t.jsx(B,{children:t.jsx(I,{onClick:h(i),"data-testid":`${i.toLowerCase()}-checkbox`,children:t.jsx(x,{option:i})})},`${i}-li`))})})})]})}export{R as default};
