@@ -56,14 +56,20 @@ export function getInvoiceResolvers() {
       ) => {
         const { invoiceService } = context;
         if (!invoiceService) {
-          throw new GraphQLError("Internal server error", {
-            extensions: {
-              code: "INTERNAL_SERVER_ERROR",
+          throw new GraphQLError(
+            "Internal server error: invoiceService doesn't exist",
+            {
+              extensions: {
+                code: "INTERNAL_SERVER_ERROR",
+              },
             },
-          });
+          );
         }
         try {
           const result = await invoiceService.getInvoiceById(args.id);
+          if (!result) {
+            throw new NotFoundException("Invoice not found");
+          }
           return result;
         } catch (error) {
           if (error instanceof NotFoundException) {
