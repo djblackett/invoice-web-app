@@ -6,7 +6,7 @@ services:
     environment:
       VITE_BACKEND_URL: http://backend.localhost/api/graphql
       VITE_REDIRECT_URI: http://frontend.localhost
-      VITR_DEMO_MODE: false
+      VITE_DEMO_MODE: false
     networks:
       - my_network
     depends_on:
@@ -25,8 +25,8 @@ services:
       - "--providers.docker=true" # Enable Docker provider for service discovery
       - "--entrypoints.web.address=:80" # Define HTTP entrypoint
     ports:
-      - "80:80"       # Public HTTP port
-      - "8080:8080"   # Traefik dashboard port
+      - "80:80" # Public HTTP port
+      - "8080:8080" # Traefik dashboard port
     networks:
       - my_network
     volumes:
@@ -34,7 +34,6 @@ services:
     labels:
       - "traefik.http.routers.api.rule=Host(`traefik.localhost`)"
       - "traefik.http.services.api.loadbalancer.server.port=8080"
-
 
   backend:
     build:
@@ -68,10 +67,10 @@ services:
     networks:
       - my_network
     volumes:
-    - pgdata-prod:/var/lib/postgresql/data
-    - ./init.sql:/docker-entrypoint-initdb.d/init.sql
+      - pgdata-prod:/var/lib/postgresql/data
+      - ./init.sql:/docker-entrypoint-initdb.d/init.sql
     healthcheck:
-      test: [ "CMD-SHELL", "pg_isready -U postgres" ]
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
       interval: 5s
       timeout: 5s
       retries: 5
