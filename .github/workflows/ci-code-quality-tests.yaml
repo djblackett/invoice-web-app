@@ -57,7 +57,6 @@ jobs:
       - name: Copy certs to frontend directory
         run: cp -r invoice-backend/certs invoice-frontend/certs
 
-
       - name: Restore Frontend Cache
         uses: actions/cache@v4.2.0
         with:
@@ -69,7 +68,7 @@ jobs:
       - name: Install Frontend Dependencies
         run: |
           cd invoice-frontend
-          yarn install --frozen-lockfile
+          yarn install
 
       - name: Save Frontend Cache
         uses: actions/cache@v4.2.0
@@ -115,8 +114,7 @@ jobs:
       AUDIENCE: ${{ secrets.AUDIENCE }}
       CLIENT_ID: ${{ secrets.CLIENT_ID }}
       CLIENT_SECRET: ${{ secrets.CLIENT_SECRET }}
-      
-    
+
     runs-on: ubuntu-latest
     services:
       postgres:
@@ -126,7 +124,7 @@ jobs:
           PG_USER: postgres
           POSTGRES_PASSWORD: example
           POSTGRES_DB: db-test
-          
+
         ports:
           - 5432:5432
         options: >-

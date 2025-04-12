@@ -28,7 +28,7 @@ jobs:
       VITE_REDIRECT_URI: https://localhost:4173/invoice-web-app/
       NODE_ENV: CI
       VITE_DEMO_MODE: false # frontend env var
-      DEMO_MODE: false      # backend env var
+      DEMO_MODE: false # backend env var
       CERT_DIR: "./certs/"
       TEST_LOGIN: ${{ secrets.TEST_LOGIN }}
       TEST_PASSWORD: ${{ secrets.TEST_PASSWORD }}
@@ -40,7 +40,6 @@ jobs:
       VITE_CLIENT_ID: ${{ secrets.AUTH0_CLIENT_ID }}
       VITE_CLIENT_SECRET: ${{ secrets.CLIENT_SECRET }}
       VITE_SCOPE: ${{ secrets.AUTH_SCOPE }}
-
 
     runs-on: ubuntu-22.04
     services:
@@ -59,8 +58,8 @@ jobs:
           --health-timeout=5s
           --health-retries=5
     if: |
-          (github.event_name == 'pull_request_target' && github.actor == 'dependabot[bot]') ||
-          (github.event_name != 'pull_request_target' && github.actor != 'dependabot[bot]')
+      (github.event_name == 'pull_request_target' && github.actor == 'dependabot[bot]') ||
+      (github.event_name != 'pull_request_target' && github.actor != 'dependabot[bot]')
     steps:
       - name: Check NODE_ENV
         run: |
@@ -71,14 +70,14 @@ jobs:
       #   uses: catchpoint/workflow-telemetry-action@v2
 
       - name: Checkout Code
-        if: ${{ github.event_name != 'pull_request_target' }} 
+        if: ${{ github.event_name != 'pull_request_target' }}
         uses: actions/checkout@v4.2.2
-      
+
       - name: Checkout Code for PR
-        if: ${{ github.event_name == 'pull_request_target' }} 
+        if: ${{ github.event_name == 'pull_request_target' }}
         uses: actions/checkout@v4.2.2
-        with: 
-          ref: ${{ github.event.pull_request.head.sha }} 
+        with:
+          ref: ${{ github.event.pull_request.head.sha }}
 
       - name: Set up Node.js and Yarn
         uses: actions/setup-node@v4.1.0
@@ -105,7 +104,6 @@ jobs:
           mkcert localhost
           cat localhost.pem > localhost-fullchain.pem
           cat "$(mkcert -CAROOT)/rootCA.pem" >> localhost-fullchain.pem
-          
 
       - name: Copy certs to frontend directory
         run: cp -r invoice-backend/certs invoice-frontend/certs
@@ -129,7 +127,7 @@ jobs:
       - name: Install Frontend Dependencies
         run: |
           cd invoice-frontend
-          yarn install --frozen-lockfile
+          yarn install
 
       - name: Install Backend Dependencies
         run: |
@@ -192,7 +190,7 @@ jobs:
         run: |
           cd invoice-backend
           yarn test:unit
-          
+
       - name: Run integration tests
         run: |
           cd invoice-backend
@@ -202,7 +200,6 @@ jobs:
         run: |
           cd invoice-backend
           yarn start:test:ci 2>&1 | tee backend.log &
-
 
       - name: GraphQL health check
         run: |
@@ -295,7 +292,7 @@ jobs:
 
       - name: Build the project
         working-directory: ${{ env.FRONTEND_DIR }}
-        env: 
+        env:
           VITE_BACKEND_URL: https://${{ secrets.VITE_BACKEND_URL}}
         run: yarn vite build
 
