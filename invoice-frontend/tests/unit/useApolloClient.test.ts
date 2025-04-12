@@ -2,6 +2,7 @@ import { renderHook, waitFor } from "@testing-library/react";
 import useGraphQLClient from "@/features/shared/hooks/useApolloClient.ts";
 import { ApolloClient, InMemoryCache } from "@apollo/client";
 import { vi, describe, beforeEach, it, afterAll, expect } from "vitest";
+import { DemoModeProvider } from "@/features/shared/components/DemoModeProvider";
 
 // Mock useAuth0
 vi.mock("@auth0/auth0-react", () => ({
@@ -35,12 +36,12 @@ describe("useGraphQLClient", () => {
     });
   });
 
-  afterAll(() => {
-    vi.unstubAllGlobals();
-  });
+  afterAll(() => {});
 
   it("should initialize Apollo Client", () => {
-    const { result } = renderHook(() => useGraphQLClient());
+    const { result } = renderHook(() => useGraphQLClient(), {
+      wrapper: DemoModeProvider,
+    });
     expect(result.current).toBeInstanceOf(ApolloClient);
     expect(result.current.cache).toBeInstanceOf(InMemoryCache);
   });
@@ -49,14 +50,16 @@ describe("useGraphQLClient", () => {
     // vi.stubGlobal("import", { meta: { env: {} } });
     import.meta.env.VITE_BACKEND_URL = null;
     vi.stubEnv("VITE_BACKEND_URL", undefined);
-    expect(() => renderHook(() => useGraphQLClient())).toThrow(
-      "Backend URL was not set during frontend build process",
-    );
+    expect(() =>
+      renderHook(() => useGraphQLClient(), { wrapper: DemoModeProvider }),
+    ).toThrow("Backend URL was not set during frontend build process");
   });
 
   it("should include authorization header", async () => {
     vi.stubEnv("VITE_BACKEND_URL", "http://localhost:4000");
-    const { result } = renderHook(() => useGraphQLClient());
+    const { result } = renderHook(() => useGraphQLClient(), {
+      wrapper: DemoModeProvider,
+    });
 
     await waitFor(() => !!result.current);
 

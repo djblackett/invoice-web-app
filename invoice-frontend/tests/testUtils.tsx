@@ -7,6 +7,7 @@ import store from "@/app/store";
 import { Provider as ReduxProvider } from "react-redux";
 import { MockedProvider, MockedResponse } from "@apollo/client/testing";
 import { NewInvoiceProvider } from "@/features/invoices/forms/NewInvoiceContextProvider";
+import { DemoModeProvider } from "@/features/shared/components/DemoModeProvider";
 
 interface CustomRenderOptions extends RenderOptions {
   route?: string;
@@ -25,13 +26,15 @@ const AllProviders = ({
 }) => {
   return (
     <ReduxProvider store={store}>
-      <MockedProvider mocks={mocks} addTypename={addTypename}>
-        <ThemeProvider theme={lightTheme}>
-          <HashRouter>
-            <NewInvoiceProvider>{children}</NewInvoiceProvider>
-          </HashRouter>
-        </ThemeProvider>
-      </MockedProvider>
+      <DemoModeProvider>
+        <MockedProvider mocks={mocks} addTypename={addTypename}>
+          <ThemeProvider theme={lightTheme}>
+            <HashRouter>
+              <NewInvoiceProvider>{children}</NewInvoiceProvider>
+            </HashRouter>
+          </ThemeProvider>
+        </MockedProvider>
+      </DemoModeProvider>
     </ReduxProvider>
   );
 };

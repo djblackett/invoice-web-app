@@ -24,7 +24,9 @@ const AllInvoices = React.lazy(
 const ViewInvoice = React.lazy(
   () => import("@/features/invoices/pages/ViewInvoice.tsx"),
 );
-const Login = React.lazy(() => import("@/features/auth/pages/Login.tsx"));
+const MemoizedLogin = React.lazy(
+  () => import("@/features/auth/pages/Login.tsx"),
+);
 
 const loadFeatures = () =>
   import("../features/shared/animations/motionConfig.ts").then(
@@ -67,7 +69,7 @@ function App() {
           path: "login",
           element: (
             <Suspense fallback={<div>Loading...</div>}>
-              <Login />
+              <MemoizedLogin />
             </Suspense>
           ),
         },

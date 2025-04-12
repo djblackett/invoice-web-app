@@ -7,17 +7,20 @@ export const VITE_REDIRECT_URI =
   import.meta.env.VITE_REDIRECT_URI ||
   window.location.origin + "/invoice-web-app/";
 
-export const isDemoMode = import.meta.env.VITE_DEMO_MODE === "true";
+// export const isDemoMode = import.meta.env.VITE_DEMO_MODE === "true";
+// export const setIsDemoMode = (value: boolean) => {
+//   import.meta.env.VITE_DEMO_MODE = value ? "true" : "false";
+// };
 
 function checkEnvs() {
   if (!VITE_BACKEND_URL) {
     throw new Error("VITE_BACKEND_URL is required");
   }
 
-  if (isDemoMode) {
-    console.log("Demo mode enabled");
-    return;
-  }
+  // if (isDemoMode) {
+  //   console.log("Demo mode enabled");
+  //   return;
+  // }
 
   if (!VITE_AUDIENCE) {
     throw new Error("VITE_AUDIENCE is required");

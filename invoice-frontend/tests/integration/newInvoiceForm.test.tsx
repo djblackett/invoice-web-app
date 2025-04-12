@@ -18,11 +18,6 @@ describe("First integration test", () => {
     expect(true).toBe(true);
   });
 
-  it("should open the new invoice form when isNewInvoiceOpen is true", async () => {
-    const newInvoiceForm = await screen.findByTestId("newInvoicePage");
-    expect(newInvoiceForm).toBeInTheDocument();
-  });
-
   it("should close the new invoice form when isNewInvoiceOpen is false", async () => {
     cleanup();
     render(

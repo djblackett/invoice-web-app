@@ -1,6 +1,8 @@
 import { render, screen, fireEvent } from "../testUtils";
 import { useAuth } from "@/features/auth/hooks/useAuth.ts";
+import MemoizedLogin from "@/features/auth/pages/Login.tsx";
 import Login from "@/features/auth/pages/Login.tsx";
+import { MemoryRouter } from "react-router";
 import { describe, it, expect, vi, beforeEach, Mock, beforeAll } from "vitest";
 
 vi.mock("@/features/auth/hooks/useAuth");
@@ -11,14 +13,6 @@ vi.mock("@/config/config", () => ({
 
 describe("Login Component", () => {
   const mockLoginWithRedirect = vi.fn();
-  // Object.defineProperty(import.meta, "env", {
-  //   value: {
-  //     VITE_REDIRECT_URI: "http://localhost:3000",
-  //     VITE_SOME_KEY: "testValue",
-  //     // include any other VITE_ variables your tests need
-  //   },
-  //   configurable: true,
-  // });
 
   beforeAll(() => {
     vi.stubEnv("VITE_BACKEND_URL", "http://localhost:4000");
@@ -49,7 +43,11 @@ describe("Login Component", () => {
       isLoading: false,
       loginWithRedirect: mockLoginWithRedirect,
     });
-    render(<Login />);
+    render(
+      <MemoryRouter>
+        <MemoizedLogin />
+      </MemoryRouter>,
+    );
     expect(
       screen.queryByText("Please login to view your invoices"),
     ).not.toBeInTheDocument();
