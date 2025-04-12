@@ -11,8 +11,7 @@ import { GraphQLWsLink } from "@apollo/client/link/subscriptions";
 import { createClient } from "graphql-ws";
 import { getMainDefinition } from "@apollo/client/utilities";
 import { loadDevMessages, loadErrorMessages } from "@apollo/client/dev";
-
-const isDemo = import.meta.env.VITE_DEMO_MODE === "true";
+import { useDemoModeContext } from "@/features/shared/components/DemoModeProvider";
 
 const useGraphQLClient = () => {
   const VITE_BACKEND_URL = import.meta.env.VITE_BACKEND_URL || "";
@@ -26,6 +25,7 @@ const useGraphQLClient = () => {
     loadErrorMessages();
   }
 
+  const { isDemoMode } = useDemoModeContext();
   const { getAccessTokenSilently, user } = useAuth();
   // Memoize the Apollo Client to prevent unnecessary re-creations
   const client = useMemo(() => {
@@ -42,7 +42,7 @@ const useGraphQLClient = () => {
         let token;
 
         // Demo mode does not require authentication
-        if (isDemo) {
+        if (isDemoMode) {
           token = "demo-token" + (user?.role === 1 ? "-admin" : "");
         } else {
           token = await getAccessTokenSilently(options);
@@ -67,8 +67,8 @@ const useGraphQLClient = () => {
     const addressWithoutProtocol = VITE_BACKEND_URL.replace(/https?:\/\//, "");
 
     let wsProtocol;
-    if (isDemo) {
-      wsProtocol = "ws://";
+    if (isDemoMode) {
+      wsProtocol = "wss://"; // changing to wss for public demo mode
     } else {
       wsProtocol = "wss://";
     }
@@ -89,7 +89,7 @@ const useGraphQLClient = () => {
             let token;
 
             // Demo mode does not require authentication
-            if (isDemo) {
+            if (isDemoMode) {
               token = "demo-token" + (user?.role === 1 ? "-admin" : "");
             } else {
               token = await getAccessTokenSilently(options);
@@ -125,7 +125,7 @@ const useGraphQLClient = () => {
       cache: new InMemoryCache(),
       connectToDevTools: process.env.NODE_ENV !== "production",
     });
-  }, [user]);
+  }, [user, isDemoMode]);
   return client;
 };
 

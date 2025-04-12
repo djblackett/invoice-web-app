@@ -14,8 +14,8 @@ function NewInvoice() {
     <>
       <AnimatePresence>
         {isNewInvoiceOpen ? (
-          <Sidebar key="sidebar-parent">
-            <FormContainerDarkenModal data-testid="newInvoicePage">
+          <Sidebar key="sidebar-parent" data-testid="newInvoicePage">
+            <FormContainerDarkenModal>
               <FormProvider {...methods}>
                 <InvoiceFormController />
               </FormProvider>

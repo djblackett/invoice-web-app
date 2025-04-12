@@ -6,6 +6,7 @@ import styled from "styled-components";
 import DemoButton from "@/features/shared/components/buttons/DemoButton.tsx";
 import { ScreenReaderOnly } from "@/features/shared/styles/AppStyles.tsx";
 import Avatar from "./Avatar";
+import { useDemoModeContext } from "@/features/shared/components/DemoModeProvider";
 
 const HeaderContainer = styled.div`
   width: 100%;
@@ -128,6 +129,12 @@ export const LoginLogoutButton = styled(m.button)`
   }
 `;
 
+export const DemoButtonStyled = styled(LoginLogoutButton)`
+  width: fit-content;
+  padding: 0 16px;
+  margin-top: 1rem;
+`;
+
 const LogoutButton = styled(LoginLogoutButton)`
   justify-self: start;
   margin-left: 16px;
@@ -201,6 +208,7 @@ type HeaderProps = {
 function Header({ themeToggler, theme }: HeaderProps) {
   const { logout, isAuthenticated } = useAuth();
   const location = useLocation();
+  const { isDemoMode } = useDemoModeContext();
 
   const logoutWithRedirect = () =>
     logout({
@@ -230,8 +238,7 @@ function Header({ themeToggler, theme }: HeaderProps) {
           </Link>
         </Logo>
         <DemoAndLogoutContainer>
-          {import.meta.env.VITE_DEMO_MODE === "true" &&
-            location.pathname === "/invoices" && <DemoButton />}
+          {isDemoMode && location.pathname === "/invoices" && <DemoButton />}
 
           {isAuthenticated && (
             <LogoutButton
