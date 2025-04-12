@@ -400,7 +400,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-
 "@esbuild/aix-ppc64@npm:0.25.2":
   version: 0.25.2
   resolution: "@esbuild/aix-ppc64@npm:0.25.2"
@@ -415,7 +414,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-
 "@esbuild/android-arm64@npm:0.25.2":
   version: 0.25.2
   resolution: "@esbuild/android-arm64@npm:0.25.2"
@@ -429,7 +427,6 @@ __metadata:
   conditions: os=android & cpu=arm
   languageName: node
   linkType: hard
-
 
 "@esbuild/android-arm@npm:0.25.2":
   version: 0.25.2
@@ -543,7 +540,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-
 "@esbuild/linux-ia32@npm:0.25.2":
   version: 0.25.2
   resolution: "@esbuild/linux-ia32@npm:0.25.2"
@@ -589,7 +585,6 @@ __metadata:
 "@esbuild/linux-ppc64@npm:0.25.2":
   version: 0.25.2
   resolution: "@esbuild/linux-ppc64@npm:0.25.2"
-
   conditions: os=linux & cpu=ppc64
   languageName: node
   linkType: hard
@@ -600,7 +595,6 @@ __metadata:
   conditions: os=linux & cpu=riscv64
   languageName: node
   linkType: hard
-
 
 "@esbuild/linux-riscv64@npm:0.25.2":
   version: 0.25.2
@@ -644,7 +638,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-
 "@esbuild/netbsd-arm64@npm:0.25.2":
   version: 0.25.2
   resolution: "@esbuild/netbsd-arm64@npm:0.25.2"
@@ -673,7 +666,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-
 "@esbuild/openbsd-arm64@npm:0.25.2":
   version: 0.25.2
   resolution: "@esbuild/openbsd-arm64@npm:0.25.2"
@@ -687,7 +679,6 @@ __metadata:
   conditions: os=openbsd & cpu=x64
   languageName: node
   linkType: hard
-
 
 "@esbuild/openbsd-x64@npm:0.25.2":
   version: 0.25.2
@@ -744,7 +735,6 @@ __metadata:
   conditions: os=win32 & cpu=x64
   languageName: node
   linkType: hard
-
 
 "@esbuild/win32-x64@npm:0.25.2":
   version: 0.25.2
@@ -3502,7 +3492,6 @@ __metadata:
   linkType: hard
 
 "esbuild@npm:^0.25.0":
-
   version: 0.25.2
   resolution: "esbuild@npm:0.25.2"
   dependencies:
@@ -3584,7 +3573,6 @@ __metadata:
       optional: true
   bin:
     esbuild: bin/esbuild
-
   checksum: 10c0/87ce0b78699c4d192b8cf7e9b688e9a0da10e6f58ff85a368bf3044ca1fa95626c98b769b5459352282e0065585b6f994a5e6699af5cccf9d31178960e2b58fd
   languageName: node
   linkType: hard
