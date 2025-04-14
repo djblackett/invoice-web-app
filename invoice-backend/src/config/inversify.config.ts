@@ -1,5 +1,5 @@
 import "reflect-metadata";
-import { Container } from "inversify";
+import { Container, interfaces } from "inversify";
 import { InvoiceService } from "../services/invoice.service";
 import { UserService } from "../services/user.service";
 import { PrismaInvoiceRepository } from "../repositories/implementations/prismaInvoiceRepository";
@@ -22,6 +22,27 @@ container
     return new PrismaClient();
   })
   .inSingletonScope();
+
+container
+  .bind<PrismaClient>(TYPES.PrismaClientDemo)
+  .toDynamicValue(() => {
+    // This binding is used for demo mode, where we use a different database URL.
+    return new PrismaClient({
+      datasourceUrl: process.env.DATABASE_URL_DEMO,
+    });
+  })
+  .inSingletonScope();
+
+// Bind a factory that returns the correct client based on a flag
+container
+  .bind<interfaces.Factory<PrismaClient, [boolean]>>(TYPES.PrismaClientFactory)
+  .toFactory<PrismaClient, [boolean]>((context: interfaces.Context) => {
+    return (isDemo: boolean) => {
+      return isDemo
+        ? context.container.get<PrismaClient>(TYPES.PrismaClientDemo)
+        : context.container.get<PrismaClient>(TYPES.PrismaClient);
+    };
+  });
 
 container.bind(DatabaseConnection).toSelf().inTransientScope();
 

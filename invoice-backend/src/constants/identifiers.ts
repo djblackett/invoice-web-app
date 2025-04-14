@@ -10,6 +10,8 @@ const TYPES = {
   PubSub: Symbol.for("PubSub"),
   UserContext: Symbol.for("UserContext"),
   PrismaClient: Symbol.for("PrismaClient"),
+  PrismaClientDemo: Symbol.for("PrismaClientDemo"),
+  PrismaClientFactory: Symbol.for("PrismaClientFactory"),
   Logger: Symbol.for("Logger"),
 };
 

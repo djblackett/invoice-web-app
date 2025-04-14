@@ -10,10 +10,11 @@ import TYPES from "@/constants/identifiers";
 import { InvoiceService } from "@/services/invoice.service";
 import { UserService } from "@/services/user.service";
 import { PubSub } from "graphql-subscriptions";
-import { Role } from "@prisma/client";
+import { PrismaClient, Role } from "@prisma/client";
 import { NODE_ENV } from "@/config/server.config";
 import { Logger } from "@/config/logger.config";
 import { Context } from "graphql-ws";
+import { Container } from "inversify";
 
 const logger = container.get<Logger>(TYPES.Logger);
 
@@ -156,46 +157,23 @@ export async function createContext({
   const authHeader = req && req.headers ? req.headers.authorization : undefined;
 
   try {
-    let user;
-    if (process.env.NODE_ENV === "test" || process.env.NODE_ENV === "CI") {
-      user = {
-        id: "auth0|12345",
-        role: "ADMIN" as Role,
-        username: "user@example.com",
-        name: "user",
-      };
-    }
-    let token;
-    if (authHeader && authHeader.startsWith("Bearer ")) {
-      token = authHeader.split(" ")[1];
-      if (token !== "demo-token" && token !== "demo-token-admin") {
-        user = await retrieveUserFromToken(token, options);
-        if (!user) {
-          throw new Error("User not found");
-        }
-      } else if (token === "demo-token") {
-        user = {
-          id: "demoId",
-          role: Role.USER,
-          username: "demo-user@example.com",
-          name: "demo-user",
-        };
-      } else {
-        user = {
-          id: "demoAdminId",
-          role: Role.ADMIN,
-          username: "demo-admin@example.com",
-          name: "demo-admin",
-        };
-      }
-    }
+    const user = await determineUserFromHeader(authHeader);
 
-    const childContainer = container.createChild();
+    const childContainer = new Container();
+    childContainer.parent = container; // Set the parent so that all other bindings are available
+
     if (!user) {
       console.warn("User is undefined, cannot proceed with user creation.");
       return { user: null, container: container };
     }
+
     childContainer.bind<UserIdAndRole>(TYPES.UserContext).toConstantValue(user);
+
+    // Decide whether this user should use the demo DB.
+    const isDemoUser = user.id === "demoId" || user.id === "demoAdminId"; // adjust the logic as needed
+
+    // Bind the PrismaClient to the child container
+    await bindPrismaClient(childContainer, isDemoUser);
 
     // Rebind dependent services so they pick up the new binding
     childContainer
@@ -211,6 +189,7 @@ export async function createContext({
     const invoiceService = childContainer.get<InvoiceService>(
       TYPES.InvoiceService,
     );
+
     const userService = childContainer.get<UserService>(TYPES.UserService);
     const pubsub = childContainer.get<PubSub>(TYPES.PubSub);
 
@@ -263,6 +242,43 @@ export async function createContext({
   }
 }
 
+async function determineUserFromHeader(authHeader: string | undefined) {
+  let user;
+  if (process.env.NODE_ENV === "test" || process.env.NODE_ENV === "CI") {
+    user = {
+      id: "auth0|12345",
+      role: "ADMIN" as Role,
+      username: "user@example.com",
+      name: "user",
+    };
+  }
+  let token;
+  if (authHeader && authHeader.startsWith("Bearer ")) {
+    token = authHeader.split(" ")[1];
+    if (token !== "demo-token" && token !== "demo-token-admin") {
+      user = await retrieveUserFromToken(token, options);
+      if (!user) {
+        throw new Error("User not found");
+      }
+    } else if (token === "demo-token") {
+      user = {
+        id: "demoId",
+        role: Role.USER,
+        username: "demo-user@example.com",
+        name: "demo-user",
+      };
+    } else {
+      user = {
+        id: "demoAdminId",
+        role: Role.ADMIN,
+        username: "demo-admin@example.com",
+        name: "demo-admin",
+      };
+    }
+  }
+  return user;
+}
+
 async function createSubscriptionContext(connection: Context) {
   const authHeader = (connection?.connectionParams?.Authorization ||
     connection?.connectionParams?.authorization) as string | undefined;
@@ -300,11 +316,18 @@ async function createSubscriptionContext(connection: Context) {
     }
   }
 
-  const childContainer = container.createChild();
+  const childContainer = new Container();
+  childContainer.parent = container;
 
   if (user) {
     childContainer.bind<UserIdAndRole>(TYPES.UserContext).toConstantValue(user);
   }
+
+  // Decide whether this user should use the demo DB.
+  const isDemoUser = user?.id === "demoId" || user?.id === "demoAdminId";
+
+  // Bind the PrismaClient to the child container
+  await bindPrismaClient(childContainer, isDemoUser);
 
   const invoiceService = childContainer.get<InvoiceService>(
     TYPES.InvoiceService,
@@ -320,4 +343,19 @@ async function createSubscriptionContext(connection: Context) {
     container: childContainer,
     connection,
   };
+}
+
+async function bindPrismaClient(
+  childContainer: Container,
+  isDemoUser: boolean,
+): Promise<PrismaClient> {
+  const prismaClientFactory = childContainer.get(TYPES.PrismaClientFactory) as (
+    isDemo: boolean,
+  ) => PrismaClient;
+
+  childContainer
+    .bind<PrismaClient>(TYPES.PrismaClient)
+    .toConstantValue(prismaClientFactory(isDemoUser));
+
+  return childContainer.get<PrismaClient>(TYPES.PrismaClient);
 }
