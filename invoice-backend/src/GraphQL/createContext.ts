@@ -145,117 +145,31 @@ export async function createContext({
   connection,
 }: ContextArgs): Promise<InjectedQueryContext> {
   logger.info("creating context");
+
   if (connection) {
     // This branch handles subscription requests, which are initiated through WebSocket connections.
     logger.info("Subscription request");
-
     return await createSubscriptionContext(connection);
   }
 
   // Regular http requests
-  const authHeader = req && req.headers ? req.headers.authorization : undefined;
-
   try {
-    let user;
-    if (process.env.NODE_ENV === "test" || process.env.NODE_ENV === "CI") {
-      user = {
-        id: "auth0|12345",
-        role: "ADMIN" as Role,
-        username: "user@example.com",
-        name: "user",
-      };
-    }
-    let token;
-    if (authHeader && authHeader.startsWith("Bearer ")) {
-      token = authHeader.split(" ")[1];
-      if (token !== "demo-token" && token !== "demo-token-admin") {
-        user = await retrieveUserFromToken(token, options);
-        if (!user) {
-          throw new Error("User not found");
-        }
-      } else if (token === "demo-token") {
-        user = {
-          id: "demoId",
-          role: Role.USER,
-          username: "demo-user@example.com",
-          name: "demo-user",
-        };
-      } else {
-        user = {
-          id: "demoAdminId",
-          role: Role.ADMIN,
-          username: "demo-admin@example.com",
-          name: "demo-admin",
-        };
-      }
-    }
-
-    const childContainer = container.createChild();
+    const user = await getUserFromRequest(req);
     if (!user) {
-      console.warn("User is undefined, cannot proceed with user creation.");
-      return { user: null, container: container };
-    }
-    childContainer.bind<UserIdAndRole>(TYPES.UserContext).toConstantValue(user);
-
-    // Rebind dependent services so they pick up the new binding
-    childContainer
-      .bind<UserService>(TYPES.UserService)
-      .to(UserService)
-      .inTransientScope();
-    childContainer
-      .bind<InvoiceService>(TYPES.InvoiceService)
-      .to(InvoiceService)
-      .inTransientScope();
-
-    // Resolve services from the child container
-    const invoiceService = childContainer.get<InvoiceService>(
-      TYPES.InvoiceService,
-    );
-    const userService = childContainer.get<UserService>(TYPES.UserService);
-    const pubsub = childContainer.get<PubSub>(TYPES.PubSub);
-
-    if (!invoiceService) {
-      throw new Error("Invoice service not found");
+      return { user: null, container };
     }
 
-    if (!userService) {
-      throw new Error("User service not found");
-    }
-
-    if (!pubsub) {
-      throw new Error("PubSub not found");
-    }
-
-    let dbUser;
-
-    try {
-      dbUser = await userService.getUserByIdSafely(user.id);
-
-      if (!dbUser) {
-        logger.info("User not found, creating user");
-        dbUser = await userService.createUserWithAuth0({
-          id: user.id,
-          name: user.name,
-          username: user.username ?? "",
-          role: user.role,
-        });
-      }
-    } catch (e: any) {
-      logger.error(`Error creating user: ${e.message}`);
-      throw e;
-    }
+    const childContainer = setupContainer(user);
+    const services = getServices(childContainer);
+    const dbUser = await getOrCreateDbUser(user, services.userService);
 
     logger.info(`User: ${dbUser.username}`);
 
-    const returnPayload = {
+    return {
       user: dbUser,
-      invoiceService,
-      userService,
-      pubsub,
+      ...services,
       container: childContainer,
     };
-
-    return returnPayload;
   } catch (e: unknown) {
     const error = e instanceof Error ? e : new Error(String(e));
     console.error("Error in createContext function:", error.message, error);
@@ -263,43 +177,118 @@ export async function createContext({
   }
 }
 
-async function createSubscriptionContext(connection: Context) {
-  const authHeader = (connection?.connectionParams?.Authorization ||
-    connection?.connectionParams?.authorization) as string | undefined;
+async function getUserFromRequest(req: any): Promise<UserIdAndRole | null> {
+  const authHeader = req && req.headers ? req.headers.authorization : undefined;
 
-  let user = null;
-  let token = null;
-  if (authHeader && authHeader.startsWith("Bearer ")) {
-    token = authHeader.split(" ")[1];
-    if (token !== "demo-token" && token !== "demo-token-admin") {
-      try {
-        try {
-          user = await retrieveUserFromToken(token, options);
-        } catch (error) {
-          logger.error("Token verification failed:" + JSON.stringify(error));
-          user = null;
-        }
-      } catch (error) {
-        console.error("Subscription token verification failed:", error);
-        user = null;
-      }
-    } else if (token === "demo-token") {
-      user = {
-        id: "demoId",
-        role: Role.USER,
-        username: "demo-user@example.com",
-        name: "demo-user",
-      };
-    } else {
-      user = {
-        id: "demoAdminId",
-        role: Role.ADMIN,
-        username: "demo-admin@example.com",
-        name: "demo-admin",
-      };
-    }
+  if (!authHeader || !authHeader.startsWith("Bearer ")) {
+    return null;
   }
 
+  const token = authHeader.split(" ")[1];
+
+  // return dummy users for testing, CI, and demo mode
+  if (process.env.NODE_ENV === "test" || process.env.NODE_ENV === "CI") {
+    return {
+      id: "auth0|12345",
+      role: "ADMIN" as Role,
+      username: "user@example.com",
+      name: "user",
+    };
+  }
+
+  if (token === "demo-token") {
+    return {
+      id: "demoId",
+      role: Role.USER,
+      username: "demo-user@example.com",
+      name: "demo-user",
+    };
+  }
+
+  if (token === "demo-token-admin") {
+    return {
+      id: "demoAdminId",
+      role: Role.ADMIN,
+      username: "demo-admin@example.com",
+      name: "demo-admin",
+    };
+  }
+
+  // return standard user
+  const user = await retrieveUserFromToken(token, options);
+  if (!user) {
+    throw new Error("User not found");
+  }
+
+  return user;
+}
+
+function setupContainer(user: UserIdAndRole) {
+  const childContainer = container.createChild();
+  childContainer.bind<UserIdAndRole>(TYPES.UserContext).toConstantValue(user);
+
+  // Rebind dependent services so they pick up the new binding
+  childContainer
+    .bind<UserService>(TYPES.UserService)
+    .to(UserService)
+    .inTransientScope();
+  childContainer
+    .bind<InvoiceService>(TYPES.InvoiceService)
+    .to(InvoiceService)
+    .inTransientScope();
+
+  return childContainer;
+}
+
+function getServices(childContainer: typeof container) {
+  // resolve services from the Inversify child container
+  const invoiceService = childContainer.get<InvoiceService>(
+    TYPES.InvoiceService,
+  );
+  const userService = childContainer.get<UserService>(TYPES.UserService);
+  const pubsub = childContainer.get<PubSub>(TYPES.PubSub);
+
+  if (!invoiceService) {
+    throw new Error("Invoice service not found");
+  }
+
+  if (!userService) {
+    throw new Error("User service not found");
+  }
+
+  if (!pubsub) {
+    throw new Error("PubSub not found");
+  }
+
+  return { invoiceService, userService, pubsub };
+}
+
+async function getOrCreateDbUser(
+  user: UserIdAndRole,
+  userService: UserService,
+) {
+  try {
+    let dbUser = await userService.getUserByIdSafely(user.id);
+
+    if (!dbUser) {
+      logger.info("User not found, creating user");
+      dbUser = await userService.createUserWithAuth0({
+        id: user.id,
+        name: user.name,
+        username: user.username ?? "",
+        role: user.role,
+      });
+    }
+
+    return dbUser;
+  } catch (e: any) {
+    logger.error(`Error creating user: ${e.message}`);
+    throw e;
+  }
+}
+
+async function createSubscriptionContext(connection: Context) {
+  const user = await getUserFromSubscriptionConnection(connection);
   const childContainer = container.createChild();
 
   if (user) {
@@ -320,4 +309,42 @@ async function createSubscriptionContext(connection: Context) {
     container: childContainer,
     connection,
   };
+}
+
+async function getUserFromSubscriptionConnection(
+  connection: Context,
+): Promise<UserIdAndRole | null> {
+  const authHeader = (connection?.connectionParams?.Authorization ||
+    connection?.connectionParams?.authorization) as string | undefined;
+
+  if (!authHeader || !authHeader.startsWith("Bearer ")) {
+    return null;
+  }
+
+  const token = authHeader.split(" ")[1];
+
+  if (token === "demo-token") {
+    return {
+      id: "demoId",
+      role: Role.USER,
+      username: "demo-user@example.com",
+      name: "demo-user",
+    };
+  }
+
+  if (token === "demo-token-admin") {
+    return {
+      id: "demoAdminId",
+      role: Role.ADMIN,
+      username: "demo-admin@example.com",
+      name: "demo-admin",
+    };
+  }
+
+  try {
+    return await retrieveUserFromToken(token, options);
+  } catch (error) {
+    logger.error("Token verification failed:" + JSON.stringify(error));
+    return null;
+  }
 }
