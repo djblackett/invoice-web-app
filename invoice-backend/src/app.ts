@@ -6,13 +6,13 @@ import {
   serverConfig,
   serverErrorConfig,
 } from "./config/server.config";
-import { Request, Response } from "express";
+import type { Request, Response } from "express";
 import { DatabaseConnection } from "./database/prisma.database.connection";
 import rateLimit from "express-rate-limit";
 import express from "express";
 import { PrismaClient } from "@prisma/client";
 import TYPES from "./constants/identifiers";
-import { Logger } from "./config/logger.config";
+import type { Logger } from "./config/logger.config";
 
 const logger = container.get<Logger>(TYPES.Logger);
 
@@ -31,7 +31,7 @@ export const createApp = async () => {
       res.status(200).send("OK");
     });
 
-    app.get("/test-setup", async (_req: Request, res: Response) => {
+    app.get("/test-setup", (_req: Request, res: Response) => {
       if (
         NODE_ENV === "test" ||
         NODE_ENV === "CI" ||
@@ -40,10 +40,17 @@ export const createApp = async () => {
         const childContainer = container.createChild();
         const prisma = new PrismaClient({ datasourceUrl: DATABASE_URL });
         childContainer.bind<PrismaClient>(PrismaClient).toConstantValue(prisma);
-        const result = await prisma.invoice.deleteMany({});
-        logger.info("Deleted invoices:" + JSON.stringify(result));
-        childContainer.unbind(PrismaClient);
-        res.status(200).send("OK");
+        prisma.invoice
+          .deleteMany()
+          .then((result) => {
+            logger.info("Deleted invoices:" + JSON.stringify(result));
+            childContainer.unbind(PrismaClient);
+            res.status(200).send("OK");
+          })
+          .catch((error) => {
+            logger.error("Error deleting invoices: " + JSON.stringify(error));
+            res.status(500).send("Internal Server Error");
+          });
         return;
       }
       logger.warn("Forbidden request to /test-setup");

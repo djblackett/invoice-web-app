@@ -21,7 +21,7 @@ export class UserService {
   constructor(
     @inject(TYPES.IUserRepo) private readonly userRepo: IUserRepo,
     @inject(TYPES.UserContext)
-    private readonly userContext: UserIdAndRole,
+    private readonly userContext: UserIdAndRole | null,
     @inject(TYPES.Logger) private readonly logger: Logger,
   ) {}
 
@@ -31,7 +31,7 @@ export class UserService {
       const hashedPassword = await bcrypt.hash(args.password, 10);
 
       const userEntity: UserEntity = {
-        name: validatedArgs.name,
+        name: validatedArgs.name ?? "",
         username: validatedArgs.username,
         passwordHash: hashedPassword,
       };
@@ -40,13 +40,13 @@ export class UserService {
 
       const userDTO: UserDTO = {
         id: createdUser.id,
-        name: createdUser.name,
+        name: createdUser.name ?? "",
         username: createdUser.username ?? "",
       };
 
       return userDTO;
     } catch (error) {
-      this.logger.error(error);
+      this.logger.error(error instanceof Error ? error.message : String(error));
       throw new ValidationException("User validation failed");
     }
   };
@@ -79,7 +79,7 @@ export class UserService {
       const validatedUserList: UserDTO[] = validateUserList(userList);
       return validatedUserList;
     } catch (error) {
-      this.logger.error(error);
+      this.logger.error(error instanceof Error ? error.message : String(error));
       throw new InternalServerException("Internal server error");
     }
   };
@@ -99,7 +99,7 @@ export class UserService {
     }
 
     const userDTO: UserDTO = {
-      id: user.id,
+      id: user.id ?? "",
       name: user.name,
       username: user.username,
     };

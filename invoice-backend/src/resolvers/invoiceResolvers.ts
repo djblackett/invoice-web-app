@@ -1,5 +1,5 @@
 import { GraphQLError } from "graphql/error/GraphQLError";
-import {
+import type {
   GetInvoiceByIdArgs,
   InjectedQueryContext,
   Invoice,
@@ -297,7 +297,7 @@ export function getInvoiceResolvers() {
     },
     Subscription: {
       invoiceAdded: {
-        subscribe: async (
+        subscribe: (
           _root: never,
           _args: never,
           context: InjectedQueryContext,

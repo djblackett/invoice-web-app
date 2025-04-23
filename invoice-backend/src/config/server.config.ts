@@ -1,10 +1,11 @@
 import "dotenv/config";
 import { urlencoded } from "body-parser";
-import express, { Application, NextFunction, Request, Response } from "express";
+import type { Application, NextFunction, Request, Response } from "express";
+import express from "express";
 import cors from "cors";
 import { BaseException, InternalServerException } from "./exception.config";
 import container from "./inversify.config";
-import { Logger } from "./logger.config";
+import type { Logger } from "./logger.config";
 import TYPES from "@/constants/identifiers";
 
 const logger = container.get<Logger>(TYPES.Logger);
@@ -50,7 +51,7 @@ export function serverConfig(app: Application) {
   }
 
   app.use(express.json());
-  app.use((req, res, next) => {
+  app.use((req, _, next) => {
     logger.info(`Incoming request: ${req.method} ${req.url}`);
     next();
   });
@@ -64,17 +65,17 @@ export function serverConfig(app: Application) {
 }
 
 export function serverErrorConfig(app: Application) {
-  app.use((err: Error, _req: Request, res: Response, next: NextFunction) => {
-    if (err && err instanceof BaseException) {
-      logger.error(err.message);
-      return res.status(err.statusCode).json(err);
-    }
+  app.use(
+    (err: Error | null, _req: Request, res: Response, next: NextFunction) => {
+      if (err instanceof BaseException) {
+        logger.error(err.message);
+        return res.status(err.statusCode).json(err);
+      } else if (err) {
+        logger.error(err.message);
+        return res.status(500).json(new InternalServerException(err.message));
+      }
 
-    if (err) {
-      logger.error(err.message);
-      return res.status(500).json(new InternalServerException(err.message));
-    }
-
-    return next();
-  });
+      return next();
+    },
+  );
 }

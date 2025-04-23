@@ -1,7 +1,7 @@
 import { inject, injectable } from "inversify";
-import { IUserRepo } from "../userRepo";
+import type { IUserRepo } from "../userRepo";
 import { DatabaseConnection } from "../../database/prisma.database.connection";
-import {
+import type {
   ReturnedUser,
   UserDTO,
   UserEntity,
@@ -23,7 +23,7 @@ export class PrismaUserRepository implements IUserRepo {
   async deleteAllUsers(): Promise<boolean> {
     try {
       const result = await this.prisma.user.deleteMany();
-      if (result) {
+      if (result.count > 0) {
         return true;
       } else {
         return false;
@@ -44,7 +44,7 @@ export class PrismaUserRepository implements IUserRepo {
           },
         },
       });
-      if (result) {
+      if (result.count > 0) {
         return true;
       } else {
         return false;
@@ -118,7 +118,7 @@ export class PrismaUserRepository implements IUserRepo {
       const user = await this.prisma.user.create({
         data: {
           name: userArgs.name ?? "",
-          username: userArgs.username,
+          username: userArgs.username ?? "",
           role: "USER",
         },
       });
@@ -143,7 +143,7 @@ export class PrismaUserRepository implements IUserRepo {
           },
           data: {
             id: args.id,
-            role: args.role,
+            role: args.role ?? "USER",
             username: args.username ?? "",
             name: args.name ?? "",
           },

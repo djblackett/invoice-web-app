@@ -1,4 +1,4 @@
-import {
+import type {
   UserEntity,
   ReturnedUser,
   UserDTO,

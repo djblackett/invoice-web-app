@@ -26,7 +26,7 @@ export class Logger {
       printf(function (
         info: TransformableInfo & { label?: string; timestamp?: string },
       ) {
-        return `\x1B[33m\x1B[3[${info["label"] || ""}\x1B[23m\x1B[39m \x1B[32m${info["timestamp"] || ""}\x1B[39m ${info.level} : ${info.message}`;
+        return `\x1B[33m\x1B[3[${String(info["label"] ?? "")}\x1B[23m\x1B[39m \x1B[32m${String(info["timestamp"] ?? "")}\x1B[39m ${String(info.level)} : ${String(info.message)}`;
       }),
     ),
     transports: [new transports.Console()],
