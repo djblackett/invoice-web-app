@@ -30,7 +30,7 @@ function getSigningKeyAsync(kid: string): Promise<string> {
       kid,
       (err: Error | null, key: SigningKey | undefined) => {
         if (err) {
-          console.error("Error fetching signing key:", err);
+          logger.error("Error fetching signing key:", err);
           logger.error(err);
           return reject(err);
         }
@@ -160,7 +160,7 @@ export async function createContext({
     }
 
     const childContainer = setupContainer(user);
-    const services = getServices(childContainer);
+    const services = resolveServices(childContainer);
     const dbUser = await getOrCreateDbUser(user, services.userService);
 
     logger.info(`User: ${dbUser.username}`);
@@ -240,7 +240,7 @@ function setupContainer(user: UserIdAndRole) {
   return childContainer;
 }
 
-function getServices(childContainer: typeof container) {
+function resolveServices(childContainer: typeof container) {
   // resolve services from the Inversify child container
   const invoiceService = childContainer.get<InvoiceService>(
     TYPES.InvoiceService,
