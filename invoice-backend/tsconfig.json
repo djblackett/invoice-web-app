@@ -14,7 +14,7 @@
     "experimentalDecorators": true /* Enable experimental support for TC39 stage 2 draft decorators. */,
     "emitDecoratorMetadata": true /* Emit design-type metadata for decorated declarations in source files. */,
     "useDefineForClassFields": true /* Emit ECMAScript-standard-compliant class fields. */,
-
+    "useUnknownInCatchVariables": true /* Default is false. When set to true, the type of the variable bound in a catch clause defaults to unknown instead of any. */,
     /* Modules */
     "module": "NodeNext" /* Specify what module code is generated. */,
     "rootDir": "./" /* Specify the root folder within your source files. */,
@@ -23,6 +23,10 @@
       "reflect-metadata"
     ] /* Specify type package names to be included without being referenced in a source file. */,
     "resolveJsonModule": true /* Enable importing .json files. */,
+    // "isolatedModules": true,
+    // "verbatimModuleSyntax": true,
+    "noErrorTruncation": true /* Disable truncating types in error messages. */,
+    "allowUnreachableCode": false,
 
     /* JavaScript Support */
     "allowJs": true /* Allow JavaScript files to be a part of your program. Use the 'checkJS' option to get errors from these files. */,
@@ -53,6 +57,19 @@
     "baseUrl": "./",
     "paths": { "@/*": ["src/*"] }
   },
+  "include": ["src/**/*", "tests/**/*"],
+  "exclude": [
+    "node_modules",
+    "dist",
+    "tests",
+    "assets",
+    "coverage",
+    "build",
+    "out",
+    "lib",
+    "scripts",
+    "src/mocks/*"
+  ],
 
   "ts-node": {
     "esm": true
