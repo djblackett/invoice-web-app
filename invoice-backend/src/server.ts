@@ -1,4 +1,5 @@
 import http from "http";
+import { Request } from "express";
 import { WebSocketServer } from "ws";
 import { useServer } from "graphql-ws/lib/use/ws";
 import { ApolloServerPluginDrainHttpServer } from "@apollo/server/plugin/drainHttpServer";
@@ -24,7 +25,7 @@ import { Logger } from "./config/logger.config";
 import TYPES from "./constants/identifiers";
 
 const isProduction = NODE_ENV === "production";
-const isDemo = process.env.DEMO_MODE === "true";
+const isDemo = process.env["DEMO_MODE"] === "true";
 
 const logger = container.get<Logger>(TYPES.Logger);
 
@@ -79,6 +80,7 @@ export const createServer = async () => {
         ApolloServerPluginDrainHttpServer({ httpServer }),
         {
           async serverWillStart() {
+            await Promise.resolve(); // Ensure async operation
             return {
               async drainServer() {
                 await serverCleanup.dispose();
@@ -89,7 +91,8 @@ export const createServer = async () => {
         isProduction
           ? ApolloServerPluginLandingPageProductionDefault({
               graphRef:
-                process.env.APOLLO_GRAPH_REF || "my-graph-id@my-graph-variant",
+                process.env["APOLLO_GRAPH_REF"] ||
+                "my-graph-id@my-graph-variant",
               footer: false,
             })
           : ApolloServerPluginLandingPageLocalDefault({ footer: false }),
@@ -100,9 +103,14 @@ export const createServer = async () => {
     await server.start();
 
     app.use(
+      "/",
       expressMiddleware(server, {
-        context: async ({ req, connection }: ContextArgs) =>
-          await createContext({ req, connection }),
+        context: async (contextArgs) => {
+          return await createContext({
+            req: express.Request,
+            connection: undefined,
+          });
+        },
       }),
     );
 

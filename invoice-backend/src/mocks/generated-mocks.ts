@@ -1,4 +1,4 @@
-/* eslint-disable @typescript-eslint/no-use-before-define,@typescript-eslint/no-unused-vars,no-prototype-builtins */
+/* eslint-disable no-prototype-builtins */
 import {
   ClientAddress,
   ClientInfo,

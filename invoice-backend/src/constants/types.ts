@@ -140,13 +140,7 @@ export interface InvoiceCreateArgs {
     postCode: string;
     street: string;
   };
-  items: Array<{
-    name: string;
-    price: number;
-    quantity: number;
-    total: number;
-    id?: string | undefined;
-  }>;
+  items: Item[];
 }
 
 export type MarkAsPaidArgs = GetInvoiceByIdArgs;

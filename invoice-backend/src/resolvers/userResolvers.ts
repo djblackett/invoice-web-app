@@ -56,9 +56,10 @@ export function getUserResolvers() {
           const userService = validateUserService(context.userService);
           const user = await userService.createUser(args);
           return user;
-        } catch (error: any) {
-          console.error(error);
-          if (error.name === "ValidationError") {
+        } catch (error: unknown) {
+          if (error instanceof Error && error.name === "ValidationError") {
+            console.error(error);
+
             throw new GraphQLError("Validation error", {
               extensions: {
                 code: "BAD_USER_INPUT",

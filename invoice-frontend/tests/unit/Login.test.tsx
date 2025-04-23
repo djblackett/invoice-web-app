@@ -1,6 +1,7 @@
 import { render, screen, fireEvent } from "../testUtils";
 import { useAuth } from "@/features/auth/hooks/useAuth.ts";
 import Login from "@/features/auth/pages/Login.tsx";
+import { MemoryRouter } from "react-router-dom";
 import { describe, it, expect, vi, beforeEach, Mock, beforeAll } from "vitest";
 
 vi.mock("@/features/auth/hooks/useAuth");

@@ -10,7 +10,7 @@ import { Logger } from "../config/logger.config";
 
 export function createLoggingPlugin(logger: Logger): ApolloServerPlugin {
   return {
-    async requestDidStart(requestContext: GraphQLRequestContext<any>) {
+    async requestDidStart(requestContext: GraphQLRequestContext<never>) {
       const operationName =
         requestContext.request.operationName || "Unnamed Operation";
       const startTime = Date.now();
@@ -18,7 +18,7 @@ export function createLoggingPlugin(logger: Logger): ApolloServerPlugin {
 
       return {
         async didEncounterErrors(
-          ctx: GraphQLRequestContextDidEncounterErrors<any>,
+          ctx: GraphQLRequestContextDidEncounterErrors<never>,
         ) {
           logger.error(
             `Errors encountered in ${operationName}: ${JSON.stringify(ctx.errors)}`,

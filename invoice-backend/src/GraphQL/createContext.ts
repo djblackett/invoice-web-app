@@ -1,5 +1,6 @@
 import jwt, { JwtHeader, JwtPayload, VerifyOptions } from "jsonwebtoken";
 import jwksClient, { SigningKey } from "jwks-rsa";
+import { Request } from "express";
 import {
   ContextArgs,
   InjectedQueryContext,
@@ -18,11 +19,11 @@ import { Context } from "graphql-ws";
 const logger = container.get<Logger>(TYPES.Logger);
 
 const client = jwksClient({
-  jwksUri: `${process.env.DOMAIN}.well-known/jwks.json`,
+  jwksUri: `${process.env["DOMAIN"]}.well-known/jwks.json`,
 });
 
-logger.info(`Domain: ${process.env.DOMAIN}`);
-logger.info(`Audience: ${process.env.AUDIENCE}`);
+logger.info(`Domain: ${process.env["DOMAIN"]}`);
+logger.info(`Audience: ${process.env["AUDIENCE"]}`);
 
 function getSigningKeyAsync(kid: string): Promise<string> {
   return new Promise((resolve, reject) => {
@@ -31,13 +32,12 @@ function getSigningKeyAsync(kid: string): Promise<string> {
       (err: Error | null, key: SigningKey | undefined) => {
         if (err) {
           console.error("Error fetching signing key:", err);
-          logger.error(err);
+          logger.error(err.message);
           return reject(err);
         }
         if (!key) {
           const error = new Error("Signing key not found");
-          logger.error(error);
-          console.error(error);
+          logger.error(error.message);
           return reject(error);
         }
         const signingKey = key.getPublicKey();
@@ -48,9 +48,9 @@ function getSigningKeyAsync(kid: string): Promise<string> {
 }
 
 const options: VerifyOptions = {
-  audience: process.env.AUDIENCE,
+  audience: process.env["AUDIENCE"],
   // Make sure issuer has the trailing "/"
-  issuer: process.env.DOMAIN,
+  issuer: process.env["DOMAIN"],
   algorithms: ["RS256"],
 };
 
@@ -78,7 +78,7 @@ export async function retrieveUserFromToken(
       throw new Error("Invalid token");
     }
 
-    const header = decoded.header as JwtHeader;
+    const header = decoded.header;
 
     if (!header.kid) {
       throw new Error("Invalid Token: no header.kid");
@@ -96,14 +96,17 @@ export async function retrieveUserFromToken(
     // Extract the email from the custom claim
     let email;
 
-    if (process.env.NODE_ENV === "test" || process.env.NODE_ENV === "CI") {
+    if (
+      process.env["NODE_ENV"] === "test" ||
+      process.env["NODE_ENV"] === "CI"
+    ) {
       email = "user@example.com";
     } else {
       email = payload[emailClaim];
     }
 
     const id = payload.sub;
-    const name = payload.name ?? "user";
+    const name = payload["name"] ?? "user";
 
     // Assign role based on payload or default to USER
     let role: "USER" | "ADMIN";
@@ -153,42 +156,78 @@ export async function createContext({
   }
 
   // Regular http requests
+  try {
+    const user = await getUserFromRequest(req);
+    if (!user) {
+      return { user: null, container };
+    }
+
+    const childContainer = setupContainer(user);
+    const services = getServices(childContainer);
+    const dbUser = await getOrCreateDbUser(user, services.userService);
+
+    logger.info(`User: ${dbUser.username}`);
+
+    return {
+      user: dbUser,
+      ...services,
+      container: childContainer,
+    };
+  } catch (e: unknown) {
+    const error = e instanceof Error ? e : new Error(String(e));
+    console.error("Error in createContext function:", error.message, error);
+    return { user: null, container };
+  }
+}
+
+async function getUserFromRequest(
+  req: Request | null | undefined,
+): Promise<UserIdAndRole | null> {
   const authHeader = req && req.headers ? req.headers.authorization : undefined;
 
-  try {
-    let user;
-    if (process.env.NODE_ENV === "test" || process.env.NODE_ENV === "CI") {
-      user = {
-        id: "auth0|12345",
-        role: "ADMIN" as Role,
-        username: "user@example.com",
-        name: "user",
-      };
-    }
-    let token;
-    if (authHeader && authHeader.startsWith("Bearer ")) {
-      token = authHeader.split(" ")[1];
-      if (token !== "demo-token" && token !== "demo-token-admin") {
-        user = await retrieveUserFromToken(token, options);
-        if (!user) {
-          throw new Error("User not found");
-        }
-      } else if (token === "demo-token") {
-        user = {
-          id: "demoId",
-          role: Role.USER,
-          username: "demo-user@example.com",
-          name: "demo-user",
-        };
-      } else {
-        user = {
-          id: "demoAdminId",
-          role: Role.ADMIN,
-          username: "demo-admin@example.com",
-          name: "demo-admin",
-        };
-      }
-    }
+  if (!authHeader || !authHeader.startsWith("Bearer ")) {
+    return null;
+  }
+
+  const token = authHeader.split(" ")[1];
+
+  // return dummy users for testing, CI, and demo mode
+  if (process.env["NODE_ENV"] === "test" || process.env["NODE_ENV"] === "CI") {
+    return {
+      id: "auth0|12345",
+      role: "ADMIN" as Role,
+      username: "user@example.com",
+      name: "user",
+    };
+  }
+
+  if (token === "demo-token") {
+    return {
+      id: "demoId",
+      role: Role.USER,
+      username: "demo-user@example.com",
+      name: "demo-user",
+    };
+  }
+
+  if (token === "demo-token-admin") {
+    return {
+      id: "demoAdminId",
+      role: Role.ADMIN,
+      username: "demo-admin@example.com",
+      name: "demo-admin",
+    };
+  }
+
+  if (!token) {
+    throw new Error("Token not found");
+  }
+
+  // return standard user
+  const user = await retrieveUserFromToken(token, options);
+  if (!user) {
+    throw new Error("User not found");
+  }
 
     const childContainer = container.createChild();
     if (!user) {
@@ -231,35 +270,22 @@ export async function createContext({
     try {
       dbUser = await userService.getUserByIdSafely(user.id);
 
-      if (!dbUser) {
-        logger.info("User not found, creating user");
-        dbUser = await userService.createUserWithAuth0({
-          id: user.id,
-          name: user.name,
-          username: user.username ?? "",
-          role: user.role,
-        });
-      }
-    } catch (e: any) {
-      logger.error(`Error creating user: ${e.message}`);
-      throw e;
+    if (!dbUser) {
+      logger.info("User not found, creating user");
+      dbUser = await userService.createUserWithAuth0({
+        id: user.id,
+        name: user.name,
+        username: user.username ?? "",
+        role: user.role,
+      });
     }
 
-    logger.info(`User: ${dbUser.username}`);
-
-    const returnPayload = {
-      user: dbUser,
-      invoiceService,
-      userService,
-      pubsub,
-      container: childContainer,
-    };
-
-    return returnPayload;
+    return dbUser;
   } catch (e: unknown) {
-    const error = e instanceof Error ? e : new Error(String(e));
-    console.error("Error in createContext function:", error.message, error);
-    return { user: null, container };
+    const errorMessage = e instanceof Error ? e.message : "Unknown error";
+
+    logger.error(`Error creating user: ${errorMessage}`);
+    throw e;
   }
 }
 
@@ -320,4 +346,46 @@ async function createSubscriptionContext(connection: Context) {
     container: childContainer,
     connection,
   };
+}
+
+async function getUserFromSubscriptionConnection(
+  connection: Context,
+): Promise<UserIdAndRole | null> {
+  const authHeader = (connection.connectionParams?.["Authorization"] ||
+    connection.connectionParams?.["authorization"]) as string | undefined;
+
+  if (!authHeader || !authHeader.startsWith("Bearer ")) {
+    return null;
+  }
+
+  const token = authHeader.split(" ")[1];
+
+  if (!token) {
+    throw new Error("Token not found");
+  }
+
+  if (token === "demo-token") {
+    return {
+      id: "demoId",
+      role: Role.USER,
+      username: "demo-user@example.com",
+      name: "demo-user",
+    };
+  }
+
+  if (token === "demo-token-admin") {
+    return {
+      id: "demoAdminId",
+      role: Role.ADMIN,
+      username: "demo-admin@example.com",
+      name: "demo-admin",
+    };
+  }
+
+  try {
+    return await retrieveUserFromToken(token, options);
+  } catch (error) {
+    logger.error("Token verification failed:" + JSON.stringify(error));
+    return null;
+  }
 }

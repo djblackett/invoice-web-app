@@ -1,42 +1,34 @@
-import pluginJs from "@eslint/js";
+import eslint from "@eslint/js";
+import { globalIgnores } from "eslint/config";
 import tseslint from "typescript-eslint";
 import eslintPluginPrettierRecommended from "eslint-plugin-prettier/recommended";
 
-/** @type {import('eslint').Linter.Config[]} */
-export default [
+// /** @type {import('eslint').Linter.Config[]} */
+export default tseslint.config(
+  globalIgnores([
+    "**/node_modules/**",
+    "**/dist/**",
+    "**/build/**",
+    "**/coverage/**",
+    "**/out/**",
+    "**/generated/**",
+    "**/src/mocks/**",
+  ]),
+  { files: ["**/*.{ts,tsx}"] },
   {
-    ignores: [
-      "build",
-      "node_modules",
-      "prisma",
-      ".env",
-      "*.json",
-      "*.yml",
-      "src/mocks",
-      "src/generated",
-      "dist",
-      "global-setup.ts",
-    ],
+    languageOptions: {
+      parserOptions: {
+        project: "./tsconfig.json",
+      },
+    },
   },
-  { files: ["**/*.{js,mjs,cjs,ts,jsx,tsx}"] },
-
-  { languageOptions: {} },
-
-  pluginJs.configs.recommended,
-  ...tseslint.configs.recommended,
+  eslint.configs.recommended,
+  ...tseslint.configs.recommendedTypeChecked,
+  tseslint.configs.strict,
   eslintPluginPrettierRecommended,
   {
     rules: {
-      "linebreak-style": ["warn", "unix"],
-      quotes: ["warn", "double"],
-      semi: ["warn", "always"],
-      "@typescript-eslint/no-explicit-any": "off", // May want to turn this on later
-      "array-callback-return": "off",
-      "consistent-return": "off",
-      "no-plusplus": "off",
-      "no-param-reassign": "off",
-      "@typescript-eslint/no-unused-vars": "error",
-      "no-unsafe-return": "off",
+      // "@typescript-eslint/no-unnecessary-condition": "error",
     },
   },
-];
+);

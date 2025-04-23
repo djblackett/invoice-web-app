@@ -186,7 +186,10 @@ export function getInvoiceResolvers() {
         _args: GetInvoiceByIdArgs,
         context: InjectedQueryContext,
       ) => {
-        if (context.user?.role !== "ADMIN" && process.env.NODE_ENV !== "test") {
+        if (
+          context.user?.role !== "ADMIN" &&
+          process.env["NODE_ENV"] !== "test"
+        ) {
           throw new GraphQLError("Unauthorized", {
             extensions: {
               code: "UNAUTHORIZED",
@@ -295,8 +298,8 @@ export function getInvoiceResolvers() {
     Subscription: {
       invoiceAdded: {
         subscribe: async (
-          _root: any,
-          _args: any,
+          _root: never,
+          _args: never,
           context: InjectedQueryContext,
         ) => {
           const { pubsub, user } = context;

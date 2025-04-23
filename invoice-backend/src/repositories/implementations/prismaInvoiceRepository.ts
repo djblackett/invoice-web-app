@@ -16,7 +16,7 @@ export class PrismaInvoiceRepository implements IInvoiceRepo {
 
   constructor(
     @inject(DatabaseConnection)
-    private readonly databaseConnection: DatabaseConnection,
+    databaseConnection: DatabaseConnection,
   ) {
     this.prisma = databaseConnection.getDatabase();
   }
@@ -32,8 +32,9 @@ export class PrismaInvoiceRepository implements IInvoiceRepo {
         },
       });
       return result;
-    } catch (e: any) {
-      throw new Error(`Database error: ${e.message}`);
+    } catch (e: unknown) {
+      const errorMessage = e instanceof Error ? e.message : "Unknown error";
+      throw new Error(`Database error: ${errorMessage}`);
     }
   }
 
@@ -53,8 +54,9 @@ export class PrismaInvoiceRepository implements IInvoiceRepo {
         },
       });
       return result;
-    } catch (e: any) {
-      throw new Error(`Database error: ${e.message}`);
+    } catch (e: unknown) {
+      const errorMessage = e instanceof Error ? e.message : "Unknown error";
+      throw new Error(`Database error: ${errorMessage}`);
     }
   }
 
@@ -77,7 +79,7 @@ export class PrismaInvoiceRepository implements IInvoiceRepo {
       }
 
       return result;
-    } catch (e) {
+    } catch (e: unknown) {
       console.error(e);
       throw prismaErrorHandler(e);
     }
@@ -105,7 +107,7 @@ export class PrismaInvoiceRepository implements IInvoiceRepo {
         return result;
       }
       throw new NotFoundException("Don't have necessary permissions");
-    } catch (e: any) {
+    } catch (e) {
       if (
         e instanceof Prisma.PrismaClientKnownRequestError &&
         e.code === "P2025"
@@ -113,7 +115,8 @@ export class PrismaInvoiceRepository implements IInvoiceRepo {
         console.error("Catch block - Invoice not found");
         throw new NotFoundException("Invoice not found");
       } else {
-        throw new InternalServerException(`Database error: ${e.message}`);
+        const errorMessage = e instanceof Error ? e.message : "Unknown error";
+        throw new InternalServerException(`Database error: ${errorMessage}`);
       }
     }
   }
@@ -143,7 +146,7 @@ export class PrismaInvoiceRepository implements IInvoiceRepo {
   async update(id: string, invoiceUpdates: Partial<Invoice>) {
     try {
       const updatedInvoice = await this.prisma.$transaction(async (prisma) => {
-        if (invoiceUpdates.items && invoiceUpdates?.items?.length >= 1) {
+        if (invoiceUpdates.items && invoiceUpdates.items.length >= 1) {
           await prisma.item.deleteMany({
             where: { invoiceId: id },
           });
@@ -244,7 +247,7 @@ export class PrismaInvoiceRepository implements IInvoiceRepo {
           total: invoice.total || new Prisma.Decimal(0),
           items: {
             create:
-              invoice.items?.map((item) => ({
+              invoice.items.map((item) => ({
                 name: item.name,
                 quantity: item.quantity,
                 price: item.price,
@@ -309,8 +312,9 @@ export class PrismaInvoiceRepository implements IInvoiceRepo {
   async deleteAllInvoices() {
     try {
       return await this.prisma.invoice.deleteMany({});
-    } catch (e: any) {
-      throw new Error(`Database error: ${e.message}`);
+    } catch (e: unknown) {
+      const errorMessage = e instanceof Error ? e.message : "Unknown error";
+      throw new Error(`Database error: ${errorMessage}`);
     }
   }
 
@@ -323,13 +327,14 @@ export class PrismaInvoiceRepository implements IInvoiceRepo {
           },
         },
       });
-    } catch (e: any) {
-      throw new Error(`Database error: ${e.message}`);
+    } catch (e: unknown) {
+      const errorMessage = e instanceof Error ? e.message : "Unknown error";
+      throw new Error(`Database error: ${errorMessage}`);
     }
   }
 }
 
-export const prismaErrorHandler = (e: any): never => {
+export const prismaErrorHandler = (e: unknown): never => {
   if (e instanceof Prisma.PrismaClientKnownRequestError && e.code === "P2002") {
     throw new BadRequestException(
       "Unique constraint failed on the fields: (`id`)",
@@ -340,6 +345,7 @@ export const prismaErrorHandler = (e: any): never => {
   ) {
     throw new NotFoundException("Invoice not found");
   } else {
-    throw new InternalServerException(`Database error: ${e.message}`);
+    const errorMessage = e instanceof Error ? e.message : "Unknown error";
+    throw new Error(`Database error: ${errorMessage}`);
   }
 };
