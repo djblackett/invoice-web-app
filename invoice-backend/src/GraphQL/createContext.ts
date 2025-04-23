@@ -30,8 +30,7 @@ function getSigningKeyAsync(kid: string): Promise<string> {
       kid,
       (err: Error | null, key: SigningKey | undefined) => {
         if (err) {
-          logger.error("Error fetching signing key:", err);
-          logger.error(err);
+          logger.error("Error fetching signing key:", err.message);
           return reject(err);
         }
         if (!key) {
