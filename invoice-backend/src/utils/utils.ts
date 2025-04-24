@@ -1,6 +1,6 @@
 import { Role } from "@prisma/client";
 import { ValidationException } from "@/config/exception.config";
-import {
+import type {
   CreateUserDTO,
   Invoice,
   InvoiceWithCreatedBy,
@@ -78,7 +78,7 @@ export const validateUserList = (inputs: unknown) => {
 export function mapUserEntityToDTO(user: UserEntity): UserDTO {
   return {
     name: user.name ?? "",
-    username: user.username,
+    username: user.username ?? "",
   };
 }
 

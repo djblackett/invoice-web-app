@@ -1,5 +1,5 @@
-import { Role } from "@prisma/client";
-import { Invoice, InvoiceWithCreatedBy } from "../constants/types";
+import type { Role } from "@prisma/client";
+import type { Invoice, InvoiceWithCreatedBy } from "../constants/types";
 
 export interface IInvoiceRepo {
   findAll: () => Promise<unknown>;

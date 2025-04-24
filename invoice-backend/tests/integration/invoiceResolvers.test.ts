@@ -16,7 +16,7 @@ import { randomUUID } from "crypto";
 import container from "@/config/inversify.config";
 import TYPES from "@/constants/identifiers";
 
-process.env.NODE_ENV = "test";
+process.env["NODE_ENV"] = "test";
 const baseInvoice = {
   createdAt: "2023-01-01",
   paymentDue: "2023-01-15",
@@ -49,9 +49,9 @@ const baseInvoice = {
   total: 1000,
 };
 
-console.log("Env vars:", process.env.DATABASE_URL);
+console.log("Env vars:", process.env["DATABASE_URL"]);
 
-let app: any;
+let app: unknown;
 let testToken: string;
 let prisma: PrismaClient;
 let schemaName: string;
@@ -68,7 +68,7 @@ describe("Invoice Resolvers Integration Tests", () => {
     const baseDatabaseUrl =
       "postgresql://postgres:example@localhost:5432/db-test";
     const newDatabaseUrl = `${baseDatabaseUrl}?schema=${schemaName}`;
-    console.log("Env vars:", process.env.DATABASE_URL);
+    console.log("Env vars:", process.env["DATABASE_URL"]);
 
     prisma = new PrismaClient({
       datasourceUrl: newDatabaseUrl,
@@ -170,6 +170,10 @@ describe("Invoice Resolvers Integration Tests", () => {
   });
 
   it("should return a list of all invoices (should be 1 now)", async () => {
+    interface AllInvoicesData {
+      allInvoices: Array<{ id: string; clientName: string }>;
+    }
+
     const { data } = await request(app)
       .query(gql`
         query AllInvoices {
@@ -181,8 +185,8 @@ describe("Invoice Resolvers Integration Tests", () => {
       `)
       .set("Authorization", `Bearer ${testToken}`);
 
-    expect((data as any).allInvoices).toHaveLength(1);
-    expect((data as any).allInvoices[0].id).toBe(currentInvoiceId);
+    expect((data as AllInvoicesData).allInvoices).toHaveLength(1);
+    expect((data as AllInvoicesData).allInvoices[0]!.id).toBe(currentInvoiceId);
   });
 
   it("should return empty array when no invoices exist", async () => {
@@ -248,7 +252,7 @@ describe("Invoice Resolvers Integration Tests", () => {
 
     expect(response.errors).toBeDefined();
     expect(response.errors![0].message).toBe("Invoice not found");
-    expect(response.errors![0].extensions.code).toBe("NOT_FOUND");
+    expect(response.errors![0].extensions["code"]).toBe("NOT_FOUND");
   });
 
   it("should add a new invoice with its own unique ID", async () => {
@@ -377,7 +381,7 @@ describe("Invoice Resolvers Integration Tests", () => {
 
     expect(response.errors).toBeDefined();
     expect(response.errors![0].message).toBe("Invoice not found");
-    expect(response.errors![0].extensions.code).toBe("NOT_FOUND");
+    expect(response.errors![0].extensions["code"]).toBe("NOT_FOUND");
   });
 
   it("should mark the invoice as paid", async () => {

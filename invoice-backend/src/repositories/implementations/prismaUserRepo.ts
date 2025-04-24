@@ -1,7 +1,7 @@
 import { inject, injectable } from "inversify";
-import { IUserRepo } from "../userRepo";
+import type { IUserRepo } from "../userRepo";
 import { DatabaseConnection } from "../../database/prisma.database.connection";
-import {
+import type {
   ReturnedUser,
   UserDTO,
   UserEntity,
@@ -15,7 +15,7 @@ export class PrismaUserRepository implements IUserRepo {
 
   constructor(
     @inject(DatabaseConnection)
-    private readonly databaseConnection: DatabaseConnection,
+    databaseConnection: DatabaseConnection,
   ) {
     this.prisma = databaseConnection.getDatabase();
   }
@@ -23,14 +23,15 @@ export class PrismaUserRepository implements IUserRepo {
   async deleteAllUsers(): Promise<boolean> {
     try {
       const result = await this.prisma.user.deleteMany();
-      if (result) {
+      if (result.count > 0) {
         return true;
       } else {
         return false;
       }
-    } catch (error: any) {
-      console.error(error);
-      throw new Error("Database error");
+    } catch (e: unknown) {
+      console.error(e);
+      const errorMessage = e instanceof Error ? e.message : "Unknown error";
+      throw new Error(`Database error: ${errorMessage}`);
     }
   }
 
@@ -43,14 +44,15 @@ export class PrismaUserRepository implements IUserRepo {
           },
         },
       });
-      if (result) {
+      if (result.count > 0) {
         return true;
       } else {
         return false;
       }
-    } catch (error: any) {
-      console.error(error);
-      throw new Error("Database error");
+    } catch (e: unknown) {
+      console.error(e);
+      const errorMessage = e instanceof Error ? e.message : "Unknown error";
+      throw new Error(`Database error: ${errorMessage}`);
     }
   }
 
@@ -59,9 +61,9 @@ export class PrismaUserRepository implements IUserRepo {
       const users = await this.prisma.user.findMany();
       return users.map((user) => ({
         ...user,
-        name: user.name ?? undefined,
+        name: user.name ?? "",
       }));
-    } catch (error: any) {
+    } catch (error: unknown) {
       console.error(error);
       throw new Error("Database error");
     }
@@ -80,8 +82,9 @@ export class PrismaUserRepository implements IUserRepo {
         },
       });
       return { ...user, name: user.name ?? "" };
-    } catch (e: any) {
+    } catch (e: unknown) {
       console.error(e);
+
       if (e instanceof PrismaClientKnownRequestError && e.code === "P2025") {
         throw new Error("User not found");
       }
@@ -104,7 +107,7 @@ export class PrismaUserRepository implements IUserRepo {
         },
       });
       return user ? { ...user, name: user.name ?? "" } : null;
-    } catch (e: any) {
+    } catch (e: unknown) {
       console.error(e);
       throw new Error("Failed to fetch user");
     }
@@ -115,12 +118,12 @@ export class PrismaUserRepository implements IUserRepo {
       const user = await this.prisma.user.create({
         data: {
           name: userArgs.name ?? "",
-          username: userArgs.username,
+          username: userArgs.username ?? "",
           role: "USER",
         },
       });
       return { ...user, name: user.name ?? "" };
-    } catch (e: any) {
+    } catch (e: unknown) {
       if (e instanceof PrismaClientKnownRequestError && e.code === "P2002") {
         throw new Error("Unique constraint failed on the fields: (`username`)");
       }
@@ -140,7 +143,7 @@ export class PrismaUserRepository implements IUserRepo {
           },
           data: {
             id: args.id,
-            role: args.role,
+            role: args.role ?? "USER",
             username: args.username ?? "",
             name: args.name ?? "",
           },
@@ -149,7 +152,7 @@ export class PrismaUserRepository implements IUserRepo {
           ...user,
           name: user.name ?? "",
         }));
-    } catch (e: any) {
+    } catch (e: unknown) {
       if (e instanceof PrismaClientKnownRequestError && e.code === "P2002") {
         throw new Error("Unique constraint failed on the fields: (`username`)");
       }
@@ -177,7 +180,7 @@ export class PrismaUserRepository implements IUserRepo {
         ...result,
         name: result.name ?? "",
       };
-    } catch (e: any) {
+    } catch (e: unknown) {
       console.error(e);
 
       if (e instanceof PrismaClientKnownRequestError && e.code === "P2025") {

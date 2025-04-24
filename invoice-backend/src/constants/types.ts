@@ -1,33 +1,32 @@
-import express from "express";
-import { BaseContext } from "@apollo/server";
-import { Context as GraphQLWSContext } from "graphql-ws";
-import { PrismaClient } from "@prisma/client";
-import { Container } from "inversify";
-import { InvoiceService } from "@/services/invoice.service";
-import { UserService } from "@/services/user.service";
-import { PubSub } from "graphql-subscriptions";
+import type express from "express";
+import type { BaseContext } from "@apollo/server";
+import type { Context as GraphQLWSContext } from "graphql-ws";
+import type { Container } from "inversify";
+import type { InvoiceService } from "@/services/invoice.service";
+import type { UserService } from "@/services/user.service";
+import type { PubSub } from "graphql-subscriptions";
 
 export interface Invoice {
-  createdBy?: UserIdAndRole;
-  createdById?: string;
-  clientAddressId?: string;
-  clientAddress: ClientAddress;
+  createdBy?: UserIdAndRole | undefined;
+  createdById?: string | undefined;
+  clientAddressId?: string | undefined;
+  clientAddress: ClientAddress | undefined;
   clientEmail: string;
   clientName: string;
   createdAt: string;
   description: string;
   id: string;
-  items: Item[];
+  items: Item[] | undefined;
   paymentDue: string;
   paymentTerms: number;
-  senderAddress: SenderAddress;
-  senderAddressId?: string;
+  senderAddress: SenderAddress | undefined;
+  senderAddressId?: string | undefined;
   status: string;
   total: number;
 }
 export interface InvoiceWithCreatedBy extends Invoice {
-  createdBy: UserIdAndRole;
-  createdById: string;
+  createdBy: UserIdAndRole | undefined;
+  createdById: string | undefined;
 }
 
 export interface SenderAddress {
@@ -45,17 +44,16 @@ export interface ClientAddress {
 }
 
 export interface Item {
-  id?: string;
-  name: string;
-  price: number;
-  quantity: number;
-  total: number;
+  id?: string | undefined;
+  name: string | undefined;
+  price: number | undefined;
+  quantity: number | undefined;
+  total: number | undefined;
 }
 
 export interface ContextArgs {
-  req?: express.Request;
-  connection?: GraphQLWSContext;
-  testPrisma?: PrismaClient;
+  req?: express.Request | undefined;
+  connection?: GraphQLWSContext | undefined;
 }
 
 export interface QueryContext extends BaseContext {
@@ -94,9 +92,9 @@ export interface User {
 export type ReturnedUser = Omit<User, "passwordHash">;
 
 export interface CreateUserArgs {
-  id?: string;
-  name?: string;
-  username: string;
+  id?: string | undefined;
+  name?: string | undefined;
+  username: string | undefined;
 }
 
 export interface UserEntity extends CreateUserArgs {
@@ -109,7 +107,7 @@ export interface CreateUserDTO extends CreateUserArgs {
 }
 
 export interface UserDTO {
-  id?: string;
+  id?: string | undefined;
   name: string;
   username: string;
 }
@@ -140,20 +138,14 @@ export interface InvoiceCreateArgs {
     postCode: string;
     street: string;
   };
-  items: Array<{
-    name: string;
-    price: number;
-    quantity: number;
-    total: number;
-    id?: string | undefined;
-  }>;
+  items: Item[];
 }
 
 export type MarkAsPaidArgs = GetInvoiceByIdArgs;
 
 export interface UserIdAndRole {
   id: string;
-  role: "USER" | "ADMIN";
-  username?: string;
-  name: string;
+  role: "USER" | "ADMIN" | undefined;
+  username?: string | undefined;
+  name: string | undefined;
 }

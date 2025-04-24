@@ -20,7 +20,7 @@ export class DatabaseConnection implements IDatabaseConnection {
       await this.prisma.$connect();
       this.logger.info("Connected to Prisma");
     } catch (e) {
-      this.logger.error(e);
+      this.logger.error(e instanceof Error ? e.message : String(e));
       await this.prisma.$disconnect();
       process.exit(1);
     }

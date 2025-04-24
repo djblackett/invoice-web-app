@@ -1,4 +1,4 @@
-import { QueryContext } from "../constants/types";
+import type { QueryContext } from "../constants/types";
 
 /**
  * Ensures that the resolver is accessed by an authenticated user.

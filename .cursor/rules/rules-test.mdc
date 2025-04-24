@@ -1,0 +1,37 @@
+---
+description: 
+globs: 
+alwaysApply: false
+---
+```md
+---
+description: Guidelines for development with TypeScript, styling, testing, and backend technologies including Node.js, Inversify.js, and Prisma.
+globs: **/*.{ts,tsx,js,jsx}
+---
+# TypeScript and Web Development Standards
+
+These guidelines define the technical standards for our application development, covering frontend, backend, and testing practices.
+
+## Language and Typing
+
+* **TypeScript Requirement:** Use TypeScript for all new files.
+* **Type Safety:** Avoid using `any` type - prefer proper type definitions.
+
+## Frontend Development
+
+* **Styling Approach:** Use styled-components for styling frontend components.
+
+## Testing
+
+* **Testing Framework:** Use Vitest for writing tests.
+* **Mocking Library:** Use vitest-mock-extended for mocking dependencies.
+
+## Backend Development
+
+Our backend technology stack includes:
+
+* **Runtime:** Node.js
+* **Dependency Injection:** Inversify.js
+* **ORM:** Prisma
+* **Architecture:** Repository Pattern
+```
