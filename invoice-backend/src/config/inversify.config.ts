@@ -1,5 +1,6 @@
 import "reflect-metadata";
-import { Container, interfaces } from "inversify";
+import type { interfaces } from "inversify";
+import { Container } from "inversify";
 import { InvoiceService } from "../services/invoice.service";
 import { UserService } from "../services/user.service";
 import { PrismaInvoiceRepository } from "../repositories/implementations/prismaInvoiceRepository";

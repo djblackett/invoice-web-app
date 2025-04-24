@@ -319,12 +319,6 @@ async function createSubscriptionContext(connection: Context) {
     childContainer.bind<UserIdAndRole>(TYPES.UserContext).toConstantValue(user);
   }
 
-  // Decide whether this user should use the demo DB.
-  const isDemoUser = user?.id === "demoId" || user?.id === "demoAdminId";
-
-  // Bind the PrismaClient to the child container
-  await bindPrismaClient(childContainer, isDemoUser);
-
   const invoiceService = childContainer.get<InvoiceService>(
     TYPES.InvoiceService,
   );
