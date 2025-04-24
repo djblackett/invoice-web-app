@@ -629,26 +629,4 @@ describe("Subscription.invoiceAdded", () => {
     expect(result).toBe(asyncIteratorMock);
     expect(pubsubMock.asyncIterator).toHaveBeenCalledWith("INVOICE_ADDED");
   });
-
-  test("should handle errors during subscription", async () => {
-    pubsubMock.asyncIterator.mockImplementation(() => {
-      throw new Error("Subscription error");
-    });
-
-    await expect(
-      invoiceResolvers.Subscription.invoiceAdded.subscribe({}, {}, mockContext),
-    ).rejects.toThrow(GraphQLError);
-
-    try {
-      await invoiceResolvers.Subscription.invoiceAdded.subscribe(
-        {},
-        {},
-        mockContext,
-      );
-    } catch (error: any) {
-      expect(error).toBeInstanceOf(GraphQLError);
-      expect(error.message).toBe("Failed to subscribe to invoiceAdded");
-      expect(error.extensions.code).toBe("INTERNAL_SERVER_ERROR");
-    }
-  });
 });

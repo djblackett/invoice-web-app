@@ -1,37 +1,41 @@
-import { beforeEach, describe, expect, it, vi } from "vitest";
+import { beforeEach, describe, expect, it, vi, afterEach } from "vitest";
 import { cleanup, fireEvent, render, screen } from "../testUtils";
 import { NewInvoiceProvider } from "@/features/invoices/forms/NewInvoiceContextProvider";
 import NewInvoice from "@/features/invoices/pages/NewInvoice";
+import { prettyDOM } from "@testing-library/react";
+// import { logTestingPlaygroundURL } from "@testing-library/react";
+
+// one shared clean-up for *all* describes
+afterEach(() => {
+  cleanup(); // unmount React trees
+  // vi.resetModules(); // drop cached modules (incl. your store)
+  cleanup();
+  vi.restoreAllMocks(); // reset mocks to original implementation
+  vi.unstubAllEnvs(); // revert NODE_ENV stub
+});
 
 describe("First integration test", () => {
-  vi.stubEnv("NODE_ENV", "production");
-
   beforeEach(() => {
+    vi.stubEnv("NODE_ENV", "production");
     render(
-      <NewInvoiceProvider initialState={{ isNewInvoiceOpen: true }}>
+      <NewInvoiceProvider
+        initialState={{ isNewInvoiceOpen: true }}
+        key={crypto.randomUUID()} // forces remount if anything slips through
+      >
         <NewInvoice />
       </NewInvoiceProvider>,
     );
-  });
-
-  it("should return true", () => {
-    expect(true).toBe(true);
-  });
-
-  it("should close the new invoice form when isNewInvoiceOpen is false", async () => {
-    cleanup();
-    render(
-      <NewInvoiceProvider initialState={{ isNewInvoiceOpen: false }}>
-        <NewInvoice />
-      </NewInvoiceProvider>,
-    );
-    const newInvoiceForm = screen.queryByTestId("newInvoicePage");
-    expect(newInvoiceForm).not.toBeInTheDocument();
   });
 
   it("should render New Invoice title in the new invoice form", async () => {
-    const newInvoiceTitle = await screen.findByText("New Invoice");
-    expect(newInvoiceTitle).toBeInTheDocument();
+    console.log("My printed DOM:", prettyDOM(document.body));
+    // logTestingPlaygroundURL();
+    const title = await screen.findByRole(
+      "heading",
+      { name: /new invoice/i },
+      { timeout: 3000 }, // wait up to 3 s
+    );
+    expect(title).toBeInTheDocument();
   });
 
   it("should render the save button in the new invoice form", async () => {
@@ -116,5 +120,15 @@ describe("NewInvoiceForm - basic DOM elements", () => {
     expect(screen.getByTestId("Net 7 Days-testID")).toBeInTheDocument();
     expect(screen.getByTestId("Net 14 Days-testID")).toBeInTheDocument();
     expect(screen.getByTestId("Net 30 Days-testID")).toBeInTheDocument();
+  });
+
+  it("should close the new invoice form when isNewInvoiceOpen is false", async () => {
+    render(
+      <NewInvoiceProvider initialState={{ isNewInvoiceOpen: false }}>
+        <NewInvoice />
+      </NewInvoiceProvider>,
+    );
+    const newInvoiceForm = screen.queryByTestId("newInvoicePage");
+    expect(newInvoiceForm).not.toBeInTheDocument();
   });
 });

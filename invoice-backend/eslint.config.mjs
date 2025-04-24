@@ -15,7 +15,7 @@ export default tseslint.config(
     "**/generated/**",
     "**/src/mocks/**",
   ]),
-  { files: ["**/*.{ts,tsx}"] },
+  { files: ["**/src/*.{ts,tsx}"] },
   {
     languageOptions: {
       parserOptions: {

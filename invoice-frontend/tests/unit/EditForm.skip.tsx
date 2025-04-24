@@ -5,12 +5,12 @@ import { NewInvoiceProvider } from "@/features/invoices/forms/NewInvoiceContextP
 import { Invoice } from "@/features/invoices/types/invoiceTypes.ts";
 
 // import { render } from "@testing-library/react";
-import { MockedProvider } from "@apollo/client/testing";
-import store from "@/app/store";
-import { Provider as ReduxProvider } from "react-redux";
-import { ThemeProvider } from "styled-components";
-import { lightTheme } from "@/features/shared/styles/Themes";
-import { HashRouter } from "react-router-dom";
+// import { MockedProvider } from "@apollo/client/testing";
+// import store from "@/app/store";
+// import { Provider as ReduxProvider } from "react-redux";
+// import { ThemeProvider } from "styled-components";
+// import { lightTheme } from "@/features/shared/styles/Themes";
+// import { HashRouter } from "react-router-dom";
 
 // TODO - is this still relevant after refactoring? Mock hooks
 vi.mock("../hooks/useResponsive", () => ({
