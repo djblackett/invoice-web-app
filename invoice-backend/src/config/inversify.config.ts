@@ -8,8 +8,8 @@ import { DatabaseConnection } from "../database/prisma.database.connection";
 import { Logger } from "./logger.config";
 import { PubSub } from "graphql-subscriptions";
 import TYPES from "../constants/identifiers";
-import { IInvoiceRepo } from "../repositories/InvoiceRepo";
-import { IUserRepo } from "../repositories/userRepo";
+import type { IInvoiceRepo } from "../repositories/InvoiceRepo";
+import type { IUserRepo } from "../repositories/userRepo";
 import { PrismaClient } from "@prisma/client";
 
 const container = new Container();

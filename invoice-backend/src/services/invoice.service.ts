@@ -19,7 +19,7 @@ export class InvoiceService {
     @inject(TYPES.IInvoiceRepo)
     private readonly invoiceRepo: IInvoiceRepo,
     @inject(TYPES.UserContext)
-    private readonly userContext: UserIdAndRole,
+    private readonly userContext: UserIdAndRole | null,
   ) {}
 
   getInvoices = async (): Promise<Invoice[]> => {
@@ -46,7 +46,9 @@ export class InvoiceService {
     }
   };
 
-  getInvoiceById = async (invoiceId: string) => {
+  getInvoiceById = async (
+    invoiceId: string,
+  ): Promise<Partial<Invoice> | null> => {
     if (!this.userContext) {
       throw new ValidationException("Unauthorized");
     }
@@ -111,7 +113,7 @@ export class InvoiceService {
         createdBy: {
           id: this.userContext.id,
           name: this.userContext.name,
-          username: this.userContext.username,
+          username: this.userContext.username ?? "",
           role: this.userContext.role,
         },
       };
@@ -141,7 +143,9 @@ export class InvoiceService {
 
     try {
       const newInvoiceUnvalidated = { ...oldInvoice, ...invoiceUpdates };
-      const validatedInvoice = validateInvoiceData(newInvoiceUnvalidated);
+      const validatedInvoice: Partial<Invoice> = validateInvoiceData(
+        newInvoiceUnvalidated,
+      );
 
       delete newInvoiceUnvalidated.createdBy;
       delete newInvoiceUnvalidated.createdById;

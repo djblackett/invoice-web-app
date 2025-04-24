@@ -1,19 +1,39 @@
 {
   "version": "0.2.0",
   "configurations": [
-  {
-    "name": "Launch Chrome",
-    "request": "launch",
-    "type": "chrome",
-    "url": "https://localhost:5173/invoice-web-app/",
-    "webRoot": "${workspaceFolder}"
-  },
+    {
+      "name": "ts-node",
+      "type": "node",
+      "request": "launch",
+      "args": ["${relativeFile}"],
+      "runtimeArgs": ["-r", "ts-node/register"],
+      "cwd": "${workspaceRoot}",
+      "protocol": "inspector",
+      "internalConsoleOptions": "openOnSessionStart"
+    },
+    {
+      "name": "Launch Chrome",
+      "request": "launch",
+      "type": "chrome",
+      "url": "https://localhost:5173/invoice-web-app/",
+      "webRoot": "${workspaceFolder}"
+    },
     {
       "type": "msedge",
       "request": "launch",
       "name": "Launch Edge against localhost",
       "url": "http://localhost:5173/invoice-web-app/",
       "webRoot": "${workspaceFolder}"
+    },
+    {
+      "type": "node",
+      "request": "launch",
+      "name": "Launch Program",
+      "program": "${workspaceFolder}/src/index.ts",
+      "runtimeArgs": ["-r", "ts-node/register"],
+      "cwd": "${workspaceRoot}",
+      "protocol": "inspector",
+      "internalConsoleOptions": "openOnSessionStart"
     }
   ]
 }

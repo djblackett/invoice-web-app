@@ -3,7 +3,7 @@ import { WebSocketServer } from "ws";
 import { useServer } from "graphql-ws/lib/use/ws";
 import { ApolloServerPluginDrainHttpServer } from "@apollo/server/plugin/drainHttpServer";
 import { ApolloServer } from "@apollo/server";
-import { ContextArgs, MyContext } from "./constants/types";
+import type { ContextArgs, MyContext } from "./constants/types";
 import {
   ApolloServerPluginLandingPageLocalDefault,
   ApolloServerPluginLandingPageProductionDefault,
@@ -20,11 +20,11 @@ import https from "https";
 import { getResolvers } from "./resolvers";
 import { createLoggingPlugin } from "./GraphQL/loggingPlugin";
 import container from "./config/inversify.config";
-import { Logger } from "./config/logger.config";
+import type { Logger } from "./config/logger.config";
 import TYPES from "./constants/identifiers";
 
 const isProduction = NODE_ENV === "production";
-const isDemo = process.env.DEMO_MODE === "true";
+const isDemo = process.env["DEMO_MODE"] === "true";
 
 const logger = container.get<Logger>(TYPES.Logger);
 
@@ -79,6 +79,7 @@ export const createServer = async () => {
         ApolloServerPluginDrainHttpServer({ httpServer }),
         {
           async serverWillStart() {
+            await Promise.resolve(); // Ensure async operation
             return {
               async drainServer() {
                 await serverCleanup.dispose();
@@ -89,7 +90,8 @@ export const createServer = async () => {
         isProduction
           ? ApolloServerPluginLandingPageProductionDefault({
               graphRef:
-                process.env.APOLLO_GRAPH_REF || "my-graph-id@my-graph-variant",
+                process.env["APOLLO_GRAPH_REF"] ||
+                "my-graph-id@my-graph-variant",
               footer: false,
             })
           : ApolloServerPluginLandingPageLocalDefault({ footer: false }),

@@ -3,7 +3,7 @@ import { renderHook, act } from "@testing-library/react-hooks";
 import { useForm, FormProvider } from "react-hook-form";
 import { NewInvoiceProvider } from "@/features/invoices/forms/NewInvoiceContextProvider";
 import useFormCaching from "@/features/invoices/hooks/useFormCaching";
-import { describe, beforeEach, it, expect, vi } from "vitest";
+import { describe, beforeEach, it, expect } from "vitest";
 
 const createWrapper = () => {
   const methods = useForm();
