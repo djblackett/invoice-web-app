@@ -2,6 +2,7 @@ import { useAuth } from "@/features/auth/hooks/useAuth";
 import styled from "styled-components";
 import { Grid } from "react-loader-spinner";
 import { useState } from "react";
+import { useDemoModeContext } from "./DemoModeProvider";
 
 const AvatarBox = styled.div`
   height: 100%;
@@ -23,6 +24,7 @@ const AvatarBox = styled.div`
 
 function Avatar() {
   const { isAuthenticated, user, isLoading } = useAuth();
+  const { isDemoMode } = useDemoModeContext();
   const [isImageLoaded, setImageLoaded] = useState(false);
 
   if (isLoading) {
@@ -42,9 +44,10 @@ function Avatar() {
     );
   }
 
-  const avatarSource = isAuthenticated
-    ? user?.picture
-    : `${import.meta.env.BASE_URL}assets/image-avatar.jpg`;
+  const avatarSource =
+    isAuthenticated && !isDemoMode
+      ? user?.picture
+      : `${import.meta.env.BASE_URL}assets/image-avatar.jpg`;
 
   return (
     <AvatarBox data-testid="avatar">
