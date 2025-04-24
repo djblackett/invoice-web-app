@@ -33,7 +33,7 @@ function getSigningKeyAsync(kid: string): Promise<string> {
       kid,
       (err: Error | null, key: SigningKey | undefined) => {
         if (err) {
-          logger.error(() => `Error fetching signing key: ${err.message}`);
+          logger.error(`Error fetching signing key: ${err.message}`);
           console.error("Error fetching signing key:", err);
           logger.error(err.message);
           return reject(err);
@@ -155,7 +155,6 @@ export async function createContext({
   connection,
 }: ContextArgs): Promise<InjectedQueryContext> {
   logger.info("creating context");
-
 
   if (connection) {
     // This branch handles subscription requests, which are initiated through WebSocket connections.
