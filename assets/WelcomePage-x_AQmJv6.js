@@ -1,0 +1,1 @@
+import{u as r,a as n,j as e,N as t}from"./index-DPd1qPLZ.js";function u(){const{isAuthenticated:o,isLoading:s}=r(),{isDemoMode:i}=n();return i?e.jsx(t,{to:"/invoices",replace:!0}):s?e.jsx("h1",{children:"Loading"}):o?e.jsx(t,{to:"/invoices",replace:!0}):e.jsx(t,{to:"login",replace:!0})}export{u as default};

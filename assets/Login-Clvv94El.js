@@ -1,4 +1,4 @@
-import{d as s,M as g,j as t,H as x,R as p,u,a as f,N as h,J as y,K as j,c as v}from"./index-CNDK3Od4.js";import{V as w}from"./ViewInvoiceStyles-BMPNOa5q.js";const a=s(g)`
+import{d as s,M as g,j as t,H as x,R as p,u,a as f,N as h,J as y,K as j,c as v}from"./index-DPd1qPLZ.js";import{V as w}from"./ViewInvoiceStyles-C1lsrj2E.js";const a=s(g)`
   justify-self: center;
   align-self: center;
   height: fit-content;
