@@ -29,7 +29,7 @@ container
   .toDynamicValue(() => {
     // This binding is used for demo mode, where we use a different database URL.
     return new PrismaClient({
-      datasourceUrl: process.env.DATABASE_URL_DEMO,
+      datasourceUrl: process.env["DATABASE_URL_DEMO"] ?? "",
     });
   })
   .inSingletonScope();

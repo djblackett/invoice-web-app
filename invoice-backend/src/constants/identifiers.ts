@@ -13,6 +13,6 @@ const TYPES = {
   PrismaClientDemo: Symbol.for("PrismaClientDemo"),
   PrismaClientFactory: Symbol.for("PrismaClientFactory"),
   Logger: Symbol.for("Logger"),
-};
+} as const;
 
 export default TYPES;
