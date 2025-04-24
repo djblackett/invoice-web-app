@@ -17,7 +17,7 @@
     "lint": "eslint --config ./eslint.config.mjs ./src",
     "lint:fix": "eslint --config ./eslint.config.mjs --fix ./src",
     "format": "prettier --write .",
-    "start": "cross-env NODE_ENV=production ts-node -r tsconfig-paths/register dist/src/index.js",
+    "start": "cross-env NODE_ENV=production node -r tsconfig-paths/register dist/src/index.js",
     "start:test": "cross-env DATABASE_URL=postgresql://postgres:example@db-dev:5432/db-test NODE_ENV=test CERT_DIR='../certs/' ts-node-dev -r tsconfig-paths/register src/index.ts",
     "start:test:ci": "cross-env DATABASE_URL=postgresql://postgres:example@localhost:5432/db-test NODE_ENV=test CERT_DIR='../certs/' ts-node-dev -r tsconfig-paths/register src/index.ts",
     "generate": "graphql-codegen",
