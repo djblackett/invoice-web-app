@@ -13,8 +13,8 @@ import {
 import { PrismaClient } from "@prisma/client";
 import { execSync } from "child_process";
 import { randomUUID } from "crypto";
-import container from "@/config/inversify.config";
-import TYPES from "@/constants/identifiers";
+import container from "../../src/config/inversify.config";
+import TYPES from "../../src/constants/identifiers";
 
 process.env["NODE_ENV"] = "test";
 const baseInvoice = {
