@@ -57,7 +57,12 @@
     "baseUrl": "./",
     "paths": { "@/*": ["src/*"] }
   },
-  "include": ["src/**/*", "tests/**/*"],
+  "include": [
+    "src/**/*",
+    "tests/**/*",
+    "eslint.config.mjs",
+    "tests/integration"
+  ],
   "exclude": [
     "node_modules",
     "dist",

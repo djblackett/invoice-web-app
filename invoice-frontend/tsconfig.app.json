@@ -13,13 +13,21 @@
     "moduleDetection": "force",
     "noEmit": true,
     "jsx": "react-jsx",
+    "sourceMap": true,
 
     /* Linting */
     "strict": true,
     "noUnusedLocals": true,
     "noUnusedParameters": true,
+    "noImplicitAny": true,
+    "noImplicitOverride": true,
     "noFallthroughCasesInSwitch": true,
     "allowSyntheticDefaultImports": true,
+
+    "noErrorTruncation": true /* Disable truncating types in error messages. */,
+    "allowUnreachableCode": false,
+
+    "useUnknownInCatchVariables": true /* Default is false. When set to true, the type of the variable bound in a catch clause defaults to unknown instead of any. */,
 
     "types": ["node", "@testing-library/jest-dom", "vitest"],
     "baseUrl": "./",

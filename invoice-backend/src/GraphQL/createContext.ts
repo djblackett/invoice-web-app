@@ -62,6 +62,7 @@ export async function retrieveUserFromToken(
   token: string,
   options: VerifyOptions,
 ): Promise<UserIdAndRole | null> {
+  // Handle test/CI environment early return
   if (NODE_ENV === "test" || NODE_ENV === "CI") {
     return {
       id: "auth0|12345",
@@ -72,82 +73,46 @@ export async function retrieveUserFromToken(
   }
 
   try {
-    // Define the namespace used for custom claims
-    const namespace = "invoice-web-app/";
-
-    // Decode the token to extract the header
-    const decoded = jwt.decode(token, { complete: true });
-
-    if (!decoded || typeof decoded !== "object") {
-      throw new Error("Invalid token");
-    }
-
-    const header = decoded.header;
-
-    if (!header.kid) {
-      throw new Error("Invalid Token: no header.kid");
-    }
-
-    // Retrieve the signing key as a string
-    const signingKey = await getSigningKeyAsync(header.kid);
-
-    // Verify the token's signature and claims
-    const payload = jwt.verify(token, signingKey, options) as JwtPayload;
-
-    // Construct the fully qualified claim name
-    const emailClaim = `${namespace}email`;
-
-    // Extract the email from the custom claim
-    let email: string;
-
-    if (
-      process.env["NODE_ENV"] === "test" ||
-      process.env["NODE_ENV"] === "CI"
-    ) {
-      email = "user@example.com";
-    } else {
-      email =
-        typeof payload[emailClaim] === "string" ? payload[emailClaim] : "";
-    }
-
-    const id = payload.sub;
-    const name = typeof payload["name"] === "string" ? payload["name"] : "user";
-
-    // Assign role based on payload or default to USER
-    let role: "USER" | "ADMIN";
-    const tokenRoleClaim = `${namespace}roles`;
-    const tokenRole = Array.isArray(payload[tokenRoleClaim])
-      ? (payload[tokenRoleClaim] as string[])
-      : [];
-
-    if (
-      tokenRole.includes("Admin") ||
-      NODE_ENV === "test" ||
-      NODE_ENV === "CI"
-    ) {
-      role = "ADMIN";
-    } else {
-      role = "USER";
-    }
-
-    if (!email || typeof email !== "string") {
-      throw new Error("Email claim is missing or invalid");
-    }
-
-    if (!id || typeof id !== "string") {
-      throw new Error("Id claim is missing or invalid");
-    }
-
-    return {
-      id,
-      role,
-      username: email,
-      name,
-    };
+    const payload = await verifyToken(token, options);
+    return extractUserFromPayload(payload);
   } catch (err) {
     console.error("Token verification failed:", err);
     throw err;
   }
+}
+
+// Helper function to verify token and return payload
+async function verifyToken(
+  token: string,
+  options: VerifyOptions,
+): Promise<JwtPayload> {
+  const decoded = jwt.decode(token, { complete: true });
+  if (!decoded || typeof decoded !== "object" || !decoded.header.kid) {
+    throw new Error("Invalid token");
+  }
+  const signingKey = await getSigningKeyAsync(decoded.header.kid);
+  return jwt.verify(token, signingKey, options) as JwtPayload;
+}
+
+// Helper function to extract user data from payload
+function extractUserFromPayload(payload: JwtPayload): UserIdAndRole {
+  const namespace = "invoice-web-app/";
+  const emailClaim = `${namespace}email`;
+  const roleClaim = `${namespace}roles`;
+
+  const email =
+    typeof payload[emailClaim] === "string" ? payload[emailClaim] : "";
+  const id = payload.sub ?? "";
+  const name = typeof payload["name"] === "string" ? payload["name"] : "user";
+  const roles = Array.isArray(payload[roleClaim])
+    ? (payload[roleClaim] as string[])
+    : [];
+
+  if (!email) throw new Error("Email claim is missing or invalid");
+  if (!id) throw new Error("Id claim is missing or invalid");
+
+  const role = roles.includes("Admin") ? "ADMIN" : "USER";
+  return { id, role, username: email, name };
 }
 
 export async function createContext({

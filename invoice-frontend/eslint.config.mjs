@@ -1,13 +1,20 @@
 import globals from "globals";
+
+// Ensure the 'browser' property exists in the imported 'globals'
+if (!globals.browser) {
+  throw new Error(
+    "The 'browser' property is not defined in the 'globals' package. Please verify your 'globals' package version.",
+  );
+}
 import pluginJs from "@eslint/js";
 import tseslint from "typescript-eslint";
 import pluginReact from "eslint-plugin-react";
-import eslintPluginPrettierRecommended from "eslint-plugin-prettier/recommended";
+import pluginPrettier from "eslint-plugin-prettier";
 
-/** @type {import('eslint').Linter.Config[]} */
-export default [
+// /** @type {import('eslint').Linter.Config[]} */
+export default tseslint.config(
   {
-    ...pluginReact.configs.flat.recommended,
+    ...pluginReact.configs.recommended,
     settings: {
       react: {
         version: "detect",
@@ -23,11 +30,16 @@ export default [
       "**/.cache/ms-playwright",
     ],
   },
-  { files: ["**/*.{js,mjs,cjs,ts,jsx,tsx}"] },
-  { languageOptions: { globals: globals.browser } },
-  pluginJs.configs.recommended,
-  ...tseslint.configs.recommended,
-  eslintPluginPrettierRecommended,
+  {
+    files: ["**/*.{js,mjs,cjs,ts,jsx,tsx}"],
+  },
+  {
+    languageOptions: { globals: globals.browser },
+  },
+  ...pluginJs.configs.recommended,
+  ...pluginPrettier.configs.recommended,
+  ...tseslint.configs.recommendedTypeChecked,
+  ...tseslint.configs.strict,
   {
     rules: {
       "array-callback-return": "off",
@@ -44,4 +56,4 @@ export default [
       "no-unsafe-return": "off",
     },
   },
-];
+);
