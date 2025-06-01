@@ -140,7 +140,7 @@ const typeDefs = gql`
 
     deleteUsersKeepAdmins: deleteResult
 
-    login(username: String!, password: String!): LoginResponse
+    login(username: String!, password: String!, provider: String): LoginResponse
   }
 
   type Subscription {

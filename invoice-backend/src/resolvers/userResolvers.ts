@@ -1,7 +1,13 @@
 import { GraphQLError } from "graphql";
 import type { UserService } from "../services/user.service";
-import type { CreateUserDTO, InjectedQueryContext } from "../constants/types";
+import type {
+  CreateUserDTO,
+  InjectedQueryContext,
+  UserIdAndRole,
+} from "../constants/types";
 import { UnauthorizedException } from "../config/exception.config";
+import jwt from "jsonwebtoken";
+import { Role } from "@prisma/client";
 
 export function getUserResolvers() {
   return {
@@ -125,6 +131,83 @@ export function getUserResolvers() {
           return { acknowledged: false };
         } catch (error) {
           console.error(error);
+          throw new GraphQLError("Internal server error", {
+            extensions: {
+              code: "INTERNAL_SERVER_ERROR",
+            },
+          });
+        }
+      },
+
+      login: (
+        _root: unknown,
+        args: { username: string; password: string; provider?: string },
+      ) => {
+        try {
+          // Handle different authentication providers
+          if (args.provider === "google") {
+            // For Google OAuth, the authentication is handled by Passport
+            // This resolver would typically be called after successful OAuth
+            throw new GraphQLError(
+              "Google authentication should use OAuth flow",
+              {
+                extensions: {
+                  code: "BAD_USER_INPUT",
+                  message:
+                    "Use /auth/google endpoint for Google authentication",
+                },
+              },
+            );
+          }
+
+          // Default Auth0/JWT authentication
+          // For now, this is a placeholder - in a real implementation,
+          // you would validate credentials against your user database
+          // or integrate with Auth0's authentication API
+
+          // Mock implementation for demonstration
+          if (
+            args.username === "demo@example.com" &&
+            args.password === "demo"
+          ) {
+            const user: UserIdAndRole = {
+              id: "demo-user-id",
+              username: args.username,
+              name: "Demo User",
+              role: Role.USER,
+            };
+
+            // Generate a JWT token
+            const token = jwt.sign(
+              {
+                sub: user.id,
+                email: user.username,
+                name: user.name,
+                role: user.role,
+              },
+              process.env["JWT_SECRET"] || "fallback-secret",
+              { expiresIn: "24h" },
+            );
+
+            return {
+              user: {
+                id: user.id,
+                username: user.username,
+              },
+              token,
+            };
+          }
+
+          throw new GraphQLError("Invalid credentials", {
+            extensions: {
+              code: "UNAUTHENTICATED",
+            },
+          });
+        } catch (error) {
+          if (error instanceof GraphQLError) {
+            throw error;
+          }
+          console.error("Login error:", error);
           throw new GraphQLError("Internal server error", {
             extensions: {
               code: "INTERNAL_SERVER_ERROR",
