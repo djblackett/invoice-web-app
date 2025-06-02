@@ -10,12 +10,9 @@ import type { Request, Response } from "express";
 import { DatabaseConnection } from "./database/prisma.database.connection";
 import rateLimit from "express-rate-limit";
 import express from "express";
-import session from "express-session";
 import { PrismaClient } from "@prisma/client";
 import TYPES from "./constants/identifiers";
 import type { Logger } from "./config/logger.config";
-import passport from "./config/passport.config";
-import type { UserIdAndRole } from "./constants/types";
 
 const logger = container.get<Logger>(TYPES.Logger);
 
@@ -29,57 +26,6 @@ export const createApp = async () => {
     await database.initConnection();
 
     app.set("trust proxy", 1);
-
-    // Session configuration
-    app.use(
-      session({
-        secret: process.env["SESSION_SECRET"] || "fallback-secret",
-        resave: false,
-        saveUninitialized: false,
-        cookie: {
-          secure: NODE_ENV === "production",
-          maxAge: 24 * 60 * 60 * 1000, // 24 hours
-        },
-      }),
-    );
-
-    // Initialize Passport
-    app.use(passport.initialize());
-    app.use(passport.session());
-
-    // Google OAuth routes
-    app.get(
-      "/auth/google",
-      passport.authenticate("google", {
-        scope: ["profile", "email"],
-      }) as express.RequestHandler,
-    );
-
-    app.get(
-      "/auth/google/callback",
-      passport.authenticate("google", {
-        failureRedirect: "/login",
-      }) as express.RequestHandler,
-      (req: Request, res: Response) => {
-        // Successful authentication
-        const user = req.user as UserIdAndRole;
-        // In a real app, you might want to generate a JWT token here
-        // and redirect to the frontend with the token
-        res.redirect(
-          `${process.env["FRONTEND_URL"] || "http://localhost:3000"}/auth/success?user=${encodeURIComponent(JSON.stringify(user))}`,
-        );
-      },
-    );
-
-    app.get("/auth/logout", (req: Request, res: Response) => {
-      req.logout((err) => {
-        if (err) {
-          logger.error("Logout error: " + JSON.stringify(err));
-          return res.status(500).send("Logout failed");
-        }
-        res.redirect("/");
-      });
-    });
 
     app.get("/health", (_req: Request, res: Response) => {
       res.status(200).send("OK");
