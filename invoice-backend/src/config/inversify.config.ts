@@ -6,6 +6,8 @@ import { UserService } from "../services/user.service";
 import { PrismaInvoiceRepository } from "../repositories/implementations/prismaInvoiceRepository";
 import { PrismaUserRepository } from "../repositories/implementations/prismaUserRepo";
 import { DatabaseConnection } from "../database/prisma.database.connection";
+import { SQLiteDatabaseConnection } from "../database/sqlite.database.connection";
+import { USE_SQLITE } from "./server.config";
 import { Logger } from "./logger.config";
 import { PubSub } from "graphql-subscriptions";
 import TYPES from "../constants/identifiers";
@@ -45,7 +47,12 @@ container
     };
   });
 
-container.bind(DatabaseConnection).toSelf().inTransientScope();
+// Bind the appropriate database connection based on configuration
+if (USE_SQLITE) {
+  container.bind(TYPES.DatabaseConnection).to(SQLiteDatabaseConnection).inTransientScope();
+} else {
+  container.bind(TYPES.DatabaseConnection).to(DatabaseConnection).inTransientScope();
+}
 
 container
   .bind<IUserRepo>(TYPES.IUserRepo)
