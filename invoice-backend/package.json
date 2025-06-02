@@ -13,6 +13,8 @@
     "build": "tsc -p tsconfig.build.json && tsc-alias",
     "build:slim": "npm run prisma-generate && ncc build ./src/index.ts -o dist -t",
     "dev": "cross-env NODE_ENV=development CERT_DIR='../certs/' ts-node-dev -r tsconfig-paths/register src/index.ts",
+    "dev:sqlite": "cross-env NODE_ENV=development USE_SQLITE=true CERT_DIR='../certs/' ts-node-dev -r tsconfig-paths/register src/index.ts",
+    "dev:memory": "cross-env NODE_ENV=development USE_SQLITE=true USE_IN_MEMORY=true CERT_DIR='../certs/' ts-node-dev -r tsconfig-paths/register src/index.ts",
     "prod": "cross-env NODE_ENV=production ts-node-dev src/index.ts",
     "lint": "eslint --config ./eslint.config.mjs ./src",
     "lint:fix": "eslint --config ./eslint.config.mjs --fix ./src",
