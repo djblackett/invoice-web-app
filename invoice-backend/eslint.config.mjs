@@ -6,7 +6,7 @@ import eslintPluginPrettierRecommended from "eslint-plugin-prettier/recommended"
 
 // /** @type {import('eslint').Linter.Config[]} */
 export default tseslint.config(
-  globalIgnores([
+globalIgnores([
     "**/node_modules/**",
     "**/dist/**",
     "**/build/**",
@@ -14,9 +14,9 @@ export default tseslint.config(
     "**/out/**",
     "**/generated/**",
     "**/src/mocks/**",
-  ]),
-  { files: ["**/src/*.{ts,tsx}"] },
+]),
   {
+    files: ["**/src/*.{ts,tsx}"],
     languageOptions: {
       parserOptions: {
         project: "./tsconfig.json",
