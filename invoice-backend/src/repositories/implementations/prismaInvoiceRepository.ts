@@ -345,12 +345,3 @@ export const prismaErrorHandler = (e: unknown): never => {
     throw new Error(`Database error: ${errorMessage}`);
   }
 };
-
-function deduplicateItemsByName<T extends { name: string }>(items: T[]): T[] {
-  const seen = new Set<string>();
-  return items.filter((item) => {
-    if (seen.has(item.name)) return false;
-    seen.add(item.name);
-    return true;
-  });
-}
