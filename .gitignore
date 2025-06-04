@@ -124,3 +124,4 @@ invoice-backend/.env.test
 invoice-backend/.env.development
 .vscode/launch.json
 invoice-backend/prisma/:memory:
+invoice-backend/prisma/memory.db

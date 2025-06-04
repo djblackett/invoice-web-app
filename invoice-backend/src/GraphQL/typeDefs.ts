@@ -8,6 +8,7 @@ const typeDefs = gql`
   }
 
   type User {
+    name: String!
     username: String!
     id: String!
   }
@@ -93,6 +94,7 @@ const typeDefs = gql`
     allUsers: [User]
     getUserById(id: String!): User
     me: User
+    getInvoicePdf(id: String!): String
   }
 
   type Mutation {
@@ -134,7 +136,7 @@ const typeDefs = gql`
 
     markAsPaid(id: String!): Invoice
 
-    createUser(name: String, username: String!, password: String!): User
+    createUser(name: String!, username: String!, password: String!): User
 
     deleteUsers: deleteResult
 

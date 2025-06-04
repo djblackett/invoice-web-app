@@ -1,4 +1,5 @@
 import { Invoice, UserIdAndRole } from "../constants/types";
+import PDFDocument from "pdfkit";
 import {
   mapPartialInvoiceToInvoice,
   validateInvoiceData,
@@ -235,5 +236,56 @@ export class InvoiceService {
       console.error(e);
       throw new InternalServerException("Internal server error");
     }
+  };
+
+  generatePdf = async (invoiceId: string): Promise<string> => {
+    const invoiceData = await this.getInvoiceById(invoiceId);
+    if (!invoiceData) {
+      throw new NotFoundException("Invoice not found");
+    }
+
+    // Since it's Partial, use optional chaining
+    const invoice = invoiceData;
+
+    const doc = new PDFDocument();
+    const buffers: Buffer[] = [];
+
+    doc.on("data", (chunk: Buffer) => buffers.push(chunk));
+
+    const pdfPromise = new Promise<string>((resolve) => {
+      doc.on("end", () => {
+        const pdfData = Buffer.concat(buffers).toString("base64");
+        resolve(pdfData);
+      });
+    });
+
+    // Generate PDF content
+    doc.fontSize(20).text("Invoice", 50, 50);
+    doc.fontSize(12).text(`Invoice ID: ${invoice.id ?? ''}`, 50, 80);
+    doc.text(`Date: ${invoice.createdAt ?? ''}`, 50, 95);
+    doc.text(`Payment Due: ${invoice.paymentDue ?? ''}`, 50, 110);
+
+    doc.text("From:", 50, 140);
+    doc.text(`${invoice.senderAddress?.street ?? ''}, ${invoice.senderAddress?.city ?? ''}`, 50, 155);
+    doc.text(`${invoice.senderAddress?.postCode ?? ''}, ${invoice.senderAddress?.country ?? ''}`, 50, 170);
+
+    doc.text("Bill To:", 300, 140);
+    doc.text(`${invoice.clientName ?? ''}`, 300, 155);
+    doc.text(`${invoice.clientAddress?.street ?? ''}, ${invoice.clientAddress?.city ?? ''}`, 300, 170);
+    doc.text(`${invoice.clientAddress?.postCode ?? ''}, ${invoice.clientAddress?.country ?? ''}`, 300, 185);
+    doc.text(`Email: ${invoice.clientEmail ?? ''}`, 300, 200);
+
+    doc.text("Items:", 50, 230);
+    let y = 245;
+    (invoice.items ?? []).forEach((item) => {
+      doc.text(`${item.quantity ?? 0} x ${item.name ?? ''} @ ${item.price ?? 0} = ${item.total ?? 0}`, 50, y);
+      y += 15;
+    });
+
+    doc.text(`Total: ${invoice.total ?? 0}`, 50, y + 10);
+
+    doc.end();
+
+    return pdfPromise;
   };
 }
