@@ -116,3 +116,4 @@ fly.toml
 !vitest.config.mts
 !.yarnrc.yml
 !.prettierrc
+!.yarn
