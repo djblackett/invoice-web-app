@@ -10,8 +10,14 @@ import type { Logger } from "../config/logger.config";
 // ChatGPT and Copilot wrote most of this code
 
 export function createLoggingPlugin(logger: Logger): ApolloServerPlugin {
+  // Add this line to check the environment variable
+  const loggingEnabled = process.env["LOG_GRAPHQL"] !== "false";
+
   return {
     async requestDidStart(requestContext: GraphQLRequestContext<BaseContext>) {
+      // if (!loggingEnabled)
+      return {};
+
       const operationName =
         requestContext.request.operationName || "Unnamed Operation";
       const startTime = Date.now();

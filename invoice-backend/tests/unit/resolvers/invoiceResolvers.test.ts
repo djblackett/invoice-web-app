@@ -182,7 +182,7 @@ describe("Query.getInvoiceById", () => {
       mockContext, // context
     );
 
-    console.log(result);
+    // console.log(result);
 
     expect(result).toEqual(mockInvoice);
     expect(invoiceServiceMock.getInvoiceById).toHaveBeenCalledWith(args.id);

@@ -9,6 +9,7 @@ export default defineConfig({
     include: ["tests/**/*.test.ts"],
     environment: "node",
     exclude: ["tests/**/*.skip.ts"],
+    setupFiles: ["./tests/integration/setup.ts"],
     coverage: {
       provider: "v8",
       reporter: ["text", "html", "json", "lcov", "verbose"],
@@ -23,7 +24,7 @@ export default defineConfig({
         "eslint.config.mjs",
         "vitest.config.mts",
       ],
-      all: true, // Collect coverage for all files, not just the ones tested
+      all: true,
       thresholds: {
         statements: 80,
         branches: 80,

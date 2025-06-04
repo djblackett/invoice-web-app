@@ -56,7 +56,7 @@ export function serverConfig(app: Application) {
 
   app.use(express.json());
   app.use((req, _, next) => {
-    console.log(`Incoming request: ${req.method} ${req.url}`);
+    // console.log(`Incoming request: ${req.method} ${req.url}`);
     next();
   });
 

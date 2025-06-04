@@ -9,6 +9,8 @@ codegen.ts
 .env
 .env.development
 
+
+
 # flyctl launch added from node_modules/diagnostics/.gitignore
 # Logs
 node_modules/diagnostics/**/logs
@@ -95,3 +97,22 @@ node_modules/diagnostics/**/.dynamodb
 node_modules/diagnostics/**/dist
 node_modules/diagnostics/**/package-lock.json
 fly.toml
+
+
+!eslint.config.ts
+!index.html
+!package-lock.json
+!yarn.lock
+!package.json
+!public
+!run_tests.sh
+!src
+!tests
+!prisma
+!libs
+!.env
+!tsconfig.json
+!tsconfig.dev.json
+!vitest.config.mts
+!.yarnrc.yml
+!.prettierrc

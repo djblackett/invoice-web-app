@@ -49,9 +49,15 @@ container
 
 // Bind the appropriate database connection based on configuration
 if (USE_SQLITE) {
-  container.bind(TYPES.DatabaseConnection).to(SQLiteDatabaseConnection).inTransientScope();
+  container
+    .bind(TYPES.DatabaseConnection)
+    .to(SQLiteDatabaseConnection)
+    .inTransientScope();
 } else {
-  container.bind(TYPES.DatabaseConnection).to(DatabaseConnection).inTransientScope();
+  container
+    .bind(TYPES.DatabaseConnection)
+    .to(DatabaseConnection)
+    .inTransientScope();
 }
 
 container
@@ -79,11 +85,11 @@ container.bind<Logger>(TYPES.Logger).to(Logger).inSingletonScope();
 container.bind<PubSub>(TYPES.PubSub).toConstantValue(new PubSub());
 
 // uncomment for verbose logging
-container.applyMiddleware((planAndResolve) => {
-  return (args) => {
-    console.log(`Resolving ${args.serviceIdentifier.toString()}`);
-    return planAndResolve(args);
-  };
-});
+// container.applyMiddleware((planAndResolve) => {
+//   return (args) => {
+//     console.log(`Resolving ${args.serviceIdentifier.toString()}`);
+//     return planAndResolve(args);
+//   };
+// });
 
 export default container;

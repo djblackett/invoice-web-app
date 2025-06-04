@@ -22,7 +22,9 @@ export const createApp = async () => {
     serverConfig(app);
     serverErrorConfig(app);
 
-    const database = container.get<IDatabaseConnection>(TYPES.DatabaseConnection);
+    const database = container.get<IDatabaseConnection>(
+      TYPES.DatabaseConnection,
+    );
     await database.initConnection();
 
     app.set("trust proxy", 1);

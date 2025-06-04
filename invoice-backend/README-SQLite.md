@@ -60,12 +60,14 @@ USE_SQLITE=true USE_IN_MEMORY=true npm run dev
 ## Benefits
 
 ### SQLite File Database
+
 - No Docker dependency
 - Faster startup time
 - Simpler development setup
 - Portable database file
 
 ### SQLite In-Memory Database
+
 - Extremely fast operations
 - No file system dependencies
 - Perfect for unit tests
@@ -77,6 +79,7 @@ USE_SQLITE=true USE_IN_MEMORY=true npm run dev
 ### Database Connection
 
 The application automatically selects the appropriate database connection class:
+
 - `DatabaseConnection` for PostgreSQL
 - `SQLiteDatabaseConnection` for SQLite
 
@@ -89,6 +92,7 @@ The application automatically selects the appropriate database connection class:
 ### Logging
 
 The application logs the database configuration on startup:
+
 - Database URL
 - Use SQLite flag
 - Use In-Memory flag
@@ -96,11 +100,13 @@ The application logs the database configuration on startup:
 ## Limitations
 
 ### SQLite Limitations
+
 - No concurrent write operations
 - Limited to single-node deployments
 - Some PostgreSQL-specific features may not be available
 
 ### In-Memory Database Limitations
+
 - Data is lost on application restart
 - Not suitable for production
 - Limited to single process
@@ -123,6 +129,7 @@ For testing, you can use:
 - For SQLite in-memory: `npm run test:integration:memory`
 
 This provides:
+
 - Fast test execution with in-memory
 - Isolated test environments
 - No cleanup required between tests
