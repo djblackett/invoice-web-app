@@ -16,7 +16,7 @@ import {
   InternalServerException,
   NotFoundException,
   ValidationException,
-} from "@/config/exception.config";
+} from "../../../src/config/exception.config";
 import { beforeEach, describe, it, expect, vi, test } from "vitest";
 
 let invoiceServiceMock: MockProxy<InvoiceService>;
@@ -271,7 +271,7 @@ describe("Mutation.addInvoice", () => {
 
     const result = await invoiceResolvers.Mutation.addInvoice(
       {},
-      args,
+      args as InvoiceCreateArgs,
       mockContext,
     );
 
@@ -621,8 +621,8 @@ describe("Subscription.invoiceAdded", () => {
     pubsubMock.asyncIterator.mockReturnValue(asyncIteratorMock);
 
     const result = await invoiceResolvers.Subscription.invoiceAdded.subscribe(
-      {},
-      {},
+      undefined as never,
+      undefined as never,
       mockContext,
     );
 

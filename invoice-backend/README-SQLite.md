@@ -116,13 +116,13 @@ To migrate from PostgreSQL to SQLite:
 
 ## Testing
 
-For testing, the in-memory database is recommended:
+For testing, you can use:
 
-```bash
-USE_SQLITE=true USE_IN_MEMORY=true npm test
-```
+- For Postgres: `npm run test:integration:postgres`
+- For SQLite file: `npm run test:integration:sqlite`
+- For SQLite in-memory: `npm run test:integration:memory`
 
 This provides:
-- Fast test execution
+- Fast test execution with in-memory
 - Isolated test environments
 - No cleanup required between tests

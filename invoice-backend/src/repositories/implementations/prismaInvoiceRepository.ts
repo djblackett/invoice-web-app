@@ -1,7 +1,8 @@
 import { Prisma, Role } from "@prisma/client";
 import { inject, injectable } from "inversify";
 import { Invoice, InvoiceWithCreatedBy } from "@/constants/types";
-import { DatabaseConnection } from "@/database/prisma.database.connection";
+import { IDatabaseConnection } from "@/database/database.connection";
+import TYPES from "@/constants/identifiers";
 import { IInvoiceRepo } from "../InvoiceRepo";
 import {
   BadRequestException,
@@ -15,8 +16,8 @@ export class PrismaInvoiceRepository implements IInvoiceRepo {
   protected prisma;
 
   constructor(
-    @inject(DatabaseConnection)
-    databaseConnection: DatabaseConnection,
+    @inject(TYPES.DatabaseConnection)
+    databaseConnection: IDatabaseConnection,
   ) {
     this.prisma = databaseConnection.getDatabase();
   }
@@ -191,7 +192,6 @@ export class PrismaInvoiceRepository implements IInvoiceRepo {
                     quantity: item.quantity,
                     total: item.total,
                   })) as Prisma.ItemCreateManyInput[]),
-                skipDuplicates: true,
               },
             },
           } as Prisma.InvoiceUpdateInput,
@@ -207,7 +207,7 @@ export class PrismaInvoiceRepository implements IInvoiceRepo {
 
       return updatedInvoice;
     } catch (e) {
-      console.error(e);
+      console.error("Update invoice error:", e);
       return prismaErrorHandler(e);
     }
   }
@@ -345,3 +345,12 @@ export const prismaErrorHandler = (e: unknown): never => {
     throw new Error(`Database error: ${errorMessage}`);
   }
 };
+
+function deduplicateItemsByName<T extends { name: string }>(items: T[]): T[] {
+  const seen = new Set<string>();
+  return items.filter((item) => {
+    if (seen.has(item.name)) return false;
+    seen.add(item.name);
+    return true;
+  });
+}

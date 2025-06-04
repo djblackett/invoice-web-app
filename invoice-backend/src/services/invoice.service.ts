@@ -157,7 +157,7 @@ export class InvoiceService {
       if (e instanceof ValidationException) {
         throw e;
       }
-      throw new InternalServerException("Internal server error");
+      throw new InternalServerException("Internal server error" + e);
     }
   };
 

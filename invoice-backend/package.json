@@ -9,7 +9,11 @@
   "scripts": {
     "test:unit": "vitest ./tests/unit",
     "test:integration": "cross-env CERT_DIR='../certs/' DATABASE_URL=postgres://postgres:example@localhost:5432/db-test NODE_ENV=test vitest ./tests/integration",
+    "test:integration:sqlite": "yarn set-db-provider:sqlite && cross-env CERT_DIR='../certs/' DATABASE_URL=file:./prisma/test.db NODE_ENV=test vitest run ./tests/integration && yarn clean:testdbs",
+    "test:integration:memory": "yarn set-db-provider:sqlite && cross-env USE_SQLITE=true USE_IN_MEMORY=true CERT_DIR='../certs/' NODE_ENV=test vitest ./tests/integration",
+    "test:integration:postgres": "yarn set-db-provider:postgres && cross-env CERT_DIR='../certs/' DATABASE_URL=postgres://postgres:example@localhost:5432/db-test NODE_ENV=test vitest ./tests/integration",
     "coverage": "cross-env DATABASE_URL=postgres://postgres:example@localhost:5432/db-test CERT_DIR='../certs/' vitest run --coverage",
+    "coverage:sqlite": "cross-env DATABASE_URL=file:./prisma/test.db CERT_DIR='../certs/' vitest run --coverage",
     "build": "tsc -p tsconfig.build.json && tsc-alias",
     "build:slim": "npm run prisma-generate && ncc build ./src/index.ts -o dist -t",
     "dev": "cross-env NODE_ENV=development CERT_DIR='../certs/' ts-node-dev -r tsconfig-paths/register src/index.ts",
@@ -25,7 +29,10 @@
     "generate": "graphql-codegen",
     "codegen": "graphql-codegen --config codegen.ts",
     "prisma-generate": "prisma generate",
-    "prisma-push": "prisma db push"
+    "prisma-push": "prisma db push",
+    "set-db-provider:sqlite": "sed -i 's/provider = \"postgresql\"/provider = \"sqlite\"/g' prisma/schema.prisma && prisma generate",
+    "set-db-provider:postgres": "sed -i 's/provider = \"sqlite\"/provider = \"postgresql\"/g' prisma/schema.prisma && prisma generate",
+    "clean:testdbs": "rm -f prisma/test_*.db"
   },
   "author": "David Andrea",
   "license": "ISC",

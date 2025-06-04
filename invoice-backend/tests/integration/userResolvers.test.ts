@@ -11,10 +11,9 @@ import {
   expect,
 } from "vitest";
 import { PrismaClient } from "@prisma/client";
-import { execSync } from "child_process";
-import { randomUUID } from "crypto";
-import container from "@/config/inversify.config";
-import TYPES from "@/constants/identifiers";
+import container from "../../src/config/inversify.config";
+import TYPES from "../../src/constants/identifiers";
+import { setupTestDatabase, type TestDatabaseConfig, bindPrismaToContainer } from "./test-database-setup";
 
 let app: any;
 process.env.NODE_ENV = "test";
@@ -59,8 +58,7 @@ async function createUsers() {
   await Promise.all(userPromises);
 }
 
-let prisma: PrismaClient;
-let schemaName: string;
+let testDbConfig: TestDatabaseConfig;
 let testToken: string;
 
 describe("Integration Tests", () => {
@@ -69,25 +67,13 @@ describe("Integration Tests", () => {
   });
 
   beforeEach(async () => {
-    schemaName = `test_schema_${randomUUID()}`;
-    const baseDatabaseUrl =
-      "postgresql://postgres:example@localhost:5432/db-test";
-    const newDatabaseUrl = `${baseDatabaseUrl}?schema=${schemaName}`;
-
-    prisma = new PrismaClient({
-      datasourceUrl: newDatabaseUrl,
-    });
-
-    await prisma.$executeRawUnsafe(
-      `SET search_path TO "${schemaName}", public`,
-    );
-    await prisma.$connect();
-
-    const child = container.createChild();
-    child.bind<PrismaClient>(TYPES.PrismaClient).toConstantValue(prisma);
-
-    console.log("Connected to Prisma", newDatabaseUrl);
-    execSync("npx prisma db push", { stdio: "inherit" });
+    // Setup test database (works with both SQLite and PostgreSQL)
+    testDbConfig = await setupTestDatabase();
+    
+    // Bind the test database to the container
+    bindPrismaToContainer(testDbConfig.prisma);
+    
+    console.log("Connected to test database:", testDbConfig.databaseUrl);
     [app] = await createServer();
 
     await request(app)
@@ -113,15 +99,13 @@ describe("Integration Tests", () => {
         }
       `)
       .set("Authorization", `Bearer ${testToken}`);
+    
+    // Clean up the test database
+    await testDbConfig.cleanup();
   });
 
   afterAll(async () => {
-    // Drop the schema to clean up
-    await prisma.$executeRawUnsafe(
-      `DROP SCHEMA IF EXISTS "${schemaName}" CASCADE`,
-    );
-
-    await prisma.$disconnect();
+    // No additional cleanup needed - handled in afterEach
   });
 
   it("should return a list of 11 users: 1 ADMIN + 10 created users", async () => {
