@@ -72,7 +72,7 @@ async function create(invoice) {
     return createdInvoice;
   } catch (error) {
     console.error("Error creating invoice:", error);
-    return prismaErrorHandler(error);
+    // return prismaErrorHandler(error);
   }
 }
 
@@ -109,7 +109,7 @@ const createUserWithAuth0 = async (args) => {
 
 async function getUserByIdSafely(id) {
   try {
-    const user = await this.prisma.user.findUnique({
+    const user = await prisma.user.findUnique({
       select: {
         id: true,
         name: true,
@@ -420,11 +420,12 @@ const data = [
 async function main() {
   await prisma.$connect();
 
-  let dbUser = getUserByIdSafely(user.id);
+  let dbUser = await getUserByIdSafely(user.id);
 
   if (!dbUser) {
     dbUser = await createUserWithAuth0(user);
   }
+
   const promises = data.map((invoice) => create(invoice));
   await Promise.all(promises);
   await prisma.$disconnect();
