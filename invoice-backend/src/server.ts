@@ -72,6 +72,9 @@ export const createServer = async () => {
       schema,
       introspection: true,
       status400ForVariableCoercionErrors: true,
+      csrfPrevention: {
+        requestHeaders: ["x-apollo-operation-name"],
+      },
       plugins: [
         ApolloServerPluginDrainHttpServer({ httpServer }),
         {

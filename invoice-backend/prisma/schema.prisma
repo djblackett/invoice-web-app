@@ -28,8 +28,10 @@ model Invoice {
   senderAddress   SenderAddress? @relation(fields: [senderAddressId], references: [id], onDelete: Cascade)
   senderAddressId Int?           @unique
   clientAddressId Int?           @unique
+  revisions       InvoiceRevision[]
 
   @@index([createdById])
+
 }
 
 model Item {
@@ -74,4 +76,14 @@ model User {
 enum Role {
   USER
   ADMIN
+}
+
+model InvoiceRevision {
+  id        String   @id @default(uuid())
+  invoiceId String
+  invoice   Invoice  @relation(fields: [invoiceId], references: [id], onDelete: Cascade)
+  createdAt DateTime @default(now())
+  data      String
+
+  @@index([invoiceId])
 }

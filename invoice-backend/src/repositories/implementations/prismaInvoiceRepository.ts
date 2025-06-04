@@ -121,19 +121,40 @@ export class PrismaInvoiceRepository implements IInvoiceRepo {
 
   async markAsPaid(id: string) {
     try {
-      return await this.prisma.invoice.update({
-        where: {
-          id,
-        },
-        data: {
-          status: "paid",
-        },
+      const currentInvoice = await this.prisma.invoice.findUnique({
+        where: { id },
         include: {
           items: true,
           clientAddress: true,
           senderAddress: true,
           createdBy: true,
         },
+      });
+      if (!currentInvoice) {
+        throw new NotFoundException("Invoice not found");
+      }
+      const revisionData = JSON.stringify(currentInvoice);
+      return await this.prisma.$transaction(async (prisma) => {
+        await prisma.invoiceRevision.create({
+          data: {
+            invoiceId: id,
+            data: revisionData,
+          },
+        });
+        return prisma.invoice.update({
+          where: {
+            id,
+          },
+          data: {
+            status: "paid",
+          },
+          include: {
+            items: true,
+            clientAddress: true,
+            senderAddress: true,
+            createdBy: true,
+          },
+        });
       });
     } catch (e) {
       console.error(e);
@@ -143,7 +164,26 @@ export class PrismaInvoiceRepository implements IInvoiceRepo {
 
   async update(id: string, invoiceUpdates: Partial<Invoice>) {
     try {
+      const currentInvoice = await this.prisma.invoice.findUnique({
+        where: { id },
+        include: {
+          items: true,
+          clientAddress: true,
+          senderAddress: true,
+          createdBy: true,
+        },
+      });
+      if (!currentInvoice) {
+        throw new NotFoundException("Invoice not found");
+      }
+      const revisionData = JSON.stringify(currentInvoice);
       const updatedInvoice = await this.prisma.$transaction(async (prisma) => {
+        await prisma.invoiceRevision.create({
+          data: {
+            invoiceId: id,
+            data: revisionData,
+          },
+        });
         if (invoiceUpdates.items && invoiceUpdates.items.length >= 1) {
           await prisma.item.deleteMany({
             where: { invoiceId: id },
