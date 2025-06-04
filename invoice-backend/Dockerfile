@@ -1,4 +1,4 @@
-FROM node:20-bookworm-slim AS build
+FROM node:22.16.0-bookworm-slim AS build
 ENV NODE_ENV=production
 
 RUN apt-get update -y && \
