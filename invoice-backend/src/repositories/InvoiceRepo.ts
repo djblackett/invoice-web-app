@@ -13,7 +13,9 @@ export interface IInvoiceRepo {
   delete: (id: string) => Promise<boolean>;
   deleteAllInvoices: () => Promise<unknown>;
   deleteInvoicesByUserId: (userId: string) => Promise<unknown>;
-  markAsPaid: (id: string) => Promise<unknown>;
-  update: (id: string, invoiceUpdates: Partial<Invoice>) => Promise<unknown>;
+  markAsPaid: (id: string, updatedById: string) => Promise<unknown>;
+  update: (id: string, invoiceUpdates: Partial<Invoice>, updatedById: string) => Promise<unknown>;
   create: (invoice: InvoiceWithCreatedBy) => Promise<unknown>;
+  getRevisionsForInvoice: (invoiceId: string, startDate?: string, endDate?: string, userId?: string) => Promise<unknown>;
+  getRestoredInvoiceFromRevision: (revisionId: string) => Promise<unknown>;
 }

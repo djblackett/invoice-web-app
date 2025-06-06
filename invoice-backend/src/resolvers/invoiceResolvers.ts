@@ -122,6 +122,36 @@ export function getInvoiceResolvers() {
           });
         }
       },
+      getInvoiceRevisions: async (
+        _root: object,
+        args: { invoiceId: string; startDate?: string; endDate?: string; userId?: string },
+        context: InjectedQueryContext,
+      ) => {
+        const { invoiceService } = context;
+        if (!invoiceService) {
+          throw new GraphQLError("Internal server error", {
+            extensions: {
+              code: "INTERNAL_SERVER_ERROR",
+            },
+          });
+        }
+        try {
+          const result = await invoiceService.getInvoiceRevisions(
+            args.invoiceId,
+            args.startDate,
+            args.endDate,
+            args.userId
+          );
+          return result;
+        } catch (error) {
+          console.error(error);
+          throw new GraphQLError("Failed to get revisions", {
+            extensions: {
+              code: "INTERNAL_SERVER_ERROR",
+            },
+          });
+        }
+      },
     },
     Mutation: {
       addInvoice: async (
@@ -329,6 +359,31 @@ export function getInvoiceResolvers() {
             });
           }
           throw new GraphQLError("Invoice could not be marked as paid", {
+            extensions: {
+              code: "INTERNAL_SERVER_ERROR",
+            },
+          });
+        }
+      },
+      restoreInvoiceToRevision: async (
+        _root: unknown,
+        args: { invoiceId: string; revisionId: string },
+        context: InjectedQueryContext,
+      ) => {
+        const { invoiceService } = context;
+        if (!invoiceService) {
+          throw new GraphQLError("Internal server error", {
+            extensions: {
+              code: "INTERNAL_SERVER_ERROR",
+            },
+          });
+        }
+        try {
+          const result = await invoiceService.restoreInvoiceToRevision(args.invoiceId, args.revisionId);
+          return result;
+        } catch (error) {
+          console.error(error);
+          throw new GraphQLError("Failed to restore invoice", {
             extensions: {
               code: "INTERNAL_SERVER_ERROR",
             },

@@ -102,6 +102,30 @@ export class InvoiceService {
     }
   };
 
+  getInvoiceRevisions = async (
+    invoiceId: string,
+    startDate?: string,
+    endDate?: string,
+    userId?: string
+  ) => {
+    if (!this.userContext) {
+      throw new ValidationException("Unauthorized");
+    }
+    // Add permission check if needed
+    try {
+      const result = await this.invoiceRepo.getRevisionsForInvoice(
+        invoiceId,
+        startDate,
+        endDate,
+        userId
+      );
+      return result;
+    } catch (e) {
+      console.error(e);
+      throw new InternalServerException("Internal server error");
+    }
+  };
+
   addInvoice = async (invoice: Invoice) => {
     if (!this.userContext) {
       throw new ValidationException("Unauthorized");
@@ -150,7 +174,7 @@ export class InvoiceService {
 
       delete newInvoiceUnvalidated.createdBy;
       delete newInvoiceUnvalidated.createdById;
-      const result = await this.invoiceRepo.update(id, validatedInvoice);
+      const result = await this.invoiceRepo.update(id, validatedInvoice, this.userContext!.id);
 
       return result;
     } catch (e) {
@@ -167,13 +191,30 @@ export class InvoiceService {
       throw new ValidationException("Unauthorized");
     }
     try {
-      const result = await this.invoiceRepo.markAsPaid(id);
+      const result = await this.invoiceRepo.markAsPaid(id, this.userContext!.id);
       return validateInvoiceData(result);
     } catch (e) {
       console.error(e);
       if (e instanceof ValidationException) {
         throw e;
       }
+      throw new InternalServerException("Internal server error");
+    }
+  };
+
+  restoreInvoiceToRevision = async (invoiceId: string, revisionId: string) => {
+    if (!this.userContext) {
+      throw new ValidationException("Unauthorized");
+    }
+    try {
+      const restored: any = await this.invoiceRepo.getRestoredInvoiceFromRevision(revisionId);
+      if (restored.id !== invoiceId) {
+        throw new ValidationException("Revision does not belong to the invoice");
+      }
+      const result = await this.invoiceRepo.update(invoiceId, restored, this.userContext!.id);
+      return result;
+    } catch (e) {
+      console.error(e);
       throw new InternalServerException("Internal server error");
     }
   };

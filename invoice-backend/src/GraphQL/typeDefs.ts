@@ -38,6 +38,13 @@ const typeDefs = gql`
     total: Float
   }
 
+  type InvoiceRevision {
+    id: String
+    createdAt: String
+    createdBy: User
+    data: String
+  }
+
   type SenderAddress {
     city: String
     country: String
@@ -95,6 +102,7 @@ const typeDefs = gql`
     getUserById(id: String!): User
     me: User
     getInvoicePdf(id: String!): String
+    getInvoiceRevisions(invoiceId: String!, startDate: String, endDate: String, userId: String): [InvoiceRevision]
   }
 
   type Mutation {
@@ -112,6 +120,7 @@ const typeDefs = gql`
       status: String
       total: Float
     ): Invoice
+    restoreInvoiceToRevision(invoiceId: String!, revisionId: String!): Invoice
 
     editInvoice(
       clientAddress: ClientInfo
