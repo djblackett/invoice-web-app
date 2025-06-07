@@ -1,5 +1,4 @@
 import { Prisma, Role } from "@prisma/client";
-import * as jsondiffpatch from "jsondiffpatch";
 import { inject, injectable } from "inversify";
 import { Invoice, InvoiceWithCreatedBy } from "@/constants/types";
 import { IDatabaseConnection } from "@/database/database.connection";
@@ -11,10 +10,6 @@ import {
   NotFoundException,
   ValidationException,
 } from "@/config/exception.config";
-
-const jdp = jsondiffpatch.create({
-  objectHash: (obj: any) => obj.id ?? JSON.stringify(obj),
-});
 
 @injectable()
 export class PrismaInvoiceRepository implements IInvoiceRepo {
@@ -124,10 +119,49 @@ export class PrismaInvoiceRepository implements IInvoiceRepo {
     }
   }
 
-  async markAsPaid(id: string, updatedById: string) {
-    try {
-      const currentInvoice = await this.prisma.invoice.findUnique({
-        where: { id },
+async markAsPaid(id: string) {
+  try {
+    const currentInvoice = await this.prisma.invoice.findUnique({
+      where: { id },
+      include: {
+        items: true,
+        clientAddress: true,
+        senderAddress: true,
+        createdBy: true,
+      },
+    });
+    if (!currentInvoice) {
+      throw new NotFoundException("Invoice not found");
+    }
+    
+    return await this.prisma.$transaction(async (prisma) => {
+      // Get the next revision number for this invoice
+      const lastRevision = await prisma.invoiceRevision.findFirst({
+        where: { invoiceId: id },
+        orderBy: { revisionNumber: 'desc' }
+      });
+      const revisionNumber = (lastRevision?.revisionNumber || 0) + 1;
+
+      // Create revision with new schema
+      await prisma.invoiceRevision.create({
+        data: {
+          invoiceId: id,
+          createdById: currentInvoice.createdById,
+          revisionNumber,
+          changeType: 'status_change',
+          jsonDiff: null, // Will be calculated by revision service if needed
+          fullSnapshot: JSON.stringify(currentInvoice),
+          description: 'Marked as paid'
+        },
+      });
+      
+      return prisma.invoice.update({
+        where: {
+          id,
+        },
+        data: {
+          status: "paid",
+        },
         include: {
           items: true,
           clientAddress: true,
@@ -135,93 +169,53 @@ export class PrismaInvoiceRepository implements IInvoiceRepo {
           createdBy: true,
         },
       });
-      if (!currentInvoice) {
-        throw new NotFoundException("Invoice not found");
-      }
-      const firstRevision = await this.prisma.invoiceRevision.findFirst({
-        where: { invoiceId: id },
-        orderBy: { createdAt: "asc" },
-      });
-      let revisionDataObj;
-      if (!firstRevision) {
-        revisionDataObj = currentInvoice;
-      } else {
-        const initialState = JSON.parse(firstRevision.data);
-        revisionDataObj = jdp.diff(initialState, currentInvoice) || {};
-      }
-      const revisionData = JSON.stringify(revisionDataObj);
-      return await this.prisma.$transaction(async (prisma) => {
-        await prisma.invoiceRevision.create({
-          data: {
-            invoiceId: id,
-            data: revisionData,
-            createdById: updatedById,
-          },
-        });
-        return prisma.invoice.update({
-          where: {
-            id,
-          },
-          data: {
-            status: "paid",
-          },
-          include: {
-            items: true,
-            clientAddress: true,
-            senderAddress: true,
-            createdBy: true,
-          },
-        });
-      });
-    } catch (e) {
+    });
+  } catch (e) {
       console.error(e);
       return prismaErrorHandler(e);
     }
   }
 
-  async update(
-    id: string,
-    invoiceUpdates: Partial<Invoice>,
-    updatedById: string,
-  ) {
-    try {
-      const currentInvoice = await this.prisma.invoice.findUnique({
-        where: { id },
-        include: {
-          items: true,
-          clientAddress: true,
-          senderAddress: true,
-          createdBy: true,
+async update(id: string, invoiceUpdates: Partial<Invoice>) {
+  try {
+    const currentInvoice = await this.prisma.invoice.findUnique({
+      where: { id },
+      include: {
+        items: true,
+        clientAddress: true,
+        senderAddress: true,
+        createdBy: true,
+      },
+    });
+    if (!currentInvoice) {
+      throw new NotFoundException("Invoice not found");
+    }
+    
+    const updatedInvoice = await this.prisma.$transaction(async (prisma) => {
+      // Get the next revision number for this invoice
+      const lastRevision = await prisma.invoiceRevision.findFirst({
+        where: { invoiceId: id },
+        orderBy: { revisionNumber: 'desc' }
+      });
+      const revisionNumber = (lastRevision?.revisionNumber || 0) + 1;
+
+      // Create revision with new schema
+      await prisma.invoiceRevision.create({
+        data: {
+          invoiceId: id,
+          createdById: currentInvoice.createdById,
+          revisionNumber,
+          changeType: 'update',
+          jsonDiff: null, // Will be calculated by revision service if needed
+          fullSnapshot: JSON.stringify(currentInvoice),
+          description: 'Invoice updated'
         },
       });
-      if (!currentInvoice) {
-        throw new NotFoundException("Invoice not found");
-      }
-      const firstRevision = await this.prisma.invoiceRevision.findFirst({
-        where: { invoiceId: id },
-        orderBy: { createdAt: "asc" },
-      });
-      let revisionDataObj;
-      if (!firstRevision) {
-        revisionDataObj = currentInvoice;
-      } else {
-        const initialState = JSON.parse(firstRevision.data);
-        revisionDataObj = jdp.diff(initialState, currentInvoice) || {};
-      }
-      const revisionData = JSON.stringify(revisionDataObj);
-      const updatedInvoice = await this.prisma.$transaction(async (prisma) => {
-        await prisma.invoiceRevision.create({
-          data: {
-            invoiceId: id,
-            data: revisionData,
-            createdById: updatedById,
-          },
+      if (invoiceUpdates.items && invoiceUpdates.items.length >= 1) {
+        await prisma.item.deleteMany({
+          where: { invoiceId: id },
         });
-        if (invoiceUpdates.items && invoiceUpdates.items.length >= 1) {
-          await prisma.item.deleteMany({
-            where: { invoiceId: id },
-          });
-        }
+      }
 
         const inputUpdateResult = await prisma.invoice.update({
           where: {
@@ -299,143 +293,69 @@ export class PrismaInvoiceRepository implements IInvoiceRepo {
         throw error;
       }
 
-      const createdInvoice = await this.prisma.$transaction(async (prisma) => {
-        const result = await prisma.invoice.create({
-          data: {
-            createdBy: {
-              connect: { id: invoice.createdById ?? "" },
-            },
-            id: invoice.id || "",
-            clientEmail: invoice.clientEmail || "",
-            clientName: invoice.clientName || "",
-            createdAt: invoice.createdAt || new Date().toISOString(),
-            description: invoice.description || "",
-            paymentDue:
-              invoice.paymentDue ||
-              new Date(Date.now() + 24 * 60 * 60 * 1000).toISOString(),
-            paymentTerms: invoice.paymentTerms || 14,
-            status: invoice.status || "pending",
-            total: invoice.total || new Prisma.Decimal(0),
-            items: {
-              create: (invoice.items ?? []).map((item) => ({
-                name: item.name ?? "",
-                quantity: item.quantity ?? 0,
-                price: item.price ?? 0,
-                total: item.total ?? 0,
-              })),
-            },
-            ...(invoice.clientAddress && {
-              clientAddress: {
-                create: {
-                  city: invoice.clientAddress.city,
-                  country: invoice.clientAddress.country,
-                  postCode: invoice.clientAddress.postCode,
-                  street: invoice.clientAddress.street,
-                },
+      const result = await this.prisma.invoice.create({
+        data: {
+          createdBy: {
+            connect: { id: invoice.createdById ?? "" },
+          },
+          id: invoice.id || "",
+          clientEmail: invoice.clientEmail || "",
+          clientName: invoice.clientName || "",
+          createdAt: invoice.createdAt || new Date().toISOString(),
+          description: invoice.description || "",
+          paymentDue:
+            invoice.paymentDue ||
+            new Date(Date.now() + 24 * 60 * 60 * 1000).toISOString(),
+          paymentTerms: invoice.paymentTerms || 14,
+          status: invoice.status || "pending",
+          total: invoice.total || new Prisma.Decimal(0),
+          items: {
+            create: (invoice.items ?? []).map((item) => ({
+              name: item.name ?? "",
+              quantity: item.quantity ?? 0,
+              price: item.price ?? 0,
+              total: item.total ?? 0,
+            })),
+          },
+          ...(invoice.clientAddress && {
+            clientAddress: {
+              create: {
+                city: invoice.clientAddress.city,
+                country: invoice.clientAddress.country,
+                postCode: invoice.clientAddress.postCode,
+                street: invoice.clientAddress.street,
               },
-            }),
-            ...(invoice.senderAddress && {
-              senderAddress: {
-                create: {
-                  city: invoice.senderAddress.city,
-                  country: invoice.senderAddress.country,
-                  postCode: invoice.senderAddress.postCode,
-                  street: invoice.senderAddress.street,
-                },
+            },
+          }),
+          ...(invoice.senderAddress && {
+            senderAddress: {
+              create: {
+                city: invoice.senderAddress.city,
+                country: invoice.senderAddress.country,
+                postCode: invoice.senderAddress.postCode,
+                street: invoice.senderAddress.street,
               },
-            }),
-          },
-          include: {
-            items: true,
-            clientAddress: true,
-            senderAddress: true,
-            createdBy: true,
-          },
-        });
-
-        // Convert total from Decimal to number
-        const tempCreatedInvoice = {
-          ...result,
-          total: Number(result.total),
-        };
-
-        const revisionData = JSON.stringify(tempCreatedInvoice);
-
-        await prisma.invoiceRevision.create({
-          data: {
-            invoiceId: result.id,
-            data: revisionData,
-            createdById: invoice.createdById ?? "",
-          },
-        });
-
-        return tempCreatedInvoice;
+            },
+          }),
+        },
+        include: {
+          items: true,
+          clientAddress: true,
+          senderAddress: true,
+          createdBy: true,
+        },
       });
+
+      // Convert total from Decimal to number
+      const createdInvoice = {
+        ...result,
+        total: Number(result.total),
+      };
 
       return createdInvoice;
     } catch (error) {
       console.error("Error creating invoice:", error);
       return prismaErrorHandler(error);
-    }
-  }
-
-  async getRevisionsForInvoice(
-    invoiceId: string,
-    startDate?: string,
-    endDate?: string,
-    userId?: string,
-  ): Promise<unknown> {
-    const where: any = { invoiceId };
-    if (startDate || endDate) {
-      where.createdAt = {};
-      if (startDate) where.createdAt.gte = startDate;
-      if (endDate) where.createdAt.lte = endDate;
-    }
-    if (userId) where.createdById = userId;
-
-    try {
-      const result = await this.prisma.invoiceRevision.findMany({
-        where,
-        include: {
-          createdBy: true,
-        },
-        orderBy: {
-          createdAt: "asc",
-        },
-      });
-      return result;
-    } catch (e: unknown) {
-      const errorMessage = e instanceof Error ? e.message : "Unknown error";
-      throw new Error(`Database error: ${errorMessage}`);
-    }
-  }
-
-  async getRestoredInvoiceFromRevision(revisionId: string): Promise<unknown> {
-    try {
-      const revision = await this.prisma.invoiceRevision.findUnique({
-        where: { id: revisionId },
-      });
-      if (!revision) {
-        throw new NotFoundException("Revision not found");
-      }
-      const firstRevision = await this.prisma.invoiceRevision.findFirst({
-        where: { invoiceId: revision.invoiceId },
-        orderBy: { createdAt: "asc" },
-      });
-      if (!firstRevision) {
-        throw new NotFoundException("First revision not found");
-      }
-      const initialState = JSON.parse(firstRevision.data);
-      if (firstRevision.id === revision.id) {
-        return initialState;
-      } else {
-        const diff = JSON.parse(revision.data);
-        const restored = jdp.patch(initialState, diff);
-        return restored;
-      }
-    } catch (e) {
-      console.error(e);
-      return prismaErrorHandler(e);
     }
   }
 

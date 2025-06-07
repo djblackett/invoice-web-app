@@ -3,6 +3,7 @@ import type { interfaces } from "inversify";
 import { Container } from "inversify";
 import { InvoiceService } from "../services/invoice.service";
 import { UserService } from "../services/user.service";
+import { RevisionService } from "../services/revision.service";
 import { PrismaInvoiceRepository } from "../repositories/implementations/prismaInvoiceRepository";
 import { PrismaUserRepository } from "../repositories/implementations/prismaUserRepo";
 import { DatabaseConnection } from "../database/prisma.database.connection";
@@ -73,6 +74,11 @@ container
 container
   .bind<InvoiceService>(TYPES.InvoiceService)
   .to(InvoiceService)
+  .inTransientScope();
+
+container
+  .bind<RevisionService>(TYPES.RevisionService)
+  .to(RevisionService)
   .inTransientScope();
 
 container.bind<Logger>(TYPES.Logger).to(Logger).inSingletonScope();

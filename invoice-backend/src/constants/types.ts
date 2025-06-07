@@ -4,6 +4,7 @@ import type { Context as GraphQLWSContext } from "graphql-ws";
 import type { Container } from "inversify";
 import type { InvoiceService } from "@/services/invoice.service";
 import type { UserService } from "@/services/user.service";
+import type { RevisionService } from "@/services/revision.service";
 import type { PubSub } from "graphql-subscriptions";
 
 export interface Invoice {
@@ -67,6 +68,7 @@ export interface InjectedQueryContext {
   user?: UserIdAndRole | null;
   invoiceService?: InvoiceService;
   userService?: UserService;
+  revisionService?: RevisionService;
   pubsub?: PubSub;
   container?: Container;
   connection?: GraphQLWSContext;

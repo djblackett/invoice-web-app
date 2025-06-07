@@ -7,6 +7,7 @@ import {
 } from "../utils/utils";
 import { inject, injectable } from "inversify";
 import { IInvoiceRepo } from "../repositories/InvoiceRepo";
+import { RevisionService } from "./revision.service";
 import TYPES from "../constants/identifiers";
 import {
   InternalServerException,
@@ -19,6 +20,8 @@ export class InvoiceService {
   constructor(
     @inject(TYPES.IInvoiceRepo)
     private readonly invoiceRepo: IInvoiceRepo,
+    @inject(TYPES.RevisionService)
+    private readonly revisionService: RevisionService,
     @inject(TYPES.UserContext)
     private readonly userContext: UserIdAndRole | null,
   ) {}
@@ -102,30 +105,6 @@ export class InvoiceService {
     }
   };
 
-  getInvoiceRevisions = async (
-    invoiceId: string,
-    startDate?: string,
-    endDate?: string,
-    userId?: string
-  ) => {
-    if (!this.userContext) {
-      throw new ValidationException("Unauthorized");
-    }
-    // Add permission check if needed
-    try {
-      const result = await this.invoiceRepo.getRevisionsForInvoice(
-        invoiceId,
-        startDate,
-        endDate,
-        userId
-      );
-      return result;
-    } catch (e) {
-      console.error(e);
-      throw new InternalServerException("Internal server error");
-    }
-  };
-
   addInvoice = async (invoice: Invoice) => {
     if (!this.userContext) {
       throw new ValidationException("Unauthorized");
@@ -146,6 +125,15 @@ export class InvoiceService {
       const fullInvoice = mapPartialInvoiceToInvoice(invoiceWithUserInfo);
       const createdInvoice = await this.invoiceRepo.create(fullInvoice);
       const validatedData = validateInvoiceData(createdInvoice);
+
+      // Create initial revision for the new invoice
+      await this.revisionService.createRevision(
+        validatedData.id,
+        null,
+        validatedData,
+        'create',
+        'Initial invoice creation'
+      );
 
       return validatedData;
     } catch (e) {
@@ -174,7 +162,17 @@ export class InvoiceService {
 
       delete newInvoiceUnvalidated.createdBy;
       delete newInvoiceUnvalidated.createdById;
-      const result = await this.invoiceRepo.update(id, validatedInvoice, this.userContext!.id);
+      
+      // Create revision with proper diff tracking
+      await this.revisionService.createRevision(
+        id,
+        oldInvoice,
+        validatedInvoice,
+        'update',
+        'Invoice updated'
+      );
+
+      const result = await this.invoiceRepo.update(id, validatedInvoice);
 
       return result;
     } catch (e) {
@@ -191,30 +189,28 @@ export class InvoiceService {
       throw new ValidationException("Unauthorized");
     }
     try {
-      const result = await this.invoiceRepo.markAsPaid(id, this.userContext!.id);
+      const oldInvoice = await this.getInvoiceById(id);
+      if (!oldInvoice) {
+        throw new NotFoundException("Invoice not found");
+      }
+
+      // Create revision before marking as paid
+      const updatedInvoice = { ...oldInvoice, status: "paid" };
+      await this.revisionService.createRevision(
+        id,
+        oldInvoice,
+        updatedInvoice,
+        'status_change',
+        'Marked as paid'
+      );
+
+      const result = await this.invoiceRepo.markAsPaid(id);
       return validateInvoiceData(result);
     } catch (e) {
       console.error(e);
       if (e instanceof ValidationException) {
         throw e;
       }
-      throw new InternalServerException("Internal server error");
-    }
-  };
-
-  restoreInvoiceToRevision = async (invoiceId: string, revisionId: string) => {
-    if (!this.userContext) {
-      throw new ValidationException("Unauthorized");
-    }
-    try {
-      const restored: any = await this.invoiceRepo.getRestoredInvoiceFromRevision(revisionId);
-      if (restored.id !== invoiceId) {
-        throw new ValidationException("Revision does not belong to the invoice");
-      }
-      const result = await this.invoiceRepo.update(invoiceId, restored, this.userContext!.id);
-      return result;
-    } catch (e) {
-      console.error(e);
       throw new InternalServerException("Internal server error");
     }
   };

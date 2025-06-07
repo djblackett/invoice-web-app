@@ -15,6 +15,7 @@ import { setupContainer, getServices } from "../utils/containerUtils";
 import { getOrCreateDbUser } from "../utils/userUtils";
 import type { InvoiceService } from "@/services/invoice.service";
 import type { UserService } from "@/services/user.service";
+import type { RevisionService } from "@/services/revision.service";
 import type { PubSub } from "graphql-subscriptions";
 
 const logger = container.get<Logger>(TYPES.Logger);
@@ -74,12 +75,16 @@ async function createSubscriptionContext(connection: Context) {
     TYPES.InvoiceService,
   );
   const userService = childContainer.get<UserService>(TYPES.UserService);
+  const revisionService = childContainer.get<RevisionService>(
+    TYPES.RevisionService,
+  );
   const pubsub = childContainer.get<PubSub>(TYPES.PubSub);
 
   return {
     user,
     invoiceService,
     userService,
+    revisionService,
     pubsub,
     container: childContainer,
     connection,

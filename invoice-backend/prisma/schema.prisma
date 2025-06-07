@@ -80,14 +80,20 @@ enum Role {
 }
 
 model InvoiceRevision {
-  id          String   @id @default(uuid())
-  invoiceId   String
-  invoice     Invoice  @relation(fields: [invoiceId], references: [id], onDelete: Cascade)
-  createdAt   DateTime @default(now())
-  data        String
-  createdBy   User     @relation(fields: [createdById], references: [id], onDelete: Cascade)
+  id        String   @id @default(uuid())
+  invoiceId String
+  invoice   Invoice  @relation(fields: [invoiceId], references: [id], onDelete: Cascade)
+  createdAt DateTime @default(now())
+  createdBy User     @relation(fields: [createdById], references: [id], onDelete: Cascade)
   createdById String
+  revisionNumber Int
+  changeType String  // 'create', 'update', 'status_change'
+  jsonDiff  String?  // JSON diff patch (null for initial creation)
+  fullSnapshot String // Full invoice data snapshot for restoration
+  description String? // Optional description of changes
 
   @@index([invoiceId])
   @@index([createdById])
+  @@index([createdAt])
+  @@unique([invoiceId, revisionNumber])
 }

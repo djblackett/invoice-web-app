@@ -36,13 +36,25 @@ const typeDefs = gql`
     senderAddress: SenderAddress
     status: String
     total: Float
+    revisions: [InvoiceRevision]
   }
 
   type InvoiceRevision {
-    id: String
-    createdAt: String
-    createdBy: User
-    data: String
+    id: String!
+    invoiceId: String!
+    createdAt: String!
+    createdBy: User!
+    revisionNumber: Int!
+    changeType: String!
+    description: String
+    jsonDiff: String
+    fullSnapshot: String!
+  }
+
+  type RevisionDiff {
+    fromRevision: Int!
+    toRevision: Int!
+    diff: String!
   }
 
   type SenderAddress {
@@ -93,6 +105,13 @@ const typeDefs = gql`
     total: Float
   }
 
+  input RevisionFilters {
+    startDate: String
+    endDate: String
+    userId: String
+    changeType: String
+  }
+
   type Query {
     allInvoices: [Invoice]
     getInvoiceById(id: String!): Invoice
@@ -102,7 +121,8 @@ const typeDefs = gql`
     getUserById(id: String!): User
     me: User
     getInvoicePdf(id: String!): String
-    getInvoiceRevisions(invoiceId: String!, startDate: String, endDate: String, userId: String): [InvoiceRevision]
+    getInvoiceRevisions(invoiceId: String!, filters: RevisionFilters): [InvoiceRevision]
+    getRevisionDiff(invoiceId: String!, fromRevision: Int!, toRevision: Int!): RevisionDiff
   }
 
   type Mutation {
@@ -120,7 +140,6 @@ const typeDefs = gql`
       status: String
       total: Float
     ): Invoice
-    restoreInvoiceToRevision(invoiceId: String!, revisionId: String!): Invoice
 
     editInvoice(
       clientAddress: ClientInfo
@@ -152,6 +171,8 @@ const typeDefs = gql`
     deleteUsersKeepAdmins: deleteResult
 
     login(username: String!, password: String!): LoginResponse
+
+    restoreInvoiceToRevision(invoiceId: String!, revisionNumber: Int!): Invoice
   }
 
   type Subscription {
