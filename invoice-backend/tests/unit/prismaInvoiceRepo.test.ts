@@ -430,19 +430,20 @@ describe("Prisma Query: updateInvoice", () => {
     expect(prisma.item.deleteMany).not.toHaveBeenCalled();
   });
 
-  test("should throw error if prisma.invoice.update fails", async () => {
-    const invoiceUpdates = {
-      clientName: "Updated Client",
-    };
+    test("should throw error if prisma.invoice.update fails", async () => {
+      const invoiceUpdates = {
+        clientName: "Updated Client",
+      };
 
-    prisma.$transaction.mockRejectedValue(new Error("Transaction failed"));
+      prisma.invoice.findUnique.mockResolvedValue({ id: "D64FUO" } as any);
+      prisma.$transaction.mockRejectedValue(new Error("Transaction failed"));
 
-    await expect(
-      mockRepo.update("D64FUO", invoiceUpdates),
-    ).rejects.toThrowError("Database error: Transaction failed");
+      await expect(
+        mockRepo.update("D64FUO", invoiceUpdates),
+      ).rejects.toThrowError("Database error: Transaction failed");
 
-    expect(prisma.$transaction).toHaveBeenCalled();
-  });
+      expect(prisma.$transaction).toHaveBeenCalled();
+    });
 });
 
 describe("Prisma Query: deleteInvoice", () => {
@@ -487,21 +488,26 @@ describe("Prisma Query: deleteInvoice", () => {
 });
 
 describe("Prisma Query: markAsPaid", () => {
-  test("should return the updated invoice object", async () => {
-    const mockInvoice: Invoice = {
-      ...mockResponseWithIds,
-      id: "D64FUO",
-      createdById: "user1",
-      total: new Decimal(mockInvoicePrismaResponse.total),
-      status: "paid",
-    };
+    test("should return the updated invoice object", async () => {
+      const mockInvoice: Invoice = {
+        ...mockResponseWithIds,
+        id: "D64FUO",
+        createdById: "user1",
+        total: new Decimal(mockInvoicePrismaResponse.total),
+        status: "paid",
+      };
 
-    prisma.invoice.update.mockResolvedValue(mockInvoice);
+      prisma.invoice.findUnique.mockResolvedValue(mockInvoice);
+      prisma.$transaction.mockImplementation(async (callback) => {
+        await callback(prisma);
+        return mockInvoice;
+      });
+      prisma.invoice.update.mockResolvedValue(mockInvoice);
 
-    const updatedInvoice = await mockRepo.markAsPaid("D64FUO");
-    const expected = { ...mockInvoice };
-    expect(updatedInvoice).toStrictEqual(expected);
-  });
+      const updatedInvoice = await mockRepo.markAsPaid("D64FUO");
+      const expected = { ...mockInvoice };
+      expect(updatedInvoice).toStrictEqual(expected);
+    });
 
   test("should throw error if no invoice is found", async () => {
     prisma.invoice.update.mockRejectedValue(

@@ -36,7 +36,7 @@ async function createUsers() {
     return request(app)
       .query(gql`
         mutation CreateUser(
-          $name: String
+          $name: String!
           $username: String!
           $password: String!
         ) {
@@ -206,7 +206,7 @@ describe("Integration Tests", () => {
     const { data } = await request(app)
       .query(gql`
         mutation CreateUser(
-          $name: String
+          $name: String!
           $username: String!
           $password: String!
         ) {
@@ -233,7 +233,7 @@ describe("Integration Tests", () => {
     const response = await request(app)
       .query(gql`
         mutation CreateUser(
-          $name: String
+          $name: String!
           $username: String!
           $password: String!
         ) {

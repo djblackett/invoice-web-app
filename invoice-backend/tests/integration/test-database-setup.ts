@@ -158,6 +158,35 @@ async function createSchema(prisma: PrismaClient): Promise<void> {
   await prisma.$executeRawUnsafe(`
     CREATE INDEX IF NOT EXISTS "Item_invoiceId_idx" ON "Item"("invoiceId");
   `);
+
+  await prisma.$executeRawUnsafe(`
+    CREATE TABLE IF NOT EXISTS "InvoiceRevision" (
+      "id" TEXT NOT NULL PRIMARY KEY,
+      "invoiceId" TEXT NOT NULL,
+      "createdAt" DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+      "createdById" TEXT NOT NULL,
+      "revisionNumber" INTEGER NOT NULL,
+      "changeType" TEXT NOT NULL,
+      "jsonDiff" TEXT,
+      "fullSnapshot" TEXT NOT NULL,
+      "description" TEXT,
+      FOREIGN KEY ("invoiceId") REFERENCES "Invoice"("id") ON DELETE CASCADE,
+      FOREIGN KEY ("createdById") REFERENCES "User"("id") ON DELETE CASCADE,
+      UNIQUE ("invoiceId", "revisionNumber")
+    );
+  `);
+
+  await prisma.$executeRawUnsafe(`
+    CREATE INDEX IF NOT EXISTS "InvoiceRevision_invoiceId_idx" ON "InvoiceRevision"("invoiceId");
+  `);
+
+  await prisma.$executeRawUnsafe(`
+    CREATE INDEX IF NOT EXISTS "InvoiceRevision_createdById_idx" ON "InvoiceRevision"("createdById");
+  `);
+
+  await prisma.$executeRawUnsafe(`
+    CREATE INDEX IF NOT EXISTS "InvoiceRevision_createdAt_idx" ON "InvoiceRevision"("createdAt");
+  `);
 }
 
 async function setupPostgreSQLTestDatabase(): Promise<TestDatabaseConfig> {
