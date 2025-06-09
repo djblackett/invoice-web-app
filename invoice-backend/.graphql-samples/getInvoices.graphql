@@ -1,0 +1,8 @@
+query {
+  allInvoices {
+    id
+    clientName
+    total
+    status
+  }
+}
