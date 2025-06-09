@@ -3,7 +3,6 @@ import { IDatabaseConnection } from "@/database/database.connection";
 import TYPES from "@/constants/identifiers";
 import { UserIdAndRole } from "@/constants/types";
 import { ValidationException, NotFoundException } from "@/config/exception.config";
-import * as jsondiffpatch from "jsondiffpatch";
 
 export interface InvoiceRevisionData {
   id: string;
@@ -31,7 +30,7 @@ export interface RevisionFilters {
 @injectable()
 export class RevisionService {
   protected prisma;
-  private diffPatcher: jsondiffpatch.DiffPatcher;
+  private diffPatcher?: any;
 
   constructor(
     @inject(TYPES.DatabaseConnection)
@@ -40,13 +39,21 @@ export class RevisionService {
     private readonly userContext: UserIdAndRole | null,
   ) {
     this.prisma = databaseConnection.getDatabase();
-    this.diffPatcher = jsondiffpatch.create({
-      objectHash: (obj: any) => obj.id || obj._id || JSON.stringify(obj),
-      arrays: {
-        detectMove: true,
-        includeValueOnMove: false
-      }
-    });
+    // DiffPatcher will be initialized lazily
+  }
+
+  private async getDiffPatcher(): Promise<any> {
+    if (!this.diffPatcher) {
+      const jsondiffpatch = await import("jsondiffpatch");
+      this.diffPatcher = jsondiffpatch.create({
+        objectHash: (obj: any) => obj.id || obj._id || JSON.stringify(obj),
+        arrays: {
+          detectMove: true,
+          includeValueOnMove: false
+        }
+      });
+    }
+    return this.diffPatcher;
   }
 
   async createRevision(
@@ -69,7 +76,8 @@ export class RevisionService {
     const revisionNumber = (lastRevision?.revisionNumber || 0) + 1;
 
     // Create JSON diff (null for initial creation)
-    const jsonDiff = changeType === 'create' ? null : this.diffPatcher.diff(previousData, currentData);
+    const diffPatcher = await this.getDiffPatcher();
+    const jsonDiff = changeType === 'create' ? null : diffPatcher.diff(previousData, currentData);
 
     await this.prisma.invoiceRevision.create({
       data: {
@@ -330,6 +338,7 @@ export class RevisionService {
     const fromData = JSON.parse(fromRev.fullSnapshot);
     const toData = JSON.parse(toRev.fullSnapshot);
 
-    return this.diffPatcher.diff(fromData, toData);
+    const diffPatcher = await this.getDiffPatcher();
+    return diffPatcher.diff(fromData, toData);
   }
 }

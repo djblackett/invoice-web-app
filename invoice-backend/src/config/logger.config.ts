@@ -1,22 +1,24 @@
-/*
-This file was taken from the following repository:
-https://github.com/vishnucprasad/express_ts/blob/main/src/config/logger.config.ts
-Not sure if I'll keep it or not. It's a logger service that uses Winston. I didn't write it.
-*/
-
 import { injectable } from "inversify";
 import { format, createLogger, transports, LogCallback } from "winston";
 import { TransformableInfo } from "logform";
 
 const { colorize, combine, label, printf, timestamp, uncolorize } = format;
+
+const isSilent =
+  process.env["LOG_SILENT"] === "true" ||
+  process.env["NODE_ENV"] === "test" ||
+  process.env["LOG_GRAPHQL"] === "false";
+
 const shouldColorize =
   process.stdout.isTTY &&
   process.env["NODE_ENV"] !== "production" &&
   process.env["NODE_ENV"] !== "CI";
+
 @injectable()
 export class Logger {
   private logger = createLogger({
-    level: "debug",
+    level: isSilent ? "error" : "debug", // Level doesn't matter if silent
+    silent: isSilent, // <--- This is the key line!
     format: combine(
       label({ label: "[LOGGER]" }),
       timestamp({
