@@ -1,4 +1,5 @@
-import "dotenv/config";
+import dotenv from "dotenv";
+dotenv.config({ path: "no-git.env" });
 
 const DOMAIN = process.env.DOMAIN ?? "";
 const CLIENT_ID = process.env.CLIENT_ID ?? "";

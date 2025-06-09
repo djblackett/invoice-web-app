@@ -20,7 +20,7 @@ if (USE_IN_MEMORY) {
   process.env["DATABASE_URL"] = DATABASE_URL;
 }
 export { DATABASE_URL };
-export const CERT_DIR = process.env["CERT_DIR"] || "../certs";
+// export const CERT_DIR = process.env["CERT_DIR"] || "../certs";
 export const NODE_ENV = process.env["NODE_ENV"];
 
 if (!PORT) {
@@ -31,7 +31,7 @@ if (!PORT) {
 console.log(`Database URL: ${DATABASE_URL}`);
 console.log(`Server Port: ${PORT}`);
 console.log(`Node Environment: ${NODE_ENV}`);
-console.log(`Cert Directory: ${CERT_DIR}`);
+// console.log(`Cert Directory: ${CERT_DIR}`);
 console.log(`Demo Mode: ${process.env["DEMO_MODE"]}`);
 console.log(`Use SQLite: ${USE_SQLITE}`);
 console.log(`Use In-Memory: ${USE_IN_MEMORY}`);

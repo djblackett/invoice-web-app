@@ -68,7 +68,7 @@ describe("Invoice Resolvers Integration Tests", () => {
     // Bind the test database to the container
     bindPrismaToContainer(testDbConfig.prisma);
 
-    // console.log("Connected to test database:", testDbConfig.databaseUrl);
+    console.log("Connected to test database:", testDbConfig.databaseUrl);
 
     // Create the dummy user directly in the database
     await testDbConfig.prisma.user.upsert({

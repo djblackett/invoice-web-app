@@ -121,19 +121,54 @@ export class PrismaInvoiceRepository implements IInvoiceRepo {
 
   async markAsPaid(id: string) {
     try {
-      return await this.prisma.invoice.update({
-        where: {
-          id,
-        },
-        data: {
-          status: "paid",
-        },
+      const currentInvoice = await this.prisma.invoice.findUnique({
+        where: { id },
         include: {
           items: true,
           clientAddress: true,
           senderAddress: true,
           createdBy: true,
         },
+      });
+      if (!currentInvoice) {
+        throw new NotFoundException("Invoice not found");
+      }
+
+      return await this.prisma.$transaction(async (prisma) => {
+        // Get the next revision number for this invoice
+        // const lastRevision = await prisma.invoiceRevision.findFirst({
+        //   where: { invoiceId: id },
+        //   orderBy: { revisionNumber: "desc" },
+        // });
+        // const revisionNumber = (lastRevision?.revisionNumber || 0) + 1;
+
+        // // Create revision with new schema
+        // await prisma.invoiceRevision.create({
+        //   data: {
+        //     invoiceId: id,
+        //     createdById: currentInvoice.createdById,
+        //     revisionNumber,
+        //     changeType: "status_change",
+        //     jsonDiff: null, // Will be calculated by revision service if needed
+        //     fullSnapshot: JSON.stringify(currentInvoice),
+        //     description: "Marked as paid",
+        //   },
+        // });
+
+        return prisma.invoice.update({
+          where: {
+            id,
+          },
+          data: {
+            status: "paid",
+          },
+          include: {
+            items: true,
+            clientAddress: true,
+            senderAddress: true,
+            createdBy: true,
+          },
+        });
       });
     } catch (e) {
       console.error(e);
@@ -143,7 +178,39 @@ export class PrismaInvoiceRepository implements IInvoiceRepo {
 
   async update(id: string, invoiceUpdates: Partial<Invoice>) {
     try {
+      const currentInvoice = await this.prisma.invoice.findUnique({
+        where: { id },
+        include: {
+          items: true,
+          clientAddress: true,
+          senderAddress: true,
+          createdBy: true,
+        },
+      });
+      if (!currentInvoice) {
+        throw new NotFoundException("Invoice not found");
+      }
+
       const updatedInvoice = await this.prisma.$transaction(async (prisma) => {
+        // Get the next revision number for this invoice
+        // const lastRevision = await prisma.invoiceRevision.findFirst({
+        //   where: { invoiceId: id },
+        //   orderBy: { revisionNumber: 'desc' }
+        // });
+        // const revisionNumber = (lastRevision?.revisionNumber || 0) + 1;
+
+        // // Create revision with new schema
+        // await prisma.invoiceRevision.create({
+        //   data: {
+        //     invoiceId: id,
+        //     createdById: currentInvoice.createdById,
+        //     revisionNumber,
+        //     changeType: 'update',
+        //     jsonDiff: null, // Will be calculated by revision service if needed
+        //     fullSnapshot: JSON.stringify(currentInvoice),
+        //     description: 'Invoice updated'
+        //   },
+        // });
         if (invoiceUpdates.items && invoiceUpdates.items.length >= 1) {
           await prisma.item.deleteMany({
             where: { invoiceId: id },

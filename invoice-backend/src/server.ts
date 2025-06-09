@@ -29,6 +29,22 @@ export const createServer = async () => {
   try {
     const app = await createApp();
     const httpServer = http.createServer(app);
+    // if (CERT_DIR && !isProduction && !isDemo) {
+    //   const sslOptions = {
+    //     key: fs.readFileSync(
+    //       path.join(__dirname, CERT_DIR, "localhost-key.pem"),
+    //       "ascii",
+    //     ),
+    //     cert: fs.readFileSync(
+    //       path.join(__dirname, CERT_DIR, "localhost-fullchain.pem"),
+    //       "ascii",
+    //     ),
+    //   };
+
+    // httpServer = https.createServer(sslOptions, app);
+    // } else {
+
+    // }
 
     const wsServer = new WebSocketServer({
       server: httpServer,
@@ -56,6 +72,9 @@ export const createServer = async () => {
       schema,
       introspection: true,
       status400ForVariableCoercionErrors: true,
+      csrfPrevention: {
+        requestHeaders: ["x-apollo-operation-name"],
+      },
       plugins: [
         ApolloServerPluginDrainHttpServer({ httpServer }),
         {

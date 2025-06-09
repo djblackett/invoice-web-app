@@ -87,6 +87,41 @@ export function getInvoiceResolvers() {
           });
         }
       },
+      getInvoicePdf: async (
+        _root: object,
+        args: GetInvoiceByIdArgs,
+        context: InjectedQueryContext,
+      ) => {
+        const { invoiceService } = context;
+        if (!invoiceService) {
+          throw new GraphQLError(
+            "Internal server error: invoiceService doesn't exist",
+            {
+              extensions: {
+                code: "INTERNAL_SERVER_ERROR",
+              },
+            },
+          );
+        }
+        try {
+          const pdfBase64 = await invoiceService.generatePdf(args.id);
+          return pdfBase64;
+        } catch (error) {
+          if (error instanceof NotFoundException) {
+            throw new GraphQLError("Invoice not found", {
+              extensions: {
+                code: "NOT_FOUND",
+              },
+            });
+          }
+          console.error(error);
+          throw new GraphQLError("Failed to generate PDF", {
+            extensions: {
+              code: "INTERNAL_SERVER_ERROR",
+            },
+          });
+        }
+      },
     },
     Mutation: {
       addInvoice: async (

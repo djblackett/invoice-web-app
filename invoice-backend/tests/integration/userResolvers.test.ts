@@ -40,7 +40,7 @@ async function createUsers() {
     return request(app)
       .query(gql`
         mutation CreateUser(
-          $name: String
+          $name: String!
           $username: String!
           $password: String!
         ) {
@@ -77,7 +77,7 @@ describe("Integration Tests", () => {
     // Bind the test database to the container
     bindPrismaToContainer(testDbConfig.prisma);
 
-    // console.log("Connected to test database:", testDbConfig.databaseUrl);
+    console.log("Connected to test database:", testDbConfig.databaseUrl);
     [app] = await createServer();
 
     await request(app)
@@ -210,7 +210,7 @@ describe("Integration Tests", () => {
     const { data } = await request(app)
       .query(gql`
         mutation CreateUser(
-          $name: String
+          $name: String!
           $username: String!
           $password: String!
         ) {
@@ -237,7 +237,7 @@ describe("Integration Tests", () => {
     const response = await request(app)
       .query(gql`
         mutation CreateUser(
-          $name: String
+          $name: String!
           $username: String!
           $password: String!
         ) {

@@ -15,8 +15,9 @@ export function createLoggingPlugin(logger: Logger): ApolloServerPlugin {
 
   return {
     async requestDidStart(requestContext: GraphQLRequestContext<BaseContext>) {
-      // if (!loggingEnabled)
-      return {};
+      if (!loggingEnabled) {
+        return {};
+      }
 
       const operationName =
         requestContext.request.operationName || "Unnamed Operation";

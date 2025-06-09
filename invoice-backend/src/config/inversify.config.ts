@@ -3,6 +3,7 @@ import type { interfaces } from "inversify";
 import { Container } from "inversify";
 import { InvoiceService } from "../services/invoice.service";
 import { UserService } from "../services/user.service";
+import { RevisionService } from "../services/revision.service";
 import { PrismaInvoiceRepository } from "../repositories/implementations/prismaInvoiceRepository";
 import { PrismaUserRepository } from "../repositories/implementations/prismaUserRepo";
 import { DatabaseConnection } from "../database/prisma.database.connection";
@@ -49,15 +50,9 @@ container
 
 // Bind the appropriate database connection based on configuration
 if (USE_SQLITE) {
-  container
-    .bind(TYPES.DatabaseConnection)
-    .to(SQLiteDatabaseConnection)
-    .inTransientScope();
+  container.bind(TYPES.DatabaseConnection).to(SQLiteDatabaseConnection).inTransientScope();
 } else {
-  container
-    .bind(TYPES.DatabaseConnection)
-    .to(DatabaseConnection)
-    .inTransientScope();
+  container.bind(TYPES.DatabaseConnection).to(DatabaseConnection).inTransientScope();
 }
 
 container
@@ -81,15 +76,20 @@ container
   .to(InvoiceService)
   .inTransientScope();
 
+container
+  .bind<RevisionService>(TYPES.RevisionService)
+  .to(RevisionService)
+  .inTransientScope();
+
 container.bind<Logger>(TYPES.Logger).to(Logger).inSingletonScope();
 container.bind<PubSub>(TYPES.PubSub).toConstantValue(new PubSub());
 
 // uncomment for verbose logging
-// container.applyMiddleware((planAndResolve) => {
-//   return (args) => {
-//     console.log(`Resolving ${args.serviceIdentifier.toString()}`);
-//     return planAndResolve(args);
-//   };
-// });
+container.applyMiddleware((planAndResolve) => {
+  return (args) => {
+    console.log(`Resolving ${args.serviceIdentifier.toString()}`);
+    return planAndResolve(args);
+  };
+});
 
 export default container;
