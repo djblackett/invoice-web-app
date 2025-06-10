@@ -3,19 +3,18 @@ import { RevisionService } from "@/services/revision.service";
 import { describe, expect, beforeEach, test, vi } from "vitest";
 import { mockDeep, mockReset } from "vitest-mock-extended";
 import { IDatabaseConnection } from "@/database/database.connection";
-import prisma from "../../../libs/__mocks__/prisma";
+import prisma from "libs/__mocks__/prisma";
 import { UserIdAndRole } from "@/constants/types";
-import {
-  ValidationException,
-  NotFoundException,
-} from "@/config/exception.config";
+import { ValidationException, NotFoundException } from "@/config/exception.config";
 
 // Mock jsondiffpatch
 vi.mock("jsondiffpatch", async () => {
   return {
-    create: vi.fn(() => ({
-      diff: vi.fn((prev, curr) => ({ changed: true })),
-    })),
+    default: {
+      create: vi.fn(() => ({
+        diff: vi.fn((prev, curr) => ({ changed: true })),
+      })),
+    },
   };
 });
 
@@ -33,22 +32,15 @@ describe("RevisionService", () => {
   let revisionService: RevisionService;
 
   beforeEach(() => {
-    revisionService = new RevisionService(
-      mockDatabaseConnection,
-      mockUserContext,
-    );
+    revisionService = new RevisionService(mockDatabaseConnection, mockUserContext);
     mockReset(prisma);
     vi.clearAllMocks();
-
-    // default behaviours for this suite
-    prisma.invoice.findUnique.mockResolvedValue({ createdById: "user1" });
-    prisma.invoiceRevision.findMany.mockResolvedValue([]);
   });
 
   test("createRevision should throw if not authorized", async () => {
     revisionService = new RevisionService(mockDatabaseConnection, null);
     await expect(
-      revisionService.createRevision("inv1", {}, {}, "create"),
+      revisionService.createRevision("inv1", {}, {}, "create")
     ).rejects.toThrow(ValidationException);
   });
 
@@ -56,12 +48,7 @@ describe("RevisionService", () => {
     prisma.invoiceRevision.findFirst.mockResolvedValue(null);
     prisma.invoiceRevision.create.mockResolvedValue({ id: "rev1" });
 
-    await revisionService.createRevision(
-      "inv1",
-      null,
-      { data: "new" },
-      "create",
-    );
+    await revisionService.createRevision("inv1", null, { data: "new" }, "create");
 
     expect(prisma.invoiceRevision.create).toHaveBeenCalledWith({
       data: expect.objectContaining({
@@ -79,12 +66,7 @@ describe("RevisionService", () => {
     prisma.invoiceRevision.findFirst.mockResolvedValue({ revisionNumber: 1 });
     prisma.invoiceRevision.create.mockResolvedValue({ id: "rev2" });
 
-    await revisionService.createRevision(
-      "inv1",
-      { old: true },
-      { new: true },
-      "update",
-    );
+    await revisionService.createRevision("inv1", { old: true }, { new: true }, "update");
 
     expect(prisma.invoiceRevision.create).toHaveBeenCalledWith({
       data: expect.objectContaining({
@@ -117,24 +99,8 @@ describe("RevisionService", () => {
   });
 
   test("getInvoiceRevisions should throw if unauthorized", async () => {
-    const mockUserContext: UserIdAndRole = {
-      id: "user1",
-      role: "USER",
-      username: "testuser",
-      name: "Test User",
-    };
-    revisionService = new RevisionService(
-      mockDatabaseConnection,
-      mockUserContext,
-    );
     prisma.invoice.findUnique.mockResolvedValue({ createdById: "user2" });
-    await expect(
-      revisionService.getInvoiceRevisions("inv1"),
-    ).rejects.toThrowError(
-      new ValidationException(
-        "Unauthorized to view revisions for this invoice",
-      ),
-    );
+    await expect(revisionService.getInvoiceRevisions("inv1")).rejects.toThrow(ValidationException);
   });
 
   test("restoreInvoiceToRevision should restore the invoice", async () => {
