@@ -5,8 +5,6 @@ const prisma = new PrismaClient({
   datasourceUrl: process.env.DATABASE_URL || "file::memory:",
 });
 
-console.log("prisma database url:", prisma.datasourceUrl);
-
 async function create(invoice) {
   try {
     const result = await prisma.invoice.create({

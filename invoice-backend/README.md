@@ -14,6 +14,10 @@ This is the backend service for the Invoice application. It provides a GraphQL A
 
 ### 🛠️ Run the Setup Script
 
+#### First Time Setup
+
+Windows users should use GitBash for compatibility.
+
 ```bash
 ./setup-dev.sh
 ```
@@ -28,6 +32,12 @@ This will:
 - Start the development server
 
 ---
+
+#### Restart/Run Later
+
+```bash
+yarn dev:review
+```
 
 ## 🔗 API Access
 
@@ -46,7 +56,7 @@ Copy-paste them directly into your GraphQL Explorer for quick testing.
 
 Prefer REST-like tools? Import the following files into [Postman](https://www.postman.com/):
 
-```
+```bash
 invoice-api.postman_collection.json
 invoice-api.postman_environment.json
 ```

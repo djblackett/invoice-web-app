@@ -1,0 +1,21 @@
+# justfile for Invoice Backend
+
+review:
+  yarn set-db-provider:sqlite
+  yarn prisma-push
+  yarn tsx prisma/seed.mjs
+  yarn dev:sqlite
+
+reset:
+  yarn clean:testdbs
+  yarn prisma-push
+  yarn tsx prisma/seed.mjs
+
+lint:
+  yarn lint
+
+test:
+  yarn test:unit
+
+format:
+  yarn format

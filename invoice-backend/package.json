@@ -32,7 +32,8 @@
     "prisma-push": "prisma db push",
     "set-db-provider:sqlite": "sed -i 's/provider = \"postgresql\"/provider = \"sqlite\"/g' prisma/schema.prisma && prisma generate",
     "set-db-provider:postgres": "sed -i 's/provider = \"sqlite\"/provider = \"postgresql\"/g' prisma/schema.prisma && prisma generate",
-    "clean:testdbs": "rm -f prisma/test_*.db"
+    "clean:testdbs": "rm -f prisma/test_*.db",
+    "dev:review": "yarn set-db-provider:sqlite && yarn prisma-push && yarn tsx prisma/seed.mjs && yarn dev:sqlite"
   },
   "author": "David Andrea",
   "license": "ISC",

@@ -13,7 +13,11 @@ import {
 import { PrismaClient } from "@prisma/client";
 import container from "../../src/config/inversify.config";
 import TYPES from "../../src/constants/identifiers";
-import { setupTestDatabase, type TestDatabaseConfig, bindPrismaToContainer } from "./test-database-setup";
+import {
+  setupTestDatabase,
+  type TestDatabaseConfig,
+  bindPrismaToContainer,
+} from "./test-database-setup";
 
 let app: any;
 process.env.NODE_ENV = "test";
@@ -69,10 +73,10 @@ describe("Integration Tests", () => {
   beforeEach(async () => {
     // Setup test database (works with both SQLite and PostgreSQL)
     testDbConfig = await setupTestDatabase();
-    
+
     // Bind the test database to the container
     bindPrismaToContainer(testDbConfig.prisma);
-    
+
     console.log("Connected to test database:", testDbConfig.databaseUrl);
     [app] = await createServer();
 
@@ -99,7 +103,7 @@ describe("Integration Tests", () => {
         }
       `)
       .set("Authorization", `Bearer ${testToken}`);
-    
+
     // Clean up the test database
     await testDbConfig.cleanup();
   });

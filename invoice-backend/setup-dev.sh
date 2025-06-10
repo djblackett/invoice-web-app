@@ -1,11 +1,7 @@
 #!/bin/bash
-
 set -e
 
-if [ ! -f .env ]; then
-  echo "📄 Copying .env.example to .env..."
-  cp .env.example .env
-fi
+[ -f .env ] || cp .env.example .env
 
 echo "🔧 Installing dependencies..."
 yarn install
@@ -13,14 +9,11 @@ yarn install
 echo "🧪 Setting DB provider to SQLite..."
 yarn set-db-provider:sqlite
 
-echo "📦 Pushing schema to SQLite DB..."
+echo "📦 Pushing schema..."
 yarn prisma-push
 
-echo "⚙️ Generating Prisma client..."
-yarn prisma-generate
+echo "🌱 Seeding database..."
+yarn tsx prisma/seed.mjs
 
-echo "Seeding database..."
-npx prisma db seed
-
-echo "🚀 Starting development server..."
-yarn dev:memory
+echo "🚀 Starting dev server..."
+yarn dev:sqlite

@@ -127,3 +127,4 @@ invoice-backend/prisma/:memory:
 invoice-backend/prisma/memory.db
 invoice-backend/prisma/memory.db
 invoice-backend/prisma/:memory:
+invoice-backend/.vscode/settings.json
