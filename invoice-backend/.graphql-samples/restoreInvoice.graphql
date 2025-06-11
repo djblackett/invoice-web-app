@@ -1,0 +1,7 @@
+mutation {
+  restoreInvoiceToRevision(invoiceId: "TY9141", revisionNumber: 1) {
+    id
+    description
+    status
+  }
+}

@@ -7,7 +7,7 @@ import {
   serverErrorConfig,
 } from "./config/server.config";
 import type { Request, Response } from "express";
-import { DatabaseConnection } from "./database/prisma.database.connection";
+import type { IDatabaseConnection } from "./database/database.connection";
 import rateLimit from "express-rate-limit";
 import express from "express";
 import { PrismaClient } from "@prisma/client";
@@ -22,7 +22,7 @@ export const createApp = async () => {
     serverConfig(app);
     serverErrorConfig(app);
 
-    const database = container.get(DatabaseConnection);
+    const database = container.get<IDatabaseConnection>(TYPES.DatabaseConnection);
     await database.initConnection();
 
     app.set("trust proxy", 1);

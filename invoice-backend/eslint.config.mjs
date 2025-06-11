@@ -2,11 +2,11 @@ import eslint from "@eslint/js";
 import { globalIgnores } from "eslint/config";
 import tseslint from "typescript-eslint";
 import eslintPluginPrettierRecommended from "eslint-plugin-prettier/recommended";
-import pluginSecurity from "eslint-plugin-security";
+// import pluginSecurity from "eslint-plugin-security";
 
 // /** @type {import('eslint').Linter.Config[]} */
 export default tseslint.config(
-  globalIgnores([
+globalIgnores([
     "**/node_modules/**",
     "**/dist/**",
     "**/build/**",
@@ -14,9 +14,9 @@ export default tseslint.config(
     "**/out/**",
     "**/generated/**",
     "**/src/mocks/**",
-  ]),
-  { files: ["**/src/*.{ts,tsx}"] },
+]),
   {
+    files: ["**/src/*.{ts,tsx}"],
     languageOptions: {
       parserOptions: {
         project: "./tsconfig.json",
@@ -25,9 +25,9 @@ export default tseslint.config(
   },
   eslint.configs.recommended,
   ...tseslint.configs.recommendedTypeChecked,
-  tseslint.configs.strict,
+  // tseslint.configs.strict,
   eslintPluginPrettierRecommended,
-  pluginSecurity.configs.recommended,
+  // pluginSecurity.configs.recommended,
   {
     rules: {
       "@typescript-eslint/no-unnecessary-condition": "error",

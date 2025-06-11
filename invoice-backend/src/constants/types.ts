@@ -4,6 +4,7 @@ import type { Context as GraphQLWSContext } from "graphql-ws";
 import type { Container } from "inversify";
 import type { InvoiceService } from "@/services/invoice.service";
 import type { UserService } from "@/services/user.service";
+import type { RevisionService } from "@/services/revision.service";
 import type { PubSub } from "graphql-subscriptions";
 
 export interface Invoice {
@@ -67,6 +68,7 @@ export interface InjectedQueryContext {
   user?: UserIdAndRole | null;
   invoiceService?: InvoiceService;
   userService?: UserService;
+  revisionService?: RevisionService;
   pubsub?: PubSub;
   container?: Container;
   connection?: GraphQLWSContext;
@@ -95,6 +97,7 @@ export interface CreateUserArgs {
   id?: string | undefined;
   name?: string | undefined;
   username: string | undefined;
+  tenantId: string;
 }
 
 export interface UserEntity extends CreateUserArgs {
@@ -110,6 +113,7 @@ export interface UserDTO {
   id?: string | undefined;
   name: string;
   username: string;
+  tenantId?: string | null;
 }
 
 export interface GetInvoiceByIdArgs {
@@ -148,4 +152,10 @@ export interface UserIdAndRole {
   role: "USER" | "ADMIN" | undefined;
   username?: string | undefined;
   name: string | undefined;
+  tenantId?: string | null;
+}
+
+export interface TenantDTO {
+  id: string;
+  name: string;
 }

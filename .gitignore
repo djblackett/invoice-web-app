@@ -123,3 +123,8 @@ invoice-frontend/before-clicking-invoice.png
 invoice-backend/.env.test
 invoice-backend/.env.development
 .vscode/launch.json
+invoice-backend/prisma/:memory:
+invoice-backend/prisma/memory.db
+invoice-backend/prisma/memory.db
+invoice-backend/prisma/:memory:
+invoice-backend/.vscode/settings.json

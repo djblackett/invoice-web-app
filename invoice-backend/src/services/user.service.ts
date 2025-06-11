@@ -4,6 +4,7 @@ import {
   CreateUserDTO,
   UserDTO,
   UserIdAndRole,
+  TenantDTO,
 } from "../constants/types";
 import bcrypt from "bcryptjs";
 import { IUserRepo } from "../repositories/userRepo";
@@ -34,20 +35,31 @@ export class UserService {
         name: validatedArgs.name ?? "",
         username: validatedArgs.username,
         passwordHash: hashedPassword,
+        tenantId: validatedArgs.tenantId,
       };
 
       const createdUser = await this.userRepo.createUser(userEntity);
 
-      const userDTO: UserDTO = {
-        id: createdUser.id,
-        name: createdUser.name ?? "",
-        username: createdUser.username ?? "",
-      };
+    const userDTO: UserDTO = {
+      id: createdUser.id,
+      name: createdUser.name ?? "",
+      username: createdUser.username ?? "",
+      tenantId: createdUser.tenantId ?? null,
+    };
 
       return userDTO;
     } catch (error) {
       this.logger.error(error instanceof Error ? error.message : String(error));
       throw new ValidationException("User validation failed");
+    }
+  };
+
+  createTenant = async (name: string): Promise<TenantDTO> => {
+    try {
+      return await this.userRepo.createTenant(name);
+    } catch (error) {
+      this.logger.error(error instanceof Error ? error.message : String(error));
+      throw new InternalServerException("Internal server error");
     }
   };
 
@@ -75,7 +87,7 @@ export class UserService {
       throw new ValidationException("Unauthorized");
     }
     try {
-      const userList = await this.userRepo.getAllUsers();
+      const userList = await this.userRepo.getAllUsers(this.userContext?.tenantId ?? undefined);
       const validatedUserList: UserDTO[] = validateUserList(userList);
       return validatedUserList;
     } catch (error) {
@@ -102,6 +114,7 @@ export class UserService {
       id: user.id ?? "",
       name: user.name,
       username: user.username,
+      tenantId: user.tenantId ?? null,
     };
     return userDTO;
   };

@@ -3,6 +3,7 @@ import type { Invoice, InvoiceWithCreatedBy } from "../constants/types";
 
 export interface IInvoiceRepo {
   findAll: () => Promise<unknown>;
+  findByTenantId: (tenantId: string) => Promise<unknown>;
   findByUserId: (userId: string) => Promise<unknown>;
   findById: (id: string) => Promise<unknown>;
   findByUserIdAndInvoiceId: (

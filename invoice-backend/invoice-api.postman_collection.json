@@ -1,0 +1,178 @@
+{
+  "info": {
+    "name": "Invoice API",
+    "_postman_id": "david-invoice-api",
+    "description": "GraphQL testing collection for the Invoice backend API.",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "item": [
+    {
+      "name": "Get All Invoices",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          },
+          {
+            "key": "Authorization",
+            "value": "Bearer {{auth_token}}",
+            "type": "text"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"query\": \"query {\\n  allInvoices {\\n    id\\n    clientName\\n    total\\n    status\\n  }\\n}\"\n}"
+        },
+        "url": {
+          "raw": "http://localhost:8000/graphql",
+          "protocol": "http",
+          "host": ["localhost"],
+          "port": "8000",
+          "path": ["graphql"]
+        }
+      }
+    },
+    {
+      "name": "Get Invoice By ID",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          },
+          {
+            "key": "Authorization",
+            "value": "Bearer {{auth_token}}",
+            "type": "text"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"query\": \"query {\\n  getInvoiceById(id: \\\"TY9141\\\") {\\n    id\\n    description\\n    status\\n    total\\n    clientName\\n    revisions {\\n      revisionNumber\\n      changeType\\n      description\\n    }\\n  }\\n}\"\n}"
+        },
+        "url": {
+          "raw": "http://localhost:8000/graphql",
+          "protocol": "http",
+          "host": ["localhost"],
+          "port": "8000",
+          "path": ["graphql"]
+        }
+      }
+    },
+    {
+      "name": "Get Invoice Revisions",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          },
+          {
+            "key": "Authorization",
+            "value": "Bearer {{auth_token}}",
+            "type": "text"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"query\": \"query {\\n  getInvoiceRevisions(invoiceId: \\\"TY9141\\\") {\\n    revisionNumber\\n    changeType\\n    description\\n    createdAt\\n  }\\n}\"\n}"
+        },
+        "url": {
+          "raw": "http://localhost:8000/graphql",
+          "protocol": "http",
+          "host": ["localhost"],
+          "port": "8000",
+          "path": ["graphql"]
+        }
+      }
+    },
+    {
+      "name": "Edit Invoice",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          },
+          {
+            "key": "Authorization",
+            "value": "Bearer {{auth_token}}",
+            "type": "text"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"query\": \"mutation {\\n  editInvoice(\\n    id: \\\"XM9141\\\"\\n    description: \\\"Updated via Postman\\\"\\n  ) {\\n    id\\n    description\\n  }\\n}\"\n}"
+        },
+        "url": {
+          "raw": "http://localhost:8000/graphql",
+          "protocol": "http",
+          "host": ["localhost"],
+          "port": "8000",
+          "path": ["graphql"]
+        }
+      }
+    },
+    {
+      "name": "Mark As Paid",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          },
+          {
+            "key": "Authorization",
+            "value": "Bearer {{auth_token}}",
+            "type": "text"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"query\": \"mutation {\\n  markAsPaid(id: \\\"XM9141\\\") {\\n    id\\n    status\\n  }\\n}\"\n}"
+        },
+        "url": {
+          "raw": "http://localhost:8000/graphql",
+          "protocol": "http",
+          "host": ["localhost"],
+          "port": "8000",
+          "path": ["graphql"]
+        }
+      }
+    },
+    {
+      "name": "Restore Invoice",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          },
+          {
+            "key": "Authorization",
+            "value": "Bearer {{auth_token}}",
+            "type": "text"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"query\": \"mutation {\\n  restoreInvoiceToRevision(invoiceId: \\\"TY9141\\\", revisionNumber: 1) {\\n    id\\n    description\\n    status\\n  }\\n}\"\n}"
+        },
+        "url": {
+          "raw": "http://localhost:8000/graphql",
+          "protocol": "http",
+          "host": ["localhost"],
+          "port": "8000",
+          "path": ["graphql"]
+        }
+      }
+    }
+  ]
+}
