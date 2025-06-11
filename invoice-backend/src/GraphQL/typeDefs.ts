@@ -7,13 +7,21 @@ const typeDefs = gql`
     subscription: Subscription
   }
 
-  type User {
-    name: String!
-    username: String!
-    id: String!
-  }
+type User {
+  name: String!
+  username: String!
+  id: String!
+  tenant: Tenant
+}
 
-  type Token {
+type Tenant {
+  id: String!
+  name: String!
+  users: [User]
+  invoices: [Invoice]
+}
+
+type Token {
     value: String!
   }
 
@@ -22,9 +30,10 @@ const typeDefs = gql`
     token: String!
   }
 
-  type Invoice {
-    createdBy: User
-    clientAddress: ClientAddress
+type Invoice {
+  createdBy: User
+  tenant: Tenant
+  clientAddress: ClientAddress
     clientEmail: String
     clientName: String
     createdAt: String
@@ -164,7 +173,7 @@ const typeDefs = gql`
 
     markAsPaid(id: String!): Invoice
 
-    createUser(name: String!, username: String!, password: String!): User
+    createUser(name: String!, username: String!, password: String!, tenantId: String!): User
 
     deleteUsers: deleteResult
 
@@ -173,6 +182,7 @@ const typeDefs = gql`
     login(username: String!, password: String!): LoginResponse
 
     restoreInvoiceToRevision(invoiceId: String!, revisionNumber: Int!): Invoice
+    createTenant(name: String!): Tenant
   }
 
   type Subscription {

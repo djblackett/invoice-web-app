@@ -76,6 +76,25 @@ export function getUserResolvers() {
         }
       },
 
+      createTenant: async (
+        _root: unknown,
+        args: { name: string },
+        context: InjectedQueryContext,
+      ) => {
+        try {
+          const userService = validateUserService(context.userService);
+          const tenant = await userService.createTenant(args.name);
+          return tenant;
+        } catch (error) {
+          console.error(error);
+          throw new GraphQLError("Internal server error", {
+            extensions: {
+              code: "INTERNAL_SERVER_ERROR",
+            },
+          });
+        }
+      },
+
       deleteUsers: async (
         _root: unknown,
         _args: unknown,

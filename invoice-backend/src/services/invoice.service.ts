@@ -38,7 +38,11 @@ export class InvoiceService {
     }
 
     if (role !== "ADMIN") {
-      return validateInvoiceList(await this.invoiceRepo.findByUserId(id));
+      if (this.userContext.tenantId) {
+        return validateInvoiceList(await this.invoiceRepo.findByTenantId(this.userContext.tenantId));
+      } else {
+        return validateInvoiceList(await this.invoiceRepo.findByUserId(id));
+      }
     }
 
     try {

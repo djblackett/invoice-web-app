@@ -97,6 +97,7 @@ export interface CreateUserArgs {
   id?: string | undefined;
   name?: string | undefined;
   username: string | undefined;
+  tenantId: string;
 }
 
 export interface UserEntity extends CreateUserArgs {
@@ -112,6 +113,7 @@ export interface UserDTO {
   id?: string | undefined;
   name: string;
   username: string;
+  tenantId?: string | null;
 }
 
 export interface GetInvoiceByIdArgs {
@@ -150,4 +152,10 @@ export interface UserIdAndRole {
   role: "USER" | "ADMIN" | undefined;
   username?: string | undefined;
   name: string | undefined;
+  tenantId?: string | null;
+}
+
+export interface TenantDTO {
+  id: string;
+  name: string;
 }

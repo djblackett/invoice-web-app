@@ -39,6 +39,26 @@ export class PrismaInvoiceRepository implements IInvoiceRepo {
     }
   }
 
+  async findByTenantId(tenantId: string): Promise<unknown> {
+    try {
+      const result = await this.prisma.invoice.findMany({
+        where: {
+          tenantId,
+        },
+        include: {
+          items: true,
+          clientAddress: true,
+          senderAddress: true,
+          createdBy: true,
+        },
+      });
+      return result;
+    } catch (e: unknown) {
+      const errorMessage = e instanceof Error ? e.message : "Unknown error";
+      throw new Error(`Database error: ${errorMessage}`);
+    }
+  }
+
   async findByUserId(userId: string): Promise<unknown> {
     try {
       const result = await this.prisma.invoice.findMany({

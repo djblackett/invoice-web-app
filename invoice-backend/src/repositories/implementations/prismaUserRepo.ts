@@ -7,6 +7,7 @@ import type {
   UserDTO,
   UserEntity,
   UserIdAndRole,
+  TenantDTO,
 } from "../../constants/types";
 import { PrismaClientKnownRequestError } from "@prisma/client/runtime/library";
 
@@ -57,9 +58,14 @@ export class PrismaUserRepository implements IUserRepo {
     }
   }
 
-  async getAllUsers(): Promise<ReturnedUser[]> {
+  async getAllUsers(tenantId?: string): Promise<ReturnedUser[]> {
     try {
-      const users = await this.prisma.user.findMany();
+      let users;
+      if (tenantId) {
+        users = await this.prisma.user.findMany({ where: { tenantId } });
+      } else {
+        users = await this.prisma.user.findMany();
+      }
       return users.map((user) => ({
         ...user,
         name: user.name ?? "",
@@ -77,12 +83,13 @@ export class PrismaUserRepository implements IUserRepo {
           id: true,
           name: true,
           username: true,
+          tenantId: true,
         },
         where: {
           id,
         },
       });
-      return { ...user, name: user.name ?? "" };
+      return { ...user, name: user.name ?? "", tenantId: user.tenantId };
     } catch (e: unknown) {
       console.error(e);
 
@@ -102,6 +109,7 @@ export class PrismaUserRepository implements IUserRepo {
           name: true,
           username: true,
           role: true,
+          tenantId: true,
         },
         where: {
           id,
@@ -121,6 +129,7 @@ export class PrismaUserRepository implements IUserRepo {
           name: userArgs.name ?? "",
           username: userArgs.username ?? "",
           role: "USER",
+          tenantId: userArgs.tenantId,
         },
       });
       return { ...user, name: user.name ?? "" };
@@ -141,6 +150,7 @@ export class PrismaUserRepository implements IUserRepo {
             role: true,
             username: true,
             name: true,
+            tenantId: true,
           },
           data: {
             id: args.id,
@@ -190,4 +200,17 @@ export class PrismaUserRepository implements IUserRepo {
       throw new Error("Database error");
     }
   };
+
+  async createTenant(name: string): Promise<TenantDTO> {
+    try {
+      const tenant = await this.prisma.tenant.create({
+        data: {
+          name,
+        },
+      });
+      return { id: tenant.id, name: tenant.name };
+    } catch (e: unknown) {
+      throw new Error("Database error");
+    }
+  }
 }
