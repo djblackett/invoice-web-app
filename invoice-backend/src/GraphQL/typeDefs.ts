@@ -121,8 +121,15 @@ const typeDefs = gql`
     getUserById(id: String!): User
     me: User
     getInvoicePdf(id: String!): String
-    getInvoiceRevisions(invoiceId: String!, filters: RevisionFilters): [InvoiceRevision]
-    getRevisionDiff(invoiceId: String!, fromRevision: Int!, toRevision: Int!): RevisionDiff
+    getInvoiceRevisions(
+      invoiceId: String!
+      filters: RevisionFilters
+    ): [InvoiceRevision]
+    getRevisionDiff(
+      invoiceId: String!
+      fromRevision: Int!
+      toRevision: Int!
+    ): RevisionDiff
   }
 
   type Mutation {

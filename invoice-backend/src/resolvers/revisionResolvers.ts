@@ -1,6 +1,9 @@
 import { GraphQLError } from "graphql/error/GraphQLError";
 import type { InjectedQueryContext } from "../constants/types";
-import { NotFoundException, ValidationException } from "../config/exception.config";
+import {
+  NotFoundException,
+  ValidationException,
+} from "../config/exception.config";
 
 export interface GetInvoiceRevisionsArgs {
   invoiceId: string;
@@ -33,28 +36,44 @@ export function getRevisionResolvers() {
       ) => {
         const { revisionService } = context;
         if (!revisionService) {
-          throw new GraphQLError("Internal server error: revisionService doesn't exist", {
-            extensions: {
-              code: "INTERNAL_SERVER_ERROR",
+          throw new GraphQLError(
+            "Internal server error: revisionService doesn't exist",
+            {
+              extensions: {
+                code: "INTERNAL_SERVER_ERROR",
+              },
             },
-          });
+          );
         }
 
         try {
-          const filters = args.filters ? {
-            ...(args.filters.startDate && { startDate: new Date(args.filters.startDate) }),
-            ...(args.filters.endDate && { endDate: new Date(args.filters.endDate) }),
-            ...(args.filters.userId && { userId: args.filters.userId }),
-            ...(args.filters.changeType && { changeType: args.filters.changeType }),
-          } : undefined;
+          const filters = args.filters
+            ? {
+                ...(args.filters.startDate && {
+                  startDate: new Date(args.filters.startDate),
+                }),
+                ...(args.filters.endDate && {
+                  endDate: new Date(args.filters.endDate),
+                }),
+                ...(args.filters.userId && { userId: args.filters.userId }),
+                ...(args.filters.changeType && {
+                  changeType: args.filters.changeType,
+                }),
+              }
+            : undefined;
 
-          const revisions = await revisionService.getInvoiceRevisions(args.invoiceId, filters);
-          
+          const revisions = await revisionService.getInvoiceRevisions(
+            args.invoiceId,
+            filters,
+          );
+
           return revisions.map((revision: any) => ({
             ...revision,
             createdAt: revision.createdAt.toISOString(),
-            jsonDiff: revision.jsonDiff ? JSON.stringify(revision.jsonDiff) : null,
-            fullSnapshot: JSON.stringify(revision.fullSnapshot)
+            jsonDiff: revision.jsonDiff
+              ? JSON.stringify(revision.jsonDiff)
+              : null,
+            fullSnapshot: JSON.stringify(revision.fullSnapshot),
           }));
         } catch (error) {
           if (error instanceof NotFoundException) {
@@ -87,24 +106,27 @@ export function getRevisionResolvers() {
       ) => {
         const { revisionService } = context;
         if (!revisionService) {
-          throw new GraphQLError("Internal server error: revisionService doesn't exist", {
-            extensions: {
-              code: "INTERNAL_SERVER_ERROR",
+          throw new GraphQLError(
+            "Internal server error: revisionService doesn't exist",
+            {
+              extensions: {
+                code: "INTERNAL_SERVER_ERROR",
+              },
             },
-          });
+          );
         }
 
         try {
           const diff = await revisionService.getRevisionDiff(
             args.invoiceId,
             args.fromRevision,
-            args.toRevision
+            args.toRevision,
           );
 
           return {
             fromRevision: args.fromRevision,
             toRevision: args.toRevision,
-            diff: JSON.stringify(diff)
+            diff: JSON.stringify(diff),
           };
         } catch (error) {
           if (error instanceof NotFoundException) {
@@ -139,18 +161,22 @@ export function getRevisionResolvers() {
       ) => {
         const { revisionService } = context;
         if (!revisionService) {
-          throw new GraphQLError("Internal server error: revisionService doesn't exist", {
-            extensions: {
-              code: "INTERNAL_SERVER_ERROR",
+          throw new GraphQLError(
+            "Internal server error: revisionService doesn't exist",
+            {
+              extensions: {
+                code: "INTERNAL_SERVER_ERROR",
+              },
             },
-          });
+          );
         }
 
         try {
-          const restoredInvoice = await revisionService.restoreInvoiceToRevision(
-            args.invoiceId,
-            args.revisionNumber
-          );
+          const restoredInvoice =
+            await revisionService.restoreInvoiceToRevision(
+              args.invoiceId,
+              args.revisionNumber,
+            );
 
           return restoredInvoice;
         } catch (error) {

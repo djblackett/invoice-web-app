@@ -50,9 +50,15 @@ container
 
 // Bind the appropriate database connection based on configuration
 if (USE_SQLITE) {
-  container.bind(TYPES.DatabaseConnection).to(SQLiteDatabaseConnection).inTransientScope();
+  container
+    .bind(TYPES.DatabaseConnection)
+    .to(SQLiteDatabaseConnection)
+    .inTransientScope();
 } else {
-  container.bind(TYPES.DatabaseConnection).to(DatabaseConnection).inTransientScope();
+  container
+    .bind(TYPES.DatabaseConnection)
+    .to(DatabaseConnection)
+    .inTransientScope();
 }
 
 container

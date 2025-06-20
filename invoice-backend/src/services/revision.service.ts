@@ -2,7 +2,10 @@ import { inject, injectable } from "inversify";
 import { IDatabaseConnection } from "@/database/database.connection";
 import TYPES from "@/constants/identifiers";
 import { UserIdAndRole } from "@/constants/types";
-import { ValidationException, NotFoundException } from "@/config/exception.config";
+import {
+  ValidationException,
+  NotFoundException,
+} from "@/config/exception.config";
 
 export interface InvoiceRevisionData {
   id: string;
@@ -49,8 +52,8 @@ export class RevisionService {
         objectHash: (obj: any) => obj.id || obj._id || JSON.stringify(obj),
         arrays: {
           detectMove: true,
-          includeValueOnMove: false
-        }
+          includeValueOnMove: false,
+        },
       });
     }
     return this.diffPatcher;
@@ -60,8 +63,8 @@ export class RevisionService {
     invoiceId: string,
     previousData: any,
     currentData: any,
-    changeType: 'create' | 'update' | 'status_change',
-    description?: string
+    changeType: "create" | "update" | "status_change",
+    description?: string,
   ): Promise<void> {
     if (!this.userContext) {
       throw new ValidationException("Unauthorized");
@@ -70,14 +73,17 @@ export class RevisionService {
     // Get the next revision number for this invoice
     const lastRevision = await this.prisma.invoiceRevision.findFirst({
       where: { invoiceId },
-      orderBy: { revisionNumber: 'desc' }
+      orderBy: { revisionNumber: "desc" },
     });
 
     const revisionNumber = (lastRevision?.revisionNumber || 0) + 1;
 
     // Create JSON diff (null for initial creation)
     const diffPatcher = await this.getDiffPatcher();
-    const jsonDiff = changeType === 'create' ? null : diffPatcher.diff(previousData, currentData);
+    const jsonDiff =
+      changeType === "create"
+        ? null
+        : diffPatcher.diff(previousData, currentData);
 
     await this.prisma.invoiceRevision.create({
       data: {
@@ -87,14 +93,14 @@ export class RevisionService {
         changeType,
         jsonDiff: jsonDiff ? JSON.stringify(jsonDiff) : null,
         fullSnapshot: JSON.stringify(currentData),
-        description: description || null
-      }
+        description: description || null,
+      },
     });
   }
 
   async getInvoiceRevisions(
     invoiceId: string,
-    filters?: RevisionFilters
+    filters?: RevisionFilters,
   ): Promise<InvoiceRevisionData[]> {
     if (!this.userContext) {
       throw new ValidationException("Unauthorized");
@@ -103,15 +109,20 @@ export class RevisionService {
     // Check if user has access to this invoice
     const invoice = await this.prisma.invoice.findUnique({
       where: { id: invoiceId },
-      select: { createdById: true }
+      select: { createdById: true },
     });
 
     if (!invoice) {
       throw new NotFoundException("Invoice not found");
     }
 
-    if (this.userContext.role !== "ADMIN" && invoice.createdById !== this.userContext.id) {
-      throw new ValidationException("Unauthorized to view revisions for this invoice");
+    if (
+      this.userContext.role !== "ADMIN" &&
+      invoice.createdById !== this.userContext.id
+    ) {
+      throw new ValidationException(
+        "Unauthorized to view revisions for this invoice",
+      );
     }
 
     const whereClause: any = { invoiceId };
@@ -143,31 +154,34 @@ export class RevisionService {
           select: {
             id: true,
             username: true,
-            name: true
-          }
-        }
+            name: true,
+          },
+        },
       },
-      orderBy: { revisionNumber: 'desc' }
+      orderBy: { revisionNumber: "desc" },
     });
 
-    return revisions.map(revision => ({
+    return revisions.map((revision) => ({
       id: revision.id,
       invoiceId: revision.invoiceId,
       createdAt: revision.createdAt,
       createdBy: {
         id: revision.createdBy.id,
         username: revision.createdBy.username,
-        name: revision.createdBy.name || undefined
+        name: revision.createdBy.name || undefined,
       },
       revisionNumber: revision.revisionNumber,
       changeType: revision.changeType,
       description: revision.description || undefined,
       jsonDiff: revision.jsonDiff ? JSON.parse(revision.jsonDiff) : null,
-      fullSnapshot: JSON.parse(revision.fullSnapshot)
+      fullSnapshot: JSON.parse(revision.fullSnapshot),
     }));
   }
 
-  async restoreInvoiceToRevision(invoiceId: string, revisionNumber: number): Promise<any> {
+  async restoreInvoiceToRevision(
+    invoiceId: string,
+    revisionNumber: number,
+  ): Promise<any> {
     if (!this.userContext) {
       throw new ValidationException("Unauthorized");
     }
@@ -175,14 +189,17 @@ export class RevisionService {
     // Check if user has access to this invoice
     const invoice = await this.prisma.invoice.findUnique({
       where: { id: invoiceId },
-      select: { createdById: true }
+      select: { createdById: true },
     });
 
     if (!invoice) {
       throw new NotFoundException("Invoice not found");
     }
 
-    if (this.userContext.role !== "ADMIN" && invoice.createdById !== this.userContext.id) {
+    if (
+      this.userContext.role !== "ADMIN" &&
+      invoice.createdById !== this.userContext.id
+    ) {
       throw new ValidationException("Unauthorized to restore this invoice");
     }
 
@@ -191,9 +208,9 @@ export class RevisionService {
       where: {
         invoiceId_revisionNumber: {
           invoiceId,
-          revisionNumber
-        }
-      }
+          revisionNumber,
+        },
+      },
     });
 
     if (!targetRevision) {
@@ -209,8 +226,8 @@ export class RevisionService {
         items: true,
         clientAddress: true,
         senderAddress: true,
-        createdBy: true
-      }
+        createdBy: true,
+      },
     });
 
     if (!currentInvoice) {
@@ -222,15 +239,15 @@ export class RevisionService {
       invoiceId,
       currentInvoice,
       snapshotData,
-      'update',
-      `Restored to revision ${revisionNumber}`
+      "update",
+      `Restored to revision ${revisionNumber}`,
     );
 
     // Restore the invoice using a transaction
     return await this.prisma.$transaction(async (prisma) => {
       // Delete current items
       await prisma.item.deleteMany({
-        where: { invoiceId }
+        where: { invoiceId },
       });
 
       // Build update data object
@@ -244,14 +261,15 @@ export class RevisionService {
         total: snapshotData.total,
         items: {
           createMany: {
-            data: snapshotData.items?.map((item: any) => ({
-              name: item.name,
-              price: item.price,
-              quantity: item.quantity,
-              total: item.total,
-            })) || []
-          }
-        }
+            data:
+              snapshotData.items?.map((item: any) => ({
+                name: item.name,
+                price: item.price,
+                quantity: item.quantity,
+                total: item.total,
+              })) || [],
+          },
+        },
       };
 
       // Only add address updates if they exist
@@ -262,7 +280,7 @@ export class RevisionService {
             city: snapshotData.clientAddress.city,
             postCode: snapshotData.clientAddress.postCode,
             country: snapshotData.clientAddress.country,
-          }
+          },
         };
       }
 
@@ -273,7 +291,7 @@ export class RevisionService {
             city: snapshotData.senderAddress.city,
             postCode: snapshotData.senderAddress.postCode,
             country: snapshotData.senderAddress.country,
-          }
+          },
         };
       }
 
@@ -285,15 +303,19 @@ export class RevisionService {
           items: true,
           clientAddress: true,
           senderAddress: true,
-          createdBy: true
-        }
+          createdBy: true,
+        },
       });
 
       return restoredInvoice;
     });
   }
 
-  async getRevisionDiff(invoiceId: string, fromRevision: number, toRevision: number): Promise<any> {
+  async getRevisionDiff(
+    invoiceId: string,
+    fromRevision: number,
+    toRevision: number,
+  ): Promise<any> {
     if (!this.userContext) {
       throw new ValidationException("Unauthorized");
     }
@@ -301,15 +323,20 @@ export class RevisionService {
     // Check if user has access to this invoice
     const invoice = await this.prisma.invoice.findUnique({
       where: { id: invoiceId },
-      select: { createdById: true }
+      select: { createdById: true },
     });
 
     if (!invoice) {
       throw new NotFoundException("Invoice not found");
     }
 
-    if (this.userContext.role !== "ADMIN" && invoice.createdById !== this.userContext.id) {
-      throw new ValidationException("Unauthorized to view revisions for this invoice");
+    if (
+      this.userContext.role !== "ADMIN" &&
+      invoice.createdById !== this.userContext.id
+    ) {
+      throw new ValidationException(
+        "Unauthorized to view revisions for this invoice",
+      );
     }
 
     const [fromRev, toRev] = await Promise.all([
@@ -317,18 +344,18 @@ export class RevisionService {
         where: {
           invoiceId_revisionNumber: {
             invoiceId,
-            revisionNumber: fromRevision
-          }
-        }
+            revisionNumber: fromRevision,
+          },
+        },
       }),
       this.prisma.invoiceRevision.findUnique({
         where: {
           invoiceId_revisionNumber: {
             invoiceId,
-            revisionNumber: toRevision
-          }
-        }
-      })
+            revisionNumber: toRevision,
+          },
+        },
+      }),
     ]);
 
     if (!fromRev || !toRev) {

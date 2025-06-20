@@ -19,7 +19,7 @@ export class SQLiteDatabaseConnection implements IDatabaseConnection {
   public async initConnection(): Promise<void> {
     try {
       await this.prisma.$connect();
-      
+
       if (USE_IN_MEMORY) {
         this.logger.info("Connected to SQLite in-memory database");
         // For in-memory database, we need to create the schema
@@ -108,7 +108,9 @@ export class SQLiteDatabaseConnection implements IDatabaseConnection {
 
       this.logger.info("In-memory database schema created successfully");
     } catch (error) {
-      this.logger.error(`Failed to create in-memory database schema: ${error instanceof Error ? error.message : String(error)}`);
+      this.logger.error(
+        `Failed to create in-memory database schema: ${error instanceof Error ? error.message : String(error)}`,
+      );
       throw error;
     }
   }
