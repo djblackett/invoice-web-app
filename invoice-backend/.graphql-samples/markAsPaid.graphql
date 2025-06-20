@@ -1,0 +1,11 @@
+mutation {
+  markAsPaid(id: "XM9141") {
+    id
+    status
+    revisions {
+      revisionNumber
+      changeType
+      description
+    }
+  }
+}

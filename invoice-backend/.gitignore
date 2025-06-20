@@ -1,9 +1,11 @@
 node_modules
 build
 .env
+.env.backup
 *.env
 .env*
 coverage
 certs
 no-git.env
 assets/
+.vscode/

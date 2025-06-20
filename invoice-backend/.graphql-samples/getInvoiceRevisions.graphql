@@ -1,0 +1,10 @@
+query {
+  getInvoiceRevisions(invoiceId: "TY9141") {
+    id
+    revisionNumber
+    changeType
+    description
+    createdAt
+    jsonDiff
+  }
+}

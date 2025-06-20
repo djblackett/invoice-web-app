@@ -1,0 +1,21 @@
+query {
+  getInvoiceById(id: "TY9141") {
+    id
+    description
+    status
+    createdAt
+    total
+    clientName
+    items {
+      name
+      quantity
+      total
+    }
+    revisions {
+      revisionNumber
+      changeType
+      description
+      createdAt
+    }
+  }
+}

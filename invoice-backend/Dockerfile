@@ -1,10 +1,13 @@
-FROM node:20.13.1-bookworm-slim AS build
+FROM node:22.16.0-bookworm-slim AS build
 ENV NODE_ENV=production
 
 RUN apt-get update -y && \
-    apt-get install -y openssl && \
+    apt-get upgrade -y && \
+    apt-get install -y --no-install-recommends openssl && \
     corepack enable && \
-    yarn set version stable
+    yarn set version stable && \
+    apt-get clean && \
+    rm -rf /var/lib/apt/lists/*
 
 WORKDIR /usr/src/app/
 
@@ -21,7 +24,7 @@ RUN rm -rf libs && rm -rf tests
 
 RUN yarn prisma-generate 
 # RUN yarn prisma-push
-RUN yarn tsc -p tsconfig.build.json
+RUN yarn build
 CMD ["yarn", "start"]
 # # Stage 2: Production
 # FROM node:20.13.1-bookworm-slim AS production

@@ -1,5 +1,6 @@
 import "reflect-metadata";
 import { InvoiceService } from "@/services/invoice.service";
+import { RevisionService } from "@/services/revision.service";
 import { describe, expect, beforeEach, afterEach, test, vi } from "vitest";
 import { mockDeep, mockReset } from "vitest-mock-extended";
 import { IInvoiceRepo } from "@/repositories/InvoiceRepo";
@@ -197,11 +198,13 @@ const invoices: Invoice[] = [
 
 describe("InvoiceService", () => {
   const mockInvoiceRepo = mockDeep<IInvoiceRepo>();
+const mockRevisionService = mockDeep<RevisionService>();
   let invoiceService: InvoiceService;
 
   beforeEach(() => {
-    invoiceService = new InvoiceService(mockInvoiceRepo, mockUserContext);
+    invoiceService = new InvoiceService(mockInvoiceRepo, mockRevisionService, mockUserContext);
     mockReset(mockInvoiceRepo); // Reset all mocks before each test
+    mockReset(mockRevisionService);
     vi.clearAllMocks(); // Clear all other mocks
   });
 
@@ -281,6 +284,13 @@ describe("InvoiceService", () => {
     // expect(mockInvoiceRepo.create).toHaveBeenCalledWith(createdInvoice);
     // expect(validateInvoiceDataMock).toHaveBeenCalledWith(createdInvoice);
     expect(result).toEqual(createdInvoice);
+    expect(mockRevisionService.createRevision).toHaveBeenCalledWith(
+      createdInvoice.id,
+      null,
+      createdInvoice,
+      'create',
+      'Initial invoice creation'
+    );
   });
 
   test("should call update on invoiceRepo when updateInvoice is called", async () => {
@@ -311,7 +321,13 @@ describe("InvoiceService", () => {
     const result = await invoiceService.updateInvoice(id, invoiceUpdates);
 
     // Assert
-
+    expect(mockRevisionService.createRevision).toHaveBeenCalledWith(
+      id,
+      oldInvoice,
+      updatedInvoice,
+      'update',
+      'Invoice updated'
+    );
     expect(result).toEqual(updatedInvoice);
   });
 
@@ -330,6 +346,7 @@ describe("InvoiceService", () => {
       status: "paid",
     };
 
+    mockInvoiceRepo.findById.mockResolvedValue(invoice);
     mockInvoiceRepo.markAsPaid.mockResolvedValue(paidInvoice);
     const validateInvoiceDataMock = vi.mocked(
       InvoiceUtils.validateInvoiceData,
@@ -344,12 +361,20 @@ describe("InvoiceService", () => {
     expect(mockInvoiceRepo.markAsPaid).toHaveBeenCalledWith(id);
     expect(validateInvoiceDataMock).toHaveBeenCalledWith(paidInvoice);
     expect(result).toEqual(invoice);
+    expect(mockRevisionService.createRevision).toHaveBeenCalledWith(
+      id,
+      invoice,
+      paidInvoice,
+      'status_change',
+      'Marked as paid'
+    );
   });
 
   test("markAsPaid should throw error when validation fails", async () => {
     // Arrange
     const invoice: Invoice = invoices[0];
     const id = invoice.id;
+    mockInvoiceRepo.findById.mockResolvedValue(invoice);
     mockInvoiceRepo.markAsPaid.mockResolvedValue(invoice);
     const validateInvoiceDataMock = vi.mocked(
       InvoiceUtils.validateInvoiceData,

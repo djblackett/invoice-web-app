@@ -11,12 +11,9 @@ import {
 import { createApp } from "./app";
 import { makeExecutableSchema } from "@graphql-tools/schema";
 import typeDefs from "./GraphQL/typeDefs";
-import { CERT_DIR, NODE_ENV } from "./config/server.config";
+import { NODE_ENV } from "./config/server.config";
 import { expressMiddleware } from "@apollo/server/express4";
 import { createContext } from "./GraphQL/createContext";
-import path from "path";
-import fs from "fs";
-import https from "https";
 import { getResolvers } from "./resolvers";
 import { createLoggingPlugin } from "./GraphQL/loggingPlugin";
 import container from "./config/inversify.config";
@@ -24,30 +21,30 @@ import type { Logger } from "./config/logger.config";
 import TYPES from "./constants/identifiers";
 
 const isProduction = NODE_ENV === "production";
-const isDemo = process.env["DEMO_MODE"] === "true";
+// const isDemo = process.env["DEMO_MODE"] === "true";
 
 const logger = container.get<Logger>(TYPES.Logger);
 
 export const createServer = async () => {
   try {
     const app = await createApp();
-    let httpServer;
-    if (CERT_DIR && !isProduction && !isDemo) {
-      const sslOptions = {
-        key: fs.readFileSync(
-          path.join(__dirname, CERT_DIR, "localhost-key.pem"),
-          "ascii",
-        ),
-        cert: fs.readFileSync(
-          path.join(__dirname, CERT_DIR, "localhost-fullchain.pem"),
-          "ascii",
-        ),
-      };
+    const httpServer = http.createServer(app);
+    // if (CERT_DIR && !isProduction && !isDemo) {
+    //   const sslOptions = {
+    //     key: fs.readFileSync(
+    //       path.join(__dirname, CERT_DIR, "localhost-key.pem"),
+    //       "ascii",
+    //     ),
+    //     cert: fs.readFileSync(
+    //       path.join(__dirname, CERT_DIR, "localhost-fullchain.pem"),
+    //       "ascii",
+    //     ),
+    //   };
 
-      httpServer = https.createServer(sslOptions, app);
-    } else {
-      httpServer = http.createServer(app);
-    }
+    // httpServer = https.createServer(sslOptions, app);
+    // } else {
+
+    // }
 
     const wsServer = new WebSocketServer({
       server: httpServer,
@@ -75,6 +72,9 @@ export const createServer = async () => {
       schema,
       introspection: true,
       status400ForVariableCoercionErrors: true,
+      csrfPrevention: {
+        requestHeaders: ["x-apollo-operation-name"],
+      },
       plugins: [
         ApolloServerPluginDrainHttpServer({ httpServer }),
         {

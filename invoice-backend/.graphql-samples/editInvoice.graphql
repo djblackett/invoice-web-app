@@ -1,0 +1,10 @@
+mutation {
+  editInvoice(id: "XM9141", description: "Updated Description Again") {
+    id
+    description
+    revisions {
+      revisionNumber
+      description
+    }
+  }
+}
