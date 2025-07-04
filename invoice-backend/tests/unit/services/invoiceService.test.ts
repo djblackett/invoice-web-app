@@ -1,11 +1,13 @@
 import "reflect-metadata";
 import { InvoiceService } from "@/services/invoice.service";
+import { RevisionService } from "@/services/revision.service";
 import { describe, expect, beforeEach, afterEach, test, vi } from "vitest";
 import { mockDeep, mockReset } from "vitest-mock-extended";
 import { IInvoiceRepo } from "@/repositories/InvoiceRepo";
 import { Invoice, UserIdAndRole } from "@/constants/types";
 import * as InvoiceUtils from "@/utils/utils";
 import { ValidationException } from "@/config/exception.config";
+import invoices from "tests/data/invoices";
 
 // Mock utility functions
 vi.mock("@/utils/utils.ts", () => ({
@@ -30,178 +32,19 @@ const mockUserContext: UserIdAndRole = {
   name: string;
 };
 
-const invoices: Invoice[] = [
-  {
-    clientAddress: {
-      city: "Toronto",
-      country: "Canada",
-      postCode: "M5H 2N2",
-      street: "123 King Street West",
-    },
-    createdBy: {
-      id: "user1",
-      name: "John Doe",
-      username: "john@melba.toast",
-      role: "USER",
-    },
-    createdById: "user1",
-    clientEmail: "johndoe@example.com",
-    clientName: "John Doe",
-    createdAt: "2022-05-12",
-    description: "Website Development",
-    id: "e08e99bd-5de6-4378-b2a8-11941bad082d",
-    items: [
-      {
-        id: "a270680c-541f-490a-8f0e-31830eb81ba0",
-        name: "Landing Page",
-        price: 500,
-        quantity: 1,
-        total: 500,
-      },
-      {
-        id: "01555927-b4cf-4670-8a5d-0707e4c52acd",
-        name: "SEO Optimization",
-        price: 300,
-        quantity: 3,
-        total: 900,
-      },
-    ],
-    paymentDue: "2022-06-12",
-    paymentTerms: 30,
-    senderAddress: {
-      city: "Montreal",
-      country: "Canada",
-      postCode: "H3B 1A1",
-      street: "456 Saint Catherine Street",
-    },
-    status: "paid",
-    total: 1400,
-  },
-  {
-    clientAddress: {
-      city: "Bradford",
-      country: "United Kingdom",
-      postCode: "BD1 9PB",
-      street: "84 Church Way",
-    },
-    createdBy: {
-      id: "user1",
-      name: "John Doe",
-      username: "john@melba.toast",
-      role: "USER",
-    },
-    createdById: "user1",
-    clientEmail: "alexgrim@mail.com",
-    clientName: "Alex Grim",
-    createdAt: "2021-08-21",
-    description: "Graphic Design",
-    id: "D64FUO",
-    items: [
-      {
-        id: "gjhgjhgjhg",
-        name: "Banner Design",
-        price: 156,
-        quantity: 1,
-        total: 156,
-      },
-      {
-        id: "hgfdyrdyi456t",
-        name: "Email Design",
-        price: 200,
-        quantity: 2,
-        total: 400,
-      },
-    ],
-    paymentDue: "2021-09-20",
-    paymentTerms: 30,
-    senderAddress: {
-      city: "London",
-      country: "United Kingdom",
-      postCode: "E1 3EZ",
-      street: "19 Union Terrace",
-    },
-    status: "paid",
-    total: 556,
-  },
-  {
-    clientAddress: {
-      city: "Berlin",
-      country: "Germany",
-      postCode: "10115",
-      street: "Unter den Linden 5",
-    },
-    createdBy: {
-      id: "user1",
-      name: "John Doe",
-      username: "john@melba.toast",
-      role: "USER",
-    },
-    createdById: "user1",
-    clientEmail: "max.mustermann@mail.de",
-    clientName: "Mr Clean",
-    createdAt: "2023-2-31",
-    description: "Photography Services",
-    id: "028a3312-89ef-42f5-aaa2-c771f08b84dd",
-    items: [
-      {
-        id: "4ed1ba6e-a7d3-4999-9a82-2875e4236d56",
-        name: "Evil",
-        price: 23,
-        quantity: 5,
-        total: 115,
-      },
-    ],
-    paymentDue: "2023-3-1",
-    paymentTerms: 1,
-    senderAddress: {
-      city: "Hamburg",
-      country: "Germany",
-      postCode: "20095",
-      street: "Mönckebergstraße 7",
-    },
-    status: "paid",
-    total: 115,
-  },
-  {
-    clientAddress: {
-      city: "",
-      country: "",
-      postCode: "",
-      street: "",
-    },
-    createdBy: {
-      id: "user1",
-      name: "John Doe",
-      username: "john@melba.toast",
-      role: "USER",
-    },
-    createdById: "user1",
-    clientEmail: "",
-    clientName: "",
-    createdAt: "9/3/2024",
-    description: "",
-    id: "b6ec4a22-c929-4ed4-95e1-7a3a6ffa25ad",
-    items: [],
-    paymentDue: "9/4/2024",
-    paymentTerms: 14,
-    senderAddress: {
-      city: "",
-      country: "",
-      postCode: "",
-      street: "",
-    },
-    status: "",
-    total: 0,
-  },
-];
-
 describe("InvoiceService", () => {
   const mockInvoiceRepo = mockDeep<IInvoiceRepo>();
+  const mockRevisionService = mockDeep<RevisionService>();
   let invoiceService: InvoiceService;
 
   beforeEach(() => {
-    invoiceService = new InvoiceService(mockInvoiceRepo, mockUserContext);
+    invoiceService = new InvoiceService(
+      mockInvoiceRepo,
+      mockRevisionService,
+      mockUserContext,
+    );
     mockReset(mockInvoiceRepo); // Reset all mocks before each test
+    mockReset(mockRevisionService);
     vi.clearAllMocks(); // Clear all other mocks
   });
 
@@ -281,6 +124,13 @@ describe("InvoiceService", () => {
     // expect(mockInvoiceRepo.create).toHaveBeenCalledWith(createdInvoice);
     // expect(validateInvoiceDataMock).toHaveBeenCalledWith(createdInvoice);
     expect(result).toEqual(createdInvoice);
+    expect(mockRevisionService.createRevision).toHaveBeenCalledWith(
+      createdInvoice.id,
+      null,
+      createdInvoice,
+      "create",
+      "Initial invoice creation",
+    );
   });
 
   test("should call update on invoiceRepo when updateInvoice is called", async () => {
@@ -311,7 +161,13 @@ describe("InvoiceService", () => {
     const result = await invoiceService.updateInvoice(id, invoiceUpdates);
 
     // Assert
-
+    expect(mockRevisionService.createRevision).toHaveBeenCalledWith(
+      id,
+      oldInvoice,
+      updatedInvoice,
+      "update",
+      "Invoice updated",
+    );
     expect(result).toEqual(updatedInvoice);
   });
 
@@ -330,6 +186,7 @@ describe("InvoiceService", () => {
       status: "paid",
     };
 
+    mockInvoiceRepo.findById.mockResolvedValue(invoice);
     mockInvoiceRepo.markAsPaid.mockResolvedValue(paidInvoice);
     const validateInvoiceDataMock = vi.mocked(
       InvoiceUtils.validateInvoiceData,
@@ -344,12 +201,20 @@ describe("InvoiceService", () => {
     expect(mockInvoiceRepo.markAsPaid).toHaveBeenCalledWith(id);
     expect(validateInvoiceDataMock).toHaveBeenCalledWith(paidInvoice);
     expect(result).toEqual(invoice);
+    expect(mockRevisionService.createRevision).toHaveBeenCalledWith(
+      id,
+      invoice,
+      paidInvoice,
+      "status_change",
+      "Marked as paid",
+    );
   });
 
   test("markAsPaid should throw error when validation fails", async () => {
     // Arrange
     const invoice: Invoice = invoices[0];
     const id = invoice.id;
+    mockInvoiceRepo.findById.mockResolvedValue(invoice);
     mockInvoiceRepo.markAsPaid.mockResolvedValue(invoice);
     const validateInvoiceDataMock = vi.mocked(
       InvoiceUtils.validateInvoiceData,

@@ -1,5 +1,9 @@
 import type { Role } from "@prisma/client";
-import type { Invoice, InvoiceWithCreatedBy } from "../constants/types";
+import type {
+  Invoice,
+  InvoiceWithCreatedBy,
+  Payment,
+} from "../constants/types";
 
 export interface IInvoiceRepo {
   findAll: () => Promise<unknown>;
@@ -16,4 +20,9 @@ export interface IInvoiceRepo {
   markAsPaid: (id: string) => Promise<unknown>;
   update: (id: string, invoiceUpdates: Partial<Invoice>) => Promise<unknown>;
   create: (invoice: InvoiceWithCreatedBy) => Promise<unknown>;
+  applyPayment: (
+    id: string,
+    paymentAmount: number,
+    newPayment: Payment,
+  ) => Promise<unknown>;
 }

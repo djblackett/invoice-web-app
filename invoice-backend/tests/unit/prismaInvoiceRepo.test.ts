@@ -435,6 +435,7 @@ describe("Prisma Query: updateInvoice", () => {
       clientName: "Updated Client",
     };
 
+    prisma.invoice.findUnique.mockResolvedValue({ id: "D64FUO" } as any);
     prisma.$transaction.mockRejectedValue(new Error("Transaction failed"));
 
     await expect(
@@ -496,6 +497,11 @@ describe("Prisma Query: markAsPaid", () => {
       status: "paid",
     };
 
+    prisma.invoice.findUnique.mockResolvedValue(mockInvoice);
+    prisma.$transaction.mockImplementation(async (callback) => {
+      await callback(prisma);
+      return mockInvoice;
+    });
     prisma.invoice.update.mockResolvedValue(mockInvoice);
 
     const updatedInvoice = await mockRepo.markAsPaid("D64FUO");

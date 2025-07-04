@@ -4,7 +4,16 @@ import type { Context as GraphQLWSContext } from "graphql-ws";
 import type { Container } from "inversify";
 import type { InvoiceService } from "@/services/invoice.service";
 import type { UserService } from "@/services/user.service";
+import type { RevisionService } from "@/services/revision.service";
 import type { PubSub } from "graphql-subscriptions";
+
+export interface Payment {
+  id: string; // Unique ID for the payment (e.g., generated)
+  invoiceId: string;
+  amount: number;
+  date: string; // ISO string for consistency with other dates
+  // Optional: Add fields like 'method' or 'notes' if needed in the future
+}
 
 export interface Invoice {
   createdBy?: UserIdAndRole | undefined;
@@ -23,6 +32,8 @@ export interface Invoice {
   senderAddressId?: string | undefined;
   status: string;
   total: number;
+  amountPaid: number; // New: Cumulative amount paid, defaults to 0
+  payments: Payment[]; // New: Audit trail of payments, defaults to []
 }
 export interface InvoiceWithCreatedBy extends Invoice {
   createdBy: UserIdAndRole | undefined;
@@ -67,6 +78,7 @@ export interface InjectedQueryContext {
   user?: UserIdAndRole | null;
   invoiceService?: InvoiceService;
   userService?: UserService;
+  revisionService?: RevisionService;
   pubsub?: PubSub;
   container?: Container;
   connection?: GraphQLWSContext;

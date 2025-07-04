@@ -1,4 +1,5 @@
-import { Invoice, UserIdAndRole } from "../constants/types";
+import { Invoice, Payment, UserIdAndRole } from "../constants/types";
+import PDFDocument from "pdfkit";
 import {
   mapPartialInvoiceToInvoice,
   validateInvoiceData,
@@ -6,21 +7,108 @@ import {
 } from "../utils/utils";
 import { inject, injectable } from "inversify";
 import { IInvoiceRepo } from "../repositories/InvoiceRepo";
+import { RevisionService } from "./revision.service";
 import TYPES from "../constants/identifiers";
 import {
   InternalServerException,
   NotFoundException,
   ValidationException,
 } from "../config/exception.config";
+import { v4 as uuidv4 } from "uuid";
 
 @injectable()
 export class InvoiceService {
   constructor(
     @inject(TYPES.IInvoiceRepo)
     private readonly invoiceRepo: IInvoiceRepo,
+    @inject(TYPES.RevisionService)
+    private readonly revisionService: RevisionService,
     @inject(TYPES.UserContext)
     private readonly userContext: UserIdAndRole | null,
   ) {}
+
+  applyPayment = async (id: string, amountPaid: number): Promise<Invoice> => {
+    if (!this.userContext) {
+      throw new ValidationException("Unauthorized");
+    }
+    const { role, id: userId } = this.userContext;
+
+    // Validate payment amount
+    if (amountPaid == 0) {
+      throw new ValidationException("Payment amount cannot be 0");
+    }
+
+    if (amountPaid <= 0) {
+      throw new ValidationException("Payment amount must be positive");
+    }
+
+    const invoice = await this.getInvoiceById(id);
+
+    if (!invoice) {
+      throw new NotFoundException("Invoice not found");
+    }
+
+    if (invoice.status != "pending") {
+      throw new ValidationException(
+        "Cannot make payment on invoice with status " + invoice.status,
+      );
+    }
+
+    // Authorization: Only owner or admin
+    if (invoice.createdById !== userId && role !== "ADMIN") {
+      throw new ValidationException("Unauthorized to apply payment");
+    }
+
+    const remaining = (invoice.total ?? 0) - (invoice.amountPaid || 0);
+    if (amountPaid > remaining) {
+      throw new ValidationException("Payment exceeds remaining balance");
+    }
+
+    try {
+      // Create new payment for audit trail
+      const newPayment: Payment = {
+        id: uuidv4(), // Or use another ID generator
+        invoiceId: id,
+        amount: amountPaid,
+        date: new Date().toISOString(),
+      };
+
+      // Update invoice
+      const updatedInvoice = {
+        ...invoice,
+        amountPaid: (Number(invoice.amountPaid) || 0) + amountPaid,
+        payments: [...(invoice.payments || []), newPayment],
+        status:
+          (Number(invoice.amountPaid) || 0) + amountPaid >= (invoice.total ?? 0)
+            ? "paid"
+            : invoice.status,
+      };
+
+      // Validate and create revision
+      const validatedInvoice = validateInvoiceData(updatedInvoice);
+      await this.revisionService.createRevision(
+        id,
+        invoice,
+        validatedInvoice,
+        "update",
+        `Payment of ${amountPaid} applied`,
+      );
+
+      // Persist via repository
+      const result = await this.invoiceRepo.applyPayment(
+        id,
+        amountPaid,
+        newPayment,
+      );
+      return validateInvoiceData(result);
+    } catch (error) {
+      if (error instanceof Error) {
+        throw new Error("Failed to apply payment: " + error.message);
+      } else {
+        throw new Error("Failed to apply payment: " + String(error));
+      }
+    }
+  };
 
   getInvoices = async (): Promise<Invoice[]> => {
     if (!this.userContext) {
@@ -122,6 +210,15 @@ export class InvoiceService {
       const createdInvoice = await this.invoiceRepo.create(fullInvoice);
       const validatedData = validateInvoiceData(createdInvoice);
 
+      // Create initial revision for the new invoice
+      await this.revisionService.createRevision(
+        validatedData.id,
+        null,
+        validatedData,
+        "create",
+        "Initial invoice creation",
+      );
+
       return validatedData;
     } catch (e) {
       console.error(e);
@@ -149,6 +246,16 @@ export class InvoiceService {
 
       delete newInvoiceUnvalidated.createdBy;
       delete newInvoiceUnvalidated.createdById;
+
+      // Create revision with proper diff tracking
+      await this.revisionService.createRevision(
+        id,
+        oldInvoice,
+        validatedInvoice,
+        "update",
+        "Invoice updated",
+      );
+
       const result = await this.invoiceRepo.update(id, validatedInvoice);
 
       return result;
@@ -157,7 +264,7 @@ export class InvoiceService {
       if (e instanceof ValidationException) {
         throw e;
       }
-      throw new InternalServerException("Internal server error");
+      throw new InternalServerException("Internal server error: " + String(e));
     }
   };
 
@@ -166,6 +273,21 @@ export class InvoiceService {
       throw new ValidationException("Unauthorized");
     }
     try {
+      const oldInvoice = await this.getInvoiceById(id);
+      if (!oldInvoice) {
+        throw new NotFoundException("Invoice not found");
+      }
+
+      // Create revision before marking as paid
+      const updatedInvoice = { ...oldInvoice, status: "paid" };
+      await this.revisionService.createRevision(
+        id,
+        oldInvoice,
+        updatedInvoice,
+        "status_change",
+        "Marked as paid",
+      );
+
       const result = await this.invoiceRepo.markAsPaid(id);
       return validateInvoiceData(result);
     } catch (e) {
@@ -235,5 +357,76 @@ export class InvoiceService {
       console.error(e);
       throw new InternalServerException("Internal server error");
     }
+  };
+
+  generatePdf = async (invoiceId: string): Promise<string> => {
+    const invoiceData = await this.getInvoiceById(invoiceId);
+    if (!invoiceData) {
+      throw new NotFoundException("Invoice not found");
+    }
+
+    // Since it's Partial, use optional chaining
+    const invoice = invoiceData;
+
+    const doc = new PDFDocument();
+    const buffers: Buffer[] = [];
+
+    doc.on("data", (chunk: Buffer) => buffers.push(chunk));
+
+    const pdfPromise = new Promise<string>((resolve) => {
+      doc.on("end", () => {
+        const pdfData = Buffer.concat(buffers).toString("base64");
+        resolve(pdfData);
+      });
+    });
+
+    // Generate PDF content
+    doc.fontSize(20).text("Invoice", 50, 50);
+    doc.fontSize(12).text(`Invoice ID: ${invoice.id ?? ""}`, 50, 80);
+    doc.text(`Date: ${invoice.createdAt ?? ""}`, 50, 95);
+    doc.text(`Payment Due: ${invoice.paymentDue ?? ""}`, 50, 110);
+
+    doc.text("From:", 50, 140);
+    doc.text(
+      `${invoice.senderAddress?.street ?? ""}, ${invoice.senderAddress?.city ?? ""}`,
+      50,
+      155,
+    );
+    doc.text(
+      `${invoice.senderAddress?.postCode ?? ""}, ${invoice.senderAddress?.country ?? ""}`,
+      50,
+      170,
+    );
+
+    doc.text("Bill To:", 300, 140);
+    doc.text(`${invoice.clientName ?? ""}`, 300, 155);
+    doc.text(
+      `${invoice.clientAddress?.street ?? ""}, ${invoice.clientAddress?.city ?? ""}`,
+      300,
+      170,
+    );
+    doc.text(
+      `${invoice.clientAddress?.postCode ?? ""}, ${invoice.clientAddress?.country ?? ""}`,
+      300,
+      185,
+    );
+    doc.text(`Email: ${invoice.clientEmail ?? ""}`, 300, 200);
+
+    doc.text("Items:", 50, 230);
+    let y = 245;
+    (invoice.items ?? []).forEach((item) => {
+      doc.text(
+        `${item.quantity ?? 0} x ${item.name ?? ""} @ ${item.price ?? 0} = ${item.total ?? 0}`,
+        50,
+        y,
+      );
+      y += 15;
+    });
+
+    doc.text(`Total: ${invoice.total ?? 0}`, 50, y + 10);
+
+    doc.end();
+
+    return pdfPromise;
   };
 }

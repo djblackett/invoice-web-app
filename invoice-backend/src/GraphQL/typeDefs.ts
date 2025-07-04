@@ -8,6 +8,7 @@ const typeDefs = gql`
   }
 
   type User {
+    name: String!
     username: String!
     id: String!
   }
@@ -19,6 +20,13 @@ const typeDefs = gql`
   type LoginResponse {
     user: User
     token: String!
+  }
+
+  type Payment {
+    id: String!
+    invoiceId: String!
+    amount: Float!
+    date: String!
   }
 
   type Invoice {
@@ -35,6 +43,27 @@ const typeDefs = gql`
     senderAddress: SenderAddress
     status: String
     total: Float
+    revisions: [InvoiceRevision]
+    payments: [Payment]
+    amountPaid: Float
+  }
+
+  type InvoiceRevision {
+    id: String!
+    invoiceId: String!
+    createdAt: String!
+    createdBy: User!
+    revisionNumber: Int!
+    changeType: String!
+    description: String
+    jsonDiff: String
+    fullSnapshot: String!
+  }
+
+  type RevisionDiff {
+    fromRevision: Int!
+    toRevision: Int!
+    diff: String!
   }
 
   type SenderAddress {
@@ -85,6 +114,13 @@ const typeDefs = gql`
     total: Float
   }
 
+  input RevisionFilters {
+    startDate: String
+    endDate: String
+    userId: String
+    changeType: String
+  }
+
   type Query {
     allInvoices: [Invoice]
     getInvoiceById(id: String!): Invoice
@@ -93,6 +129,16 @@ const typeDefs = gql`
     allUsers: [User]
     getUserById(id: String!): User
     me: User
+    getInvoicePdf(id: String!): String
+    getInvoiceRevisions(
+      invoiceId: String!
+      filters: RevisionFilters
+    ): [InvoiceRevision]
+    getRevisionDiff(
+      invoiceId: String!
+      fromRevision: Int!
+      toRevision: Int!
+    ): RevisionDiff
   }
 
   type Mutation {
@@ -134,13 +180,17 @@ const typeDefs = gql`
 
     markAsPaid(id: String!): Invoice
 
-    createUser(name: String, username: String!, password: String!): User
+    createUser(name: String!, username: String!, password: String!): User
 
     deleteUsers: deleteResult
 
     deleteUsersKeepAdmins: deleteResult
 
     login(username: String!, password: String!): LoginResponse
+
+    restoreInvoiceToRevision(invoiceId: String!, revisionNumber: Int!): Invoice
+
+    applyPayment(invoiceId: String!, amountPaid: Float!): Invoice!
   }
 
   type Subscription {

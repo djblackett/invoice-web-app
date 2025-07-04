@@ -1,6 +1,7 @@
 import { inject, injectable } from "inversify";
 import type { IUserRepo } from "../userRepo";
-import { DatabaseConnection } from "../../database/prisma.database.connection";
+import { IDatabaseConnection } from "../../database/database.connection";
+import TYPES from "../../constants/identifiers";
 import type {
   ReturnedUser,
   UserDTO,
@@ -14,8 +15,8 @@ export class PrismaUserRepository implements IUserRepo {
   protected prisma;
 
   constructor(
-    @inject(DatabaseConnection)
-    databaseConnection: DatabaseConnection,
+    @inject(TYPES.DatabaseConnection)
+    databaseConnection: IDatabaseConnection,
   ) {
     this.prisma = databaseConnection.getDatabase();
   }

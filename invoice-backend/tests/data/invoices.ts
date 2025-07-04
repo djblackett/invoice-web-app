@@ -38,6 +38,8 @@ const data: Invoice[] = [
       },
     ],
     total: 1800.9,
+    payments: [],
+    amountPaid: 0,
   },
   {
     id: "XM9141",
@@ -83,6 +85,8 @@ const data: Invoice[] = [
       },
     ],
     total: 556.0,
+    payments: [],
+    amountPaid: 0,
   },
   {
     id: "RG0314",
@@ -121,6 +125,8 @@ const data: Invoice[] = [
       },
     ],
     total: 14002.33,
+    payments: [],
+    amountPaid: 0,
   },
   {
     id: "RT2080",
@@ -159,6 +165,8 @@ const data: Invoice[] = [
       },
     ],
     total: 102.04,
+    payments: [],
+    amountPaid: 0,
   },
   {
     id: "AA1449",
@@ -203,6 +211,8 @@ const data: Invoice[] = [
       },
     ],
     total: 4032.33,
+    payments: [],
+    amountPaid: 0,
   },
   {
     id: "TY9141",
@@ -241,6 +251,8 @@ const data: Invoice[] = [
       },
     ],
     total: 6155.91,
+    payments: [],
+    amountPaid: 0,
   },
   {
     id: "FV2353",
@@ -279,6 +291,8 @@ const data: Invoice[] = [
       },
     ],
     total: 3102.04,
+    payments: [],
+    amountPaid: 0,
   },
 ];
 

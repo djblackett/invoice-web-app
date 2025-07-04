@@ -6,7 +6,10 @@ import type {
   InvoiceCreateArgs,
   MarkAsPaidArgs,
 } from "../constants/types";
-import { NotFoundException } from "../config/exception.config";
+import {
+  NotFoundException,
+  ValidationException,
+} from "../config/exception.config";
 
 export function getInvoiceResolvers() {
   return {
@@ -87,8 +90,94 @@ export function getInvoiceResolvers() {
           });
         }
       },
+      getInvoicePdf: async (
+        _root: object,
+        args: GetInvoiceByIdArgs,
+        context: InjectedQueryContext,
+      ) => {
+        const { invoiceService } = context;
+        if (!invoiceService) {
+          throw new GraphQLError(
+            "Internal server error: invoiceService doesn't exist",
+            {
+              extensions: {
+                code: "INTERNAL_SERVER_ERROR",
+              },
+            },
+          );
+        }
+        try {
+          const pdfBase64 = await invoiceService.generatePdf(args.id);
+          return pdfBase64;
+        } catch (error) {
+          if (error instanceof NotFoundException) {
+            throw new GraphQLError("Invoice not found", {
+              extensions: {
+                code: "NOT_FOUND",
+              },
+            });
+          }
+          console.error(error);
+          throw new GraphQLError("Failed to generate PDF", {
+            extensions: {
+              code: "INTERNAL_SERVER_ERROR",
+            },
+          });
+        }
+      },
     },
     Mutation: {
+      applyPayment: async (
+        _root: object,
+        args: { invoiceId: string; amountPaid: number },
+        context: InjectedQueryContext,
+      ) => {
+        console.error("args:", args);
+
+        const { invoiceService, user } = context;
+        if (!invoiceService) {
+          throw new GraphQLError(
+            "Internal server error: invoiceService not found",
+            {
+              extensions: { code: "INTERNAL_SERVER_ERROR" },
+            },
+          );
+        }
+        if (!user) {
+          throw new GraphQLError("Unauthorized", {
+            extensions: { code: "UNAUTHORIZED" },
+          });
+        }
+        try {
+          const updatedInvoice = await invoiceService.applyPayment(
+            args.invoiceId,
+            args.amountPaid,
+          );
+
+          return updatedInvoice;
+        } catch (error) {
+          console.error(error);
+          if (error instanceof NotFoundException) {
+            throw new GraphQLError("Invoice not found", {
+              extensions: { code: "NOT_FOUND" },
+            });
+          } else if (error instanceof ValidationException) {
+            throw new GraphQLError(error.message, {
+              extensions: { code: "BAD_USER_INPUT" },
+            });
+          }
+          throw new GraphQLError("Failed to apply payment", {
+            extensions: {
+              code: "INTERNAL_SERVER_ERROR",
+              message:
+                "An error occurred while applying payment: " +
+                (error && typeof error === "object" && "message" in error
+                  ? (error as { message: string }).message
+                  : String(error)),
+            },
+          });
+        }
+      },
       addInvoice: async (
         _root: object,
         args: InvoiceCreateArgs,
@@ -103,7 +192,11 @@ export function getInvoiceResolvers() {
           });
         }
         try {
-          const newInvoice = await invoiceService.addInvoice(args);
+          const newInvoice = await invoiceService.addInvoice({
+            ...args,
+            amountPaid: 0,
+            payments: [],
+          });
           await pubsub.publish("INVOICE_ADDED", { invoiceAdded: newInvoice });
           return newInvoice;
         } catch (error) {

@@ -132,6 +132,8 @@ export function mapPartialInvoiceToInvoice(
           total: item.total ?? 0,
         })) ?? [],
       total: invoice.total ?? 0,
+      amountPaid: 0,
+      payments: [],
     };
 
     return invoiceWithDefaultValues;

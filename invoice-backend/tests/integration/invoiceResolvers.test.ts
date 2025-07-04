@@ -10,11 +10,11 @@ import {
   expect,
   afterEach,
 } from "vitest";
-import { PrismaClient } from "@prisma/client";
-import { execSync } from "child_process";
-import { randomUUID } from "crypto";
-import container from "../../src/config/inversify.config";
-import TYPES from "../../src/constants/identifiers";
+import {
+  setupTestDatabase,
+  type TestDatabaseConfig,
+  bindPrismaToContainer,
+} from "./test-database-setup";
 
 process.env["NODE_ENV"] = "test";
 const baseInvoice = {
@@ -53,8 +53,7 @@ console.log("Env vars:", process.env["DATABASE_URL"]);
 
 let app: unknown;
 let testToken: string;
-let prisma: PrismaClient;
-let schemaName: string;
+let testDbConfig: TestDatabaseConfig;
 let currentInvoiceId = "";
 
 describe("Invoice Resolvers Integration Tests", () => {
@@ -63,30 +62,24 @@ describe("Invoice Resolvers Integration Tests", () => {
   });
 
   beforeEach(async () => {
-    schemaName = `test_schema_${randomUUID()}`;
+    // Setup test database (works with both SQLite and PostgreSQL)
+    testDbConfig = await setupTestDatabase();
 
-    const baseDatabaseUrl =
-      "postgresql://postgres:example@localhost:5432/db-test";
-    const newDatabaseUrl = `${baseDatabaseUrl}?schema=${schemaName}`;
-    console.log("Env vars:", process.env["DATABASE_URL"]);
+    // Bind the test database to the container
+    bindPrismaToContainer(testDbConfig.prisma);
 
-    prisma = new PrismaClient({
-      datasourceUrl: newDatabaseUrl,
-    });
+    console.log("Connected to test database:", testDbConfig.databaseUrl);
 
-    const child = container.createChild();
-
-    child.bind<PrismaClient>(TYPES.PrismaClient).toConstantValue(prisma);
-    console.log("Connected to Prisma", newDatabaseUrl);
-
-    // process.env.DATABASE_URL = newDatabaseUrl;
-
-    await prisma.$executeRawUnsafe(
-      `SET search_path TO "${schemaName}", public`,
-    );
-
-    execSync("npx prisma db push", {
-      stdio: "inherit",
+    // Create the dummy user directly in the database
+    await testDbConfig.prisma.user.upsert({
+      where: { id: "auth0|12345" },
+      update: {},
+      create: {
+        id: "auth0|12345",
+        username: "user@example.com",
+        name: "user",
+        role: "ADMIN",
+      },
     });
 
     [app] = await createServer();
@@ -161,12 +154,8 @@ describe("Invoice Resolvers Integration Tests", () => {
   });
 
   afterEach(async () => {
-    // Drop the schema to clean up
-    await prisma.$executeRawUnsafe(
-      `DROP SCHEMA IF EXISTS "${schemaName}" CASCADE`,
-    );
-
-    await prisma.$disconnect();
+    // Clean up the test database
+    await testDbConfig.cleanup();
   });
 
   it("should return a list of all invoices (should be 1 now)", async () => {
@@ -311,7 +300,7 @@ describe("Invoice Resolvers Integration Tests", () => {
       clientName: "Johnathan Doe",
     };
 
-    const { data } = await request(app)
+    const { data, errors } = await request(app)
       .query(gql`
         mutation EditInvoice(
           $clientAddress: ClientInfo
@@ -349,8 +338,15 @@ describe("Invoice Resolvers Integration Tests", () => {
       .variables(updatedData)
       .set("Authorization", `Bearer ${testToken}`);
 
-    expect((data as any).editInvoice.id).toBe(currentInvoiceId);
-    expect((data as any).editInvoice.clientName).toBe(updatedData.clientName);
+    if (errors) {
+      console.error(errors);
+    }
+    expect(errors).toBeFalsy();
+    const editInvoiceData = data as {
+      editInvoice: { id: string; clientName: string };
+    };
+    expect(editInvoiceData.editInvoice).not.toBeNull();
+    expect(editInvoiceData.editInvoice.id).toBe(currentInvoiceId);
   });
 
   it("should remove an invoice (the one with our unique ID)", async () => {

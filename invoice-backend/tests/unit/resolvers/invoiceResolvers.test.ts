@@ -16,7 +16,7 @@ import {
   InternalServerException,
   NotFoundException,
   ValidationException,
-} from "@/config/exception.config";
+} from "../../../src/config/exception.config";
 import { beforeEach, describe, it, expect, vi, test } from "vitest";
 
 let invoiceServiceMock: MockProxy<InvoiceService>;
@@ -72,6 +72,8 @@ describe("Query.allInvoices", () => {
         },
         status: "pending",
         total: 100.0,
+        amountPaid: 0,
+        payments: [],
       },
       {
         id: "2",
@@ -96,6 +98,8 @@ describe("Query.allInvoices", () => {
         },
         status: "paid",
         total: 200.0,
+        amountPaid: 0,
+        payments: [],
       },
     ];
 
@@ -171,6 +175,8 @@ describe("Query.getInvoiceById", () => {
       },
       status: "pending",
       total: 100.0,
+      amountPaid: 0,
+      payments: [],
     };
 
     invoiceServiceMock.getInvoiceById.mockResolvedValue(mockInvoice);
@@ -182,7 +188,7 @@ describe("Query.getInvoiceById", () => {
       mockContext, // context
     );
 
-    console.log(result);
+    // console.log(result);
 
     expect(result).toEqual(mockInvoice);
     expect(invoiceServiceMock.getInvoiceById).toHaveBeenCalledWith(args.id);
@@ -261,6 +267,8 @@ describe("Mutation.addInvoice", () => {
       },
       status: "pending",
       total: 150.0,
+      amountPaid: 0,
+      payments: [],
     };
 
     const newInvoice: InvoiceWithCreatedBy = {
@@ -271,7 +279,7 @@ describe("Mutation.addInvoice", () => {
 
     const result = await invoiceResolvers.Mutation.addInvoice(
       {},
-      args,
+      args as InvoiceCreateArgs,
       mockContext,
     );
 
@@ -389,6 +397,8 @@ describe("Mutation.editInvoice", () => {
       },
       status: "pending",
       total: 200.0,
+      amountPaid: 0,
+      payments: [],
     };
 
     invoiceServiceMock.updateInvoice.mockResolvedValue(updatedInvoice);
@@ -474,6 +484,8 @@ describe("Mutation.removeInvoice", () => {
       },
       status: "pending",
       total: 100.0,
+      amountPaid: 0,
+      payments: [],
     };
 
     invoiceServiceMock.deleteInvoice.mockResolvedValue(removedInvoice as any);
@@ -551,6 +563,8 @@ describe("Mutation.markAsPaid", () => {
       },
       status: "paid",
       total: 100.0,
+      amountPaid: 0,
+      payments: [],
     };
 
     invoiceServiceMock.markAsPaid.mockResolvedValue(updatedInvoice as any);
@@ -621,8 +635,8 @@ describe("Subscription.invoiceAdded", () => {
     pubsubMock.asyncIterator.mockReturnValue(asyncIteratorMock);
 
     const result = await invoiceResolvers.Subscription.invoiceAdded.subscribe(
-      {},
-      {},
+      undefined as never,
+      undefined as never,
       mockContext,
     );
 

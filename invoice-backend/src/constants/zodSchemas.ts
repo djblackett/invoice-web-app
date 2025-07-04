@@ -1,4 +1,6 @@
+import { Prisma } from "@prisma/client";
 import { z } from "zod";
+import { Decimal } from "@prisma/client/runtime/library";
 
 export const itemsZod = z.object({
   id: z.string().optional(),
@@ -20,6 +22,20 @@ const createdByZod = z.object({
   username: z.string(),
   role: z.enum(["USER", "ADMIN"]),
 });
+const decimalToNumber = (val: unknown): number => {
+  if (val instanceof Decimal) {
+    return val.toNumber();
+  }
+  return Number(val);
+};
+
+export const paymentZod = z.object({
+  id: z.string(),
+  invoiceId: z.string(),
+  amount: z.preprocess(decimalToNumber, z.number().positive()),
+  date: z.string().datetime(),
+});
+
 export const invoiceZod = z.object({
   createdBy: createdByZod,
   createdById: z.string(),
@@ -35,6 +51,11 @@ export const invoiceZod = z.object({
   senderAddress: addressZod,
   status: z.string(),
   total: z.coerce.number(),
+  amountPaid: z.preprocess(
+    (v) => (v instanceof Prisma.Decimal ? v.toNumber() : v),
+    z.number().min(0),
+  ),
+  payments: z.array(paymentZod).default([]), // New
 });
 export const userCreateZod = z.object({
   id: z.string().optional(),
