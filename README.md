@@ -270,6 +270,19 @@ For a detailed record of the time spent on this project, see the [project timesh
 
  I also used ChatGPT for some of the written documentation. Generally, I typed out what I wanted to say, but asked ChatGPT to say it more concisely and with a more formal tone.
 
+## Contributing
+
+Contributions to the Fullstack Invoice Project are welcome.  
+If you wish to propose enhancements, fix bugs, or expand functionality, please adhere to the following process:
+
+1. **Fork** the repository and create a dedicated branch for your changes.  
+2. **Implement** your changes in a manner consistent with the existing code style and architectural patterns.  
+3. **Add or update tests** as necessary to maintain reliability, and ensure that all unit, integration, and end-to-end tests pass locally before submission.  
+4. **Open a Pull Request** describing the nature of your changes, the problem they address, and any relevant context.  
+
+For substantial changes or new features, it is recommended to open an issue beforehand to facilitate discussion and alignment on approach.
+
+
 ## License
 
 This project is licensed under the MIT License. This means you are free to use, modify, and distribute the software, provided that you include the original copyright and license notice in any copies or substantial portions of the software.
