@@ -49,12 +49,13 @@ container
 container.bind<Logger>(TYPES.Logger).to(Logger).inSingletonScope();
 container.bind<PubSub>(TYPES.PubSub).toConstantValue(new PubSub());
 
-// uncomment for verbose logging
-container.applyMiddleware((planAndResolve) => {
-  return (args) => {
-    console.log(`Resolving ${args.serviceIdentifier.toString()}`);
-    return planAndResolve(args);
-  };
-});
+// Verbose logging middleware - uncomment if needed for debugging
+// container.applyMiddleware((planAndResolve) => {
+//   return (args) => {
+//     const logger = container.get<Logger>(TYPES.Logger);
+//     logger.debug(`Resolving ${args.serviceIdentifier.toString()}`);
+//     return planAndResolve(args);
+//   };
+// });
 
 export default container;

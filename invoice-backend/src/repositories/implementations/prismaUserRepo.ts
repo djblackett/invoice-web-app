@@ -8,6 +8,8 @@ import type {
   UserIdAndRole,
 } from "../../constants/types";
 import { PrismaClientKnownRequestError } from "@prisma/client/runtime/library";
+import TYPES from "../../constants/identifiers";
+import type { Logger } from "../../config/logger.config";
 
 @injectable()
 export class PrismaUserRepository implements IUserRepo {
@@ -16,6 +18,8 @@ export class PrismaUserRepository implements IUserRepo {
   constructor(
     @inject(DatabaseConnection)
     databaseConnection: DatabaseConnection,
+    @inject(TYPES.Logger)
+    private readonly logger: Logger,
   ) {
     this.prisma = databaseConnection.getDatabase();
   }
@@ -29,7 +33,7 @@ export class PrismaUserRepository implements IUserRepo {
         return false;
       }
     } catch (e: unknown) {
-      console.error(e);
+      this.logger.error(String(e));
       const errorMessage = e instanceof Error ? e.message : "Unknown error";
       throw new Error(`Database error: ${errorMessage}`);
     }
@@ -50,7 +54,7 @@ export class PrismaUserRepository implements IUserRepo {
         return false;
       }
     } catch (e: unknown) {
-      console.error(e);
+      this.logger.error(String(e));
       const errorMessage = e instanceof Error ? e.message : "Unknown error";
       throw new Error(`Database error: ${errorMessage}`);
     }
@@ -64,7 +68,7 @@ export class PrismaUserRepository implements IUserRepo {
         name: user.name ?? "",
       }));
     } catch (error: unknown) {
-      console.error(error);
+      this.logger.error(String(error));
       throw new Error("Database error");
     }
   }
@@ -83,7 +87,7 @@ export class PrismaUserRepository implements IUserRepo {
       });
       return { ...user, name: user.name ?? "" };
     } catch (e: unknown) {
-      console.error(e);
+      this.logger.error(String(e));
 
       if (e instanceof PrismaClientKnownRequestError && e.code === "P2025") {
         throw new Error("User not found");
@@ -108,7 +112,7 @@ export class PrismaUserRepository implements IUserRepo {
       });
       return user ? { ...user, name: user.name ?? "" } : null;
     } catch (e: unknown) {
-      console.error(e);
+      this.logger.error(String(e));
       throw new Error("Failed to fetch user");
     }
   }
@@ -181,7 +185,7 @@ export class PrismaUserRepository implements IUserRepo {
         name: result.name ?? "",
       };
     } catch (e: unknown) {
-      console.error(e);
+      this.logger.error(String(e));
 
       if (e instanceof PrismaClientKnownRequestError && e.code === "P2025") {
         throw new Error("Incorrect username or password");
