@@ -112,7 +112,7 @@ export const createServer = async () => {
   } catch (error) {
     // Exiting the process with a non-zero status code indicates that the server failed to start.
     // This is important for container orchestration systems (like Kubernetes) to detect the failure and take appropriate actions.
-    console.error("Server startup error:", error);
+    logger.error("Server startup error: " + String(error));
     process.exit(1);
   }
 };
