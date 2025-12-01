@@ -149,7 +149,8 @@ describe("Integration Tests", () => {
           }
         }
       `)
-      .set("Authorization", `Bearer ${testToken}`);
+      .set("Authorization", `Bearer ${testToken}`)
+      .expectNoErrors();
 
     const response = await request(app)
       .query(gql`
@@ -160,7 +161,8 @@ describe("Integration Tests", () => {
           }
         }
       `)
-      .set("Authorization", `Bearer ${testToken}`);
+      .set("Authorization", `Bearer ${testToken}`)
+      .expectNoErrors();
 
     const usersArray = (response as any).data.allUsers;
     expect(usersArray).toBeDefined();

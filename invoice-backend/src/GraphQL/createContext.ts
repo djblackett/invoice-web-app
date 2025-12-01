@@ -34,14 +34,11 @@ function getSigningKeyAsync(kid: string): Promise<string> {
       (err: Error | null, key: SigningKey | undefined) => {
         if (err) {
           logger.error(`Error fetching signing key: ${err.message}`);
-          console.error("Error fetching signing key:", err);
-          logger.error(err.message);
           return reject(err);
         }
         if (!key) {
           const error = new Error("Signing key not found");
           logger.error(error.message);
-          console.error(error);
           return reject(error);
         }
         const signingKey = key.getPublicKey();
@@ -76,12 +73,17 @@ export async function retrieveUserFromToken(
     const payload = await verifyToken(token, options);
     return extractUserFromPayload(payload);
   } catch (err) {
-    console.error("Token verification failed:", err);
+    logger.error("Token verification failed: " + String(err));
     throw err;
   }
 }
 
 // Helper function to verify token and return payload
+// Note: JWT expiration is automatically validated by jwt.verify()
+// For token refresh implementation:
+// 1. Frontend should implement token refresh using Auth0's refresh token flow
+// 2. When a token is near expiration, request a new token from Auth0
+// 3. This can be done via Auth0's /oauth/token endpoint with grant_type=refresh_token
 async function verifyToken(
   token: string,
   options: VerifyOptions,
@@ -90,7 +92,15 @@ async function verifyToken(
   if (!decoded || typeof decoded !== "object" || !decoded.header.kid) {
     throw new Error("Invalid token");
   }
+
+  // Check if token is expired before verification for better error messages
+  const payload = decoded.payload as JwtPayload;
+  if (payload.exp && payload.exp < Date.now() / 1000) {
+    throw new Error("Token has expired");
+  }
+
   const signingKey = await getSigningKeyAsync(decoded.header.kid);
+  // jwt.verify will also check expiration, but we check above for clearer error messaging
   return jwt.verify(token, signingKey, options) as JwtPayload;
 }
 
@@ -153,24 +163,23 @@ export async function createContext({
     };
   } catch (e: unknown) {
     const error = e instanceof Error ? e : new Error(String(e));
-    console.error("Error in createContext function:", error.message, error);
+    logger.error(`Error in createContext function: ${error.message}`);
     return { user: null, container };
   }
 }
 
-async function getUserFromRequest(req: Request): Promise<UserIdAndRole | null> {
-  const authHeader = req.headers.authorization;
-
+// Helper function to extract Bearer token from Authorization header
+function extractBearerToken(authHeader: string | undefined): string | null {
   if (!authHeader || !authHeader.startsWith("Bearer ")) {
     return null;
   }
 
   const token = authHeader.split(" ")[1];
+  return token || null;
+}
 
-  if (!token) {
-    return null;
-  }
-
+// Helper function to get user from token (handles test, demo, and real tokens)
+async function getUserFromToken(token: string): Promise<UserIdAndRole | null> {
   // return dummy users for testing, CI, and demo mode
   if (process.env["NODE_ENV"] === "test" || process.env["NODE_ENV"] === "CI") {
     return {
@@ -181,7 +190,10 @@ async function getUserFromRequest(req: Request): Promise<UserIdAndRole | null> {
     };
   }
 
-  if (token === "demo-token") {
+  const demoUserToken = process.env["DEMO_USER_TOKEN"];
+  const demoAdminToken = process.env["DEMO_ADMIN_TOKEN"];
+
+  if (demoUserToken && token === demoUserToken) {
     return {
       id: "demoId",
       role: Role.USER,
@@ -190,7 +202,7 @@ async function getUserFromRequest(req: Request): Promise<UserIdAndRole | null> {
     };
   }
 
-  if (token === "demo-token-admin") {
+  if (demoAdminToken && token === demoAdminToken) {
     return {
       id: "demoAdminId",
       role: Role.ADMIN,
@@ -206,6 +218,16 @@ async function getUserFromRequest(req: Request): Promise<UserIdAndRole | null> {
   }
 
   return user;
+}
+
+async function getUserFromRequest(req: Request): Promise<UserIdAndRole | null> {
+  const token = extractBearerToken(req.headers.authorization);
+
+  if (!token) {
+    return null;
+  }
+
+  return await getUserFromToken(token);
 }
 
 function setupContainer(user: UserIdAndRole) {
@@ -306,36 +328,16 @@ async function getUserFromSubscriptionConnection(
   const authHeader = (connection.connectionParams?.["Authorization"] ||
     connection.connectionParams?.["authorization"]) as string | undefined;
 
-  if (!authHeader || !authHeader.startsWith("Bearer ")) {
+  const token = extractBearerToken(authHeader);
+
+  if (!token) {
     return null;
   }
 
-  const token = authHeader.split(" ")[1];
-
-  if (token === "demo-token") {
-    return {
-      id: "demoId",
-      role: Role.USER,
-      username: "demo-user@example.com",
-      name: "demo-user",
-    };
-  }
-
-  if (token === "demo-token-admin") {
-    return {
-      id: "demoAdminId",
-      role: Role.ADMIN,
-      username: "demo-admin@example.com",
-      name: "demo-admin",
-    };
-  }
   try {
-    if (!token) {
-      return null;
-    }
-    return await retrieveUserFromToken(token, options);
+    return await getUserFromToken(token);
   } catch (error) {
-    logger.error("Token verification failed:" + JSON.stringify(error));
+    logger.error("Token verification failed: " + JSON.stringify(error));
     return null;
   }
 }

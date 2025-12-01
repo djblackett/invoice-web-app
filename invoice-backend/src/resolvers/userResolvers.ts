@@ -2,6 +2,11 @@ import { GraphQLError } from "graphql";
 import type { UserService } from "../services/user.service";
 import type { CreateUserDTO, InjectedQueryContext } from "../constants/types";
 import { UnauthorizedException } from "../config/exception.config";
+import container from "../config/inversify.config";
+import TYPES from "../constants/identifiers";
+import type { Logger } from "../config/logger.config";
+
+const logger = container.get<Logger>(TYPES.Logger);
 
 export function getUserResolvers() {
   return {
@@ -16,7 +21,7 @@ export function getUserResolvers() {
 
           return await userService.getUsers();
         } catch (error) {
-          console.error("Error caught in resolver", error);
+          logger.error("Error caught in resolver: " + String(error));
           throw new GraphQLError("Internal server error", {
             extensions: {
               code: "INTERNAL_SERVER_ERROR",
@@ -36,7 +41,7 @@ export function getUserResolvers() {
           const user = await userService.getUserByIdSafely(args.id);
           return user;
         } catch (error) {
-          console.error(error);
+          logger.error(String(error));
           throw new GraphQLError("Internal server error", {
             extensions: {
               code: "INTERNAL_SERVER_ERROR",
@@ -58,7 +63,7 @@ export function getUserResolvers() {
           return user;
         } catch (error: unknown) {
           if (error instanceof Error && error.name === "ValidationError") {
-            console.error(error);
+            logger.error(String(error));
 
             throw new GraphQLError("Validation error", {
               extensions: {
@@ -95,7 +100,7 @@ export function getUserResolvers() {
           }
           return { acknowledged: false };
         } catch (error) {
-          console.error(error);
+          logger.error(String(error));
           throw new GraphQLError("Internal server error", {
             extensions: {
               code: "INTERNAL_SERVER_ERROR",
@@ -124,7 +129,7 @@ export function getUserResolvers() {
           }
           return { acknowledged: false };
         } catch (error) {
-          console.error(error);
+          logger.error(String(error));
           throw new GraphQLError("Internal server error", {
             extensions: {
               code: "INTERNAL_SERVER_ERROR",
@@ -138,7 +143,7 @@ export function getUserResolvers() {
 
 function validateUserService(userService: UserService | undefined) {
   if (!userService) {
-    console.error("User service not found in context");
+    logger.error("User service not found in context");
     throw new GraphQLError("Internal server error", {
       extensions: {
         code: "INTERNAL_SERVER_ERROR",
