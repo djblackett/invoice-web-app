@@ -10,7 +10,7 @@ import {
   ValidationException,
 } from "@/config/exception.config";
 import TYPES from "@/constants/identifiers";
-import type { Logger } from "@/config/this.logger.config";
+import type { Logger } from "@/config/logger.config";
 
 @injectable()
 export class PrismaInvoiceRepository implements IInvoiceRepo {
@@ -108,7 +108,7 @@ export class PrismaInvoiceRepository implements IInvoiceRepo {
         return result;
       }
       throw new NotFoundException("Don't have necessary permissions");
-    } catch (e) {
+    } catch (e: unknown) {
       if (
         e instanceof Prisma.PrismaClientKnownRequestError &&
         e.code === "P2025"
@@ -138,7 +138,7 @@ export class PrismaInvoiceRepository implements IInvoiceRepo {
           createdBy: true,
         },
       });
-    } catch (e) {
+    } catch (e: unknown) {
       this.logger.error(String(e));
       return prismaErrorHandler(e);
     }
@@ -210,7 +210,7 @@ export class PrismaInvoiceRepository implements IInvoiceRepo {
       });
 
       return updatedInvoice;
-    } catch (e) {
+    } catch (e: unknown) {
       this.logger.error(String(e));
       return prismaErrorHandler(e);
     }
@@ -225,7 +225,7 @@ export class PrismaInvoiceRepository implements IInvoiceRepo {
         if (!user) {
           throw new ValidationException("User does not exist");
         }
-      } catch (error) {
+      } catch (error: unknown) {
         this.logger.error("Error finding user: " + String(error));
         throw error;
       }
@@ -290,7 +290,7 @@ export class PrismaInvoiceRepository implements IInvoiceRepo {
       };
 
       return createdInvoice;
-    } catch (error) {
+    } catch (error: unknown) {
       this.logger.error("Error creating invoice: " + String(error));
       return prismaErrorHandler(error);
     }
@@ -302,7 +302,7 @@ export class PrismaInvoiceRepository implements IInvoiceRepo {
         where: { id },
       });
       return true;
-    } catch (e) {
+    } catch (e: unknown) {
       this.logger.error(String(e));
       prismaErrorHandler(e);
       return false;

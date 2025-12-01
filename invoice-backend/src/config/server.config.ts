@@ -29,7 +29,7 @@ if (!PORT) {
 // Sanitize database URL for logging (hide credentials)
 const sanitizedDbUrl = DATABASE_URL.replace(
   /(:\/\/)([^:]+):([^@]+)@/,
-  "$1***:***@"
+  "$1***:***@",
 );
 logger.info(`Database URL: ${sanitizedDbUrl}`);
 logger.info(`Server Port: ${PORT}`);

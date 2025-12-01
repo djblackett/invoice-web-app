@@ -11,6 +11,7 @@ import container from "@/config/inversify.config";
 import TYPES from "@/constants/identifiers";
 import { InvoiceService } from "@/services/invoice.service";
 import { UserService } from "@/services/user.service";
+import { TokenService } from "@/services/token.service";
 import type { PubSub } from "graphql-subscriptions";
 import { Role } from "@prisma/client";
 import { NODE_ENV } from "@/config/server.config";
@@ -178,7 +179,7 @@ function extractBearerToken(authHeader: string | undefined): string | null {
   return token || null;
 }
 
-// Helper function to get user from token (handles test, demo, and real tokens)
+// Helper function to get user from token (handles test, demo, Auth0, and new tokens)
 async function getUserFromToken(token: string): Promise<UserIdAndRole | null> {
   // return dummy users for testing, CI, and demo mode
   if (process.env["NODE_ENV"] === "test" || process.env["NODE_ENV"] === "CI") {
@@ -211,7 +212,48 @@ async function getUserFromToken(token: string): Promise<UserIdAndRole | null> {
     };
   }
 
-  // return standard user
+  // Check AUTH_SYSTEM environment variable to determine which auth to use
+  const authSystem = process.env["AUTH_SYSTEM"] || "auth0";
+
+  if (authSystem === "new") {
+    // Use new token system only
+    return await getUserFromNewToken(token);
+  } else if (authSystem === "dual") {
+    // Try new token first, fallback to Auth0
+    try {
+      return await getUserFromNewToken(token);
+    } catch (error) {
+      logger.info("New token verification failed, trying Auth0");
+      return await getUserFromAuth0Token(token);
+    }
+  } else {
+    // Default to Auth0 only
+    return await getUserFromAuth0Token(token);
+  }
+}
+
+// Helper function to verify new JWT tokens
+async function getUserFromNewToken(token: string): Promise<UserIdAndRole> {
+  try {
+    const tokenService = container.get(TokenService);
+    const payload = tokenService.verifyAccessToken(token);
+
+    return {
+      id: payload.sub,
+      role: payload.role,
+      username: payload.email,
+      name: payload.name,
+    };
+  } catch (error) {
+    logger.error("New token verification failed: " + String(error));
+    throw error;
+  }
+}
+
+// Helper function to verify Auth0 tokens (legacy)
+async function getUserFromAuth0Token(
+  token: string
+): Promise<UserIdAndRole> {
   const user = await retrieveUserFromToken(token, options);
   if (!user) {
     throw new Error("User not found");

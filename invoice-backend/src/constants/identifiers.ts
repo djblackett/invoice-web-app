@@ -11,6 +11,10 @@ const TYPES = {
   UserContext: Symbol.for("UserContext"),
   PrismaClient: Symbol.for("PrismaClient"),
   Logger: Symbol.for("Logger"),
+  // Auth-related types
+  AuthRepo: Symbol.for("AuthRepo"),
+  TokenService: Symbol.for("TokenService"),
+  AuthService: Symbol.for("AuthService"),
 };
 
 export default TYPES;

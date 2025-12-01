@@ -63,15 +63,86 @@ model SenderAddress {
 }
 
 model User {
-  id           String    @id @default(uuid())
-  invoices     Invoice[]
-  name         String?
-  username     String @unique
-  role         Role   @default(USER)
+  id              String         @id @default(uuid())
+  invoices        Invoice[]
+  name            String?
+  username        String         @unique
+  role            Role           @default(USER)
+  passwordHash    String?
+  emailVerified   DateTime?
+  createdAt       DateTime       @default(now())
+  updatedAt       DateTime       @updatedAt
+
+  oauthAccounts   OAuthAccount[]
+  refreshTokens   RefreshToken[]
+  sessions        Session[]
 }
 
+model OAuthAccount {
+  id                String        @id @default(uuid())
+  userId            String
+  provider          OAuthProvider
+  providerAccountId String
+  accessToken       String?       @db.Text
+  refreshToken      String?       @db.Text
+  expiresAt         DateTime?
+  scope             String?
+  idToken           String?       @db.Text
+  createdAt         DateTime      @default(now())
+  updatedAt         DateTime      @updatedAt
+
+  user              User          @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([provider, providerAccountId])
+  @@index([userId])
+}
+
+model RefreshToken {
+  id              String    @id @default(uuid())
+  userId          String
+  token           String    @unique @db.Text
+  family          String
+  expiresAt       DateTime
+  createdAt       DateTime  @default(now())
+  replacedBy      String?   @unique
+  revokedAt       DateTime?
+  revokedReason   String?
+  isRevoked       Boolean   @default(false)
+  userAgent       String?
+  ipAddress       String?
+
+  user            User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@index([family])
+  @@index([expiresAt])
+}
+
+model Session {
+  id              String   @id @default(uuid())
+  userId          String
+  refreshTokenId  String   @unique
+  userAgent       String?
+  ipAddress       String?
+  lastActive      DateTime @default(now())
+  expiresAt       DateTime
+  createdAt       DateTime @default(now())
+
+  user            User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@index([expiresAt])
+}
 
 enum Role {
   USER
   ADMIN
+}
+
+enum OAuthProvider {
+  GOOGLE
+  MICROSOFT
+  APPLE
+  LOCAL
+  AUTH0
 }
