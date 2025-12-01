@@ -26,13 +26,26 @@ if (!PORT) {
   throw new Error("Server env port not set");
 }
 
-logger.info(`Database URL: ${DATABASE_URL}`);
+// Sanitize database URL for logging (hide credentials)
+const sanitizedDbUrl = DATABASE_URL.replace(
+  /(:\/\/)([^:]+):([^@]+)@/,
+  "$1***:***@"
+);
+logger.info(`Database URL: ${sanitizedDbUrl}`);
 logger.info(`Server Port: ${PORT}`);
 logger.info(`Node Environment: ${NODE_ENV}`);
 logger.info(`Cert Directory: ${CERT_DIR}`);
 logger.info(`Demo Mode: ${process.env["DEMO_MODE"]}`);
 
 export function serverConfig(app: Application) {
+  // Default allowed origins for development
+  const defaultDevOrigins = [
+    "http://localhost:5173",
+    "https://localhost:5173",
+    "http://localhost:3000",
+    "https://localhost:3000",
+  ];
+
   if (NODE_ENV === "production") {
     app.use(
       cors({
@@ -42,9 +55,14 @@ export function serverConfig(app: Application) {
       }),
     );
   } else {
+    // Use explicit allowed origins in development, fallback to localhost ports
+    const allowedOrigins = process.env["CORS_ORIGIN"]
+      ? process.env["CORS_ORIGIN"].split(",")
+      : defaultDevOrigins;
+
     app.use(
       cors({
-        origin: process.env["CORS_ORIGIN"] ?? "*",
+        origin: allowedOrigins,
         credentials: true,
       }),
     );

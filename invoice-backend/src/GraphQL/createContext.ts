@@ -181,7 +181,10 @@ async function getUserFromRequest(req: Request): Promise<UserIdAndRole | null> {
     };
   }
 
-  if (token === "demo-token") {
+  const demoUserToken = process.env["DEMO_USER_TOKEN"];
+  const demoAdminToken = process.env["DEMO_ADMIN_TOKEN"];
+
+  if (demoUserToken && token === demoUserToken) {
     return {
       id: "demoId",
       role: Role.USER,
@@ -190,7 +193,7 @@ async function getUserFromRequest(req: Request): Promise<UserIdAndRole | null> {
     };
   }
 
-  if (token === "demo-token-admin") {
+  if (demoAdminToken && token === demoAdminToken) {
     return {
       id: "demoAdminId",
       role: Role.ADMIN,
@@ -312,7 +315,10 @@ async function getUserFromSubscriptionConnection(
 
   const token = authHeader.split(" ")[1];
 
-  if (token === "demo-token") {
+  const demoUserToken = process.env["DEMO_USER_TOKEN"];
+  const demoAdminToken = process.env["DEMO_ADMIN_TOKEN"];
+
+  if (demoUserToken && token === demoUserToken) {
     return {
       id: "demoId",
       role: Role.USER,
@@ -321,7 +327,7 @@ async function getUserFromSubscriptionConnection(
     };
   }
 
-  if (token === "demo-token-admin") {
+  if (demoAdminToken && token === demoAdminToken) {
     return {
       id: "demoAdminId",
       role: Role.ADMIN,

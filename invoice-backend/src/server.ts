@@ -73,7 +73,7 @@ export const createServer = async () => {
 
     const server = new ApolloServer<MyContext>({
       schema,
-      introspection: true,
+      introspection: !isProduction, // Disable introspection in production
       status400ForVariableCoercionErrors: true,
       plugins: [
         ApolloServerPluginDrainHttpServer({ httpServer }),
