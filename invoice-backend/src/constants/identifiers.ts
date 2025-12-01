@@ -15,6 +15,7 @@ const TYPES = {
   AuthRepo: Symbol.for("AuthRepo"),
   TokenService: Symbol.for("TokenService"),
   AuthService: Symbol.for("AuthService"),
+  EmailService: Symbol.for("EmailService"),
 };
 
 export default TYPES;

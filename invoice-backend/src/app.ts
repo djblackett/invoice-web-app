@@ -10,9 +10,11 @@ import type { Request, Response } from "express";
 import { DatabaseConnection } from "./database/prisma.database.connection";
 import rateLimit from "express-rate-limit";
 import express from "express";
+import cookieParser from "cookie-parser";
 import { PrismaClient } from "@prisma/client";
 import TYPES from "./constants/identifiers";
 import type { Logger } from "./config/logger.config";
+import authRoutes from "./routes/auth.routes";
 
 const logger = container.get<Logger>(TYPES.Logger);
 
@@ -26,6 +28,12 @@ export const createApp = async () => {
     await database.initConnection();
 
     app.set("trust proxy", 1);
+
+    // Cookie parser middleware (required for refresh token cookies)
+    app.use(cookieParser());
+
+    // Authentication routes
+    app.use("/auth", authRoutes);
 
     app.get("/health", (_req: Request, res: Response) => {
       res.status(200).send("OK");
