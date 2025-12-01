@@ -52,7 +52,7 @@ export function configureLocalStrategy() {
           // TODO: Add getUserForAuthentication method to IUserRepo
 
           logger.warn(
-            "Password verification not yet implemented - requires getUserForAuthentication method"
+            "Password verification not yet implemented - requires getUserForAuthentication method",
           );
           return done(null, false, {
             message: "Authentication not yet fully implemented",
@@ -72,7 +72,7 @@ export function configureLocalStrategy() {
           logger.error(`Error in local strategy: ${error}`);
           return done(error);
         }
-      }
-    )
+      },
+    ),
   );
 }

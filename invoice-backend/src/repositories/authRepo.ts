@@ -36,12 +36,12 @@ export interface IAuthRepo {
   createOAuthAccount: (data: OAuthAccountData) => Promise<OAuthAccountData>;
   findOAuthAccount: (
     provider: OAuthProvider,
-    providerAccountId: string
+    providerAccountId: string,
   ) => Promise<OAuthAccountData | null>;
   findOAuthAccountsByUserId: (userId: string) => Promise<OAuthAccountData[]>;
   updateOAuthAccount: (
     id: string,
-    data: Partial<OAuthAccountData>
+    data: Partial<OAuthAccountData>,
   ) => Promise<OAuthAccountData>;
   deleteOAuthAccount: (id: string) => Promise<boolean>;
 
@@ -50,10 +50,11 @@ export interface IAuthRepo {
   findRefreshTokenByToken: (token: string) => Promise<RefreshTokenData | null>;
   findRefreshTokensByUserId: (userId: string) => Promise<RefreshTokenData[]>;
   findRefreshTokensByFamily: (family: string) => Promise<RefreshTokenData[]>;
+  findActiveRefreshTokens: () => Promise<RefreshTokenData[]>;
   revokeRefreshToken: (
     id: string,
     reason: string,
-    replacedBy?: string
+    replacedBy?: string,
   ) => Promise<boolean>;
   revokeTokenFamily: (family: string, reason: string) => Promise<number>;
   cleanupExpiredTokens: () => Promise<number>;
@@ -61,7 +62,7 @@ export interface IAuthRepo {
   // Sessions
   createSession: (data: SessionData) => Promise<SessionData>;
   findSessionByRefreshTokenId: (
-    refreshTokenId: string
+    refreshTokenId: string,
   ) => Promise<SessionData | null>;
   findSessionsByUserId: (userId: string) => Promise<SessionData[]>;
   updateSessionActivity: (id: string) => Promise<boolean>;

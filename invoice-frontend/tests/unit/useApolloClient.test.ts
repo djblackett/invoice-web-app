@@ -4,10 +4,39 @@ import { ApolloClient, InMemoryCache } from "@apollo/client";
 import { vi, describe, beforeEach, it, afterAll, expect } from "vitest";
 import { DemoModeProvider } from "@/features/shared/components/DemoModeProvider";
 
-// Mock useAuth0
-vi.mock("@auth0/auth0-react", () => ({
-  useAuth0: () => ({
+// Mock config.ts to prevent checkEnvs from running
+vi.mock("@/config/config", () => ({
+  VITE_BACKEND_URL: "http://localhost:4000/graphql",
+  VITE_AUDIENCE: "https://invoice-web-app/",
+  VITE_SCOPE: "openid profile email",
+  VITE_DOMAIN: "test.auth0.com",
+  VITE_CLIENT_ID: "test-client-id",
+  VITE_REDIRECT_URI: "http://localhost:5173",
+}));
+
+// Mock auth.api.ts to avoid config dependency issues
+vi.mock("@/features/auth/services/auth.api", () => ({
+  getOAuthLoginUrl: vi.fn(),
+  extractOAuthTokenFromUrl: vi.fn(() => ({ accessToken: null, isNewUser: false, error: null })),
+  clearOAuthParamsFromUrl: vi.fn(),
+}));
+
+// Mock useAuth and useUnifiedAuth
+vi.mock("@/features/auth/hooks/useAuth.ts", () => ({
+  useAuth: () => ({
     getAccessTokenSilently: vi.fn().mockResolvedValue("mocked-token"),
+    isAuthenticated: true,
+    isLoading: false,
+    user: null,
+  }),
+}));
+
+vi.mock("@/features/auth/hooks/useUnifiedAuth", () => ({
+  useUnifiedAuth: () => ({
+    getAccessToken: vi.fn().mockResolvedValue("mocked-token"),
+    isAuthenticated: true,
+    isLoading: false,
+    user: null,
   }),
 }));
 
@@ -16,6 +45,7 @@ vi.stubGlobal("import", {
   meta: {
     env: {
       VITE_BACKEND_URL: "http://localhost:4000/graphql",
+      VITE_AUTH_SYSTEM: "auth0",
     },
   },
 });

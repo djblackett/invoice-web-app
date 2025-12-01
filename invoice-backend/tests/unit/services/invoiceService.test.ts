@@ -6,6 +6,7 @@ import { IInvoiceRepo } from "@/repositories/InvoiceRepo";
 import { Invoice, UserIdAndRole } from "@/constants/types";
 import * as InvoiceUtils from "@/utils/utils";
 import { ValidationException } from "@/config/exception.config";
+import type { Logger } from "@/config/logger.config";
 
 // Mock utility functions
 vi.mock("@/utils/utils.ts", () => ({
@@ -197,11 +198,13 @@ const invoices: Invoice[] = [
 
 describe("InvoiceService", () => {
   const mockInvoiceRepo = mockDeep<IInvoiceRepo>();
+  const mockLogger = mockDeep<Logger>();
   let invoiceService: InvoiceService;
 
   beforeEach(() => {
-    invoiceService = new InvoiceService(mockInvoiceRepo, mockUserContext);
+    invoiceService = new InvoiceService(mockInvoiceRepo, mockUserContext, mockLogger);
     mockReset(mockInvoiceRepo); // Reset all mocks before each test
+    mockReset(mockLogger); // Reset logger mock
     vi.clearAllMocks(); // Clear all other mocks
   });
 

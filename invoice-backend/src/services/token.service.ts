@@ -48,7 +48,7 @@ export class TokenService {
   private decodeKey(encodedKey: string | undefined): string {
     if (!encodedKey) {
       throw new Error(
-        "JWT keys not configured. Run 'yarn tsx scripts/generate-rsa-keys.ts'"
+        "JWT keys not configured. Run 'yarn tsx scripts/generate-rsa-keys.ts'",
       );
     }
 

@@ -6,12 +6,13 @@ import type { IAuthRepo } from "@/repositories/authRepo";
 import { AuthService } from "@/services/auth.service";
 import { TokenService } from "@/services/token.service";
 import type { Logger } from "@/config/logger.config";
-import { hashPassword, comparePassword, validatePasswordStrength } from "@/utils/crypto.util";
+import { hashPassword, validatePasswordStrength } from "@/utils/crypto.util";
 import {
   registerSchema,
   loginSchema,
   validateRequest,
 } from "@/validators/auth.validator";
+import type { RegisterInput, LoginInput } from "@/validators/auth.validator";
 import { OAuthProvider } from "@prisma/client";
 
 const logger = container.get<Logger>(TYPES.Logger);
@@ -22,7 +23,7 @@ const logger = container.get<Logger>(TYPES.Logger);
 export async function register(req: Request, res: Response) {
   try {
     // Validate request body
-    const validation = validateRequest(registerSchema, req.body);
+    const validation = validateRequest<RegisterInput>(registerSchema, req.body);
     if (!validation.success) {
       return res.status(400).json({
         error: "Validation failed",
@@ -81,7 +82,7 @@ export async function register(req: Request, res: Response) {
       {
         userAgent: req.headers["user-agent"],
         ipAddress: req.ip,
-      }
+      },
     );
 
     // Set refresh token as httpOnly cookie
@@ -106,7 +107,8 @@ export async function register(req: Request, res: Response) {
       },
     });
   } catch (error) {
-    logger.error(`Registration error: ${error}`);
+    const message = error instanceof Error ? error.message : String(error);
+    logger.error(`Registration error: ${message}`);
     return res.status(500).json({
       error: "Internal server error",
     });
@@ -119,7 +121,7 @@ export async function register(req: Request, res: Response) {
 export async function login(req: Request, res: Response) {
   try {
     // Validate request body
-    const validation = validateRequest(loginSchema, req.body);
+    const validation = validateRequest<LoginInput>(loginSchema, req.body);
     if (!validation.success) {
       return res.status(400).json({
         error: "Validation failed",
@@ -127,13 +129,13 @@ export async function login(req: Request, res: Response) {
       });
     }
 
-    const { email, password } = validation.data;
+    const { email } = validation.data;
 
     const userRepo = container.get<IUserRepo>(TYPES.IUserRepo);
     const authService = container.get(AuthService);
 
     // Find user
-    const user = await userRepo.getUserById(email);
+    const user = await userRepo.getUserByIdSafely(email);
     if (!user) {
       return res.status(401).json({
         error: "Invalid email or password",
@@ -145,7 +147,9 @@ export async function login(req: Request, res: Response) {
     // TODO: Add getUserForAuthentication method
     // Temporary workaround: we'll need to extend the interface
 
-    logger.warn("Password verification temporarily disabled - needs getUserForAuthentication");
+    logger.warn(
+      "Password verification temporarily disabled - needs getUserForAuthentication",
+    );
 
     // Future implementation:
     // const userWithPassword = await userRepo.getUserForAuthentication(email);
@@ -170,7 +174,7 @@ export async function login(req: Request, res: Response) {
       {
         userAgent: req.headers["user-agent"],
         ipAddress: req.ip,
-      }
+      },
     );
 
     // Set refresh token as httpOnly cookie
@@ -195,7 +199,8 @@ export async function login(req: Request, res: Response) {
       },
     });
   } catch (error) {
-    logger.error(`Login error: ${error}`);
+    const message = error instanceof Error ? error.message : String(error);
+    logger.error(`Login error: ${message}`);
     return res.status(500).json({
       error: "Internal server error",
     });
@@ -207,7 +212,7 @@ export async function login(req: Request, res: Response) {
  */
 export async function logout(req: Request, res: Response) {
   try {
-    const refreshToken = req.cookies.refreshToken;
+    const refreshToken = req.cookies.refreshToken as string | undefined;
 
     if (!refreshToken) {
       return res.status(400).json({
@@ -229,7 +234,8 @@ export async function logout(req: Request, res: Response) {
       message: "Logged out successfully",
     });
   } catch (error) {
-    logger.error(`Logout error: ${error}`);
+    const message = error instanceof Error ? error.message : String(error);
+    logger.error(`Logout error: ${message}`);
     return res.status(500).json({
       error: "Internal server error",
     });
@@ -241,7 +247,7 @@ export async function logout(req: Request, res: Response) {
  */
 export async function refresh(req: Request, res: Response) {
   try {
-    const refreshToken = req.cookies.refreshToken;
+    const refreshToken = req.cookies.refreshToken as string | undefined;
 
     if (!refreshToken) {
       return res.status(401).json({
@@ -273,7 +279,8 @@ export async function refresh(req: Request, res: Response) {
       expiresIn: tokens.expiresIn,
     });
   } catch (error) {
-    logger.error(`Token refresh error: ${error}`);
+    const message = error instanceof Error ? error.message : String(error);
+    logger.error(`Token refresh error: ${message}`);
 
     // Clear invalid refresh token
     res.clearCookie("refreshToken");
@@ -287,14 +294,15 @@ export async function refresh(req: Request, res: Response) {
 /**
  * Get JWKS (JSON Web Key Set) for public key distribution
  */
-export async function getJWKS(_req: Request, res: Response) {
+export function getJWKS(_req: Request, res: Response) {
   try {
     const tokenService = container.get(TokenService);
     const jwks = tokenService.getPublicJWKS();
 
     return res.status(200).json(jwks);
   } catch (error) {
-    logger.error(`JWKS error: ${error}`);
+    const message = error instanceof Error ? error.message : String(error);
+    logger.error(`JWKS error: ${message}`);
     return res.status(500).json({
       error: "Internal server error",
     });

@@ -6,6 +6,8 @@ import { PrismaClientKnownRequestError } from "@prisma/client/runtime/library";
 import { PrismaUserRepository } from "@/repositories/implementations/prismaUserRepo";
 import { UserEntity } from "@/constants/types";
 import { DatabaseConnection } from "@/database/prisma.database.connection";
+import { mockDeep } from "vitest-mock-extended";
+import type { Logger } from "@/config/logger.config";
 
 vi.mock("../../libs/prisma");
 
@@ -22,12 +24,15 @@ const mockUser = {
   role: "USER",
 } as const;
 
+const mockLogger = mockDeep<Logger>();
+
 beforeEach(() => {
   vi.clearAllMocks(); // Clear mocks before each test
 });
 
 const userRepo = new PrismaUserRepository(
   new DatabaseConnectionMock() as DatabaseConnection,
+  mockLogger,
 );
 
 describe("findAllUsers", () => {

@@ -21,16 +21,20 @@ export function googleAuth(req: Request, res: Response, next: NextFunction) {
 /**
  * Google OAuth - Callback handler
  */
-export async function googleCallback(req: Request, res: Response, next: NextFunction) {
+export async function googleCallback(
+  req: Request,
+  res: Response,
+  next: NextFunction,
+) {
   passport.authenticate(
     "google",
     { session: false },
     async (err: Error, user: OAuthUserData) => {
       try {
         if (err || !user) {
-          logger.error(`Google OAuth error: ${err?.message || "No user data"}`);
+          logger.error(`Google OAuth error: ${err.message || "No user data"}`);
           return res.redirect(
-            `${process.env.FRONTEND_URL}/login?error=oauth_failed`
+            `${process.env.FRONTEND_URL}/login?error=oauth_failed`,
           );
         }
 
@@ -55,10 +59,10 @@ export async function googleCallback(req: Request, res: Response, next: NextFunc
       } catch (error) {
         logger.error(`Google OAuth callback error: ${error}`);
         return res.redirect(
-          `${process.env.FRONTEND_URL}/login?error=oauth_failed`
+          `${process.env.FRONTEND_URL}/login?error=oauth_failed`,
         );
       }
-    }
+    },
   )(req, res, next);
 }
 
@@ -78,7 +82,7 @@ export function microsoftAuth(req: Request, res: Response, next: NextFunction) {
 export async function microsoftCallback(
   req: Request,
   res: Response,
-  next: NextFunction
+  next: NextFunction,
 ) {
   passport.authenticate(
     "microsoft",
@@ -87,10 +91,10 @@ export async function microsoftCallback(
       try {
         if (err || !user) {
           logger.error(
-            `Microsoft OAuth error: ${err?.message || "No user data"}`
+            `Microsoft OAuth error: ${err.message || "No user data"}`,
           );
           return res.redirect(
-            `${process.env.FRONTEND_URL}/login?error=oauth_failed`
+            `${process.env.FRONTEND_URL}/login?error=oauth_failed`,
           );
         }
 
@@ -114,10 +118,10 @@ export async function microsoftCallback(
       } catch (error) {
         logger.error(`Microsoft OAuth callback error: ${error}`);
         return res.redirect(
-          `${process.env.FRONTEND_URL}/login?error=oauth_failed`
+          `${process.env.FRONTEND_URL}/login?error=oauth_failed`,
         );
       }
-    }
+    },
   )(req, res, next);
 }
 
@@ -137,7 +141,7 @@ export function appleAuth(req: Request, res: Response, next: NextFunction) {
 export async function appleCallback(
   req: Request,
   res: Response,
-  next: NextFunction
+  next: NextFunction,
 ) {
   passport.authenticate(
     "apple",
@@ -145,11 +149,9 @@ export async function appleCallback(
     async (err: Error, user: OAuthUserData) => {
       try {
         if (err || !user) {
-          logger.error(
-            `Apple Sign In error: ${err?.message || "No user data"}`
-          );
+          logger.error(`Apple Sign In error: ${err.message || "No user data"}`);
           return res.redirect(
-            `${process.env.FRONTEND_URL}/login?error=oauth_failed`
+            `${process.env.FRONTEND_URL}/login?error=oauth_failed`,
           );
         }
 
@@ -173,10 +175,10 @@ export async function appleCallback(
       } catch (error) {
         logger.error(`Apple Sign In callback error: ${error}`);
         return res.redirect(
-          `${process.env.FRONTEND_URL}/login?error=oauth_failed`
+          `${process.env.FRONTEND_URL}/login?error=oauth_failed`,
         );
       }
-    }
+    },
   )(req, res, next);
 }
 

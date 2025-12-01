@@ -1,5 +1,5 @@
 import "reflect-metadata";
-import { MockProxy, mock } from "vitest-mock-extended";
+import { MockProxy, mock, mockDeep } from "vitest-mock-extended";
 import { CreateUserDTO } from "@/constants/types";
 import { IUserRepo } from "@/repositories/userRepo";
 import { UserService } from "@/services/user.service";
@@ -7,13 +7,11 @@ import bcrypt from "bcryptjs";
 import { vi, Mock, beforeEach, describe, expect, it } from "vitest";
 import { InternalServerException } from "@/config/exception.config";
 import { Role } from "@prisma/client";
-import container from "@/config/inversify.config";
-import TYPES from "@/constants/identifiers";
-import { Logger } from "@/config/logger.config";
+import type { Logger } from "@/config/logger.config";
 
 let userRepoMock: MockProxy<IUserRepo>;
 let userService: UserService;
-const logger = container.get<Logger>(TYPES.Logger);
+const logger = mockDeep<Logger>();
 
 const userContextMock = {
   id: "1",

@@ -50,7 +50,9 @@ export class EmailService {
       logger.info("SMTP connection verified successfully");
     } catch (error) {
       logger.error(`SMTP connection verification failed: ${error}`);
-      logger.warn("Email sending will not work until SMTP is properly configured");
+      logger.warn(
+        "Email sending will not work until SMTP is properly configured",
+      );
     }
   }
 
@@ -80,7 +82,7 @@ export class EmailService {
   async sendVerificationEmail(
     email: string,
     token: string,
-    name?: string
+    name?: string,
   ): Promise<void> {
     const verifyUrl = `${this.frontendUrl}/verify-email?token=${token}`;
 
@@ -147,7 +149,7 @@ If you didn't create this account, please ignore this email.
   async sendPasswordResetEmail(
     email: string,
     token: string,
-    name?: string
+    name?: string,
   ): Promise<void> {
     const resetUrl = `${this.frontendUrl}/reset-password?token=${token}`;
 

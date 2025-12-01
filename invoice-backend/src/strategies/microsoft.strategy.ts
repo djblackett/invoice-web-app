@@ -28,7 +28,7 @@ export function configureMicrosoftStrategy() {
     !process.env.MICROSOFT_CLIENT_SECRET
   ) {
     logger.warn(
-      "Microsoft OAuth not configured - MICROSOFT_CLIENT_ID and MICROSOFT_CLIENT_SECRET required"
+      "Microsoft OAuth not configured - MICROSOFT_CLIENT_ID and MICROSOFT_CLIENT_SECRET required",
     );
     return;
   }
@@ -48,7 +48,7 @@ export function configureMicrosoftStrategy() {
         accessToken,
         refreshToken,
         profile: MicrosoftProfile,
-        done
+        done,
       ) => {
         try {
           logger.info(`Microsoft OAuth callback for user: ${profile.id}`);
@@ -64,7 +64,10 @@ export function configureMicrosoftStrategy() {
 
           if (!email) {
             logger.error("Microsoft profile missing email");
-            return done(new Error("Email not provided by Microsoft"), undefined);
+            return done(
+              new Error("Email not provided by Microsoft"),
+              undefined,
+            );
           }
 
           // Pass profile data to the controller
@@ -83,8 +86,8 @@ export function configureMicrosoftStrategy() {
           logger.error(`Microsoft OAuth error: ${error}`);
           return done(error as Error, undefined);
         }
-      }
-    )
+      },
+    ),
   );
 
   logger.info("Microsoft OAuth strategy configured");

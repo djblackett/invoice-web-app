@@ -1,4 +1,4 @@
-import { MockProxy, mock } from "vitest-mock-extended";
+import { MockProxy, mock, mockDeep } from "vitest-mock-extended";
 import { getUserResolvers } from "../../../src/resolvers/userResolvers";
 import { UserService } from "../../../src/services/user.service";
 import { GraphQLError } from "graphql";
@@ -8,7 +8,15 @@ import {
   InjectedQueryContext,
   UserIdAndRole,
 } from "../../../src/constants/types";
-import { beforeEach, describe, it, expect } from "vitest";
+import { beforeEach, describe, it, expect, vi } from "vitest";
+import type { Logger } from "../../../src/config/logger.config";
+
+// Mock the container to prevent it from trying to load during tests
+vi.mock("../../../src/config/inversify.config", () => ({
+  default: {
+    get: vi.fn(() => mockDeep<Logger>()),
+  },
+}));
 
 let userServiceMock: MockProxy<UserService>;
 let userResolvers: ReturnType<typeof getUserResolvers>;

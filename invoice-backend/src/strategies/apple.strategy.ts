@@ -35,7 +35,7 @@ export function configureAppleStrategy() {
     !process.env.APPLE_PRIVATE_KEY
   ) {
     logger.warn(
-      "Apple Sign In not configured - APPLE_SERVICE_ID, APPLE_TEAM_ID, APPLE_KEY_ID, and APPLE_PRIVATE_KEY required"
+      "Apple Sign In not configured - APPLE_SERVICE_ID, APPLE_TEAM_ID, APPLE_KEY_ID, and APPLE_PRIVATE_KEY required",
     );
     return;
   }
@@ -54,12 +54,16 @@ export function configureAppleStrategy() {
       },
       async (req, accessToken, refreshToken, idToken, profile, done) => {
         try {
-          logger.info(`Apple Sign In callback for user: ${profile.sub || profile.id}`);
+          logger.info(
+            `Apple Sign In callback for user: ${profile.sub || profile.id}`,
+          );
 
           // Apple profile structure
           // WARNING: name and email are only provided on FIRST authentication!
           const email = profile.email;
-          const emailVerified = profile.email_verified === "true" || profile.email_verified === true;
+          const emailVerified =
+            profile.email_verified === "true" ||
+            profile.email_verified === true;
 
           // Name is only provided on first sign-in
           let name: string | undefined;
@@ -92,8 +96,8 @@ export function configureAppleStrategy() {
           logger.error(`Apple Sign In error: ${error}`);
           return done(error as Error, undefined);
         }
-      }
-    )
+      },
+    ),
   );
 
   logger.info("Apple Sign In strategy configured");

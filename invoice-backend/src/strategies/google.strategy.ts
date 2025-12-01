@@ -23,7 +23,7 @@ const logger = container.get<Logger>(TYPES.Logger);
 export function configureGoogleStrategy() {
   if (!process.env.GOOGLE_CLIENT_ID || !process.env.GOOGLE_CLIENT_SECRET) {
     logger.warn(
-      "Google OAuth not configured - GOOGLE_CLIENT_ID and GOOGLE_CLIENT_SECRET required"
+      "Google OAuth not configured - GOOGLE_CLIENT_ID and GOOGLE_CLIENT_SECRET required",
     );
     return;
   }
@@ -80,8 +80,8 @@ export function configureGoogleStrategy() {
           logger.error(`Google OAuth error: ${error}`);
           return done(error as Error, undefined);
         }
-      }
-    )
+      },
+    ),
   );
 
   logger.info("Google OAuth strategy configured");

@@ -1,4 +1,4 @@
-import { MockProxy, mock } from "vitest-mock-extended";
+import { MockProxy, mock, mockDeep } from "vitest-mock-extended";
 import { getInvoiceResolvers } from "../../../src/resolvers/invoiceResolvers";
 import { InvoiceService } from "../../../src/services/invoice.service";
 import { PubSub } from "graphql-subscriptions";
@@ -18,6 +18,14 @@ import {
   ValidationException,
 } from "@/config/exception.config";
 import { beforeEach, describe, it, expect, vi, test } from "vitest";
+import type { Logger } from "../../../src/config/logger.config";
+
+// Mock the container to prevent it from trying to load during tests
+vi.mock("../../../src/config/inversify.config", () => ({
+  default: {
+    get: vi.fn(() => mockDeep<Logger>()),
+  },
+}));
 
 let invoiceServiceMock: MockProxy<InvoiceService>;
 let pubsubMock: MockProxy<PubSub>;

@@ -41,7 +41,7 @@ export class OAuthService {
   constructor(
     @inject(TYPES.IUserRepo) private userRepo: IUserRepo,
     @inject(TYPES.AuthRepo) private authRepo: IAuthRepo,
-    @inject(AuthService) private authService: AuthService
+    @inject(AuthService) private authService: AuthService,
   ) {}
 
   /**
@@ -50,12 +50,12 @@ export class OAuthService {
    */
   async handleOAuthAuthentication(
     oauthData: OAuthUserData,
-    metadata?: { userAgent?: string; ipAddress?: string }
+    metadata?: { userAgent?: string; ipAddress?: string },
   ): Promise<OAuthResult> {
     // Check if OAuth account already exists
     const existingOAuthAccount = await this.authRepo.findOAuthAccount(
       OAuthProvider[oauthData.provider],
-      oauthData.providerAccountId
+      oauthData.providerAccountId,
     );
 
     if (existingOAuthAccount) {
@@ -63,7 +63,7 @@ export class OAuthService {
       return await this.handleExistingOAuthAccount(
         existingOAuthAccount,
         oauthData,
-        metadata
+        metadata,
       );
     }
 
@@ -85,7 +85,7 @@ export class OAuthService {
   private async handleExistingOAuthAccount(
     oauthAccount: any,
     oauthData: OAuthUserData,
-    metadata?: { userAgent?: string; ipAddress?: string }
+    metadata?: { userAgent?: string; ipAddress?: string },
   ): Promise<OAuthResult> {
     logger.info(`Existing OAuth account found: ${oauthAccount.userId}`);
 
@@ -113,7 +113,7 @@ export class OAuthService {
         name: user.name,
         role: user.role,
       },
-      metadata
+      metadata,
     );
 
     return {
@@ -134,10 +134,10 @@ export class OAuthService {
   private async linkOAuthAccount(
     existingUser: any,
     oauthData: OAuthUserData,
-    metadata?: { userAgent?: string; ipAddress?: string }
+    metadata?: { userAgent?: string; ipAddress?: string },
   ): Promise<OAuthResult> {
     logger.info(
-      `Linking ${oauthData.provider} account to existing user: ${existingUser.id}`
+      `Linking ${oauthData.provider} account to existing user: ${existingUser.id}`,
     );
 
     // Create OAuth account link
@@ -161,7 +161,7 @@ export class OAuthService {
         name: existingUser.name,
         role: existingUser.role,
       },
-      metadata
+      metadata,
     );
 
     return {
@@ -181,10 +181,10 @@ export class OAuthService {
    */
   private async createUserWithOAuth(
     oauthData: OAuthUserData,
-    metadata?: { userAgent?: string; ipAddress?: string }
+    metadata?: { userAgent?: string; ipAddress?: string },
   ): Promise<OAuthResult> {
     logger.info(
-      `Creating new user with ${oauthData.provider}: ${oauthData.email}`
+      `Creating new user with ${oauthData.provider}: ${oauthData.email}`,
     );
 
     // Create user
@@ -212,7 +212,7 @@ export class OAuthService {
         name: user.name,
         role: user.role,
       },
-      metadata
+      metadata,
     );
 
     return {
@@ -232,14 +232,14 @@ export class OAuthService {
    */
   async linkProviderToUser(
     userId: string,
-    oauthData: OAuthUserData
+    oauthData: OAuthUserData,
   ): Promise<void> {
     logger.info(`Linking ${oauthData.provider} to user: ${userId}`);
 
     // Check if this provider is already linked
     const existingLink = await this.authRepo.findOAuthAccount(
       OAuthProvider[oauthData.provider],
-      oauthData.providerAccountId
+      oauthData.providerAccountId,
     );
 
     if (existingLink) {
@@ -247,7 +247,7 @@ export class OAuthService {
         throw new Error("This provider is already linked to your account");
       } else {
         throw new Error(
-          "This provider is already linked to a different account"
+          "This provider is already linked to a different account",
         );
       }
     }
@@ -291,7 +291,7 @@ export class OAuthService {
       // Note: We'd need to check if user has passwordHash
       // For now, prevent unlinking if it's the only method
       throw new Error(
-        "Cannot unlink the only authentication method. Please set a password first."
+        "Cannot unlink the only authentication method. Please set a password first.",
       );
     }
 

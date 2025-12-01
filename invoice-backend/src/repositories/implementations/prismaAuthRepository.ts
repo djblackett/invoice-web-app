@@ -1,6 +1,12 @@
 import { injectable, inject } from "inversify";
-import type { PrismaClient, OAuthProvider } from "@prisma/client";
-import { TYPES } from "@/constants/types";
+import type {
+  OAuthAccount,
+  OAuthProvider,
+  PrismaClient,
+  RefreshToken,
+  Session,
+} from "@prisma/client";
+import TYPES from "@/constants/identifiers";
 import type {
   IAuthRepo,
   OAuthAccountData,
@@ -32,7 +38,7 @@ export class PrismaAuthRepository implements IAuthRepo {
 
   async findOAuthAccount(
     provider: OAuthProvider,
-    providerAccountId: string
+    providerAccountId: string,
   ): Promise<OAuthAccountData | null> {
     const account = await this.prisma.oAuthAccount.findUnique({
       where: {
@@ -46,9 +52,7 @@ export class PrismaAuthRepository implements IAuthRepo {
     return account ? this.mapOAuthAccount(account) : null;
   }
 
-  async findOAuthAccountsByUserId(
-    userId: string
-  ): Promise<OAuthAccountData[]> {
+  async findOAuthAccountsByUserId(userId: string): Promise<OAuthAccountData[]> {
     const accounts = await this.prisma.oAuthAccount.findMany({
       where: { userId },
       orderBy: { createdAt: "desc" },
@@ -59,7 +63,7 @@ export class PrismaAuthRepository implements IAuthRepo {
 
   async updateOAuthAccount(
     id: string,
-    data: Partial<OAuthAccountData>
+    data: Partial<OAuthAccountData>,
   ): Promise<OAuthAccountData> {
     const account = await this.prisma.oAuthAccount.update({
       where: { id },
@@ -103,7 +107,7 @@ export class PrismaAuthRepository implements IAuthRepo {
   }
 
   async findRefreshTokenByToken(
-    token: string
+    token: string,
   ): Promise<RefreshTokenData | null> {
     const refreshToken = await this.prisma.refreshToken.findUnique({
       where: { token },
@@ -112,9 +116,7 @@ export class PrismaAuthRepository implements IAuthRepo {
     return refreshToken ? this.mapRefreshToken(refreshToken) : null;
   }
 
-  async findRefreshTokensByUserId(
-    userId: string
-  ): Promise<RefreshTokenData[]> {
+  async findRefreshTokensByUserId(userId: string): Promise<RefreshTokenData[]> {
     const tokens = await this.prisma.refreshToken.findMany({
       where: {
         userId,
@@ -127,11 +129,21 @@ export class PrismaAuthRepository implements IAuthRepo {
     return tokens.map((token) => this.mapRefreshToken(token));
   }
 
-  async findRefreshTokensByFamily(
-    family: string
-  ): Promise<RefreshTokenData[]> {
+  async findRefreshTokensByFamily(family: string): Promise<RefreshTokenData[]> {
     const tokens = await this.prisma.refreshToken.findMany({
       where: { family },
+      orderBy: { createdAt: "desc" },
+    });
+
+    return tokens.map((token) => this.mapRefreshToken(token));
+  }
+
+  async findActiveRefreshTokens(): Promise<RefreshTokenData[]> {
+    const tokens = await this.prisma.refreshToken.findMany({
+      where: {
+        isRevoked: false,
+        expiresAt: { gt: new Date() },
+      },
       orderBy: { createdAt: "desc" },
     });
 
@@ -141,7 +153,7 @@ export class PrismaAuthRepository implements IAuthRepo {
   async revokeRefreshToken(
     id: string,
     reason: string,
-    replacedBy?: string
+    replacedBy?: string,
   ): Promise<boolean> {
     try {
       await this.prisma.refreshToken.update({
@@ -201,7 +213,7 @@ export class PrismaAuthRepository implements IAuthRepo {
   }
 
   async findSessionByRefreshTokenId(
-    refreshTokenId: string
+    refreshTokenId: string,
   ): Promise<SessionData | null> {
     const session = await this.prisma.session.findUnique({
       where: { refreshTokenId },
@@ -266,7 +278,7 @@ export class PrismaAuthRepository implements IAuthRepo {
   }
 
   // Helper mappers
-  private mapOAuthAccount(account: any): OAuthAccountData {
+  private mapOAuthAccount(account: OAuthAccount): OAuthAccountData {
     return {
       id: account.id,
       userId: account.userId,
@@ -280,7 +292,7 @@ export class PrismaAuthRepository implements IAuthRepo {
     };
   }
 
-  private mapRefreshToken(token: any): RefreshTokenData {
+  private mapRefreshToken(token: RefreshToken): RefreshTokenData {
     return {
       id: token.id,
       userId: token.userId,
@@ -292,7 +304,7 @@ export class PrismaAuthRepository implements IAuthRepo {
     };
   }
 
-  private mapSession(session: any): SessionData {
+  private mapSession(session: Session): SessionData {
     return {
       id: session.id,
       userId: session.userId,

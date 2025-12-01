@@ -105,6 +105,7 @@ async function verifyToken(
   return jwt.verify(token, signingKey, options) as JwtPayload;
 }
 
+/* eslint-disable security/detect-object-injection */
 // Helper function to extract user data from payload
 function extractUserFromPayload(payload: JwtPayload): UserIdAndRole {
   const namespace = "invoice-web-app/";
@@ -114,7 +115,7 @@ function extractUserFromPayload(payload: JwtPayload): UserIdAndRole {
   const email =
     typeof payload[emailClaim] === "string" ? payload[emailClaim] : "";
   const id = payload.sub ?? "";
-  const name = typeof payload["name"] === "string" ? payload["name"] : "user";
+  const name = typeof payload.name === "string" ? payload.name : "user";
   const roles = Array.isArray(payload[roleClaim])
     ? (payload[roleClaim] as string[])
     : [];
@@ -125,6 +126,7 @@ function extractUserFromPayload(payload: JwtPayload): UserIdAndRole {
   const role = roles.includes("Admin") ? "ADMIN" : "USER";
   return { id, role, username: email, name };
 }
+/* eslint-enable security/detect-object-injection */
 
 export async function createContext({
   req,
@@ -217,13 +219,15 @@ async function getUserFromToken(token: string): Promise<UserIdAndRole | null> {
 
   if (authSystem === "new") {
     // Use new token system only
-    return await getUserFromNewToken(token);
+    return getUserFromNewToken(token);
   } else if (authSystem === "dual") {
     // Try new token first, fallback to Auth0
     try {
-      return await getUserFromNewToken(token);
+      return getUserFromNewToken(token);
     } catch (error) {
-      logger.info("New token verification failed, trying Auth0");
+      logger.info(
+        `New token verification failed, trying Auth0. Reason: ${String(error)}`,
+      );
       return await getUserFromAuth0Token(token);
     }
   } else {
@@ -233,7 +237,7 @@ async function getUserFromToken(token: string): Promise<UserIdAndRole | null> {
 }
 
 // Helper function to verify new JWT tokens
-async function getUserFromNewToken(token: string): Promise<UserIdAndRole> {
+function getUserFromNewToken(token: string): UserIdAndRole {
   try {
     const tokenService = container.get(TokenService);
     const payload = tokenService.verifyAccessToken(token);
@@ -251,9 +255,7 @@ async function getUserFromNewToken(token: string): Promise<UserIdAndRole> {
 }
 
 // Helper function to verify Auth0 tokens (legacy)
-async function getUserFromAuth0Token(
-  token: string
-): Promise<UserIdAndRole> {
+async function getUserFromAuth0Token(token: string): Promise<UserIdAndRole> {
   const user = await retrieveUserFromToken(token, options);
   if (!user) {
     throw new Error("User not found");

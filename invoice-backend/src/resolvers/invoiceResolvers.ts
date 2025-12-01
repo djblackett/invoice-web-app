@@ -11,7 +11,14 @@ import container from "../config/inversify.config";
 import TYPES from "../constants/identifiers";
 import type { Logger } from "../config/logger.config";
 
-const logger = container.get<Logger>(TYPES.Logger);
+// Lazy-load logger to avoid issues during test imports
+let logger: Logger | null = null;
+function getLogger(): Logger {
+  if (!logger) {
+    logger = container.get<Logger>(TYPES.Logger);
+  }
+  return logger;
+}
 
 export function getInvoiceResolvers() {
   return {
@@ -25,7 +32,7 @@ export function getInvoiceResolvers() {
           const { user, invoiceService } = context;
 
           if (!user) {
-            logger.error("User not found in context");
+            getLogger().error("User not found in context");
             throw new GraphQLError("Internal server error", {
               extensions: {
                 code: "INTERNAL_SERVER_ERROR",
@@ -34,7 +41,7 @@ export function getInvoiceResolvers() {
           }
 
           if (!invoiceService) {
-            logger.error("Invoice service not found in context");
+            getLogger().error("Invoice service not found in context");
             throw new GraphQLError("Internal server error", {
               extensions: {
                 code: "INTERNAL_SERVER_ERROR",
@@ -45,7 +52,7 @@ export function getInvoiceResolvers() {
           const result = await invoiceService.getInvoices();
           return result;
         } catch (error) {
-          logger.error(String(error));
+          getLogger().error(String(error));
           throw new GraphQLError("Failed to retrieve invoices", {
             extensions: {
               code: "INTERNAL_SERVER_ERROR",
@@ -84,7 +91,7 @@ export function getInvoiceResolvers() {
               },
             });
           }
-          logger.error(String(error));
+          getLogger().error(String(error));
           throw new GraphQLError("Failed to retrieve invoice", {
             extensions: {
               code: "INTERNAL_SERVER_ERROR",
@@ -112,7 +119,7 @@ export function getInvoiceResolvers() {
           await pubsub.publish("INVOICE_ADDED", { invoiceAdded: newInvoice });
           return newInvoice;
         } catch (error) {
-          logger.error(String(error));
+          getLogger().error(String(error));
           throw new GraphQLError("Failed to add invoice", {
             extensions: {
               code: "INTERNAL_SERVER_ERROR",
@@ -149,7 +156,7 @@ export function getInvoiceResolvers() {
           const result = await invoiceService.updateInvoice(id, update);
           return result;
         } catch (error) {
-          logger.error(String(error));
+          getLogger().error(String(error));
           throw new GraphQLError("Failed to update invoice", {
             extensions: {
               code: "INTERNAL_SERVER_ERROR",
@@ -175,7 +182,7 @@ export function getInvoiceResolvers() {
           const result = await invoiceService.deleteInvoice(args.id);
           return result;
         } catch (error) {
-          logger.error(String(error));
+          getLogger().error(String(error));
           if (error instanceof NotFoundException) {
             throw new GraphQLError("Invoice not found", {
               extensions: {
@@ -224,7 +231,7 @@ export function getInvoiceResolvers() {
             return { acknowledged: false };
           }
         } catch (error) {
-          logger.error(String(error));
+          getLogger().error(String(error));
           throw new GraphQLError("Failed to delete all invoices", {
             extensions: {
               code: "INTERNAL_SERVER_ERROR",
@@ -263,7 +270,7 @@ export function getInvoiceResolvers() {
           const result = await invoiceService.deleteInvoicesByUserId();
           return result;
         } catch (error) {
-          logger.error(String(error));
+          getLogger().error(String(error));
           throw new GraphQLError("Failed to delete invoices by user id", {
             extensions: {
               code: "INTERNAL_SERVER_ERROR",
@@ -289,7 +296,7 @@ export function getInvoiceResolvers() {
           const result = await invoiceService.markAsPaid(args.id);
           return result;
         } catch (error) {
-          logger.error(String(error));
+          getLogger().error(String(error));
           if (error instanceof NotFoundException) {
             throw new GraphQLError("Invoice not found", {
               extensions: {
@@ -330,7 +337,7 @@ export function getInvoiceResolvers() {
           try {
             return pubsub.asyncIterator("INVOICE_ADDED");
           } catch (error) {
-            logger.error(String(error));
+            getLogger().error(String(error));
             throw new GraphQLError("Failed to subscribe to invoiceAdded", {
               extensions: {
                 code: "INTERNAL_SERVER_ERROR",

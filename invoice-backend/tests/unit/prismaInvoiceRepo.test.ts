@@ -17,6 +17,8 @@ import {
 } from "@prisma/client/runtime/library";
 import { PrismaUserRepository } from "@/repositories/implementations/prismaUserRepo";
 import { DatabaseConnection } from "@/database/prisma.database.connection";
+import { mockDeep } from "vitest-mock-extended";
+import type { Logger } from "@/config/logger.config";
 
 vi.mock("../../libs/prisma");
 
@@ -129,13 +131,14 @@ const mockResponseWithIds = {
   total: new Decimal(mockInvoicePrismaResponse.total),
 };
 
+const mockLogger = mockDeep<Logger>();
 const mockDb = new DatabaseConnectionMock();
 (mockDb as any).prisma = prisma;
-(mockDb as any).logger = console;
-const mockRepo = new PrismaInvoiceRepository(mockDb);
+const mockRepo = new PrismaInvoiceRepository(mockDb, mockLogger);
 
 const mockUserRepo = new PrismaUserRepository(
   new DatabaseConnectionMock() as DatabaseConnection,
+  mockLogger,
 );
 
 describe("Prisma Query: createInvoice", () => {

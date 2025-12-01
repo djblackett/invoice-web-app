@@ -83,7 +83,7 @@ export type VerifyEmailInput = z.infer<typeof verifyEmailSchema>;
  */
 export function validateRequest<T>(
   schema: z.ZodSchema<T>,
-  data: unknown
+  data: unknown,
 ): { success: true; data: T } | { success: false; errors: string[] } {
   const result = schema.safeParse(data);
 

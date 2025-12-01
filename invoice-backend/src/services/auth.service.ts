@@ -1,5 +1,5 @@
 import { injectable, inject } from "inversify";
-import type { IAuthRepo } from "@/repositories/authRepo";
+import type { IAuthRepo, RefreshTokenData } from "@/repositories/authRepo";
 import { TokenService, type JWTPayload } from "@/services/token.service";
 import {
   generateSecureToken,
@@ -7,7 +7,7 @@ import {
   hashToken,
   compareToken,
 } from "@/utils/crypto.util";
-import { TYPES } from "@/constants/types";
+import TYPES from "@/constants/identifiers";
 
 export interface TokenPair {
   accessToken: string;
@@ -22,13 +22,12 @@ export interface RefreshTokenMetadata {
 
 @injectable()
 export class AuthService {
-  private refreshTokenExpiry: number;
+  private readonly refreshTokenExpiry: number;
 
   constructor(
     @inject(TYPES.AuthRepo) private authRepo: IAuthRepo,
-    @inject(TokenService) private tokenService: TokenService
+    @inject(TokenService) private tokenService: TokenService,
   ) {
-    // Parse refresh token expiry (e.g., "30d" -> 30 days in milliseconds)
     const expiryString = process.env.JWT_REFRESH_TOKEN_EXPIRY || "30d";
     this.refreshTokenExpiry = this.parseExpiry(expiryString);
   }
@@ -42,16 +41,16 @@ export class AuthService {
       throw new Error(`Invalid expiry format: ${expiry}`);
     }
 
-    const value = parseInt(match[1], 10);
+    const value = Number.parseInt(match[1], 10);
     const unit = match[2];
 
     switch (unit) {
       case "d":
-        return value * 24 * 60 * 60 * 1000; // days
+        return value * 24 * 60 * 60 * 1000;
       case "h":
-        return value * 60 * 60 * 1000; // hours
+        return value * 60 * 60 * 1000;
       case "m":
-        return value * 60 * 1000; // minutes
+        return value * 60 * 1000;
       default:
         return value;
     }
@@ -62,9 +61,8 @@ export class AuthService {
    */
   async generateTokenPair(
     user: { id: string; email: string; name?: string; role: "USER" | "ADMIN" },
-    metadata?: RefreshTokenMetadata
+    metadata?: RefreshTokenMetadata,
   ): Promise<TokenPair> {
-    // Generate access token (JWT)
     const accessToken = this.tokenService.signAccessToken({
       sub: user.id,
       email: user.email,
@@ -72,12 +70,10 @@ export class AuthService {
       role: user.role,
     });
 
-    // Generate refresh token (opaque)
     const refreshToken = generateSecureToken(32);
     const tokenFamily = generateTokenFamily();
     const hashedToken = await hashToken(refreshToken);
 
-    // Store refresh token in database
     await this.authRepo.createRefreshToken({
       userId: user.id,
       token: hashedToken,
@@ -100,15 +96,14 @@ export class AuthService {
    */
   async refreshAccessToken(
     refreshToken: string,
-    metadata?: RefreshTokenMetadata
+    metadata?: RefreshTokenMetadata,
   ): Promise<TokenPair> {
-    // Find all tokens in database to check against
     const allTokens = await this.findValidRefreshTokens();
 
-    // Find matching token (need to compare hashes)
-    let matchedToken: any = null;
+    let matchedToken: RefreshTokenData | null = null;
     for (const token of allTokens) {
-      if (await compareToken(refreshToken, token.token)) {
+      const isMatch = await compareToken(refreshToken, token.token);
+      if (isMatch) {
         matchedToken = token;
         break;
       }
@@ -118,14 +113,12 @@ export class AuthService {
       throw new Error("Invalid refresh token");
     }
 
-    // Check if token is expired
     if (new Date() > new Date(matchedToken.expiresAt)) {
       throw new Error("Refresh token expired");
     }
 
-    // Check if token was already used (potential security breach)
     const tokenDetails = await this.authRepo.findRefreshTokenByToken(
-      matchedToken.token
+      matchedToken.token,
     );
 
     if (!tokenDetails) {
@@ -133,30 +126,24 @@ export class AuthService {
     }
 
     if (tokenDetails.replacedBy) {
-      // Token reuse detected! Revoke entire family
       await this.authRepo.revokeTokenFamily(
         matchedToken.family,
-        "Token reuse detected - potential security breach"
+        "Token reuse detected - potential security breach",
       );
       throw new Error(
-        "Token reuse detected. All tokens in this family have been revoked."
+        "Token reuse detected. All tokens in this family have been revoked.",
       );
     }
 
-    // Get user details (you'll need to implement getUserById in userRepo)
-    // For now, we'll need to fetch from the token's userId
-    // This is a simplified version - you'd want to fetch full user details
     const user = {
       id: matchedToken.userId,
-      email: "", // Fetch from user repo
-      role: "USER" as const, // Fetch from user repo
+      email: "",
+      role: "USER" as const,
     };
 
-    // Generate new token pair
     const newRefreshToken = generateSecureToken(32);
     const hashedNewToken = await hashToken(newRefreshToken);
 
-    // Create new refresh token with same family
     const newToken = await this.authRepo.createRefreshToken({
       userId: matchedToken.userId,
       token: hashedNewToken,
@@ -166,15 +153,16 @@ export class AuthService {
       ipAddress: metadata?.ipAddress,
     });
 
-    // Revoke old token (mark as replaced)
+    if (!tokenDetails.id) {
+      throw new Error("Missing refresh token id for rotation");
+    }
+
     await this.authRepo.revokeRefreshToken(
-      tokenDetails.id!,
+      tokenDetails.id,
       "Rotated",
-      newToken.id
+      newToken.id,
     );
 
-    // Generate new access token
-    // NOTE: You'll need to fetch full user details from user repository
     const accessToken = this.tokenService.signAccessToken({
       sub: user.id,
       email: user.email,
@@ -194,10 +182,13 @@ export class AuthService {
   async revokeRefreshToken(refreshToken: string): Promise<void> {
     const allTokens = await this.findValidRefreshTokens();
 
-    // Find matching token
     for (const token of allTokens) {
-      if (await compareToken(refreshToken, token.token)) {
-        await this.authRepo.revokeRefreshToken(token.id!, "User logout");
+      const isMatch = await compareToken(refreshToken, token.token);
+      if (isMatch) {
+        if (!token.id) {
+          throw new Error("Missing token id for revocation");
+        }
+        await this.authRepo.revokeRefreshToken(token.id, "User logout");
         return;
       }
     }
@@ -213,9 +204,12 @@ export class AuthService {
     let revokedCount = 0;
 
     for (const token of tokens) {
+      if (!token.id) {
+        continue;
+      }
       const success = await this.authRepo.revokeRefreshToken(
-        token.id!,
-        "User logout from all devices"
+        token.id,
+        "User logout from all devices",
       );
       if (success) revokedCount++;
     }
@@ -242,14 +236,7 @@ export class AuthService {
    * Helper to find all valid (non-revoked, non-expired) refresh tokens
    * Used for token comparison during refresh
    */
-  private async findValidRefreshTokens() {
-    // This is a simplified approach - in production you might want to
-    // implement a more efficient search strategy
-    // For now, we'll just get tokens from the database directly
-    // A better approach would be to index tokens by a hash prefix
-
-    // This method needs to be implemented more efficiently
-    // For now, returning empty array as placeholder
-    return [];
+  private async findValidRefreshTokens(): Promise<RefreshTokenData[]> {
+    return this.authRepo.findActiveRefreshTokens();
   }
 }

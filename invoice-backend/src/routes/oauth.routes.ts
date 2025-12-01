@@ -1,8 +1,15 @@
 import { Router } from "express";
+import type { Request, Response } from "express";
 import * as oauthController from "@/controllers/oauth.controller";
 import { oauthCallbackLimiter } from "@/middleware/rateLimit.middleware";
 
 const router = Router();
+
+type AsyncHandler = (req: Request, res: Response) => Promise<unknown>;
+
+const wrap = (handler: AsyncHandler) => (req: Request, res: Response) => {
+  void handler(req, res);
+};
 
 // ==================== Google OAuth ====================
 
@@ -11,7 +18,7 @@ const router = Router();
  * @desc    Initiate Google OAuth flow
  * @access  Public
  */
-router.get("/google", oauthController.googleAuth);
+router.get("/google", wrap(oauthController.googleAuth));
 
 /**
  * @route   GET /oauth/google/callback
@@ -21,7 +28,7 @@ router.get("/google", oauthController.googleAuth);
 router.get(
   "/google/callback",
   oauthCallbackLimiter,
-  oauthController.googleCallback
+  wrap(oauthController.googleCallback),
 );
 
 // ==================== Microsoft OAuth ====================
@@ -31,7 +38,7 @@ router.get(
  * @desc    Initiate Microsoft OAuth flow
  * @access  Public
  */
-router.get("/microsoft", oauthController.microsoftAuth);
+router.get("/microsoft", wrap(oauthController.microsoftAuth));
 
 /**
  * @route   GET /oauth/microsoft/callback
@@ -41,7 +48,7 @@ router.get("/microsoft", oauthController.microsoftAuth);
 router.get(
   "/microsoft/callback",
   oauthCallbackLimiter,
-  oauthController.microsoftCallback
+  wrap(oauthController.microsoftCallback),
 );
 
 // ==================== Apple Sign In ====================
@@ -51,7 +58,7 @@ router.get(
  * @desc    Initiate Apple Sign In flow (uses POST per Apple requirements)
  * @access  Public
  */
-router.post("/apple", oauthController.appleAuth);
+router.post("/apple", wrap(oauthController.appleAuth));
 
 /**
  * @route   POST /oauth/apple/callback
@@ -61,7 +68,7 @@ router.post("/apple", oauthController.appleAuth);
 router.post(
   "/apple/callback",
   oauthCallbackLimiter,
-  oauthController.appleCallback
+  wrap(oauthController.appleCallback),
 );
 
 // ==================== Account Management ====================
@@ -71,13 +78,13 @@ router.post(
  * @desc    Link additional OAuth provider to authenticated user
  * @access  Private (requires authentication)
  */
-router.post("/link/:provider", oauthController.linkProvider);
+router.post("/link/:provider", wrap(oauthController.linkProvider));
 
 /**
  * @route   GET /oauth/accounts
  * @desc    Get all linked OAuth accounts for authenticated user
  * @access  Private (requires authentication)
  */
-router.get("/accounts", oauthController.getLinkedAccounts);
+router.get("/accounts", wrap(oauthController.getLinkedAccounts));
 
 export default router;

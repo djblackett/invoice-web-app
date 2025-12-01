@@ -6,7 +6,7 @@ import {
   split,
 } from "@apollo/client";
 import { setContext } from "@apollo/client/link/context";
-import { useAuth } from "@/features/auth/hooks/useAuth.ts";
+import { useUnifiedAuth } from "@/features/auth/hooks/useUnifiedAuth";
 import { GraphQLWsLink } from "@apollo/client/link/subscriptions";
 import { createClient } from "graphql-ws";
 import { getMainDefinition } from "@apollo/client/utilities";
@@ -26,26 +26,19 @@ const useGraphQLClient = () => {
   }
 
   const { isDemoMode } = useDemoModeContext();
-  const { getAccessTokenSilently, user } = useAuth();
+  const { getAccessToken, user } = useUnifiedAuth();
   // Memoize the Apollo Client to prevent unnecessary re-creations
   const client = useMemo(() => {
     // Authentication Link to attach the token to headers
     const authLink = setContext(async (_, { headers }) => {
       try {
-        const options = {
-          authorizationParams: {
-            audience: import.meta.env.VITE_AUDIENCE,
-            scope: import.meta.env.VITE_SCOPE,
-          },
-        };
-
         let token;
 
         // Demo mode does not require authentication
         if (isDemoMode) {
           token = "demo-token" + (user?.role === 1 ? "-admin" : "");
         } else {
-          token = await getAccessTokenSilently(options);
+          token = await getAccessToken();
         }
         return {
           headers: {
@@ -79,20 +72,13 @@ const useGraphQLClient = () => {
         url: `${wsProtocol}${addressWithoutProtocol}`,
         connectionParams: async () => {
           try {
-            const options = {
-              authorizationParams: {
-                audience: import.meta.env.VITE_AUDIENCE,
-                scope: import.meta.env.VITE_SCOPE,
-              },
-            };
-
             let token;
 
             // Demo mode does not require authentication
             if (isDemoMode) {
               token = "demo-token" + (user?.role === 1 ? "-admin" : "");
             } else {
-              token = await getAccessTokenSilently(options);
+              token = await getAccessToken();
             }
             return token ? { Authorization: `Bearer ${token}` } : {};
           } catch (error) {
