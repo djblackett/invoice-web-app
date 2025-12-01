@@ -11,10 +11,15 @@ import { DatabaseConnection } from "./database/prisma.database.connection";
 import rateLimit from "express-rate-limit";
 import express from "express";
 import cookieParser from "cookie-parser";
+import passport from "passport";
 import { PrismaClient } from "@prisma/client";
 import TYPES from "./constants/identifiers";
 import type { Logger } from "./config/logger.config";
 import authRoutes from "./routes/auth.routes";
+import oauthRoutes from "./routes/oauth.routes";
+import { configureGoogleStrategy } from "./strategies/google.strategy";
+import { configureMicrosoftStrategy } from "./strategies/microsoft.strategy";
+import { configureAppleStrategy } from "./strategies/apple.strategy";
 
 const logger = container.get<Logger>(TYPES.Logger);
 
@@ -32,8 +37,17 @@ export const createApp = async () => {
     // Cookie parser middleware (required for refresh token cookies)
     app.use(cookieParser());
 
+    // Initialize Passport
+    app.use(passport.initialize());
+
+    // Configure OAuth strategies
+    configureGoogleStrategy();
+    configureMicrosoftStrategy();
+    configureAppleStrategy();
+
     // Authentication routes
     app.use("/auth", authRoutes);
+    app.use("/oauth", oauthRoutes);
 
     app.get("/health", (_req: Request, res: Response) => {
       res.status(200).send("OK");

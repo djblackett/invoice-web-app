@@ -5,6 +5,7 @@ import { UserService } from "../services/user.service";
 import { AuthService } from "../services/auth.service";
 import { TokenService } from "../services/token.service";
 import { EmailService } from "../services/email.service";
+import { OAuthService } from "../services/oauth.service";
 import { PrismaInvoiceRepository } from "../repositories/implementations/prismaInvoiceRepository";
 import { PrismaUserRepository } from "../repositories/implementations/prismaUserRepo";
 import { PrismaAuthRepository } from "../repositories/implementations/prismaAuthRepository";
@@ -61,6 +62,8 @@ container.bind(TokenService).toSelf().inSingletonScope();
 container.bind(AuthService).toSelf().inTransientScope();
 
 container.bind(EmailService).toSelf().inSingletonScope();
+
+container.bind(OAuthService).toSelf().inTransientScope();
 
 container.bind<Logger>(TYPES.Logger).to(Logger).inSingletonScope();
 container.bind<PubSub>(TYPES.PubSub).toConstantValue(new PubSub());
