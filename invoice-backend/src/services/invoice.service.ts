@@ -12,10 +12,7 @@ import {
   NotFoundException,
   ValidationException,
 } from "../config/exception.config";
-import container from "../config/inversify.config";
 import type { Logger } from "../config/logger.config";
-
-const logger = container.get<Logger>(TYPES.Logger);
 
 @injectable()
 export class InvoiceService {
@@ -24,6 +21,8 @@ export class InvoiceService {
     private readonly invoiceRepo: IInvoiceRepo,
     @inject(TYPES.UserContext)
     private readonly userContext: UserIdAndRole | null,
+    @inject(TYPES.Logger)
+    private readonly logger: Logger,
   ) {}
 
   getInvoices = async (): Promise<Invoice[]> => {
@@ -45,7 +44,7 @@ export class InvoiceService {
       const result = await this.invoiceRepo.findAll();
       return validateInvoiceList(result);
     } catch (e) {
-      logger.error(String(e));
+      this.logger.error(String(e));
       throw new InternalServerException("Internal server error");
     }
   };
@@ -66,12 +65,12 @@ export class InvoiceService {
       try {
         const result = await this.invoiceRepo.findById(invoiceId);
         if (!result) {
-          logger.error("role = ADMIN - Invoice not found");
+          this.logger.error("role = ADMIN - Invoice not found");
           throw new NotFoundException("Invoice not found");
         }
         return result;
       } catch (e) {
-        logger.error(String(e));
+        this.logger.error(String(e));
         if (e instanceof ValidationException) {
           throw e;
         }
@@ -88,12 +87,12 @@ export class InvoiceService {
           invoiceId,
         );
         if (!result) {
-          logger.error("role = USER - Invoice not found");
+          this.logger.error("role = USER - Invoice not found");
           throw new NotFoundException("Invoice not found");
         }
         return result;
       } catch (e) {
-        logger.error(String(e));
+        this.logger.error(String(e));
         if (e instanceof ValidationException) {
           throw e;
         }
@@ -128,7 +127,7 @@ export class InvoiceService {
 
       return validatedData;
     } catch (e) {
-      logger.error(String(e));
+      this.logger.error(String(e));
       if (e instanceof ValidationException) {
         throw e;
       } else if (e instanceof NotFoundException) {
@@ -157,7 +156,7 @@ export class InvoiceService {
 
       return result;
     } catch (e) {
-      logger.error(String(e));
+      this.logger.error(String(e));
       if (e instanceof ValidationException) {
         throw e;
       }
@@ -173,7 +172,7 @@ export class InvoiceService {
       const result = await this.invoiceRepo.markAsPaid(id);
       return validateInvoiceData(result);
     } catch (e) {
-      logger.error(String(e));
+      this.logger.error(String(e));
       if (e instanceof ValidationException) {
         throw e;
       }
@@ -198,7 +197,7 @@ export class InvoiceService {
       }
       return result;
     } catch (e) {
-      logger.error(String(e));
+      this.logger.error(String(e));
       throw new InternalServerException("Internal server error");
     }
   };
@@ -217,7 +216,7 @@ export class InvoiceService {
     try {
       return await this.invoiceRepo.deleteAllInvoices();
     } catch (e) {
-      logger.error(String(e));
+      this.logger.error(String(e));
       throw new InternalServerException("Internal server error");
     }
   };
@@ -236,7 +235,7 @@ export class InvoiceService {
     try {
       return await this.invoiceRepo.deleteInvoicesByUserId(id);
     } catch (e) {
-      logger.error(String(e));
+      this.logger.error(String(e));
       throw new InternalServerException("Internal server error");
     }
   };

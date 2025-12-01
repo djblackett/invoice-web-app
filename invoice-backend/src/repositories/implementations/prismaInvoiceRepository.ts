@@ -9,11 +9,8 @@ import {
   NotFoundException,
   ValidationException,
 } from "@/config/exception.config";
-import container from "@/config/inversify.config";
 import TYPES from "@/constants/identifiers";
-import type { Logger } from "@/config/logger.config";
-
-const logger = container.get<Logger>(TYPES.Logger);
+import type { Logger } from "@/config/this.logger.config";
 
 @injectable()
 export class PrismaInvoiceRepository implements IInvoiceRepo {
@@ -22,6 +19,8 @@ export class PrismaInvoiceRepository implements IInvoiceRepo {
   constructor(
     @inject(DatabaseConnection)
     databaseConnection: DatabaseConnection,
+    @inject(TYPES.Logger)
+    private readonly logger: Logger,
   ) {
     this.prisma = databaseConnection.getDatabase();
   }
@@ -81,7 +80,7 @@ export class PrismaInvoiceRepository implements IInvoiceRepo {
 
       return result;
     } catch (e: unknown) {
-      logger.error(String(e));
+      this.logger.error(String(e));
       prismaErrorHandler(e);
       throw new Error("Unhandled error in findById"); // This line is unreachable but ensures all code paths return
     }
@@ -114,7 +113,7 @@ export class PrismaInvoiceRepository implements IInvoiceRepo {
         e instanceof Prisma.PrismaClientKnownRequestError &&
         e.code === "P2025"
       ) {
-        logger.error("Catch block - Invoice not found");
+        this.logger.error("Catch block - Invoice not found");
         throw new NotFoundException("Invoice not found");
       } else {
         const errorMessage = e instanceof Error ? e.message : "Unknown error";
@@ -140,7 +139,7 @@ export class PrismaInvoiceRepository implements IInvoiceRepo {
         },
       });
     } catch (e) {
-      logger.error(String(e));
+      this.logger.error(String(e));
       return prismaErrorHandler(e);
     }
   }
@@ -212,7 +211,7 @@ export class PrismaInvoiceRepository implements IInvoiceRepo {
 
       return updatedInvoice;
     } catch (e) {
-      logger.error(String(e));
+      this.logger.error(String(e));
       return prismaErrorHandler(e);
     }
   }
@@ -227,7 +226,7 @@ export class PrismaInvoiceRepository implements IInvoiceRepo {
           throw new ValidationException("User does not exist");
         }
       } catch (error) {
-        logger.error("Error finding user: " + String(error));
+        this.logger.error("Error finding user: " + String(error));
         throw error;
       }
 
@@ -292,7 +291,7 @@ export class PrismaInvoiceRepository implements IInvoiceRepo {
 
       return createdInvoice;
     } catch (error) {
-      logger.error("Error creating invoice: " + String(error));
+      this.logger.error("Error creating invoice: " + String(error));
       return prismaErrorHandler(error);
     }
   }
@@ -304,7 +303,7 @@ export class PrismaInvoiceRepository implements IInvoiceRepo {
       });
       return true;
     } catch (e) {
-      logger.error(String(e));
+      this.logger.error(String(e));
       prismaErrorHandler(e);
       return false;
     }
