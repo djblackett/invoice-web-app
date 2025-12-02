@@ -1,11 +1,8 @@
-import { injectable } from "inversify";
+import { injectable, inject } from "inversify";
 import nodemailer from "nodemailer";
 import type { Transporter } from "nodemailer";
-import container from "@/config/inversify.config";
 import TYPES from "@/constants/identifiers";
 import type { Logger } from "@/config/logger.config";
-
-const logger = container.get<Logger>(TYPES.Logger);
 
 export interface EmailOptions {
   to: string;
@@ -21,7 +18,7 @@ export class EmailService {
   private fromName: string;
   private frontendUrl: string;
 
-  constructor() {
+  constructor(@inject(TYPES.Logger) private logger: Logger) {
     this.fromEmail = process.env.FROM_EMAIL || "noreply@localhost";
     this.fromName = process.env.FROM_NAME || "Invoice App";
     this.frontendUrl = process.env.FRONTEND_URL || "http://localhost:5173";
@@ -38,7 +35,7 @@ export class EmailService {
     });
 
     // Verify connection configuration
-    this.verifyConnection();
+    void this.verifyConnection();
   }
 
   /**
@@ -47,10 +44,11 @@ export class EmailService {
   private async verifyConnection() {
     try {
       await this.transporter.verify();
-      logger.info("SMTP connection verified successfully");
+      this.logger.info("SMTP connection verified successfully");
     } catch (error) {
-      logger.error(`SMTP connection verification failed: ${error}`);
-      logger.warn(
+      const message = error instanceof Error ? error.message : String(error);
+      this.logger.error(`SMTP connection verification failed: ${message}`);
+      this.logger.warn(
         "Email sending will not work until SMTP is properly configured",
       );
     }
@@ -69,9 +67,10 @@ export class EmailService {
         html: options.html,
       });
 
-      logger.info(`Email sent to ${options.to}: ${options.subject}`);
+      this.logger.info(`Email sent to ${options.to}: ${options.subject}`);
     } catch (error) {
-      logger.error(`Failed to send email to ${options.to}: ${error}`);
+      const message = error instanceof Error ? error.message : String(error);
+      this.logger.error(`Failed to send email to ${options.to}: ${message}`);
       throw new Error("Failed to send email");
     }
   }

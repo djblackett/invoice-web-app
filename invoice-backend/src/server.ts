@@ -33,15 +33,18 @@ export const createServer = async () => {
     const app = await createApp();
     let httpServer;
     if (CERT_DIR && !isProduction && !isDemo) {
+      const keyPath = path.join(__dirname, CERT_DIR, "localhost-key.pem");
+      const certPath = path.join(
+        __dirname,
+        CERT_DIR,
+        "localhost-fullchain.pem",
+      );
       const sslOptions = {
-        key: fs.readFileSync(
-          path.join(__dirname, CERT_DIR, "localhost-key.pem"),
-          "ascii",
-        ),
-        cert: fs.readFileSync(
-          path.join(__dirname, CERT_DIR, "localhost-fullchain.pem"),
-          "ascii",
-        ),
+        // Local dev certs; paths are derived from config on disk
+        // eslint-disable-next-line security/detect-non-literal-fs-filename
+        key: fs.readFileSync(keyPath, "ascii"),
+        // eslint-disable-next-line security/detect-non-literal-fs-filename
+        cert: fs.readFileSync(certPath, "ascii"),
       };
 
       httpServer = https.createServer(sslOptions, app);

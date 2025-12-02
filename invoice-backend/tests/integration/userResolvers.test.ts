@@ -83,11 +83,15 @@ describe("Integration Tests", () => {
     );
     await prisma.$connect();
 
-    const child = container.createChild();
-    child.bind<PrismaClient>(TYPES.PrismaClient).toConstantValue(prisma);
+    // Rebind PrismaClient in the global container so all child containers use the test DB
+    container.rebind<PrismaClient>(TYPES.PrismaClient).toConstantValue(prisma);
 
     console.log("Connected to Prisma", newDatabaseUrl);
-    execSync("npx prisma db push", { stdio: "inherit" });
+    process.env.DATABASE_URL = newDatabaseUrl;
+    execSync("npx prisma db push --force-reset --skip-generate", {
+      stdio: "inherit",
+      env: { ...process.env, DATABASE_URL: newDatabaseUrl },
+    });
     [app] = await createServer();
 
     await request(app)

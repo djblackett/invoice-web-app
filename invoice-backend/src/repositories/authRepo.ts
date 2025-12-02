@@ -10,6 +10,8 @@ export interface OAuthAccountData {
   expiresAt?: Date;
   scope?: string;
   idToken?: string;
+  createdAt?: Date;
+  updatedAt?: Date;
 }
 
 export interface RefreshTokenData {
@@ -20,6 +22,10 @@ export interface RefreshTokenData {
   expiresAt: Date;
   userAgent?: string;
   ipAddress?: string;
+  replacedBy?: string;
+  revokedAt?: Date;
+  revokedReason?: string;
+  isRevoked?: boolean;
 }
 
 export interface SessionData {

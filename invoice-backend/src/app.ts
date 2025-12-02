@@ -38,7 +38,8 @@ export const createApp = async () => {
     app.use(cookieParser());
 
     // Initialize Passport
-    app.use(passport.initialize());
+    // Type assertion needed due to Express type conflicts between @types/express and @types/passport
+    app.use(passport.initialize() as unknown as express.RequestHandler);
 
     // Configure OAuth strategies
     configureGoogleStrategy();

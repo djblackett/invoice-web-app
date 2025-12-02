@@ -4,14 +4,15 @@ import { defineConfig } from "vitest/config";
 export default defineConfig({
   test: {
     globals: true,
-    reporters: ["html", "json", "verbose"],
+    reporters: ["default", "html", "json"],
     outputFile: "./test-output.html",
     include: ["tests/**/*.test.ts"],
     environment: "node",
     exclude: ["tests/**/*.skip.ts"],
+    setupFiles: ["./tests/setup.ts"],
     coverage: {
       provider: "v8",
-      reporter: ["text", "html", "json", "lcov", "verbose"],
+      reporter: ["text", "html", "json", "lcov"],
       exclude: [
         "node_modules/",
         "libs/",

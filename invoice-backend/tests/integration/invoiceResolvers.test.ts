@@ -74,19 +74,18 @@ describe("Invoice Resolvers Integration Tests", () => {
       datasourceUrl: newDatabaseUrl,
     });
 
-    const child = container.createChild();
-
-    child.bind<PrismaClient>(TYPES.PrismaClient).toConstantValue(prisma);
+    // Rebind PrismaClient in the global container so all child containers use the test DB
+    container.rebind<PrismaClient>(TYPES.PrismaClient).toConstantValue(prisma);
     console.log("Connected to Prisma", newDatabaseUrl);
-
-    // process.env.DATABASE_URL = newDatabaseUrl;
 
     await prisma.$executeRawUnsafe(
       `SET search_path TO "${schemaName}", public`,
     );
 
-    execSync("npx prisma db push", {
+    process.env.DATABASE_URL = newDatabaseUrl;
+    execSync("npx prisma db push --force-reset --skip-generate", {
       stdio: "inherit",
+      env: { ...process.env, DATABASE_URL: newDatabaseUrl },
     });
 
     [app] = await createServer();

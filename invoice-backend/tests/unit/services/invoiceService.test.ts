@@ -2,8 +2,8 @@ import "reflect-metadata";
 import { InvoiceService } from "@/services/invoice.service";
 import { describe, expect, beforeEach, afterEach, test, vi } from "vitest";
 import { mockDeep, mockReset } from "vitest-mock-extended";
-import { IInvoiceRepo } from "@/repositories/InvoiceRepo";
-import { Invoice, UserIdAndRole } from "@/constants/types";
+import type { IInvoiceRepo } from "@/repositories/InvoiceRepo";
+import type { Invoice, UserIdAndRole } from "@/constants/types";
 import * as InvoiceUtils from "@/utils/utils";
 import { ValidationException } from "@/config/exception.config";
 import type { Logger } from "@/config/logger.config";
@@ -202,7 +202,11 @@ describe("InvoiceService", () => {
   let invoiceService: InvoiceService;
 
   beforeEach(() => {
-    invoiceService = new InvoiceService(mockInvoiceRepo, mockUserContext, mockLogger);
+    invoiceService = new InvoiceService(
+      mockInvoiceRepo,
+      mockUserContext,
+      mockLogger,
+    );
     mockReset(mockInvoiceRepo); // Reset all mocks before each test
     mockReset(mockLogger); // Reset logger mock
     vi.clearAllMocks(); // Clear all other mocks
@@ -214,14 +218,16 @@ describe("InvoiceService", () => {
 
   test("getInvoices should return a list of invoices", async () => {
     // Arrange
-    const validatedInvoices = invoices.map((invoice) => ({
+    const validatedInvoices: Invoice[] = invoices.map((invoice) => ({
       ...invoice,
       createdById: invoice.createdById ?? mockUserContext.id,
       createdBy: {
         id: invoice.createdBy?.id ?? mockUserContext.id,
-        name: invoice.createdBy?.name ?? mockUserContext.name,
+        name: invoice.createdBy?.name ?? mockUserContext.name ?? "",
         username: invoice.createdBy?.username ?? mockUserContext.username ?? "",
-        role: invoice.createdBy?.role ?? mockUserContext.role,
+        role: (invoice.createdBy?.role ?? mockUserContext.role) as
+          | "USER"
+          | "ADMIN",
       },
     }));
     mockInvoiceRepo.findAll.mockResolvedValue(validatedInvoices);
@@ -229,7 +235,8 @@ describe("InvoiceService", () => {
       InvoiceUtils.validateInvoiceList,
       true,
     );
-    validateInvoiceListMock.mockReturnValue(validatedInvoices);
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    validateInvoiceListMock.mockReturnValue(validatedInvoices as any);
 
     // Act
     const result = await invoiceService.getInvoices();
@@ -237,12 +244,13 @@ describe("InvoiceService", () => {
     // Assert
     expect(result).toEqual(invoices);
     expect(mockInvoiceRepo.findAll).toHaveBeenCalled();
-    expect(validateInvoiceListMock).toHaveBeenCalledWith(invoices);
+    expect(validateInvoiceListMock).toHaveBeenCalledWith(validatedInvoices);
   });
 
   test("should call findById on invoiceRepo when getInvoiceById is called", async () => {
     // Arrange
-    const invoice: Invoice = invoices[0]; // Mock data
+    const invoice = invoices[0];
+    if (!invoice) throw new Error("Test data missing");
     mockInvoiceRepo.findById.mockResolvedValue(invoice);
 
     // Act
@@ -259,7 +267,8 @@ describe("InvoiceService", () => {
 
   test("should call create on invoiceRepo when addInvoice is called", async () => {
     // Arrange
-    const newInvoice: Invoice = invoices[1];
+    const newInvoice = invoices[1];
+    if (!newInvoice) throw new Error("Test data missing");
     const createdInvoice = {
       ...newInvoice,
       createdById: newInvoice.createdById ?? mockUserContext.id,
@@ -275,7 +284,8 @@ describe("InvoiceService", () => {
       InvoiceUtils.validateInvoiceData,
       true,
     );
-    validateInvoiceDataMock.mockReturnValue(createdInvoice);
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any, @typescript-eslint/no-unsafe-argument
+    validateInvoiceDataMock.mockReturnValue(createdInvoice as any);
 
     // Act
     const result = await invoiceService.addInvoice(createdInvoice);
@@ -288,15 +298,16 @@ describe("InvoiceService", () => {
 
   test("should call update on invoiceRepo when updateInvoice is called", async () => {
     // Arrange
-    const oldInvoice: Invoice = invoices[2];
+    const oldInvoice = invoices[2];
+    if (!oldInvoice) throw new Error("Test data missing");
     const id = oldInvoice.id;
     const invoiceUpdates = { total: 200 };
-    const updatedInvoice = {
+    const updatedInvoice: Invoice = {
       ...oldInvoice,
       total: 200,
       createdBy: {
         id: mockUserContext.id,
-        name: mockUserContext.name,
+        name: mockUserContext.name ?? "",
         username: mockUserContext.username || "",
         role: mockUserContext.role,
       },
@@ -306,6 +317,7 @@ describe("InvoiceService", () => {
       InvoiceUtils.validateInvoiceData,
       true,
     );
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any, @typescript-eslint/no-unsafe-argument
     validateInvoiceDataMock.mockReturnValue(updatedInvoice as any);
     mockInvoiceRepo.update.mockResolvedValue(updatedInvoice);
 
@@ -320,15 +332,18 @@ describe("InvoiceService", () => {
 
   test("should call markAsPaid on invoiceRepo when markAsPaid is called", async () => {
     // Arrange
-    const invoice: Invoice = invoices[0]; // Mock data
+    const invoice = invoices[0];
+    if (!invoice) throw new Error("Test data missing");
     const id = invoice.id;
-    const paidInvoice = {
+    const paidInvoice: Invoice = {
       ...invoice,
       createdBy: {
         id: invoice.createdBy?.id ?? mockUserContext.id,
-        name: invoice.createdBy?.name ?? mockUserContext.name,
+        name: invoice.createdBy?.name ?? mockUserContext.name ?? "",
         username: invoice.createdBy?.username ?? mockUserContext.username ?? "",
-        role: invoice.createdBy?.role ?? mockUserContext.role,
+        role: (invoice.createdBy?.role ?? mockUserContext.role) as
+          | "USER"
+          | "ADMIN",
       },
       status: "paid",
     };
@@ -338,6 +353,7 @@ describe("InvoiceService", () => {
       InvoiceUtils.validateInvoiceData,
       true,
     );
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any, @typescript-eslint/no-unsafe-argument
     validateInvoiceDataMock.mockReturnValue(paidInvoice as any);
 
     // Act

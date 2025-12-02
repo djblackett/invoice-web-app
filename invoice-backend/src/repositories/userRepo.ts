@@ -11,6 +11,7 @@ export interface IUserRepo {
   getAllUsers: () => Promise<ReturnedUser[]>;
   getUserById: (id: string) => Promise<UserDTO | null>;
   getUserByIdSafely: (id: string) => Promise<UserIdAndRole | null>;
+  getUserByUsername: (username: string) => Promise<UserIdAndRole | null>;
   deleteAllUsers: () => Promise<boolean>;
   deleteAllUsersKeepAdmin: () => Promise<boolean>;
 }

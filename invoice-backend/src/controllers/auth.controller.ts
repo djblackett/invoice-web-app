@@ -15,7 +15,7 @@ import {
 import type { RegisterInput, LoginInput } from "@/validators/auth.validator";
 import { OAuthProvider } from "@prisma/client";
 
-const logger = container.get<Logger>(TYPES.Logger);
+const getLogger = (): Logger => container.get<Logger>(TYPES.Logger);
 
 /**
  * Register a new user with email and password
@@ -64,6 +64,12 @@ export async function register(req: Request, res: Response) {
       passwordHash,
     });
 
+    if (!user.role) {
+      return res.status(500).json({
+        error: "User creation failed - missing role",
+      });
+    }
+
     // Create OAuth account entry for LOCAL provider
     await authRepo.createOAuthAccount({
       userId: user.id,
@@ -72,18 +78,29 @@ export async function register(req: Request, res: Response) {
     });
 
     // Generate tokens
-    const tokens = await authService.generateTokenPair(
-      {
-        id: user.id,
-        email,
-        name,
-        role: user.role,
-      },
-      {
-        userAgent: req.headers["user-agent"],
-        ipAddress: req.ip,
-      },
-    );
+    const metadata: { userAgent?: string; ipAddress?: string } = {};
+    if (req.headers["user-agent"] !== undefined) {
+      metadata.userAgent = req.headers["user-agent"];
+    }
+    if (req.ip !== undefined) {
+      metadata.ipAddress = req.ip;
+    }
+
+    const tokenPayload: {
+      id: string;
+      email: string;
+      name?: string;
+      role: "USER" | "ADMIN";
+    } = {
+      id: user.id,
+      email,
+      role: user.role,
+    };
+    if (name !== undefined) {
+      tokenPayload.name = name;
+    }
+
+    const tokens = await authService.generateTokenPair(tokenPayload, metadata);
 
     // Set refresh token as httpOnly cookie
     res.cookie("refreshToken", tokens.refreshToken, {
@@ -93,7 +110,7 @@ export async function register(req: Request, res: Response) {
       maxAge: 30 * 24 * 60 * 60 * 1000, // 30 days
     });
 
-    logger.info(`User registered: ${email}`);
+    getLogger().info(`User registered: ${email}`);
 
     // Return access token and user info
     return res.status(201).json({
@@ -108,7 +125,7 @@ export async function register(req: Request, res: Response) {
     });
   } catch (error) {
     const message = error instanceof Error ? error.message : String(error);
-    logger.error(`Registration error: ${message}`);
+    getLogger().error(`Registration error: ${message}`);
     return res.status(500).json({
       error: "Internal server error",
     });
@@ -136,7 +153,7 @@ export async function login(req: Request, res: Response) {
 
     // Find user
     const user = await userRepo.getUserByIdSafely(email);
-    if (!user) {
+    if (!user || !user.username || !user.role) {
       return res.status(401).json({
         error: "Invalid email or password",
       });
@@ -147,7 +164,7 @@ export async function login(req: Request, res: Response) {
     // TODO: Add getUserForAuthentication method
     // Temporary workaround: we'll need to extend the interface
 
-    logger.warn(
+    getLogger().warn(
       "Password verification temporarily disabled - needs getUserForAuthentication",
     );
 
@@ -159,23 +176,34 @@ export async function login(req: Request, res: Response) {
     //
     // const isValidPassword = await comparePassword(password, userWithPassword.passwordHash);
     // if (!isValidPassword) {
-    //   logger.warn(`Failed login attempt for: ${email}`);
+    //   getLogger().warn(`Failed login attempt for: ${email}`);
     //   return res.status(401).json({ error: "Invalid email or password" });
     // }
 
     // Generate tokens
-    const tokens = await authService.generateTokenPair(
-      {
-        id: user.id,
-        email: user.username,
-        name: user.name,
-        role: user.role,
-      },
-      {
-        userAgent: req.headers["user-agent"],
-        ipAddress: req.ip,
-      },
-    );
+    const metadata: { userAgent?: string; ipAddress?: string } = {};
+    if (req.headers["user-agent"] !== undefined) {
+      metadata.userAgent = req.headers["user-agent"];
+    }
+    if (req.ip !== undefined) {
+      metadata.ipAddress = req.ip;
+    }
+
+    const tokenPayload: {
+      id: string;
+      email: string;
+      name?: string;
+      role: "USER" | "ADMIN";
+    } = {
+      id: user.id,
+      email: user.username,
+      role: user.role,
+    };
+    if (user.name !== undefined) {
+      tokenPayload.name = user.name;
+    }
+
+    const tokens = await authService.generateTokenPair(tokenPayload, metadata);
 
     // Set refresh token as httpOnly cookie
     res.cookie("refreshToken", tokens.refreshToken, {
@@ -185,7 +213,7 @@ export async function login(req: Request, res: Response) {
       maxAge: 30 * 24 * 60 * 60 * 1000, // 30 days
     });
 
-    logger.info(`User logged in: ${email}`);
+    getLogger().info(`User logged in: ${email}`);
 
     // Return access token and user info
     return res.status(200).json({
@@ -200,7 +228,7 @@ export async function login(req: Request, res: Response) {
     });
   } catch (error) {
     const message = error instanceof Error ? error.message : String(error);
-    logger.error(`Login error: ${message}`);
+    getLogger().error(`Login error: ${message}`);
     return res.status(500).json({
       error: "Internal server error",
     });
@@ -228,14 +256,14 @@ export async function logout(req: Request, res: Response) {
     // Clear the cookie
     res.clearCookie("refreshToken");
 
-    logger.info("User logged out");
+    getLogger().info("User logged out");
 
     return res.status(200).json({
       message: "Logged out successfully",
     });
   } catch (error) {
     const message = error instanceof Error ? error.message : String(error);
-    logger.error(`Logout error: ${message}`);
+    getLogger().error(`Logout error: ${message}`);
     return res.status(500).json({
       error: "Internal server error",
     });
@@ -258,10 +286,15 @@ export async function refresh(req: Request, res: Response) {
     const authService = container.get(AuthService);
 
     // Refresh tokens
-    const tokens = await authService.refreshAccessToken(refreshToken, {
-      userAgent: req.headers["user-agent"],
-      ipAddress: req.ip,
-    });
+    const metadata: { userAgent?: string; ipAddress?: string } = {};
+    if (req.headers["user-agent"] !== undefined) {
+      metadata.userAgent = req.headers["user-agent"];
+    }
+    if (req.ip !== undefined) {
+      metadata.ipAddress = req.ip;
+    }
+
+    const tokens = await authService.refreshAccessToken(refreshToken, metadata);
 
     // Set new refresh token as httpOnly cookie
     res.cookie("refreshToken", tokens.refreshToken, {
@@ -271,7 +304,7 @@ export async function refresh(req: Request, res: Response) {
       maxAge: 30 * 24 * 60 * 60 * 1000, // 30 days
     });
 
-    logger.info("Access token refreshed");
+    getLogger().info("Access token refreshed");
 
     // Return new access token
     return res.status(200).json({
@@ -280,7 +313,7 @@ export async function refresh(req: Request, res: Response) {
     });
   } catch (error) {
     const message = error instanceof Error ? error.message : String(error);
-    logger.error(`Token refresh error: ${message}`);
+    getLogger().error(`Token refresh error: ${message}`);
 
     // Clear invalid refresh token
     res.clearCookie("refreshToken");
@@ -302,7 +335,7 @@ export function getJWKS(_req: Request, res: Response) {
     return res.status(200).json(jwks);
   } catch (error) {
     const message = error instanceof Error ? error.message : String(error);
-    logger.error(`JWKS error: ${message}`);
+    getLogger().error(`JWKS error: ${message}`);
     return res.status(500).json({
       error: "Internal server error",
     });

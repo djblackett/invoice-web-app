@@ -20,17 +20,38 @@ export class PrismaAuthRepository implements IAuthRepo {
 
   // OAuth Accounts
   async createOAuthAccount(data: OAuthAccountData): Promise<OAuthAccountData> {
+    const createData: {
+      userId: string;
+      provider: OAuthProvider;
+      providerAccountId: string;
+      accessToken?: string;
+      refreshToken?: string;
+      expiresAt?: Date;
+      scope?: string;
+      idToken?: string;
+    } = {
+      userId: data.userId,
+      provider: data.provider,
+      providerAccountId: data.providerAccountId,
+    };
+    if (data.accessToken !== undefined) {
+      createData.accessToken = data.accessToken;
+    }
+    if (data.refreshToken !== undefined) {
+      createData.refreshToken = data.refreshToken;
+    }
+    if (data.expiresAt !== undefined) {
+      createData.expiresAt = data.expiresAt;
+    }
+    if (data.scope !== undefined) {
+      createData.scope = data.scope;
+    }
+    if (data.idToken !== undefined) {
+      createData.idToken = data.idToken;
+    }
+
     const account = await this.prisma.oAuthAccount.create({
-      data: {
-        userId: data.userId,
-        provider: data.provider,
-        providerAccountId: data.providerAccountId,
-        accessToken: data.accessToken,
-        refreshToken: data.refreshToken,
-        expiresAt: data.expiresAt,
-        scope: data.scope,
-        idToken: data.idToken,
-      },
+      data: createData,
     });
 
     return this.mapOAuthAccount(account);
@@ -65,15 +86,32 @@ export class PrismaAuthRepository implements IAuthRepo {
     id: string,
     data: Partial<OAuthAccountData>,
   ): Promise<OAuthAccountData> {
+    const updateData: {
+      accessToken?: string;
+      refreshToken?: string;
+      expiresAt?: Date;
+      scope?: string;
+      idToken?: string;
+    } = {};
+    if (data.accessToken !== undefined) {
+      updateData.accessToken = data.accessToken;
+    }
+    if (data.refreshToken !== undefined) {
+      updateData.refreshToken = data.refreshToken;
+    }
+    if (data.expiresAt !== undefined) {
+      updateData.expiresAt = data.expiresAt;
+    }
+    if (data.scope !== undefined) {
+      updateData.scope = data.scope;
+    }
+    if (data.idToken !== undefined) {
+      updateData.idToken = data.idToken;
+    }
+
     const account = await this.prisma.oAuthAccount.update({
       where: { id },
-      data: {
-        accessToken: data.accessToken,
-        refreshToken: data.refreshToken,
-        expiresAt: data.expiresAt,
-        scope: data.scope,
-        idToken: data.idToken,
-      },
+      data: updateData,
     });
 
     return this.mapOAuthAccount(account);
@@ -92,15 +130,28 @@ export class PrismaAuthRepository implements IAuthRepo {
 
   // Refresh Tokens
   async createRefreshToken(data: RefreshTokenData): Promise<RefreshTokenData> {
+    const createData: {
+      userId: string;
+      token: string;
+      family: string;
+      expiresAt: Date;
+      userAgent?: string;
+      ipAddress?: string;
+    } = {
+      userId: data.userId,
+      token: data.token, // Should already be hashed
+      family: data.family,
+      expiresAt: data.expiresAt,
+    };
+    if (data.userAgent !== undefined) {
+      createData.userAgent = data.userAgent;
+    }
+    if (data.ipAddress !== undefined) {
+      createData.ipAddress = data.ipAddress;
+    }
+
     const token = await this.prisma.refreshToken.create({
-      data: {
-        userId: data.userId,
-        token: data.token, // Should already be hashed
-        family: data.family,
-        expiresAt: data.expiresAt,
-        userAgent: data.userAgent,
-        ipAddress: data.ipAddress,
-      },
+      data: createData,
     });
 
     return this.mapRefreshToken(token);
@@ -156,14 +207,23 @@ export class PrismaAuthRepository implements IAuthRepo {
     replacedBy?: string,
   ): Promise<boolean> {
     try {
+      const updateData: {
+        isRevoked: boolean;
+        revokedAt: Date;
+        revokedReason: string;
+        replacedBy?: string;
+      } = {
+        isRevoked: true,
+        revokedAt: new Date(),
+        revokedReason: reason,
+      };
+      if (replacedBy !== undefined) {
+        updateData.replacedBy = replacedBy;
+      }
+
       await this.prisma.refreshToken.update({
         where: { id },
-        data: {
-          isRevoked: true,
-          revokedAt: new Date(),
-          revokedReason: reason,
-          replacedBy,
-        },
+        data: updateData,
       });
       return true;
     } catch {
@@ -199,14 +259,26 @@ export class PrismaAuthRepository implements IAuthRepo {
 
   // Sessions
   async createSession(data: SessionData): Promise<SessionData> {
+    const createData: {
+      userId: string;
+      refreshTokenId: string;
+      expiresAt: Date;
+      userAgent?: string;
+      ipAddress?: string;
+    } = {
+      userId: data.userId,
+      refreshTokenId: data.refreshTokenId,
+      expiresAt: data.expiresAt,
+    };
+    if (data.userAgent !== undefined) {
+      createData.userAgent = data.userAgent;
+    }
+    if (data.ipAddress !== undefined) {
+      createData.ipAddress = data.ipAddress;
+    }
+
     const session = await this.prisma.session.create({
-      data: {
-        userId: data.userId,
-        refreshTokenId: data.refreshTokenId,
-        userAgent: data.userAgent,
-        ipAddress: data.ipAddress,
-        expiresAt: data.expiresAt,
-      },
+      data: createData,
     });
 
     return this.mapSession(session);
@@ -279,39 +351,62 @@ export class PrismaAuthRepository implements IAuthRepo {
 
   // Helper mappers
   private mapOAuthAccount(account: OAuthAccount): OAuthAccountData {
-    return {
+    const data: OAuthAccountData = {
       id: account.id,
       userId: account.userId,
       provider: account.provider,
       providerAccountId: account.providerAccountId,
-      accessToken: account.accessToken ?? undefined,
-      refreshToken: account.refreshToken ?? undefined,
-      expiresAt: account.expiresAt ?? undefined,
-      scope: account.scope ?? undefined,
-      idToken: account.idToken ?? undefined,
+      createdAt: account.createdAt,
+      updatedAt: account.updatedAt,
     };
+    if (account.accessToken !== null) {
+      data.accessToken = account.accessToken;
+    }
+    if (account.refreshToken !== null) {
+      data.refreshToken = account.refreshToken;
+    }
+    if (account.expiresAt !== null) {
+      data.expiresAt = account.expiresAt;
+    }
+    if (account.scope !== null) {
+      data.scope = account.scope;
+    }
+    if (account.idToken !== null) {
+      data.idToken = account.idToken;
+    }
+    return data;
   }
 
   private mapRefreshToken(token: RefreshToken): RefreshTokenData {
-    return {
+    const data: RefreshTokenData = {
       id: token.id,
       userId: token.userId,
       token: token.token,
       family: token.family,
       expiresAt: token.expiresAt,
-      userAgent: token.userAgent ?? undefined,
-      ipAddress: token.ipAddress ?? undefined,
     };
+    if (token.userAgent !== null) {
+      data.userAgent = token.userAgent;
+    }
+    if (token.ipAddress !== null) {
+      data.ipAddress = token.ipAddress;
+    }
+    return data;
   }
 
   private mapSession(session: Session): SessionData {
-    return {
+    const data: SessionData = {
       id: session.id,
       userId: session.userId,
       refreshTokenId: session.refreshTokenId,
-      userAgent: session.userAgent ?? undefined,
-      ipAddress: session.ipAddress ?? undefined,
       expiresAt: session.expiresAt,
     };
+    if (session.userAgent !== null) {
+      data.userAgent = session.userAgent;
+    }
+    if (session.ipAddress !== null) {
+      data.ipAddress = session.ipAddress;
+    }
+    return data;
   }
 }

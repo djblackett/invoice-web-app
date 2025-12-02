@@ -1,15 +1,32 @@
 import { Router } from "express";
-import type { Request, Response } from "express";
+import type { Request, Response, NextFunction, RequestHandler } from "express";
 import * as oauthController from "@/controllers/oauth.controller";
 import { oauthCallbackLimiter } from "@/middleware/rateLimit.middleware";
 
 const router = Router();
 
-type AsyncHandler = (req: Request, res: Response) => Promise<unknown>;
+// Wrapper for sync handlers that call passport.authenticate (takes next param)
+const wrapSync =
+  (
+    handler: (req: Request, res: Response, next: NextFunction) => void,
+  ): RequestHandler =>
+  (req, res, next) => {
+    handler(req, res, next);
+  };
 
-const wrap = (handler: AsyncHandler) => (req: Request, res: Response) => {
-  void handler(req, res);
-};
+// Wrapper for sync handlers without next param
+const wrapSyncSimple =
+  (handler: (req: Request, res: Response) => void | Response): RequestHandler =>
+  (req, res) => {
+    handler(req, res);
+  };
+
+// Wrapper for async handlers
+const wrapAsync =
+  (handler: (req: Request, res: Response) => Promise<unknown>): RequestHandler =>
+  (req, res, next) => {
+    void handler(req, res).catch(next);
+  };
 
 // ==================== Google OAuth ====================
 
@@ -18,7 +35,7 @@ const wrap = (handler: AsyncHandler) => (req: Request, res: Response) => {
  * @desc    Initiate Google OAuth flow
  * @access  Public
  */
-router.get("/google", wrap(oauthController.googleAuth));
+router.get("/google", wrapSync(oauthController.googleAuth));
 
 /**
  * @route   GET /oauth/google/callback
@@ -28,7 +45,7 @@ router.get("/google", wrap(oauthController.googleAuth));
 router.get(
   "/google/callback",
   oauthCallbackLimiter,
-  wrap(oauthController.googleCallback),
+  wrapSync(oauthController.googleCallback),
 );
 
 // ==================== Microsoft OAuth ====================
@@ -38,7 +55,7 @@ router.get(
  * @desc    Initiate Microsoft OAuth flow
  * @access  Public
  */
-router.get("/microsoft", wrap(oauthController.microsoftAuth));
+router.get("/microsoft", wrapSync(oauthController.microsoftAuth));
 
 /**
  * @route   GET /oauth/microsoft/callback
@@ -48,7 +65,7 @@ router.get("/microsoft", wrap(oauthController.microsoftAuth));
 router.get(
   "/microsoft/callback",
   oauthCallbackLimiter,
-  wrap(oauthController.microsoftCallback),
+  wrapSync(oauthController.microsoftCallback),
 );
 
 // ==================== Apple Sign In ====================
@@ -58,7 +75,7 @@ router.get(
  * @desc    Initiate Apple Sign In flow (uses POST per Apple requirements)
  * @access  Public
  */
-router.post("/apple", wrap(oauthController.appleAuth));
+router.post("/apple", wrapSync(oauthController.appleAuth));
 
 /**
  * @route   POST /oauth/apple/callback
@@ -68,7 +85,7 @@ router.post("/apple", wrap(oauthController.appleAuth));
 router.post(
   "/apple/callback",
   oauthCallbackLimiter,
-  wrap(oauthController.appleCallback),
+  wrapSync(oauthController.appleCallback),
 );
 
 // ==================== Account Management ====================
@@ -78,13 +95,13 @@ router.post(
  * @desc    Link additional OAuth provider to authenticated user
  * @access  Private (requires authentication)
  */
-router.post("/link/:provider", wrap(oauthController.linkProvider));
+router.post("/link/:provider", wrapSyncSimple(oauthController.linkProvider));
 
 /**
  * @route   GET /oauth/accounts
  * @desc    Get all linked OAuth accounts for authenticated user
  * @access  Private (requires authentication)
  */
-router.get("/accounts", wrap(oauthController.getLinkedAccounts));
+router.get("/accounts", wrapAsync(oauthController.getLinkedAccounts));
 
 export default router;

@@ -19,14 +19,14 @@ import type { Logger } from "@/config/logger.config";
 import type { Context } from "graphql-ws";
 import type { Request } from "express";
 
-const logger = container.get<Logger>(TYPES.Logger);
+const getLogger = (): Logger => container.get<Logger>(TYPES.Logger);
 
 const client = jwksClient({
   jwksUri: `${process.env["DOMAIN"]}.well-known/jwks.json`,
 });
 
-logger.info(`Domain: ${process.env["DOMAIN"]}`);
-logger.info(`Audience: ${process.env["AUDIENCE"]}`);
+getLogger().info(`Domain: ${process.env["DOMAIN"]}`);
+getLogger().info(`Audience: ${process.env["AUDIENCE"]}`);
 
 function getSigningKeyAsync(kid: string): Promise<string> {
   return new Promise((resolve, reject) => {
@@ -34,12 +34,12 @@ function getSigningKeyAsync(kid: string): Promise<string> {
       kid,
       (err: Error | null, key: SigningKey | undefined) => {
         if (err) {
-          logger.error(`Error fetching signing key: ${err.message}`);
+          getLogger().error(`Error fetching signing key: ${err.message}`);
           return reject(err);
         }
         if (!key) {
           const error = new Error("Signing key not found");
-          logger.error(error.message);
+          getLogger().error(error.message);
           return reject(error);
         }
         const signingKey = key.getPublicKey();
@@ -74,7 +74,7 @@ export async function retrieveUserFromToken(
     const payload = await verifyToken(token, options);
     return extractUserFromPayload(payload);
   } catch (err) {
-    logger.error("Token verification failed: " + String(err));
+    getLogger().error("Token verification failed: " + String(err));
     throw err;
   }
 }
@@ -132,17 +132,17 @@ export async function createContext({
   req,
   connection,
 }: ContextArgs): Promise<InjectedQueryContext> {
-  logger.info("creating context");
+  getLogger().info("creating context");
 
   if (connection) {
     // This branch handles subscription requests, which are initiated through WebSocket connections.
-    logger.info("Subscription request");
+    getLogger().info("Subscription request");
     return await createSubscriptionContext(connection);
   }
 
   if (!req) {
-    // This branch handles HTTP requests.
-    logger.info("HTTP request");
+    // This branch handles requests with neither req nor connection (should not happen in normal operation)
+    getLogger().warn("No request or connection provided to createContext");
     return { user: null, container };
   }
 
@@ -150,14 +150,17 @@ export async function createContext({
   try {
     const user = await getUserFromRequest(req);
     if (!user) {
+      getLogger().info("No user found from token, returning context with null user");
       return { user: null, container };
     }
+
+    getLogger().info(`User from token: ${user.username} (${user.id})`);
 
     const childContainer = setupContainer(user);
     const services = getServices(childContainer);
     const dbUser = await getOrCreateDbUser(user, services.userService);
 
-    logger.info(`User: ${dbUser.username}`);
+    getLogger().info(`DB User: ${dbUser.username}`);
 
     return {
       user: dbUser,
@@ -166,7 +169,8 @@ export async function createContext({
     };
   } catch (e: unknown) {
     const error = e instanceof Error ? e : new Error(String(e));
-    logger.error(`Error in createContext function: ${error.message}`);
+    getLogger().error(`Error in createContext function: ${error.message}`);
+    getLogger().error(`Stack trace: ${error.stack}`);
     return { user: null, container };
   }
 }
@@ -216,22 +220,26 @@ async function getUserFromToken(token: string): Promise<UserIdAndRole | null> {
 
   // Check AUTH_SYSTEM environment variable to determine which auth to use
   const authSystem = process.env["AUTH_SYSTEM"] || "auth0";
+  getLogger().info(`AUTH_SYSTEM: ${authSystem}`);
 
   if (authSystem === "new") {
     // Use new token system only
+    getLogger().info("Using new token system");
     return getUserFromNewToken(token);
   } else if (authSystem === "dual") {
     // Try new token first, fallback to Auth0
+    getLogger().info("Using dual auth system, trying new token first");
     try {
       return getUserFromNewToken(token);
     } catch (error) {
-      logger.info(
+      getLogger().info(
         `New token verification failed, trying Auth0. Reason: ${String(error)}`,
       );
       return await getUserFromAuth0Token(token);
     }
   } else {
     // Default to Auth0 only
+    getLogger().info("Using Auth0 token system");
     return await getUserFromAuth0Token(token);
   }
 }
@@ -249,7 +257,7 @@ function getUserFromNewToken(token: string): UserIdAndRole {
       name: payload.name,
     };
   } catch (error) {
-    logger.error("New token verification failed: " + String(error));
+    getLogger().error("New token verification failed: " + String(error));
     throw error;
   }
 }
@@ -265,20 +273,26 @@ async function getUserFromAuth0Token(token: string): Promise<UserIdAndRole> {
 }
 
 async function getUserFromRequest(req: Request): Promise<UserIdAndRole | null> {
-  const token = extractBearerToken(req.headers.authorization);
+  const authHeader = req.headers.authorization;
+  getLogger().info(`Authorization header: ${authHeader ? authHeader.substring(0, 20) + "..." : "missing"}`);
+
+  const token = extractBearerToken(authHeader);
 
   if (!token) {
+    getLogger().info("No bearer token found in authorization header");
     return null;
   }
 
+  getLogger().info(`Token extracted, attempting to verify (first 20 chars): ${token.substring(0, 20)}...`);
   return await getUserFromToken(token);
 }
 
 function setupContainer(user: UserIdAndRole) {
-  const childContainer = container.createChild();
+  const childContainer = container.createChild({ skipBaseClassChecks: true });
   childContainer.bind<UserIdAndRole>(TYPES.UserContext).toConstantValue(user);
 
-  // Rebind dependent services so they pick up the new binding
+  // Override parent bindings by binding again in child
+  // Child bindings take precedence when resolving
   childContainer
     .bind<UserService>(TYPES.UserService)
     .to(UserService)
@@ -322,7 +336,7 @@ async function getOrCreateDbUser(
     let dbUser = await userService.getUserByIdSafely(user.id);
 
     if (!dbUser) {
-      logger.info("User not found, creating user");
+      getLogger().info("User not found, creating user");
       dbUser = await userService.createUserWithAuth0({
         id: user.id,
         name: user.name,
@@ -334,9 +348,9 @@ async function getOrCreateDbUser(
     return dbUser;
   } catch (e: unknown) {
     if (e instanceof Error) {
-      logger.error(`Error creating user: ${e.message}`);
+      getLogger().error(`Error creating user: ${e.message}`);
     } else {
-      logger.error(`Error creating user: ${String(e)}`);
+      getLogger().error(`Error creating user: ${String(e)}`);
     }
     throw e;
   }
@@ -344,11 +358,23 @@ async function getOrCreateDbUser(
 
 async function createSubscriptionContext(connection: Context) {
   const user = await getUserFromSubscriptionConnection(connection);
-  const childContainer = container.createChild();
+  const childContainer = container.createChild({ skipBaseClassChecks: true });
 
-  if (user) {
-    childContainer.bind<UserIdAndRole>(TYPES.UserContext).toConstantValue(user);
-  }
+  // Always bind UserContext (even if null) before resolving services that depend on it
+  childContainer
+    .bind<UserIdAndRole | null>(TYPES.UserContext)
+    .toConstantValue(user);
+
+  // Override parent bindings by binding again in child
+  // Child bindings take precedence when resolving
+  childContainer
+    .bind<UserService>(TYPES.UserService)
+    .to(UserService)
+    .inTransientScope();
+  childContainer
+    .bind<InvoiceService>(TYPES.InvoiceService)
+    .to(InvoiceService)
+    .inTransientScope();
 
   const invoiceService = childContainer.get<InvoiceService>(
     TYPES.InvoiceService,
@@ -381,7 +407,7 @@ async function getUserFromSubscriptionConnection(
   try {
     return await getUserFromToken(token);
   } catch (error) {
-    logger.error("Token verification failed: " + JSON.stringify(error));
+    getLogger().error("Token verification failed: " + JSON.stringify(error));
     return null;
   }
 }

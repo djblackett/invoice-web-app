@@ -5,7 +5,7 @@ import container from "@/config/inversify.config";
 import type { Logger } from "@/config/logger.config";
 import TYPES from "@/constants/identifiers";
 
-const logger = container.get<Logger>(TYPES.Logger);
+const getLogger = (): Logger => container.get<Logger>(TYPES.Logger);
 
 /**
  * Configure Google OAuth 2.0 Strategy
@@ -22,7 +22,7 @@ const logger = container.get<Logger>(TYPES.Logger);
  */
 export function configureGoogleStrategy() {
   if (!process.env.GOOGLE_CLIENT_ID || !process.env.GOOGLE_CLIENT_SECRET) {
-    logger.warn(
+    getLogger().warn(
       "Google OAuth not configured - GOOGLE_CLIENT_ID and GOOGLE_CLIENT_SECRET required",
     );
     return;
@@ -38,27 +38,27 @@ export function configureGoogleStrategy() {
         scope: ["profile", "email"],
         passReqToCallback: true,
       },
-      async (req, accessToken, refreshToken, profile: GoogleProfile, done) => {
+      (_req, accessToken, refreshToken, profile: GoogleProfile, done) => {
         try {
-          logger.info(`Google OAuth callback for user: ${profile.id}`);
+          getLogger().info(`Google OAuth callback for user: ${profile.id}`);
 
           // Extract profile data
           const email =
-            profile.emails && profile.emails.length > 0
+            profile.emails && profile.emails.length > 0 && profile.emails[0]
               ? profile.emails[0].value
               : undefined;
           const emailVerified =
-            profile.emails && profile.emails.length > 0
-              ? profile.emails[0].verified
+            profile.emails && profile.emails.length > 0 && profile.emails[0]
+              ? profile.emails[0].verified ?? false
               : false;
           const name = profile.displayName;
           const picture =
-            profile.photos && profile.photos.length > 0
+            profile.photos && profile.photos.length > 0 && profile.photos[0]
               ? profile.photos[0].value
               : undefined;
 
           if (!email) {
-            logger.error("Google profile missing email");
+            getLogger().error("Google profile missing email");
             return done(new Error("Email not provided by Google"), undefined);
           }
 
@@ -75,14 +75,16 @@ export function configureGoogleStrategy() {
             refreshToken,
           };
 
-          return done(null, userData);
+          done(null, userData);
         } catch (error) {
-          logger.error(`Google OAuth error: ${error}`);
-          return done(error as Error, undefined);
+          const message =
+            error instanceof Error ? error.message : String(error);
+          getLogger().error(`Google OAuth error: ${message}`);
+          done(error as Error, undefined);
         }
       },
     ),
   );
 
-  logger.info("Google OAuth strategy configured");
+  getLogger().info("Google OAuth strategy configured");
 }

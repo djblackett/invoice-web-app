@@ -1,6 +1,6 @@
 import { injectable } from "inversify";
 import jwt from "jsonwebtoken";
-import { createPublicKey } from "crypto";
+import { createPublicKey, type JsonWebKey } from "crypto";
 
 /**
  * JWT Payload structure
@@ -36,10 +36,10 @@ export class TokenService {
 
   constructor() {
     // Load configuration from environment variables
-    this.privateKey = this.decodeKey(process.env.JWT_PRIVATE_KEY);
-    this.publicKey = this.decodeKey(process.env.JWT_PUBLIC_KEY);
-    this.issuer = process.env.JWT_ISSUER || "http://localhost:8000";
-    this.accessTokenExpiry = process.env.JWT_ACCESS_TOKEN_EXPIRY || "15m";
+    this.privateKey = this.decodeKey(process.env["JWT_PRIVATE_KEY"]);
+    this.publicKey = this.decodeKey(process.env["JWT_PUBLIC_KEY"]);
+    this.issuer = process.env["JWT_ISSUER"] || "http://localhost:8000";
+    this.accessTokenExpiry = process.env["JWT_ACCESS_TOKEN_EXPIRY"] || "15m";
   }
 
   /**
@@ -55,7 +55,10 @@ export class TokenService {
     try {
       return Buffer.from(encodedKey, "base64").toString("utf-8");
     } catch (error) {
-      throw new Error("Invalid JWT key encoding. Expected base64-encoded PEM.");
+      const message = error instanceof Error ? error.message : String(error);
+      throw new Error(
+        `Invalid JWT key encoding. Expected base64-encoded PEM. ${message}`,
+      );
     }
   }
 
@@ -67,7 +70,7 @@ export class TokenService {
       algorithm: "RS256",
       expiresIn: this.accessTokenExpiry,
       issuer: this.issuer,
-    });
+    } as jwt.SignOptions);
   }
 
   /**
@@ -98,16 +101,22 @@ export class TokenService {
    */
   getPublicJWKS(): JWKS {
     const publicKeyObject = createPublicKey(this.publicKey);
-    const jwk = publicKeyObject.export({ format: "jwk" }) as any;
+    const exported = publicKeyObject.export({ format: "jwk" });
+    if (!this.isJsonWebKey(exported)) {
+      throw new Error("Failed to export public key in JWK format");
+    }
+    const jwk = exported;
+    const modulus = typeof jwk.n === "string" ? jwk.n : "";
+    const exponent = typeof jwk.e === "string" ? jwk.e : "";
 
     return {
       keys: [
         {
-          kty: jwk.kty,
+          kty: jwk.kty || "RSA",
           use: "sig",
           kid: "main-key", // Key ID - useful when rotating keys
-          n: jwk.n,
-          e: jwk.e,
+          n: modulus,
+          e: exponent,
         },
       ],
     };
@@ -118,6 +127,10 @@ export class TokenService {
    */
   getPublicKey(): string {
     return this.publicKey;
+  }
+
+  private isJsonWebKey(value: unknown): value is JsonWebKey {
+    return typeof value === "object" && value !== null && "kty" in value;
   }
 
   /**

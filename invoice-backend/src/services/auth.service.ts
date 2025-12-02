@@ -28,7 +28,7 @@ export class AuthService {
     @inject(TYPES.AuthRepo) private authRepo: IAuthRepo,
     @inject(TokenService) private tokenService: TokenService,
   ) {
-    const expiryString = process.env.JWT_REFRESH_TOKEN_EXPIRY || "30d";
+    const expiryString = process.env["JWT_REFRESH_TOKEN_EXPIRY"] || "30d";
     this.refreshTokenExpiry = this.parseExpiry(expiryString);
   }
 
@@ -37,7 +37,7 @@ export class AuthService {
    */
   private parseExpiry(expiry: string): number {
     const match = expiry.match(/^(\d+)([dhm])$/);
-    if (!match) {
+    if (!match || !match[1] || !match[2]) {
       throw new Error(`Invalid expiry format: ${expiry}`);
     }
 
@@ -63,25 +63,34 @@ export class AuthService {
     user: { id: string; email: string; name?: string; role: "USER" | "ADMIN" },
     metadata?: RefreshTokenMetadata,
   ): Promise<TokenPair> {
-    const accessToken = this.tokenService.signAccessToken({
+    const payload: Omit<JWTPayload, "iat" | "exp"> = {
       sub: user.id,
       email: user.email,
-      name: user.name,
       role: user.role,
-    });
+    };
+    if (user.name !== undefined) {
+      payload.name = user.name;
+    }
+    const accessToken = this.tokenService.signAccessToken(payload);
 
     const refreshToken = generateSecureToken(32);
     const tokenFamily = generateTokenFamily();
     const hashedToken = await hashToken(refreshToken);
 
-    await this.authRepo.createRefreshToken({
+    const tokenData: RefreshTokenData = {
       userId: user.id,
       token: hashedToken,
       family: tokenFamily,
       expiresAt: new Date(Date.now() + this.refreshTokenExpiry),
-      userAgent: metadata?.userAgent,
-      ipAddress: metadata?.ipAddress,
-    });
+    };
+    if (metadata?.userAgent !== undefined) {
+      tokenData.userAgent = metadata.userAgent;
+    }
+    if (metadata?.ipAddress !== undefined) {
+      tokenData.ipAddress = metadata.ipAddress;
+    }
+
+    await this.authRepo.createRefreshToken(tokenData);
 
     return {
       accessToken,
@@ -144,14 +153,20 @@ export class AuthService {
     const newRefreshToken = generateSecureToken(32);
     const hashedNewToken = await hashToken(newRefreshToken);
 
-    const newToken = await this.authRepo.createRefreshToken({
+    const newTokenData: RefreshTokenData = {
       userId: matchedToken.userId,
       token: hashedNewToken,
       family: matchedToken.family,
       expiresAt: new Date(Date.now() + this.refreshTokenExpiry),
-      userAgent: metadata?.userAgent,
-      ipAddress: metadata?.ipAddress,
-    });
+    };
+    if (metadata?.userAgent !== undefined) {
+      newTokenData.userAgent = metadata.userAgent;
+    }
+    if (metadata?.ipAddress !== undefined) {
+      newTokenData.ipAddress = metadata.ipAddress;
+    }
+
+    const newToken = await this.authRepo.createRefreshToken(newTokenData);
 
     if (!tokenDetails.id) {
       throw new Error("Missing refresh token id for rotation");

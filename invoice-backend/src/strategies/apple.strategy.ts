@@ -4,7 +4,7 @@ import container from "@/config/inversify.config";
 import type { Logger } from "@/config/logger.config";
 import TYPES from "@/constants/identifiers";
 
-const logger = container.get<Logger>(TYPES.Logger);
+const getLogger = (): Logger => container.get<Logger>(TYPES.Logger);
 
 /**
  * Configure Apple Sign In Strategy
@@ -34,7 +34,7 @@ export function configureAppleStrategy() {
     !process.env.APPLE_KEY_ID ||
     !process.env.APPLE_PRIVATE_KEY
   ) {
-    logger.warn(
+    getLogger().warn(
       "Apple Sign In not configured - APPLE_SERVICE_ID, APPLE_TEAM_ID, APPLE_KEY_ID, and APPLE_PRIVATE_KEY required",
     );
     return;
@@ -52,9 +52,22 @@ export function configureAppleStrategy() {
         scope: ["email", "name"],
         passReqToCallback: true,
       },
-      async (req, accessToken, refreshToken, idToken, profile, done) => {
+      (
+        _req,
+        accessToken,
+        refreshToken,
+        idToken,
+        profile: {
+          sub?: string;
+          id?: string;
+          email?: string;
+          email_verified?: string | boolean;
+          name?: { firstName?: string; lastName?: string };
+        },
+        done,
+      ) => {
         try {
-          logger.info(
+          getLogger().info(
             `Apple Sign In callback for user: ${profile.sub || profile.id}`,
           );
 
@@ -75,7 +88,7 @@ export function configureAppleStrategy() {
           }
 
           if (!email) {
-            logger.error("Apple profile missing email");
+            getLogger().error("Apple profile missing email");
             return done(new Error("Email not provided by Apple"), undefined);
           }
 
@@ -91,14 +104,16 @@ export function configureAppleStrategy() {
             idToken, // Apple uses ID token
           };
 
-          return done(null, userData);
+          done(null, userData);
         } catch (error) {
-          logger.error(`Apple Sign In error: ${error}`);
-          return done(error as Error, undefined);
+          const message =
+            error instanceof Error ? error.message : String(error);
+          getLogger().error(`Apple Sign In error: ${message}`);
+          done(error as Error, undefined);
         }
       },
     ),
   );
 
-  logger.info("Apple Sign In strategy configured");
+  getLogger().info("Apple Sign In strategy configured");
 }
