@@ -1,5 +1,10 @@
 import { Page, Locator, expect } from "@playwright/test";
 import InvoiceItem from "./InvoiceItem";
+import { InvoiceData } from "../../factories/invoice.factory";
+import {
+  waitForElementHidden,
+  waitForNetworkIdle,
+} from "../../helpers/test.utils";
 
 export class NewInvoiceForm {
   page: Page;
@@ -225,6 +230,80 @@ export class NewInvoiceForm {
 
   async clickDiscardButton() {
     await this.discardButton.click();
+  }
+
+  /**
+   * Fill the entire invoice form with data from InvoiceData factory
+   */
+  async fillInvoiceForm(data: InvoiceData): Promise<void> {
+    // Open new invoice form
+    await this.clickNewInvoiceButton();
+    await this.billFromText.waitFor({ state: "visible", timeout: 5000 });
+
+    // Fill sender address
+    await this.fillStreetAddress(data.streetAddress);
+    await this.fillCity(data.city);
+    await this.fillPostalCode(data.postalCode);
+    await this.fillCountry(data.country);
+
+    // Fill client details
+    await this.fillClientName(data.clientName);
+    await this.fillClientEmail(data.clientEmail);
+    await this.fillClientStreetAddress(data.clientStreetAddress);
+    await this.fillClientCity(data.clientCity);
+    await this.fillClientPostalCode(data.clientPostalCode);
+    await this.fillClientCountry(data.clientCountry);
+
+    // Fill invoice date - use direct input instead of datepicker
+    await this.fillDate(data.invoiceDate);
+
+    // Select payment terms
+    await this.selectPaymentTerms(data.paymentTerms);
+
+    // Fill project description
+    await this.fillProjectDescription(data.projectDescription);
+
+    // Add first item
+    if (data.items.length > 0) {
+      await this.addFirstItem(
+        data.items[0].description,
+        data.items[0].quantity,
+        data.items[0].price,
+      );
+    }
+
+    // Add remaining items
+    for (let i = 1; i < data.items.length; i++) {
+      await this.addItem(
+        data.items[i].description,
+        data.items[i].quantity,
+        data.items[i].price,
+      );
+    }
+  }
+
+  /**
+   * Create and save an invoice
+   */
+  async createInvoice(data: InvoiceData): Promise<void> {
+    await this.fillInvoiceForm(data);
+    await this.clickSaveButton();
+
+    // Wait for form to close
+    await waitForElementHidden(this.billFromText);
+    await waitForNetworkIdle(this.page);
+  }
+
+  /**
+   * Create and save as draft
+   */
+  async createDraftInvoice(data: InvoiceData): Promise<void> {
+    await this.fillInvoiceForm(data);
+    await this.clickSaveAsDraftButton();
+
+    // Wait for form to close
+    await waitForElementHidden(this.billFromText);
+    await waitForNetworkIdle(this.page);
   }
 }
 

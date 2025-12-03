@@ -70,11 +70,14 @@ async function globalSetup() {
 
   await invoiceMainPage.page.waitForLoadState("networkidle");
 
+  // Wait for successful login by checking for authenticated element
+  await invoiceMainPage.page.getByTestId("newInvoiceButton").waitFor({
+    state: "visible",
+    timeout: 10000,
+  });
+
   // set the auth key in the local storage so that the app thinks we are logged in
   await context.storageState({ path: "state.json" });
-
-  // seemed to have race conditions with the storageState, so added a delay
-  await invoiceMainPage.page.waitForTimeout(2000);
 
   await clearDatabase();
 

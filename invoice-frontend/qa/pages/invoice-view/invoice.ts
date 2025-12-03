@@ -1,6 +1,8 @@
 import { Locator, Page } from "playwright";
+import { waitForNetworkIdle } from "../../helpers/test.utils";
 
 class InvoicePage {
+  readonly page: Page;
   readonly editButton: Locator;
   readonly cancelButton: Locator;
   readonly deleteButton: Locator;
@@ -9,6 +11,7 @@ class InvoicePage {
   readonly goBackButton: Locator;
 
   constructor(page: Page) {
+    this.page = page;
     this.editButton = page.getByRole("button", { name: "edit" });
     this.cancelButton = page.getByRole("button", { name: "Cancel" });
     this.deleteButton = page.getByRole("button", { name: "Delete" }).first();
@@ -75,17 +78,23 @@ class InvoicePage {
     await this.clickDeleteButtonSecond();
     await this.clickGoBackButton();
   }
+
+  /**
+   * Delete invoice completely (opens modal and confirms)
+   */
+  async deleteInvoice(): Promise<void> {
+    await this.clickDeleteButton();
+    await this.clickDeleteButtonSecond();
+    await waitForNetworkIdle(this.page);
+  }
+
+  /**
+   * Mark invoice as paid and wait for update
+   */
+  async markAsPaid(): Promise<void> {
+    await this.clickMarkAsPaidButton();
+    await waitForNetworkIdle(this.page);
+  }
 }
 
 export default InvoicePage;
-
-/*
-await page.getByRole('button', { name: 'edit' }).click();
-  await page.getByRole('button', { name: 'Cancel' }).click();
-  await page.getByRole('button', { name: 'Delete' }).click();
-  await page.getByRole('button', { name: 'Cancel' }).click();
-  await page.getByRole('button', { name: 'Mark as Paid' }).click();
-  await page.getByRole('button', { name: 'Delete' }).click();
-  await page.getByRole('button', { name: 'Delete' }).nth(1).click();
-  await page.getByText('Go back').click();
-*/

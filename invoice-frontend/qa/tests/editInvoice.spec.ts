@@ -1,65 +1,128 @@
 import { expect, test } from "../fixtures/base";
-import {
-  createExampleInvoice,
-  NewInvoiceForm,
-} from "../pages/newInvoice/newInvoiceForm";
-
-import { clearDatabase, TEST_BASE_URL } from "../../global-setup";
+import { generateInvoice } from "../factories/invoice.factory";
+import { convertToApiInvoice } from "../helpers/api.helper";
 import { EditForm } from "../pages/edit/editForm";
 import InvoicePage from "../pages/invoice-view/invoice";
+import { waitForNetworkIdle } from "../helpers/test.utils";
 
-test.beforeEach(async () => {
-  await clearDatabase();
-});
+test.describe("Edit Invoice", () => {
+  let invoiceData: any;
+  let createdInvoiceId: string;
 
-test("should show the correct date already in the form when the edit page is opened", async ({
-  page,
-}) => {
-  const newInvoiceForm = new NewInvoiceForm(page);
+  test.beforeEach(async ({ page, apiHelper }) => {
+    // Clear database
+    await apiHelper.clearDatabase();
 
-  // Navigate to the invoice page if not already there
-  await page.goto(`${TEST_BASE_URL}#/invoices`);
-  await page.waitForLoadState("networkidle");
+    // Generate unique test data with specific date
+    invoiceData = generateInvoice({
+      invoiceDate: "01/30/2025",
+    });
 
-  await createExampleInvoice(newInvoiceForm);
-  await page.getByText("Jack Sparrow").waitFor({ state: "visible" });
+    // Create invoice via API for faster setup
+    const apiInvoice = convertToApiInvoice(invoiceData);
+    const result = await apiHelper.createInvoice(apiInvoice);
+    createdInvoiceId = result.id;
 
-  await page.getByRole("link", { name: "Jack Sparrow" }).click();
+    // Navigate to invoices page
+    await page.goto("/#/invoices");
+    await waitForNetworkIdle(page);
+  });
 
-  const invoicePage = new InvoicePage(page);
-  await invoicePage.clickEditButton();
+  test.afterEach(async ({ apiHelper }) => {
+    // Cleanup - delete invoice if it still exists
+    if (createdInvoiceId) {
+      try {
+        await apiHelper.deleteInvoice(createdInvoiceId);
+      } catch (error) {
+        // Invoice may already be deleted by the test
+      }
+    }
+  });
 
-  const editForm = new EditForm(page);
-  const datePicker = editForm.invoiceDate;
-  await expect(await datePicker).toHaveValue("01/30/2025");
+  test("should show the correct date in the form when edit page is opened", async ({
+    page,
+  }) => {
+    // Click on the invoice to view details
+    await page.getByRole("link", { name: invoiceData.clientName }).click();
+    await waitForNetworkIdle(page);
 
-  await page.getByRole("button", { name: "Cancel" }).click();
-  await page.getByRole("button", { name: "Delete" }).click();
-  await page.getByRole("button", { name: "Delete" }).nth(1).click();
-});
+    const invoicePage = new InvoicePage(page);
+    await invoicePage.clickEditButton();
 
-test("should select the chosen date in the date picker", async ({ page }) => {
-  const newInvoiceForm = new NewInvoiceForm(page);
+    const editForm = new EditForm(page);
 
-  // Navigate to the invoice page if not already there
-  await page.goto(`${TEST_BASE_URL}#/invoices`);
-  await page.waitForLoadState("networkidle");
+    // Verify the date is pre-filled correctly
+    await expect(editForm.invoiceDate).toHaveValue(invoiceData.invoiceDate);
 
-  await createExampleInvoice(newInvoiceForm);
-  await page.getByText("Jack Sparrow").waitFor({ state: "visible" });
+    // Cancel the edit
+    await invoicePage.clickCancelButton();
+  });
 
-  await page.getByRole("link", { name: "Jack Sparrow" }).click();
+  test("should allow editing client name", async ({ page }) => {
+    // Click on the invoice to view details
+    await page.getByRole("link", { name: invoiceData.clientName }).click();
+    await waitForNetworkIdle(page);
 
-  const invoicePage = new InvoicePage(page);
-  await invoicePage.clickEditButton();
+    const invoicePage = new InvoicePage(page);
+    await invoicePage.clickEditButton();
 
-  const editForm = new EditForm(page);
-  const datePicker = editForm.invoiceDate;
-  await expect(await datePicker).toHaveValue("01/30/2025");
+    const editForm = new EditForm(page);
 
-  await datePicker.click();
+    // Update client name
+    const newClientName = "Updated Client Name";
+    await editForm.fillClientName(newClientName);
 
-  await page.getByRole("button", { name: "Cancel" }).click();
-  await page.getByRole("button", { name: "Delete" }).click();
-  await page.getByRole("button", { name: "Delete" }).nth(1).click();
+    // Save changes
+    await editForm.clickSaveButton();
+    await waitForNetworkIdle(page);
+
+    // Verify the updated name is displayed
+    await expect(page.getByText(newClientName)).toBeVisible();
+  });
+
+  test("should allow changing invoice date", async ({ page }) => {
+    // Click on the invoice to view details
+    await page.getByRole("link", { name: invoiceData.clientName }).click();
+    await waitForNetworkIdle(page);
+
+    const invoicePage = new InvoicePage(page);
+    await invoicePage.clickEditButton();
+
+    const editForm = new EditForm(page);
+
+    // Change the date
+    const newDate = "02/15/2025";
+    await editForm.fillDate(newDate);
+
+    // Verify the date was updated in the form
+    await expect(editForm.invoiceDate).toHaveValue(newDate);
+
+    // Cancel without saving
+    await invoicePage.clickCancelButton();
+  });
+
+  test("should allow canceling edit without saving changes", async ({
+    page,
+  }) => {
+    const originalClientName = invoiceData.clientName;
+
+    // Click on the invoice to view details
+    await page.getByRole("link", { name: originalClientName }).click();
+    await waitForNetworkIdle(page);
+
+    const invoicePage = new InvoicePage(page);
+    await invoicePage.clickEditButton();
+
+    const editForm = new EditForm(page);
+
+    // Make changes
+    await editForm.fillClientName("This Should Not Be Saved");
+
+    // Cancel
+    await invoicePage.clickCancelButton();
+    await waitForNetworkIdle(page);
+
+    // Verify original name is still displayed
+    await expect(page.getByText(originalClientName)).toBeVisible();
+  });
 });

@@ -1,62 +1,107 @@
 import { expect, test } from "../fixtures/base";
-import {
-  createExampleInvoice,
-  NewInvoiceForm,
-} from "../pages/newInvoice/newInvoiceForm";
-import { chromium } from "@playwright/test";
-import { clearDatabase, TEST_BASE_URL } from "../../global-setup";
+import { generateInvoice } from "../factories/invoice.factory";
+import { convertToApiInvoice } from "../helpers/api.helper";
+import InvoicePage from "../pages/invoice-view/invoice";
+import { waitForText, waitForNetworkIdle } from "../helpers/test.utils";
 
-if (!process.env.TEST_BASE_URL) {
-  throw new Error("TEST_URL is not defined");
-}
+test.describe("Invoice View Operations", () => {
+  let invoiceData: any;
+  let createdInvoiceId: string;
 
-test.beforeEach(async () => {
-  await clearDatabase();
-  const browser = await chromium.launch();
-  const context = await browser.newContext({
-    ignoreHTTPSErrors: true,
+  test.beforeEach(async ({ page, apiHelper }) => {
+    // Clear database
+    await apiHelper.clearDatabase();
+
+    // Generate unique test data
+    invoiceData = generateInvoice();
+
+    // Create invoice via API for faster setup
+    const apiInvoice = convertToApiInvoice(invoiceData);
+    const result = await apiHelper.createInvoice(apiInvoice);
+    createdInvoiceId = result.id;
+
+    // Navigate to invoices page
+    await page.goto("/#/invoices");
+    await waitForNetworkIdle(page);
   });
-  const page = await context.newPage();
-  await page.goto(TEST_BASE_URL!);
-  const newInvoiceForm = new NewInvoiceForm(page);
-  await createExampleInvoice(newInvoiceForm);
-});
 
-test("Should mark invoice as paid", async ({ invoiceMainPage }) => {
-  await invoiceMainPage.gotoPage();
+  test.afterEach(async ({ apiHelper }) => {
+    // Cleanup - delete invoice if it still exists
+    if (createdInvoiceId) {
+      try {
+        await apiHelper.deleteInvoice(createdInvoiceId);
+      } catch (error) {
+        // Invoice may already be deleted by the test
+      }
+    }
+  });
 
-  if (process.env.NODE_ENV === "CI") {
-    await invoiceMainPage.page.screenshot({
-      path: "before-clicking-invoice.png",
-    });
-  }
+  test("should mark invoice as paid", async ({ page }) => {
+    // Click on the invoice to view details
+    await page.getByText(invoiceData.clientName).click();
+    await waitForNetworkIdle(page);
 
-  await invoiceMainPage.page.getByText("Jack Sparrow").click();
-  await invoiceMainPage.page.getByTestId("mark-as-paid").click();
-  await invoiceMainPage.page.waitForTimeout(2000);
+    const invoicePage = new InvoicePage(page);
 
-  const status = await invoiceMainPage.page.getByText("Paid", { exact: true });
+    // Mark as paid
+    await invoicePage.markAsPaid();
 
-  await expect(status).toBeVisible();
+    // Verify status changed to "Paid"
+    const status = page.getByText("Paid", { exact: true });
+    await expect(status).toBeVisible();
+  });
 
-  await invoiceMainPage.page.getByRole("button", { name: "Delete" }).click();
-  await invoiceMainPage.page
-    .getByRole("button", { name: "Delete" })
-    .nth(1)
-    .click();
-});
+  test("should delete an invoice", async ({ page }) => {
+    // Verify invoice is visible in the list
+    await expect(page.getByText(invoiceData.clientName)).toBeVisible();
 
-test("Should delete an invoice", async ({ invoiceMainPage }) => {
-  await invoiceMainPage.gotoPage();
+    // Click on the invoice to view details
+    await page.getByText(invoiceData.clientName).click();
+    await waitForNetworkIdle(page);
 
-  await invoiceMainPage.page.getByText("Jack Sparrow").click();
-  await invoiceMainPage.page.getByRole("button", { name: "Delete" }).click();
-  await invoiceMainPage.page
-    .getByRole("button", { name: "Delete" })
-    .nth(1)
-    .click();
-  await invoiceMainPage.page.waitForTimeout(2000);
+    const invoicePage = new InvoicePage(page);
 
-  const deletedInvoice = await invoiceMainPage.page.getByText("Jack Sparrow");
-  await expect(deletedInvoice).not.toBeVisible();
+    // Delete the invoice
+    await invoicePage.deleteInvoice();
+
+    // Verify invoice is no longer visible in the list
+    const deletedInvoice = page.getByText(invoiceData.clientName);
+    await expect(deletedInvoice).not.toBeVisible();
+
+    // Clear the ID since we already deleted it
+    createdInvoiceId = "";
+  });
+
+  test("should navigate back to invoice list", async ({ page }) => {
+    // Click on the invoice to view details
+    await page.getByText(invoiceData.clientName).click();
+    await waitForNetworkIdle(page);
+
+    const invoicePage = new InvoicePage(page);
+
+    // Click go back
+    await invoicePage.clickGoBackButton();
+    await waitForNetworkIdle(page);
+
+    // Verify we're back on the invoices list page
+    await expect(page.getByText(invoiceData.clientName)).toBeVisible();
+  });
+
+  test("should open edit modal", async ({ page }) => {
+    // Click on the invoice to view details
+    await page.getByText(invoiceData.clientName).click();
+    await waitForNetworkIdle(page);
+
+    const invoicePage = new InvoicePage(page);
+
+    // Click edit button
+    await invoicePage.clickEditButton();
+
+    // Verify edit form is visible
+    const editFormTitle = page.getByText("Edit Invoice");
+    await expect(editFormTitle).toBeVisible();
+
+    // Cancel to close the form
+    await invoicePage.clickCancelButton();
+  });
 });
