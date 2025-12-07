@@ -14,8 +14,13 @@ import { v4 as uuidv4 } from "uuid";
 import { useAddInvoice } from "./useAddInvoice";
 
 export const useSubmitDraft = () => {
-  const { startDate, selectedPaymentOption, methods, setIsCacheActive } =
-    useNewInvoiceContext();
+  const {
+    startDate,
+    selectedPaymentOption,
+    methods,
+    setIsCacheActive,
+    setIsNewInvoiceOpen,
+  } = useNewInvoiceContext();
   const { trigger, reset, setError, clearErrors, getValues } = methods;
   const { replace } = useFieldArray({
     name: "items",
@@ -111,9 +116,12 @@ export const useSubmitDraft = () => {
     newInvoice.status = "draft";
 
     try {
+      // Close form quickly; mutation continues in background
+      methods.setValue("status", "draft", { shouldDirty: false }); // keep status consistent for any listeners
+      setIsCacheActive(false);
+      setIsNewInvoiceOpen(false); // explicitly close the form before awaiting network
       await handleAddInvoice(newInvoice);
 
-      setIsCacheActive(false);
       handleFormReset();
       replace([{ id: uuidv4(), name: "", quantity: 0, price: 0, total: 0 }]);
     } catch (error) {

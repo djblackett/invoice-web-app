@@ -145,13 +145,13 @@ export default function FilterDropDown({
         {icon}
       </DropDownContainer>
       <ClickOutsideProvider onOutsideClick={closeFilter}>
-        <DropDownListContainer style={{ height: isOpen ? "130px" : 0 }}>
-          <DropDownList data-testid="draft-filter">
+      <DropDownListContainer style={{ height: isOpen ? "130px" : 0 }}>
+        <DropDownList data-testid="filter-options">
             {options.map((option: string) => (
               <ListItem key={`${option}-li`}>
                 <ItemButton
                   onClick={clickCallback(option)}
-                  data-testid={`${option.toLowerCase()}-checkbox`}
+                  data-testid={`${option.toLowerCase()}-filter`}
                 >
                   <CheckboxSelection option={option} />
                 </ItemButton>

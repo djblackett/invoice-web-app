@@ -65,12 +65,15 @@ function NewInvoiceBottomMenu({
         justifySelf={justifyCancel || ""}
       />
       <SaveAndDraftContainer>
-        <SaveDraft
-          data-testid="saveDraft"
-          type="button"
-          value={width > 325 ? "Save as draft" : "Draft"}
-          onClick={() => onSubmitDraft()}
-        />
+      <SaveDraft
+        data-testid="saveDraft"
+        type="button"
+        value={width > 325 ? "Save as Draft" : "Draft"}
+        onClick={async () => {
+          await onSubmitDraft();
+          setIsNewInvoiceOpen(false);
+        }}
+      />
         <Save type="button" value="Save" onClick={handleSubmit(onSubmit)} />
       </SaveAndDraftContainer>
     </MenuContainer>

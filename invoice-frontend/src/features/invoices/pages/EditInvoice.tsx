@@ -14,10 +14,6 @@ type EditFormProps = {
 function EditInvoice({ invoice }: EditFormProps) {
   const { isNewInvoiceOpen, methods } = useNewInvoiceContext();
 
-  if (!invoice) {
-    return null;
-  }
-
   return (
     <>
       <AnimatePresence>
@@ -25,7 +21,11 @@ function EditInvoice({ invoice }: EditFormProps) {
           <Sidebar key="sidebar-edit-parent">
             <FormContainerDarkenModal data-testid="editInvoiceModal">
               <FormProvider {...methods}>
-                <EditFormController invoice={invoice} />
+                {invoice ? (
+                  <EditFormController invoice={invoice} />
+                ) : (
+                  <div style={{ padding: "1rem" }}>Loading invoice…</div>
+                )}
               </FormProvider>
             </FormContainerDarkenModal>
           </Sidebar>

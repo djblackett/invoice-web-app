@@ -1,6 +1,7 @@
 import styled from "styled-components";
 import Proptypes from "prop-types";
 import React, { forwardRef } from "react";
+import { useNewInvoiceContext } from "@/features/invoices/forms/NewInvoiceContextProvider.tsx";
 
 const Button = styled.button`
   background-color: ${({ theme }) => theme.editButton};
@@ -38,8 +39,12 @@ type EditButtonProps = {
 
 const EditButton = forwardRef<HTMLButtonElement, EditButtonProps>(
   ({ toggleEditTab, isEditOpen }, ref) => {
+    // Also grab the context directly to avoid stale callbacks
+    const { setIsNewInvoiceOpen } = useNewInvoiceContext();
     const handleClick = () => {
-      toggleEditTab(!isEditOpen);
+      // Always open the edit sidebar; the parent decides how/when to close it
+      setIsNewInvoiceOpen(true);
+      toggleEditTab(true);
     };
     return (
       <Button

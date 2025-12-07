@@ -14,6 +14,7 @@ export const useSubmitNewInvoice = () => {
     startDate,
     selectedPaymentOption,
     setIsCacheActive,
+    setIsNewInvoiceOpen,
   } = useNewInvoiceContext();
   const { trigger, setError, getValues } = methods;
   const { replace } = useFieldArray({
@@ -54,6 +55,8 @@ export const useSubmitNewInvoice = () => {
       newInvoice.status = "pending";
 
       try {
+        // Close the form immediately so UI can proceed while the mutation runs
+        setIsNewInvoiceOpen(false);
         await handleAddInvoice(newInvoice);
 
         setIsCacheActive(false);

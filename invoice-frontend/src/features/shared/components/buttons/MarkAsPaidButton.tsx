@@ -47,7 +47,9 @@ function MarkAsPaidButton({ invoice, editButtonRef }: MarkPaidProps) {
   });
 
   const handleClick = async () => {
-    if (invoice.status === "pending") {
+    const status = invoice.status?.toLowerCase();
+
+    if (status === "pending") {
       const response = await markAsPaid({
         variables: {
           markAsPaidId: invoice.id,

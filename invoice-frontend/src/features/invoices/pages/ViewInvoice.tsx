@@ -14,7 +14,8 @@ import { GET_INVOICE_BY_ID } from "../graphql/invoice.queries.ts";
 import React from "react";
 import { Button } from "@/features/shared/components/buttons/MarkAsPaidButton.tsx";
 
-const EditInvoice = React.lazy(() => import("./EditInvoice.tsx"));
+// Eager load to avoid timing out waiting for the edit sidebar chunk
+import EditInvoice from "./EditInvoice.tsx";
 const DeleteModal = React.lazy(() => import("../components/DeleteModal.tsx"));
 const FullInvoice = React.lazy(() => import("../components/FullInvoice.tsx"));
 
