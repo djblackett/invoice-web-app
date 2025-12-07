@@ -25,6 +25,7 @@ export interface ApiInvoice {
   paymentTerms: number;
   items: ApiInvoiceItem[];
   createdAt?: string;
+  status?: string;
 }
 
 /**
@@ -43,10 +44,36 @@ export class ApiHelper {
    * Initialize the API context
    */
   async init(): Promise<void> {
+    // Load the storage state to extract the access token
+    const fs = await import("fs");
+    const stateJson = JSON.parse(fs.readFileSync("state.json", "utf-8"));
+
+    // Extract access token from localStorage
+    let accessToken = "test-token"; // fallback
+    if (stateJson.origins && stateJson.origins.length > 0) {
+      const localStorage = stateJson.origins[0].localStorage || [];
+      const tokenEntry = localStorage.find((entry: any) =>
+        entry.name.includes("@@auth0spajs@@") && entry.name.includes("https://invoice-web-app/")
+      );
+
+      if (tokenEntry && tokenEntry.value) {
+        try {
+          const parsed = JSON.parse(tokenEntry.value);
+          if (parsed.body && parsed.body.access_token) {
+            accessToken = parsed.body.access_token;
+          }
+        } catch (e) {
+          console.warn("Failed to parse access token from storage state:", e);
+        }
+      }
+    }
+
     this.apiContext = await request.newContext({
       ignoreHTTPSErrors: true,
+      storageState: "state.json", // Use authenticated session from global setup
       extraHTTPHeaders: {
         "Content-Type": "application/json",
+        Authorization: `Bearer ${accessToken}`,
       },
     });
   }
@@ -86,29 +113,70 @@ export class ApiHelper {
     }
 
     const mutation = `
-      mutation CreateInvoice($input: InvoiceInput!) {
-        createInvoice(input: $input) {
+      mutation addInvoice(
+        $clientEmail: String
+        $clientAddress: ClientInfo
+        $clientName: String
+        $createdAt: String
+        $description: String
+        $items: [ItemInput]
+        $paymentTerms: Float
+        $senderAddress: SenderInfo
+        $status: String
+      ) {
+        addInvoice(
+          clientEmail: $clientEmail
+          clientAddress: $clientAddress
+          clientName: $clientName
+          createdAt: $createdAt
+          description: $description
+          items: $items
+          paymentTerms: $paymentTerms
+          senderAddress: $senderAddress
+          status: $status
+        ) {
           id
           clientName
           clientEmail
           description
           status
           total
+          createdAt
+          paymentDue
+          paymentTerms
+          clientAddress {
+            street
+            city
+            postCode
+            country
+          }
+          senderAddress {
+            street
+            city
+            postCode
+            country
+          }
+          items {
+            id
+            name
+            quantity
+            price
+            total
+          }
         }
       }
     `;
 
     const variables = {
-      input: {
-        senderAddress: invoice.senderAddress,
-        clientName: invoice.clientName,
-        clientEmail: invoice.clientEmail,
-        clientAddress: invoice.clientAddress,
-        description: invoice.description,
-        paymentTerms: invoice.paymentTerms,
-        items: invoice.items,
-        createdAt: invoice.createdAt || new Date().toISOString(),
-      },
+      senderAddress: invoice.senderAddress,
+      clientName: invoice.clientName,
+      clientEmail: invoice.clientEmail,
+      clientAddress: invoice.clientAddress,
+      description: invoice.description,
+      paymentTerms: invoice.paymentTerms,
+      items: invoice.items,
+      createdAt: invoice.createdAt || new Date().toISOString(),
+      status: invoice.status || "Pending",
     };
 
     const response = await this.apiContext.post(this.backendUrl, {
@@ -130,7 +198,7 @@ export class ApiHelper {
       );
     }
 
-    return result.data.createInvoice;
+    return result.data.addInvoice;
   }
 
   /**
@@ -142,13 +210,16 @@ export class ApiHelper {
     }
 
     const query = `
-      query GetInvoices {
-        invoices {
+      query allInvoices {
+        allInvoices {
           id
           clientName
           clientEmail
           status
           total
+          createdAt
+          paymentDue
+          description
         }
       }
     `;
@@ -169,27 +240,29 @@ export class ApiHelper {
       );
     }
 
-    return result.data.invoices;
+    return result.data.allInvoices;
   }
 
   /**
    * Delete an invoice by ID
    */
-  async deleteInvoice(id: string): Promise<boolean> {
+  async deleteInvoice(id: string): Promise<{ success: boolean }> {
     if (!this.apiContext) {
       throw new Error("API context not initialized. Call init() first.");
     }
 
     const mutation = `
-      mutation DeleteInvoice($id: ID!) {
-        deleteInvoice(id: $id)
+      mutation RemoveInvoice($removeInvoiceId: String!) {
+        removeInvoice(id: $removeInvoiceId) {
+          acknowledged
+        }
       }
     `;
 
     const response = await this.apiContext.post(this.backendUrl, {
       data: {
         query: mutation,
-        variables: { id },
+        variables: { removeInvoiceId: id },
       },
     });
 
@@ -205,7 +278,8 @@ export class ApiHelper {
       );
     }
 
-    return result.data.deleteInvoice;
+    // Return an object with success property for test compatibility
+    return { success: result.data.removeInvoice.acknowledged };
   }
 
   /**
@@ -220,10 +294,13 @@ export class ApiHelper {
     }
 
     const mutation = `
-      mutation UpdateInvoiceStatus($id: ID!, $status: String!) {
-        updateInvoiceStatus(id: $id, status: $status) {
+      mutation editInvoice($id: String, $status: String) {
+        editInvoice(id: $id, status: $status) {
           id
           status
+          clientName
+          clientEmail
+          total
         }
       }
     `;
@@ -249,7 +326,7 @@ export class ApiHelper {
       );
     }
 
-    return result.data.updateInvoiceStatus;
+    return result.data.editInvoice;
   }
 }
 

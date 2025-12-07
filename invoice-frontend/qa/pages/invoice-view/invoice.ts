@@ -12,7 +12,7 @@ class InvoicePage {
 
   constructor(page: Page) {
     this.page = page;
-    this.editButton = page.getByRole("button", { name: "edit" });
+    this.editButton = page.getByRole("button", { name: /edit/i });
     this.cancelButton = page.getByRole("button", { name: "Cancel" });
     this.deleteButton = page.getByRole("button", { name: "Delete" }).first();
     this.deleteButtonSecond = page
@@ -26,7 +26,13 @@ class InvoicePage {
    * Clicks the edit button.
    */
   async clickEditButton(): Promise<void> {
+    await this.editButton.waitFor({ state: "visible", timeout: 10000 });
     await this.editButton.click();
+    // Wait for edit form fields to appear instead of the modal shell (more robust)
+    await this.page
+      .getByRole("textbox", { name: /client's name/i })
+      .waitFor({ state: "visible", timeout: 5000 });
+    await waitForNetworkIdle(this.page);
   }
 
   /**

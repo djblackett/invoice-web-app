@@ -125,7 +125,16 @@ export class NewInvoiceForm {
   }
 
   async fillDate(date: string) {
-    await this.invoiceDate.fill(date);
+    // The date input is readonly, so we need to either:
+    // 1. Use JavaScript to set the value directly, or
+    // 2. Click to open the date picker and select from there
+    // Using JavaScript is faster and more reliable for testing
+    await this.invoiceDate.evaluate((el: HTMLInputElement, value: string) => {
+      el.value = value;
+      // Trigger change event so React picks up the change
+      el.dispatchEvent(new Event('change', { bubbles: true }));
+      el.dispatchEvent(new Event('input', { bubbles: true }));
+    }, date);
   }
 
   /**
@@ -289,9 +298,9 @@ export class NewInvoiceForm {
     await this.fillInvoiceForm(data);
     await this.clickSaveButton();
 
-    // Wait for form to close
-    await waitForElementHidden(this.billFromText);
+    // Wait for the new invoice to appear in the list (more reliable than modal/toast)
     await waitForNetworkIdle(this.page);
+    await this.page.getByText(data.clientName).waitFor({ state: "visible", timeout: 5000 });
   }
 
   /**
@@ -301,9 +310,9 @@ export class NewInvoiceForm {
     await this.fillInvoiceForm(data);
     await this.clickSaveAsDraftButton();
 
-    // Wait for form to close
-    await waitForElementHidden(this.billFromText);
+    // Wait for draft to appear in list to confirm save
     await waitForNetworkIdle(this.page);
+    await this.page.getByText(data.clientName).waitFor({ state: "visible", timeout: 5000 });
   }
 }
 

@@ -60,7 +60,10 @@ async function globalSetup() {
   }
 
   await invoiceMainPage.page.getByLabel("Email address").fill(TEST_LOGIN!);
-  await invoiceMainPage.page.getByLabel("Password").fill(TEST_PASSWORD!);
+  // Use input[type="password"] to avoid matching the "Show password" toggle button
+  await invoiceMainPage.page
+    .locator('input[type="password"][name="password"]')
+    .fill(TEST_PASSWORD!);
   await invoiceMainPage.page
     .getByRole("button", {
       name: "Continue",
