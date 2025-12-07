@@ -180,7 +180,7 @@ export function getInvoiceResolvers() {
         }
         try {
           const result = await invoiceService.deleteInvoice(args.id);
-          return result;
+          return { acknowledged: result };
         } catch (error) {
           getLogger().error(String(error));
           if (error instanceof NotFoundException) {

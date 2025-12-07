@@ -41,6 +41,8 @@ services:
       - SECRET=theSecretStuff
       - CERT_DIR="./certs"
       - DEMO_MODE=false
+      - DOMAIN=https://dev-n4e4qk7s3kbzusrs.us.auth0.com/
+      - AUDIENCE=https://invoice-web-app/
     networks:
       - my_network_dev
     volumes:

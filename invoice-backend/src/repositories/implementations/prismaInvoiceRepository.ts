@@ -230,12 +230,19 @@ export class PrismaInvoiceRepository implements IInvoiceRepo {
         throw error;
       }
 
+      // Calculate total from items if not provided
+      const calculatedTotal = invoice.total ||
+        (invoice.items ?? []).reduce((sum, item) => {
+          const itemTotal = (item.quantity ?? 0) * (item.price ?? 0);
+          return sum + itemTotal;
+        }, 0);
+
       const result = await this.prisma.invoice.create({
         data: {
           createdBy: {
             connect: { id: invoice.createdById ?? "" },
           },
-          id: invoice.id || "",
+          ...(invoice.id && invoice.id !== "" && { id: invoice.id }),
           clientEmail: invoice.clientEmail || "",
           clientName: invoice.clientName || "",
           createdAt: invoice.createdAt || new Date().toISOString(),
@@ -245,14 +252,17 @@ export class PrismaInvoiceRepository implements IInvoiceRepo {
             new Date(Date.now() + 24 * 60 * 60 * 1000).toISOString(),
           paymentTerms: invoice.paymentTerms || 14,
           status: invoice.status || "pending",
-          total: invoice.total || new Prisma.Decimal(0),
+          total: new Prisma.Decimal(calculatedTotal),
           items: {
-            create: (invoice.items ?? []).map((item) => ({
-              name: item.name ?? "",
-              quantity: item.quantity ?? 0,
-              price: item.price ?? 0,
-              total: item.total ?? 0,
-            })),
+            create: (invoice.items ?? []).map((item) => {
+              const itemTotal = (item.quantity ?? 0) * (item.price ?? 0);
+              return {
+                name: item.name ?? "",
+                quantity: item.quantity ?? 0,
+                price: item.price ?? 0,
+                total: item.total || itemTotal,
+              };
+            }),
           },
           ...(invoice.clientAddress && {
             clientAddress: {

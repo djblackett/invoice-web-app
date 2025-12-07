@@ -187,7 +187,7 @@ export class InvoiceService {
 
     const { id, role } = this.userContext;
     const invoice = (await this.getInvoiceById(invoiceId)) as Invoice;
-    if (invoice.createdById !== id || role !== "ADMIN") {
+    if (invoice.createdById !== id && role !== "ADMIN") {
       throw new ValidationException("Unauthorized");
     }
     try {
