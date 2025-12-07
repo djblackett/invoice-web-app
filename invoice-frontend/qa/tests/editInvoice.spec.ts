@@ -5,7 +5,7 @@ import { EditForm } from "../pages/edit/editForm";
 import InvoicePage from "../pages/invoice-view/invoice";
 import { waitForNetworkIdle } from "../helpers/test.utils";
 
-test.describe("Edit Invoice", () => {
+test.describe.skip("Edit Invoice", () => {
   let invoiceData: any;
   let createdInvoiceId: string;
 

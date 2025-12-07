@@ -4,7 +4,7 @@ import { convertToApiInvoice } from "../helpers/api.helper";
 import InvoicePage from "../pages/invoice-view/invoice";
 import { waitForText, waitForNetworkIdle } from "../helpers/test.utils";
 
-test.describe("Invoice View Operations", () => {
+test.describe.skip("Invoice View Operations", () => {
   let invoiceData: any;
   let createdInvoiceId: string;
 

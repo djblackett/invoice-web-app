@@ -33,7 +33,7 @@ describe("First integration test", () => {
     const title = await screen.findByRole(
       "heading",
       { name: /new invoice/i },
-      { timeout: 3000 }, // wait up to 3 s
+      { timeout: 5000 }, // wait up to 5 seconds for lazy-loaded components
     );
     expect(title).toBeInTheDocument();
   });
