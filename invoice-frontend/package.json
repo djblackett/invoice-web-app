@@ -98,5 +98,5 @@
   "optionalDependencies": {
     "@rollup/rollup-linux-x64-musl": "4.9.5"
   },
-  "packageManager": "yarn@4.6.0"
+  "packageManager": "yarn@4.12.0"
 }
