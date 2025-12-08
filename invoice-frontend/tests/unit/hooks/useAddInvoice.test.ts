@@ -6,6 +6,12 @@ import { useMutation } from "@apollo/client";
 import { Invoice } from "@/features/invoices/types/invoiceTypes";
 import { renderHook } from "@testing-library/react";
 
+vi.mock("@/features/invoices/forms/NewInvoiceContextProvider.tsx", () => ({
+  useNewInvoiceContext: () => ({
+    setIsNewInvoiceOpen: vi.fn(),
+  }),
+}));
+
 vi.mock("@apollo/client", () => ({
   useMutation: vi.fn(),
   gql: vi.fn(),

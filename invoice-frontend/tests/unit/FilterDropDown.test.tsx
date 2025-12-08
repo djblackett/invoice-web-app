@@ -1,4 +1,4 @@
-import { render, screen, fireEvent } from "../testUtils";
+import { renderWithProviders, screen, fireEvent } from "../testUtils";
 import FilterDropDown from "@/features/invoices/components/FilterDropDown.tsx";
 import { describe, it, expect, beforeEach, vi } from "vitest";
 
@@ -12,7 +12,7 @@ describe("FilterDropDown", () => {
   });
 
   it("renders filter dropdown with icon", () => {
-    render(
+    renderWithProviders(
       <FilterDropDown
         icon={mockIcon}
         isOpen={false}
@@ -25,7 +25,7 @@ describe("FilterDropDown", () => {
   });
 
   it("shows dropdown list when isOpen is true", () => {
-    render(
+    renderWithProviders(
       <FilterDropDown
         icon={mockIcon}
         isOpen={true}
@@ -40,7 +40,7 @@ describe("FilterDropDown", () => {
   });
 
   it("hides dropdown list when isOpen is false", () => {
-    const { container } = render(
+    const { container } = renderWithProviders(
       <FilterDropDown
         icon={mockIcon}
         isOpen={false}
@@ -55,7 +55,7 @@ describe("FilterDropDown", () => {
   });
 
   it("renders all filter options", () => {
-    render(
+    renderWithProviders(
       <FilterDropDown
         icon={mockIcon}
         isOpen={true}
@@ -70,7 +70,7 @@ describe("FilterDropDown", () => {
   });
 
   it("renders checkbox for each option", () => {
-    render(
+    renderWithProviders(
       <FilterDropDown
         icon={mockIcon}
         isOpen={true}
@@ -79,13 +79,13 @@ describe("FilterDropDown", () => {
       />,
     );
 
-    expect(screen.getByTestId("draft-checkbox")).toBeInTheDocument();
-    expect(screen.getByTestId("pending-checkbox")).toBeInTheDocument();
-    expect(screen.getByTestId("paid-checkbox")).toBeInTheDocument();
+    expect(screen.getByTestId("draft-filter")).toBeInTheDocument();
+    expect(screen.getByTestId("pending-filter")).toBeInTheDocument();
+    expect(screen.getByTestId("paid-filter")).toBeInTheDocument();
   });
 
   it("has clickable checkboxes", () => {
-    render(
+    renderWithProviders(
       <FilterDropDown
         icon={mockIcon}
         isOpen={true}
@@ -94,15 +94,14 @@ describe("FilterDropDown", () => {
       />,
     );
 
-    const draftCheckbox = screen.getByTestId("draft-checkbox");
+    const draftCheckbox = screen.getByTestId("draft-filter");
     fireEvent.click(draftCheckbox);
 
-    // Checkbox should be clickable
     expect(draftCheckbox).toBeInTheDocument();
   });
 
   it("has proper aria-label for accessibility", () => {
-    render(
+    renderWithProviders(
       <FilterDropDown
         icon={mockIcon}
         isOpen={false}
@@ -116,7 +115,7 @@ describe("FilterDropDown", () => {
   });
 
   it("renders all checkbox options", () => {
-    render(
+    renderWithProviders(
       <FilterDropDown
         icon={mockIcon}
         isOpen={true}
@@ -125,9 +124,8 @@ describe("FilterDropDown", () => {
       />,
     );
 
-    // All checkboxes should exist and be clickable
-    expect(screen.getByTestId("draft-checkbox")).toBeInTheDocument();
-    expect(screen.getByTestId("pending-checkbox")).toBeInTheDocument();
-    expect(screen.getByTestId("paid-checkbox")).toBeInTheDocument();
+    expect(screen.getByTestId("draft-filter")).toBeInTheDocument();
+    expect(screen.getByTestId("pending-filter")).toBeInTheDocument();
+    expect(screen.getByTestId("paid-filter")).toBeInTheDocument();
   });
 });

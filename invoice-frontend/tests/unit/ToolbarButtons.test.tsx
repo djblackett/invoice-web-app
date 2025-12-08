@@ -1,4 +1,4 @@
-import { render, screen, fireEvent } from "../testUtils";
+import { renderWithProviders, screen, fireEvent } from "../testUtils";
 import ToolbarButtons from "@/features/invoices/components/ToolbarButtons.tsx";
 import { describe, it, expect, vi, beforeEach } from "vitest";
 import { Invoice } from "@/features/invoices/types/invoiceTypes";
@@ -55,7 +55,7 @@ describe("ToolbarButtons", () => {
   });
 
   it("renders all three buttons", () => {
-    render(<ToolbarButtons invoice={mockInvoice} openModal={mockOpenModal} />);
+    renderWithProviders(<ToolbarButtons invoice={mockInvoice} openModal={mockOpenModal} />);
 
     expect(screen.getByText("Edit")).toBeInTheDocument();
     expect(screen.getByText("Delete")).toBeInTheDocument();
@@ -63,7 +63,7 @@ describe("ToolbarButtons", () => {
   });
 
   it("calls openModal when delete button is clicked", () => {
-    render(<ToolbarButtons invoice={mockInvoice} openModal={mockOpenModal} />);
+    renderWithProviders(<ToolbarButtons invoice={mockInvoice} openModal={mockOpenModal} />);
 
     const deleteButton = screen.getByText("Delete");
     fireEvent.click(deleteButton);
@@ -72,21 +72,21 @@ describe("ToolbarButtons", () => {
   });
 
   it("renders edit button with correct text", () => {
-    render(<ToolbarButtons invoice={mockInvoice} openModal={mockOpenModal} />);
+    renderWithProviders(<ToolbarButtons invoice={mockInvoice} openModal={mockOpenModal} />);
 
     const editButton = screen.getByText("Edit");
     expect(editButton).toBeInTheDocument();
   });
 
   it("renders delete button with correct text", () => {
-    render(<ToolbarButtons invoice={mockInvoice} openModal={mockOpenModal} />);
+    renderWithProviders(<ToolbarButtons invoice={mockInvoice} openModal={mockOpenModal} />);
 
     const deleteButton = screen.getByText("Delete");
     expect(deleteButton).toBeInTheDocument();
   });
 
   it("renders mark as paid button with correct text", () => {
-    render(<ToolbarButtons invoice={mockInvoice} openModal={mockOpenModal} />);
+    renderWithProviders(<ToolbarButtons invoice={mockInvoice} openModal={mockOpenModal} />);
 
     const markAsPaidButton = screen.getByText("Mark as Paid");
     expect(markAsPaidButton).toBeInTheDocument();
@@ -94,14 +94,14 @@ describe("ToolbarButtons", () => {
 
   it("renders mark as paid button even for paid invoices", () => {
     const paidInvoice = { ...mockInvoice, status: "paid" };
-    render(<ToolbarButtons invoice={paidInvoice} openModal={mockOpenModal} />);
+    renderWithProviders(<ToolbarButtons invoice={paidInvoice} openModal={mockOpenModal} />);
 
     // The button is rendered but the click handler prevents marking paid invoices
     expect(screen.getByText("Mark as Paid")).toBeInTheDocument();
   });
 
   it("has proper button container structure", () => {
-    const { container } = render(
+    const { container } = renderWithProviders(
       <ToolbarButtons invoice={mockInvoice} openModal={mockOpenModal} />,
     );
 
@@ -109,7 +109,7 @@ describe("ToolbarButtons", () => {
   });
 
   it("maintains button order: Edit, Delete, Mark as Paid", () => {
-    render(<ToolbarButtons invoice={mockInvoice} openModal={mockOpenModal} />);
+    renderWithProviders(<ToolbarButtons invoice={mockInvoice} openModal={mockOpenModal} />);
 
     const buttons = screen.getAllByRole("button");
     expect(buttons[0]).toHaveTextContent("Edit");

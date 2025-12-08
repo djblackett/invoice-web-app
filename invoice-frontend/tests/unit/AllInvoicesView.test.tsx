@@ -1,4 +1,4 @@
-import { render, screen } from "../testUtils";
+import { renderWithProviders, screen } from "../testUtils";
 import AllInvoicesView from "@/features/invoices/components/AllInvoicesView.tsx";
 import { describe, it, expect, beforeEach } from "vitest";
 import { Invoice } from "@/features/invoices/types/invoiceTypes";
@@ -74,7 +74,7 @@ describe("AllInvoicesView", () => {
   });
 
   it("renders loading spinner when loading is true", () => {
-    render(
+    renderWithProviders(
       <AllInvoicesView
         invoiceList={[]}
         width={1200}
@@ -88,7 +88,7 @@ describe("AllInvoicesView", () => {
 
   it("renders error message when error is provided", () => {
     const error = new Error("Failed to fetch invoices");
-    render(
+    renderWithProviders(
       <AllInvoicesView
         invoiceList={[]}
         width={1200}
@@ -101,7 +101,7 @@ describe("AllInvoicesView", () => {
   });
 
   it("renders empty list when no invoices are provided", () => {
-    render(
+    renderWithProviders(
       <AllInvoicesView
         invoiceList={[]}
         width={1200}
@@ -116,7 +116,7 @@ describe("AllInvoicesView", () => {
   });
 
   it("renders invoice cards when invoices are provided", () => {
-    render(
+    renderWithProviders(
       <AllInvoicesView
         invoiceList={mockInvoices}
         width={1200}
@@ -130,7 +130,7 @@ describe("AllInvoicesView", () => {
   });
 
   it("renders links to individual invoice pages", () => {
-    render(
+    renderWithProviders(
       <AllInvoicesView
         invoiceList={mockInvoices}
         width={1200}
@@ -141,12 +141,12 @@ describe("AllInvoicesView", () => {
 
     const links = screen.getAllByRole("link");
     expect(links).toHaveLength(2);
-    expect(links[0]).toHaveAttribute("href", "#/invoices/RT3080");
-    expect(links[1]).toHaveAttribute("href", "#/invoices/XM9141");
+    expect(links[0]).toHaveAttribute("href", "/invoices/RT3080");
+    expect(links[1]).toHaveAttribute("href", "/invoices/XM9141");
   });
 
   it("displays client names for each invoice", () => {
-    render(
+    renderWithProviders(
       <AllInvoicesView
         invoiceList={mockInvoices}
         width={1200}
@@ -160,7 +160,7 @@ describe("AllInvoicesView", () => {
   });
 
   it("applies mobile styling when width is less than 1200", () => {
-    const { container } = render(
+    const { container } = renderWithProviders(
       <AllInvoicesView
         invoiceList={mockInvoices}
         width={800}
@@ -174,7 +174,7 @@ describe("AllInvoicesView", () => {
   });
 
   it("applies desktop styling when width is 1200 or more", () => {
-    const { container } = render(
+    const { container } = renderWithProviders(
       <AllInvoicesView
         invoiceList={mockInvoices}
         width={1200}
@@ -188,7 +188,7 @@ describe("AllInvoicesView", () => {
   });
 
   it("renders correct invoice status for each card", () => {
-    render(
+    renderWithProviders(
       <AllInvoicesView
         invoiceList={mockInvoices}
         width={1200}
@@ -202,7 +202,7 @@ describe("AllInvoicesView", () => {
   });
 
   it("displays invoice totals", () => {
-    render(
+    renderWithProviders(
       <AllInvoicesView
         invoiceList={mockInvoices}
         width={1200}
@@ -216,7 +216,7 @@ describe("AllInvoicesView", () => {
   });
 
   it("handles single invoice correctly", () => {
-    render(
+    renderWithProviders(
       <AllInvoicesView
         invoiceList={[mockInvoices[0]]}
         width={1200}
@@ -230,7 +230,7 @@ describe("AllInvoicesView", () => {
   });
 
   it("sets tabIndex to -1 on links", () => {
-    render(
+    renderWithProviders(
       <AllInvoicesView
         invoiceList={mockInvoices}
         width={1200}
@@ -246,7 +246,7 @@ describe("AllInvoicesView", () => {
   });
 
   it("renders invoice grid container", () => {
-    const { container } = render(
+    const { container } = renderWithProviders(
       <AllInvoicesView
         invoiceList={mockInvoices}
         width={1200}

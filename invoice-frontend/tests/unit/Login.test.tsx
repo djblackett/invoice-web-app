@@ -1,4 +1,4 @@
-import { render, screen, fireEvent } from "../testUtils";
+import { renderWithProviders, screen, fireEvent } from "../testUtils";
 import { useAuth } from "@/features/auth/hooks/useAuth.ts";
 import MemoizedLogin from "@/features/auth/pages/Login.tsx";
 import Login from "@/features/auth/pages/Login.tsx";
@@ -33,7 +33,7 @@ describe("Login Component", () => {
       isLoading: true,
       loginWithRedirect: mockLoginWithRedirect,
     });
-    render(<Login />);
+    renderWithProviders(<Login />);
     expect(screen.getByText("Loading")).toBeInTheDocument();
   });
 
@@ -43,14 +43,14 @@ describe("Login Component", () => {
       isLoading: false,
       loginWithRedirect: mockLoginWithRedirect,
     });
-    render(<MemoizedLogin />);
+    renderWithProviders(<MemoizedLogin />);
     expect(
       screen.queryByText("Please login to view your invoices"),
     ).not.toBeInTheDocument();
   });
 
   it("shows login prompt and button when not authenticated", () => {
-    render(<Login />);
+    renderWithProviders(<Login />);
     expect(screen.getByTestId("welcome-text")).toBeInTheDocument();
     const loginButton = screen.getByTestId("login-button");
     expect(loginButton).toBeInTheDocument();
@@ -58,7 +58,7 @@ describe("Login Component", () => {
   });
 
   it("calls loginWithRedirect on login button click", () => {
-    render(<Login />);
+    renderWithProviders(<Login />);
     const loginButton = screen.getByTestId("login-button");
     fireEvent.click(loginButton);
     expect(mockLoginWithRedirect).toHaveBeenCalled();

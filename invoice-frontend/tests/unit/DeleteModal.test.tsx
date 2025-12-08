@@ -1,6 +1,5 @@
 import { describe, it, expect, vi, afterEach } from "vitest";
-import { render, screen, fireEvent } from "../testUtils";
-import { MockedProvider } from "@apollo/client/testing";
+import { renderWithProviders, screen, fireEvent } from "../testUtils";
 import DeleteModal, {
   DeleteModalProps,
 } from "@/features/invoices/components/DeleteModal.tsx";
@@ -8,8 +7,6 @@ import {
   REMOVE_INVOICE,
   ALL_INVOICES,
 } from "@/features/invoices/graphql/invoice.queries.ts";
-import { ThemeProvider } from "styled-components";
-import { lightTheme } from "@/features/shared/styles/Themes.ts";
 import "@testing-library/jest-dom";
 
 const mocks = [
@@ -48,11 +45,7 @@ describe("DeleteModal", () => {
   });
 
   it("renders correctly when modal is open", () => {
-    render(
-      <MockedProvider mocks={mocks} addTypename={false}>
-        <DeleteModal {...defaultProps} />
-      </MockedProvider>,
-    );
+    renderWithProviders(<DeleteModal {...defaultProps} />, { mocks });
 
     expect(screen.getByText("Confirm Deletion")).toBeInTheDocument();
     expect(
@@ -62,24 +55,16 @@ describe("DeleteModal", () => {
   });
 
   it("calls setIsModalOpen when cancel button is clicked", () => {
-    render(
-      <MockedProvider mocks={mocks} addTypename={false}>
-        <DeleteModal {...defaultProps} />
-      </MockedProvider>,
-    );
+    renderWithProviders(<DeleteModal {...defaultProps} />, { mocks });
 
     fireEvent.click(screen.getByText("Cancel"));
     expect(defaultProps.setIsModalOpen).toHaveBeenCalledWith(false);
   });
 
   it("does not render modal when isModalOpen is false", () => {
-    render(
-      <MockedProvider mocks={mocks} addTypename={false}>
-        <ThemeProvider theme={lightTheme}>
-          <DeleteModal {...defaultProps} isModalOpen={false} />
-        </ThemeProvider>
-      </MockedProvider>,
-    );
+    renderWithProviders(<DeleteModal {...defaultProps} isModalOpen={false} />, {
+      mocks,
+    });
 
     expect(screen.queryByText("Confirm Deletion")).not.toBeVisible();
   });

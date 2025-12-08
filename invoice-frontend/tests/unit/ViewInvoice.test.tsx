@@ -1,6 +1,5 @@
-import { render, screen, fireEvent, waitFor } from "@testing-library/react";
-import { MockedProvider } from "@apollo/client/testing";
-import { MemoryRouter, Route, Routes } from "react-router-dom";
+import { renderWithProviders, screen, fireEvent, waitFor } from "../testUtils";
+import { Route, Routes } from "react-router-dom";
 import ViewInvoice from "@/features/invoices/pages/ViewInvoice.tsx";
 import { GET_INVOICE_BY_ID } from "@/features/invoices/graphql/invoice.queries.ts";
 import { describe, it, expect, vi } from "vitest";
@@ -63,14 +62,11 @@ const mocks = [
 
 describe("ViewInvoice", () => {
   it("renders loading state", () => {
-    render(
-      <MockedProvider mocks={mocks} addTypename={false}>
-        <MemoryRouter initialEntries={["/invoice/1"]}>
-          <Routes>
-            <Route path="/invoice/:id" element={<ViewInvoice />} />
-          </Routes>
-        </MemoryRouter>
-      </MockedProvider>,
+    renderWithProviders(
+      <Routes>
+        <Route path="/invoice/:id" element={<ViewInvoice />} />
+      </Routes>,
+      { mocks, route: "/invoice/1" },
     );
     expect(screen.getByText("Loading")).toBeInTheDocument();
   });
@@ -86,14 +82,11 @@ describe("ViewInvoice", () => {
       },
     ];
 
-    render(
-      <MockedProvider mocks={errorMocks} addTypename={false}>
-        <MemoryRouter initialEntries={["/invoice/1"]}>
-          <Routes>
-            <Route path="/invoice/:id" element={<ViewInvoice />} />
-          </Routes>
-        </MemoryRouter>
-      </MockedProvider>,
+    renderWithProviders(
+      <Routes>
+        <Route path="/invoice/:id" element={<ViewInvoice />} />
+      </Routes>,
+      { mocks: errorMocks, route: "/invoice/1" },
     );
 
     await waitFor(() => {
@@ -102,14 +95,11 @@ describe("ViewInvoice", () => {
   });
 
   it("renders invoice and handles go back", async () => {
-    render(
-      <MockedProvider mocks={mocks} addTypename={false}>
-        <MemoryRouter initialEntries={["/invoice/1"]}>
-          <Routes>
-            <Route path="/invoice/:id" element={<ViewInvoice />} />
-          </Routes>
-        </MemoryRouter>
-      </MockedProvider>,
+    renderWithProviders(
+      <Routes>
+        <Route path="/invoice/:id" element={<ViewInvoice />} />
+      </Routes>,
+      { mocks, route: "/invoice/1" },
     );
 
     await waitFor(() => {
@@ -123,14 +113,11 @@ describe("ViewInvoice", () => {
 
 describe("ViewInvoice", () => {
   it("renders loading state", () => {
-    render(
-      <MockedProvider mocks={mocks} addTypename={false}>
-        <MemoryRouter initialEntries={["/invoices/1"]}>
-          <Routes>
-            <Route path="/invoices/:id" element={<ViewInvoice />} />
-          </Routes>
-        </MemoryRouter>
-      </MockedProvider>,
+    renderWithProviders(
+      <Routes>
+        <Route path="/invoices/:id" element={<ViewInvoice />} />
+      </Routes>,
+      { mocks, route: "/invoices/1" },
     );
     expect(screen.getByText("Loading")).toBeInTheDocument();
   });
@@ -146,14 +133,11 @@ describe("ViewInvoice", () => {
       },
     ];
 
-    render(
-      <MockedProvider mocks={errorMocks} addTypename={false}>
-        <MemoryRouter initialEntries={["/invoices/1"]}>
-          <Routes>
-            <Route path="/invoices/:id" element={<ViewInvoice />} />
-          </Routes>
-        </MemoryRouter>
-      </MockedProvider>,
+    renderWithProviders(
+      <Routes>
+        <Route path="/invoices/:id" element={<ViewInvoice />} />
+      </Routes>,
+      { mocks: errorMocks, route: "/invoices/1" },
     );
 
     await waitFor(() => {
@@ -162,14 +146,11 @@ describe("ViewInvoice", () => {
   });
 
   it("renders invoice and handles go back", async () => {
-    render(
-      <MockedProvider mocks={mocks} addTypename={false}>
-        <MemoryRouter initialEntries={["/invoices/1"]}>
-          <Routes>
-            <Route path="/invoices/:id" element={<ViewInvoice />} />
-          </Routes>
-        </MemoryRouter>
-      </MockedProvider>,
+    renderWithProviders(
+      <Routes>
+        <Route path="/invoices/:id" element={<ViewInvoice />} />
+      </Routes>,
+      { mocks, route: "/invoices/1" },
     );
 
     expect(await screen.findByText("Go back")).toBeInTheDocument();

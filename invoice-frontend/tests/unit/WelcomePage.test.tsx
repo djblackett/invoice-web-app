@@ -1,4 +1,4 @@
-import { render, screen } from "../testUtils";
+import { renderWithProviders, screen } from "../testUtils";
 import { useAuth } from "@/features/auth/hooks/useAuth.ts";
 import { describe, it, expect, vi, Mock } from "vitest";
 import WelcomePage from "@/pages/WelcomePage";
@@ -13,7 +13,7 @@ describe("WelcomePage", () => {
       isAuthenticated: false,
     });
 
-    render(<WelcomePage />);
+    renderWithProviders(<WelcomePage />);
     expect(screen.getByText("Loading")).toBeInTheDocument();
   });
 
@@ -23,7 +23,7 @@ describe("WelcomePage", () => {
       isAuthenticated: true,
     });
 
-    render(<WelcomePage />);
+    renderWithProviders(<WelcomePage />);
     expect(screen.queryByText("Loading")).not.toBeInTheDocument();
     expect(screen.queryByText("Navigate")).not.toBeInTheDocument();
     // Since Navigate doesn't render visible content, you can check the component was called with correct props
@@ -35,7 +35,7 @@ describe("WelcomePage", () => {
       isAuthenticated: false,
     });
 
-    render(<WelcomePage />);
+    renderWithProviders(<WelcomePage />);
     expect(screen.queryByText("Loading")).not.toBeInTheDocument();
     expect(screen.queryByText("Navigate")).not.toBeInTheDocument();
   });

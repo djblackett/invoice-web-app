@@ -1,10 +1,20 @@
-import { cleanup, render, screen } from "../testUtils";
+import { cleanup, renderWithProviders, screen } from "../testUtils";
 import { describe, it, expect, vi, Mock, afterEach, beforeEach } from "vitest";
 import AllInvoices from "@/features/invoices/pages/AllInvoices.tsx";
 import { useAuth } from "@/features/auth/hooks/useAuth.ts";
 
 // Mock useAuth0 hook
 vi.mock("@/features/auth/hooks/useAuth");
+vi.mock("@/features/invoices/hooks/useInvoices", () => ({
+  default: () => ({ invoiceList: [], loading: false, error: null }),
+}));
+vi.mock("@apollo/client", async (importOriginal) => {
+  const actual = await importOriginal();
+  return {
+    ...actual,
+    useSubscription: () => ({ data: null }),
+  };
+});
 
 describe("AllInvoices Component", () => {
   beforeEach(() => {
@@ -25,7 +35,7 @@ describe("AllInvoices Component", () => {
       isLoading: false,
     });
 
-    render(<AllInvoices />);
+    renderWithProviders(<AllInvoices />);
 
     const welcomeText = screen.getByText(/Welcome testuser@example.com/i);
     expect(welcomeText).toBeInTheDocument();
@@ -39,7 +49,7 @@ describe("AllInvoices Component", () => {
       isLoading: true,
     });
 
-    render(<AllInvoices />);
+    renderWithProviders(<AllInvoices />);
 
     const loadingText = screen.getByText(/Loading/i);
     expect(loadingText).toBeInTheDocument();
@@ -52,7 +62,7 @@ describe("AllInvoices Component", () => {
       isLoading: false,
     });
 
-    render(<AllInvoices />);
+    renderWithProviders(<AllInvoices />);
 
     const welcomeText = screen.queryByText(/Welcome/i);
     expect(welcomeText).not.toBeInTheDocument();

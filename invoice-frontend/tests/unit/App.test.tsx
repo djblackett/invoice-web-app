@@ -1,4 +1,4 @@
-import { render, screen } from "../testUtils";
+import { renderWithProviders, screen } from "../testUtils";
 import { fireEvent } from "@testing-library/react";
 import { describe, it, expect, vi, beforeEach } from "vitest";
 import App from "@/app/App";
@@ -44,23 +44,23 @@ describe("App Component", () => {
   });
 
   it("renders avatar element", () => {
-    render(<App />);
+    renderWithProviders(<App />);
     expect(screen.getByTestId("logo")).toBeInTheDocument();
   });
 
   it("renders avatar element", () => {
-    render(<App />);
+    renderWithProviders(<App />);
     expect(screen.getByTestId("avatar")).toBeInTheDocument();
   });
 
   it("applies light theme by default", () => {
-    render(<App />);
+    renderWithProviders(<App />);
     const container = screen.getByTestId("container");
     expect(container).toHaveStyle("background: #F2F2F2"); // replace with actual light theme background
   });
 
   it("toggles to dark theme", () => {
-    render(<App />);
+    renderWithProviders(<App />);
     const toggleButton = screen.getByTestId("dark-mode-button");
     fireEvent.click(toggleButton);
     expect(window.localStorage.getItem("theme")).toBe("dark");
@@ -69,7 +69,7 @@ describe("App Component", () => {
   });
 
   it("renders Header component", () => {
-    render(<App />);
+    renderWithProviders(<App />);
     expect(screen.getByRole("banner")).toBeInTheDocument();
   });
 });
