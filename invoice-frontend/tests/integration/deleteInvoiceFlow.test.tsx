@@ -1,7 +1,12 @@
 import { describe, expect, it, vi, beforeEach, afterEach } from "vitest";
-import { cleanup, fireEvent, render, screen, waitFor } from "../testUtils";
+import {
+  cleanup,
+  fireEvent,
+  renderWithProviders,
+  screen,
+  waitFor,
+} from "../testUtils";
 import DeleteModal from "@/features/invoices/components/DeleteModal";
-import { MockedProvider } from "@apollo/client/testing";
 import { REMOVE_INVOICE, ALL_INVOICES } from "@/features/invoices/graphql/invoice.queries";
 
 afterEach(() => {
@@ -46,14 +51,13 @@ describe("Delete Invoice Flow Integration Tests", () => {
   it("should render delete confirmation modal when open", () => {
     const setIsModalOpen = vi.fn();
 
-    render(
-      <MockedProvider mocks={mocks} addTypename={false}>
-        <DeleteModal
-          isModalOpen={true}
-          setIsModalOpen={setIsModalOpen}
-          invoice={mockInvoice}
-        />
-      </MockedProvider>,
+    renderWithProviders(
+      <DeleteModal
+        isModalOpen={true}
+        setIsModalOpen={setIsModalOpen}
+        invoice={mockInvoice}
+      />,
+      { mocks, route: "/invoices/RT3080" },
     );
 
     expect(screen.getByText("Confirm Deletion")).toBeInTheDocument();
@@ -62,14 +66,13 @@ describe("Delete Invoice Flow Integration Tests", () => {
   it("should display invoice ID in confirmation message", () => {
     const setIsModalOpen = vi.fn();
 
-    render(
-      <MockedProvider mocks={mocks} addTypename={false}>
-        <DeleteModal
-          isModalOpen={true}
-          setIsModalOpen={setIsModalOpen}
-          invoice={mockInvoice}
-        />
-      </MockedProvider>,
+    renderWithProviders(
+      <DeleteModal
+        isModalOpen={true}
+        setIsModalOpen={setIsModalOpen}
+        invoice={mockInvoice}
+      />,
+      { mocks, route: "/invoices/RT3080" },
     );
 
     expect(
@@ -80,14 +83,13 @@ describe("Delete Invoice Flow Integration Tests", () => {
   it("should show delete and cancel buttons", () => {
     const setIsModalOpen = vi.fn();
 
-    render(
-      <MockedProvider mocks={mocks} addTypename={false}>
-        <DeleteModal
-          isModalOpen={true}
-          setIsModalOpen={setIsModalOpen}
-          invoice={mockInvoice}
-        />
-      </MockedProvider>,
+    renderWithProviders(
+      <DeleteModal
+        isModalOpen={true}
+        setIsModalOpen={setIsModalOpen}
+        invoice={mockInvoice}
+      />,
+      { mocks, route: "/invoices/RT3080" },
     );
 
     expect(screen.getByText("Delete")).toBeInTheDocument();
@@ -97,14 +99,13 @@ describe("Delete Invoice Flow Integration Tests", () => {
   it("should close modal when cancel is clicked", () => {
     const setIsModalOpen = vi.fn();
 
-    render(
-      <MockedProvider mocks={mocks} addTypename={false}>
-        <DeleteModal
-          isModalOpen={true}
-          setIsModalOpen={setIsModalOpen}
-          invoice={mockInvoice}
-        />
-      </MockedProvider>,
+    renderWithProviders(
+      <DeleteModal
+        isModalOpen={true}
+        setIsModalOpen={setIsModalOpen}
+        invoice={mockInvoice}
+      />,
+      { mocks, route: "/invoices/RT3080" },
     );
 
     const cancelButton = screen.getByText("Cancel");
@@ -116,14 +117,13 @@ describe("Delete Invoice Flow Integration Tests", () => {
   it("should not render modal when isModalOpen is false", () => {
     const setIsModalOpen = vi.fn();
 
-    render(
-      <MockedProvider mocks={mocks} addTypename={false}>
-        <DeleteModal
-          isModalOpen={false}
-          setIsModalOpen={setIsModalOpen}
-          invoice={mockInvoice}
-        />
-      </MockedProvider>,
+    renderWithProviders(
+      <DeleteModal
+        isModalOpen={false}
+        setIsModalOpen={setIsModalOpen}
+        invoice={mockInvoice}
+      />,
+      { mocks, route: "/invoices/RT3080" },
     );
 
     expect(screen.queryByText("Confirm Deletion")).not.toBeVisible();
@@ -132,14 +132,13 @@ describe("Delete Invoice Flow Integration Tests", () => {
   it("should have delete button with proper styling", () => {
     const setIsModalOpen = vi.fn();
 
-    render(
-      <MockedProvider mocks={mocks} addTypename={false}>
-        <DeleteModal
-          isModalOpen={true}
-          setIsModalOpen={setIsModalOpen}
-          invoice={mockInvoice}
-        />
-      </MockedProvider>,
+    renderWithProviders(
+      <DeleteModal
+        isModalOpen={true}
+        setIsModalOpen={setIsModalOpen}
+        invoice={mockInvoice}
+      />,
+      { mocks, route: "/invoices/RT3080" },
     );
 
     const deleteButton = screen.getByText("Delete");
@@ -150,14 +149,13 @@ describe("Delete Invoice Flow Integration Tests", () => {
   it("should render modal overlay when open", () => {
     const setIsModalOpen = vi.fn();
 
-    const { container } = render(
-      <MockedProvider mocks={mocks} addTypename={false}>
-        <DeleteModal
-          isModalOpen={true}
-          setIsModalOpen={setIsModalOpen}
-          invoice={mockInvoice}
-        />
-      </MockedProvider>,
+    const { container } = renderWithProviders(
+      <DeleteModal
+        isModalOpen={true}
+        setIsModalOpen={setIsModalOpen}
+        invoice={mockInvoice}
+      />,
+      { mocks, route: "/invoices/RT3080" },
     );
 
     expect(container.firstChild).toBeInTheDocument();
@@ -166,14 +164,13 @@ describe("Delete Invoice Flow Integration Tests", () => {
   it("should display warning message about action being permanent", () => {
     const setIsModalOpen = vi.fn();
 
-    render(
-      <MockedProvider mocks={mocks} addTypename={false}>
-        <DeleteModal
-          isModalOpen={true}
-          setIsModalOpen={setIsModalOpen}
-          invoice={mockInvoice}
-        />
-      </MockedProvider>,
+    renderWithProviders(
+      <DeleteModal
+        isModalOpen={true}
+        setIsModalOpen={setIsModalOpen}
+        invoice={mockInvoice}
+      />,
+      { mocks, route: "/invoices/RT3080" },
     );
 
     expect(

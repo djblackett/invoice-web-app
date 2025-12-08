@@ -1,57 +1,73 @@
 import React, { ReactElement } from "react";
-import { render, RenderOptions } from "@testing-library/react";
+import {
+  render as rtlRender,
+  renderHook as rtlRenderHook,
+  RenderOptions,
+  RenderHookOptions,
+} from "@testing-library/react";
 import { ThemeProvider } from "styled-components";
 import { lightTheme } from "@/features/shared/styles/Themes.ts";
-import { HashRouter } from "react-router-dom";
+import { MemoryRouter } from "react-router-dom";
 import store from "@/app/store";
 import { Provider as ReduxProvider } from "react-redux";
 import { MockedProvider, MockedResponse } from "@apollo/client/testing";
+import { InMemoryCache } from "@apollo/client";
 import { NewInvoiceProvider } from "@/features/invoices/forms/NewInvoiceContextProvider";
 import { DemoModeProvider } from "@/features/shared/components/DemoModeProvider";
 
-interface CustomRenderOptions extends RenderOptions {
+interface ProviderOptions {
   route?: string;
   mocks?: MockedResponse[];
-  addTypename?: boolean;
 }
+
+interface CustomRenderOptions extends RenderOptions, ProviderOptions {}
+interface CustomRenderHookOptions<TProps>
+  extends RenderHookOptions<TProps>,
+    ProviderOptions {}
 
 const AllProviders = ({
   children,
   mocks = [],
-  addTypename = false,
-}: {
-  children: React.ReactNode;
-  mocks?: MockedResponse[];
-  addTypename?: boolean;
-}) => {
-  return (
-    <ReduxProvider store={store}>
-      <DemoModeProvider>
-        <MockedProvider mocks={mocks} addTypename={addTypename}>
-          <ThemeProvider theme={lightTheme}>
-            <HashRouter>
-              <NewInvoiceProvider>{children}</NewInvoiceProvider>
-            </HashRouter>
-          </ThemeProvider>
-        </MockedProvider>
-      </DemoModeProvider>
-    </ReduxProvider>
-  );
-};
+  route = "/",
+}: ProviderOptions & { children: React.ReactNode }) => (
+  <ReduxProvider store={store}>
+    <DemoModeProvider>
+      <MockedProvider mocks={mocks} cache={new InMemoryCache()}>
+        <ThemeProvider theme={lightTheme}>
+          <MemoryRouter initialEntries={[route]}>
+            <NewInvoiceProvider>{children}</NewInvoiceProvider>
+          </MemoryRouter>
+        </ThemeProvider>
+      </MockedProvider>
+    </DemoModeProvider>
+  </ReduxProvider>
+);
 
-const customRender = (
+const renderWithProviders = (
   ui: ReactElement,
-  { mocks = [], addTypename = false, ...options }: CustomRenderOptions = {},
-) => {
-  return render(ui, {
+  { mocks = [], route = "/", ...options }: CustomRenderOptions = {},
+) =>
+  rtlRender(ui, {
     wrapper: ({ children }) => (
-      <AllProviders mocks={mocks} addTypename={addTypename}>
+      <AllProviders mocks={mocks} route={route}>
         {children}
       </AllProviders>
     ),
     ...options,
   });
-};
+
+const renderHookWithProviders = <TProps, TResult>(
+  hook: (props: TProps) => TResult,
+  { mocks = [], route = "/", ...options }: CustomRenderHookOptions<TProps> = {},
+) =>
+  rtlRenderHook(hook, {
+    wrapper: ({ children }) => (
+      <AllProviders mocks={mocks} route={route}>
+        {children}
+      </AllProviders>
+    ),
+    ...options,
+  });
 
 export * from "@testing-library/react";
-export { customRender as render };
+export { renderWithProviders, renderHookWithProviders };

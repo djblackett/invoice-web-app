@@ -1,5 +1,5 @@
 import { beforeEach, describe, expect, it, vi, afterEach } from "vitest";
-import { cleanup, fireEvent, render, screen } from "../testUtils";
+import { cleanup, fireEvent, renderWithProviders, screen } from "../testUtils";
 import { NewInvoiceProvider } from "@/features/invoices/forms/NewInvoiceContextProvider";
 import NewInvoice from "@/features/invoices/pages/NewInvoice";
 import { prettyDOM } from "@testing-library/react";
@@ -17,7 +17,7 @@ afterEach(() => {
 describe("First integration test", () => {
   beforeEach(() => {
     vi.stubEnv("NODE_ENV", "production");
-    render(
+    renderWithProviders(
       <NewInvoiceProvider
         initialState={{ isNewInvoiceOpen: true }}
         key={crypto.randomUUID()} // forces remount if anything slips through
@@ -56,7 +56,7 @@ describe("First integration test", () => {
 
 describe("NewInvoiceForm - basic DOM elements", () => {
   beforeEach(() => {
-    render(
+    renderWithProviders(
       <NewInvoiceProvider initialState={{ isNewInvoiceOpen: true }}>
         <NewInvoice />
       </NewInvoiceProvider>,
@@ -123,7 +123,7 @@ describe("NewInvoiceForm - basic DOM elements", () => {
   });
 
   it("should close the new invoice form when isNewInvoiceOpen is false", async () => {
-    render(
+    renderWithProviders(
       <NewInvoiceProvider initialState={{ isNewInvoiceOpen: false }}>
         <NewInvoice />
       </NewInvoiceProvider>,

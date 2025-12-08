@@ -4,6 +4,42 @@
 import "@testing-library/jest-dom";
 import { vi } from "vitest";
 import React from "react";
+import { act } from "react";
+
+// React 19: silence deprecated react-dom/test-utils act usage by routing to React.act
+vi.mock("react-dom/test-utils", async () => {
+  const actual =
+    await vi.importActual<typeof import("react-dom/test-utils")>(
+      "react-dom/test-utils",
+    );
+  return {
+    ...actual,
+    act,
+  };
+});
+
+// Silence the ReactDOMTestUtils.act deprecation noise; react-testing-library still calls it.
+const originalError = console.error;
+console.error = (...args: unknown[]) => {
+  if (
+    typeof args[0] === "string" &&
+    args[0].includes("ReactDOMTestUtils.act is deprecated")
+  ) {
+    return;
+  }
+  originalError(...args);
+};
+
+const originalWarn = console.warn;
+console.warn = (...args: unknown[]) => {
+  if (
+    typeof args[0] === "string" &&
+    args[0].includes("ReactDOMTestUtils.act is deprecated")
+  ) {
+    return;
+  }
+  originalWarn(...args);
+};
 
 // Mock motion/react (Framer Motion) for tests
 // AnimatePresence and other motion components don't work well in test environments

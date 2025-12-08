@@ -1,5 +1,5 @@
 import { describe, expect, it, vi } from "vitest";
-import { fireEvent, render, screen } from "../testUtils";
+import { fireEvent, renderWithProviders, screen } from "../testUtils";
 import AllInvoicesView from "@/features/invoices/components/AllInvoicesView";
 import invoices from "../data/invoices";
 import AllInvoicesToolbar from "@/features/invoices/components/AllInvoicesToolbar";
@@ -12,7 +12,7 @@ describe("First integration test", () => {
   vi.stubEnv("NODE_ENV", "production");
 
   it("should render the full list of invoices ", () => {
-    render(
+    renderWithProviders(
       <AllInvoicesView invoiceList={invoices} width={1200} loading={false} />,
     );
     const invoicesList = screen.getAllByTestId("invoice-card");
@@ -20,14 +20,16 @@ describe("First integration test", () => {
   });
 
   it("should render the loading state", () => {
-    render(<AllInvoicesView invoiceList={[]} width={1200} loading={true} />);
+    renderWithProviders(
+      <AllInvoicesView invoiceList={[]} width={1200} loading={true} />,
+    );
     const loadingGrid = screen.getByTestId("grid-loading");
     expect(loadingGrid).toBeInTheDocument();
   });
 
   it("should render the error state", () => {
     const error = new Error("Test error");
-    render(
+    renderWithProviders(
       <AllInvoicesView
         invoiceList={[]}
         width={1200}
@@ -40,13 +42,17 @@ describe("First integration test", () => {
   });
 
   it("should render the empty list state", async () => {
-    render(<AllInvoicesView invoiceList={[]} width={1200} loading={false} />);
+    renderWithProviders(
+      <AllInvoicesView invoiceList={[]} width={1200} loading={false} />,
+    );
     const emptyList = await screen.findByText("There is nothing here");
     expect(emptyList).toBeInTheDocument();
   });
 
   it("should render the waking up the backend message", () => {
-    render(<AllInvoicesView invoiceList={[]} width={1200} loading={true} />);
+    renderWithProviders(
+      <AllInvoicesView invoiceList={[]} width={1200} loading={true} />,
+    );
     const wakingUpMessage = screen.getByText(
       "Waking up the backend containers",
     );
@@ -60,7 +66,7 @@ describe("First integration test", () => {
       (invoice) => invoice.status === "pending",
     );
 
-    render(
+    renderWithProviders(
       <>
         <AllInvoicesToolbar invoiceList={invoices} />
         <AllInvoicesView invoiceList={invoices} width={1200} loading={false} />
@@ -76,7 +82,7 @@ describe("First integration test", () => {
   });
 
   it("should render an invoice's id in the invoice card", async () => {
-    render(
+    renderWithProviders(
       <AllInvoicesView invoiceList={invoices} width={1200} loading={false} />,
     );
 
@@ -85,7 +91,7 @@ describe("First integration test", () => {
   });
 
   it("should render an invoice's status in the invoice card", async () => {
-    render(
+    renderWithProviders(
       <AllInvoicesView invoiceList={invoices} width={1200} loading={false} />,
     );
 
@@ -99,7 +105,7 @@ describe("First integration test", () => {
   });
 
   it("should render an invoice's client name in the invoice card", async () => {
-    render(
+    renderWithProviders(
       <AllInvoicesView invoiceList={invoices} width={1200} loading={false} />,
     );
 
@@ -108,7 +114,7 @@ describe("First integration test", () => {
   });
 
   it("should render an invoice's total in the invoice card", async () => {
-    render(
+    renderWithProviders(
       <AllInvoicesView invoiceList={invoices} width={1200} loading={false} />,
     );
 
@@ -120,7 +126,7 @@ describe("First integration test", () => {
   });
 
   it("should render an invoice's paymentDue date in the invoice card", async () => {
-    render(
+    renderWithProviders(
       <AllInvoicesView invoiceList={invoices} width={1200} loading={false} />,
     );
 
