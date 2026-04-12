@@ -6,6 +6,7 @@ import MarkAsPaidButton from "@/features/shared/components/buttons/MarkAsPaidBut
 import { useNewInvoiceContext } from "../forms/NewInvoiceContextProvider.tsx";
 import { SyntheticEvent, useRef } from "react";
 import { Invoice } from "@/features/invoices/types/invoiceTypes.ts";
+import { HistoryButton } from "@/features/revisions/styles.ts";
 
 const ButtonsContainer = styled.div`
   display: flex;
@@ -41,9 +42,14 @@ const ButtonsContainer = styled.div`
 type ToolbarButtonsProps = {
   invoice: Invoice;
   openModal: (e: SyntheticEvent) => void;
+  openHistory?: () => void;
 };
 
-function ToolbarButtons({ invoice, openModal }: ToolbarButtonsProps) {
+function ToolbarButtons({
+  invoice,
+  openModal,
+  openHistory,
+}: ToolbarButtonsProps) {
   const { isNewInvoiceOpen, setIsNewInvoiceOpen } = useNewInvoiceContext();
 
   const openEditInvoice = () => {
@@ -54,6 +60,16 @@ function ToolbarButtons({ invoice, openModal }: ToolbarButtonsProps) {
 
   return (
     <ButtonsContainer>
+      {openHistory && (
+        <HistoryButton
+          type="button"
+          onClick={openHistory}
+          data-testid="history-button"
+          aria-label="View revision history"
+        >
+          History
+        </HistoryButton>
+      )}
       <EditButton
         toggleEditTab={openEditInvoice}
         isEditOpen={isNewInvoiceOpen}

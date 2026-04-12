@@ -52,9 +52,14 @@ const StatusText = styled.p`
 export type InvoiceToolBarProps = {
   invoice: Invoice;
   setIsModalOpen: React.Dispatch<React.SetStateAction<boolean>>;
+  setIsHistoryOpen?: React.Dispatch<React.SetStateAction<boolean>>;
 };
 
-function InvoiceToolbar({ invoice, setIsModalOpen }: InvoiceToolBarProps) {
+function InvoiceToolbar({
+  invoice,
+  setIsModalOpen,
+  setIsHistoryOpen,
+}: InvoiceToolBarProps) {
   const openModal = (e: SyntheticEvent) => {
     e.preventDefault();
     toast.clearWaitingQueue();
@@ -86,7 +91,13 @@ function InvoiceToolbar({ invoice, setIsModalOpen }: InvoiceToolBarProps) {
         <StatusText>Status</StatusText>
         {invoiceStatus}
       </StatusContainer>
-      <ToolbarButtons invoice={invoice} openModal={openModal} />
+      <ToolbarButtons
+        invoice={invoice}
+        openModal={openModal}
+        openHistory={
+          setIsHistoryOpen ? () => setIsHistoryOpen(true) : undefined
+        }
+      />
     </Toolbar>
   );
 }

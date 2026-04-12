@@ -143,10 +143,51 @@ export class PrismaInvoiceRepository implements IInvoiceRepo {
   async update(id: string, invoiceUpdates: Partial<Invoice>) {
     try {
       const updatedInvoice = await this.prisma.$transaction(async (prisma) => {
-        if (invoiceUpdates.items && invoiceUpdates.items.length >= 1) {
-          await prisma.item.deleteMany({
+        // Items get reconciled by id when possible so that revision diffs
+        // can stably match line items across edits (modify vs. remove+add).
+        // An item with an id that already belongs to this invoice is
+        // UPDATED in place; a new id (or no id) triggers a CREATE; anything
+        // missing from the incoming list is DELETED.
+        if (invoiceUpdates.items !== undefined) {
+          const incomingItems = invoiceUpdates.items ?? [];
+          const existing = await prisma.item.findMany({
             where: { invoiceId: id },
+            select: { id: true },
           });
+          const existingIds = new Set(existing.map((i) => i.id));
+          const incomingIds = new Set(
+            incomingItems.map((i) => i.id).filter((v): v is string => !!v),
+          );
+          const toDelete = [...existingIds].filter(
+            (eid) => !incomingIds.has(eid),
+          );
+          if (toDelete.length > 0) {
+            await prisma.item.deleteMany({
+              where: { invoiceId: id, id: { in: toDelete } },
+            });
+          }
+          for (const item of incomingItems) {
+            const payload = {
+              name: item.name ?? "",
+              price: item.price ?? 0,
+              quantity: item.quantity ?? 0,
+              total: item.total ?? 0,
+            };
+            if (item.id && existingIds.has(item.id)) {
+              await prisma.item.update({
+                where: { id: item.id },
+                data: payload,
+              });
+            } else {
+              await prisma.item.create({
+                data: {
+                  ...payload,
+                  ...(item.id ? { id: item.id } : {}),
+                  Invoice: { connect: { id } },
+                },
+              });
+            }
+          }
         }
 
         const inputUpdateResult = await prisma.invoice.update({
@@ -181,19 +222,6 @@ export class PrismaInvoiceRepository implements IInvoiceRepo {
                   },
                 }
               : undefined,
-            items: {
-              createMany: {
-                data:
-                  invoiceUpdates.items &&
-                  (invoiceUpdates.items.map((item) => ({
-                    name: item.name,
-                    price: item.price,
-                    quantity: item.quantity,
-                    total: item.total,
-                  })) as Prisma.ItemCreateManyInput[]),
-                skipDuplicates: true,
-              },
-            },
           } as Prisma.InvoiceUpdateInput,
           include: {
             items: true,

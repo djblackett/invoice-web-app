@@ -11,6 +11,7 @@ import container from "@/config/inversify.config";
 import TYPES from "@/constants/identifiers";
 import { InvoiceService } from "@/services/invoice.service";
 import { UserService } from "@/services/user.service";
+import { InvoiceRevisionService } from "@/services/invoiceRevision.service";
 import type { PubSub } from "graphql-subscriptions";
 import { Role } from "@prisma/client";
 import { NODE_ENV } from "@/config/server.config";
@@ -221,6 +222,10 @@ function setupContainer(user: UserIdAndRole) {
     .bind<InvoiceService>(TYPES.InvoiceService)
     .to(InvoiceService)
     .inTransientScope();
+  childContainer
+    .bind<InvoiceRevisionService>(TYPES.InvoiceRevisionService)
+    .to(InvoiceRevisionService)
+    .inTransientScope();
 
   return childContainer;
 }
@@ -231,6 +236,9 @@ function getServices(childContainer: typeof container) {
     TYPES.InvoiceService,
   );
   const userService = childContainer.tryGet<UserService>(TYPES.UserService);
+  const invoiceRevisionService = childContainer.tryGet<InvoiceRevisionService>(
+    TYPES.InvoiceRevisionService,
+  );
   const pubsub = childContainer.tryGet<PubSub>(TYPES.PubSub);
 
   if (!invoiceService) {
@@ -241,11 +249,15 @@ function getServices(childContainer: typeof container) {
     throw new Error("User service not found");
   }
 
+  if (!invoiceRevisionService) {
+    throw new Error("Invoice revision service not found");
+  }
+
   if (!pubsub) {
     throw new Error("PubSub not found");
   }
 
-  return { invoiceService, userService, pubsub };
+  return { invoiceService, userService, invoiceRevisionService, pubsub };
 }
 
 async function getOrCreateDbUser(

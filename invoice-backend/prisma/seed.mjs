@@ -416,6 +416,144 @@ const data = [
   },
 ];
 
+/**
+ * Build a snapshot object matching the shape expected by the backend
+ * revision diff engine (see `services/invoiceDiff.ts#InvoiceSnapshot`).
+ * Keeping this logic in the seed instead of importing from /src lets the
+ * seed stay runnable under Node without ts-node.
+ */
+function buildSnapshot(invoice) {
+  const items = (invoice.items ?? []).map((it) => ({
+    id: it.id ?? "",
+    name: it.name ?? "",
+    price: Number(it.price ?? 0),
+    quantity: Number(it.quantity ?? 0),
+    total: Number(it.total ?? 0),
+  }));
+  const total = items.reduce((s, i) => s + i.total, 0);
+  return {
+    clientAddress: { ...(invoice.clientAddress ?? {}) },
+    senderAddress: { ...(invoice.senderAddress ?? {}) },
+    clientEmail: invoice.clientEmail ?? "",
+    clientName: invoice.clientName ?? "",
+    createdAt: invoice.createdAt ?? "",
+    description: invoice.description ?? "",
+    items,
+    paymentDue: invoice.paymentDue ?? "",
+    paymentTerms: Number(invoice.paymentTerms ?? 0),
+    status: invoice.status ?? "",
+    total: Math.round(total * 100) / 100,
+  };
+}
+
+/**
+ * Demo revisions for the first seeded invoice so a reviewer can open
+ * it and immediately exercise the history UI without doing edits first.
+ * Stored in reverse-chronological order (most recent first), but they'll
+ * be inserted with ascending revisionNumber below.
+ */
+const demoRevisionEdits = [
+  {
+    message: "Initial draft created",
+    changeType: "create",
+    mutate: (state) => ({
+      ...state,
+      status: "draft",
+      description: "Website re-brand (draft)",
+      items: [
+        { id: "seed-item-1", name: "Brand Guidelines", quantity: 1, price: 1500, total: 1500 },
+      ],
+    }),
+  },
+  {
+    message: "Added logo design deliverable",
+    changeType: "edit",
+    mutate: (state) => ({
+      ...state,
+      description: "Website re-brand + logo",
+      items: [
+        ...state.items,
+        { id: "seed-item-2", name: "Logo Design", quantity: 1, price: 300.9, total: 300.9 },
+      ],
+    }),
+  },
+  {
+    message: "Increased brand guidelines price",
+    changeType: "edit",
+    mutate: (state) => ({
+      ...state,
+      items: state.items.map((it) =>
+        it.id === "seed-item-1" ? { ...it, price: 1800.9, total: 1800.9 } : it,
+      ),
+    }),
+  },
+  {
+    message: "Sent to client, pending payment",
+    changeType: "edit",
+    mutate: (state) => ({ ...state, status: "pending" }),
+  },
+  {
+    message: "Marked as paid",
+    changeType: "edit",
+    mutate: (state) => ({ ...state, status: "paid" }),
+  },
+];
+
+async function seedRevisionsForInvoice(invoice) {
+  // Build successive snapshots by applying each demo edit in order.
+  let state = buildSnapshot({ ...invoice, items: [] });
+  let revisionNumber = 0;
+  for (const step of demoRevisionEdits) {
+    state = step.mutate(state);
+    // Recompute totals so every snapshot is internally consistent.
+    const items = state.items.map((it) => ({
+      ...it,
+      total: Math.round(it.price * it.quantity * 100) / 100,
+    }));
+    const total = Math.round(items.reduce((s, i) => s + i.total, 0) * 100) / 100;
+    const snapshot = { ...state, items, total };
+    revisionNumber += 1;
+    await prisma.invoiceRevision.create({
+      data: {
+        invoiceId: invoice.id,
+        revisionNumber,
+        changeType: step.changeType,
+        message: step.message,
+        createdById: invoice.createdById,
+        snapshot,
+      },
+    });
+    state = snapshot;
+  }
+
+  // Fast-forward the actual invoice to match the final demo revision so
+  // that the "current" invoice and the newest revision agree.
+  const finalSnapshot = state;
+  await prisma.$transaction(async (tx) => {
+    await tx.item.deleteMany({ where: { invoiceId: invoice.id } });
+    for (const item of finalSnapshot.items) {
+      await tx.item.create({
+        data: {
+          id: item.id,
+          name: item.name,
+          price: item.price,
+          quantity: item.quantity,
+          total: item.total,
+          Invoice: { connect: { id: invoice.id } },
+        },
+      });
+    }
+    await tx.invoice.update({
+      where: { id: invoice.id },
+      data: {
+        status: finalSnapshot.status,
+        description: finalSnapshot.description,
+        total: finalSnapshot.total,
+      },
+    });
+  });
+}
+
 async function main() {
   await prisma.$connect();
 
@@ -430,7 +568,29 @@ async function main() {
       console.log(`Invoice ${invoice.id} already exists — skipping.`);
       continue;
     }
-    await create(invoice);
+    const created = await create(invoice);
+
+    // For every seeded invoice, record a single "create" revision so the
+    // history view is never empty. The first invoice additionally gets a
+    // full demo history so a reviewer can click through restore/diff.
+    const initialSnapshot = buildSnapshot(created);
+    await prisma.invoiceRevision.create({
+      data: {
+        invoiceId: created.id,
+        revisionNumber: 1,
+        changeType: "create",
+        message: "Invoice created",
+        createdById: created.createdById,
+        snapshot: initialSnapshot,
+      },
+    });
+  }
+
+  // Replace the history for the first demo invoice with a richer series.
+  const demoInvoiceId = data[0]?.id;
+  if (demoInvoiceId) {
+    await prisma.invoiceRevision.deleteMany({ where: { invoiceId: demoInvoiceId } });
+    await seedRevisionsForInvoice(data[0]);
   }
 
   await prisma.$disconnect();

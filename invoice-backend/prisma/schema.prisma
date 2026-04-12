@@ -12,9 +12,9 @@ datasource db {
 }
 
 model Invoice {
-  id              String         @id @default(uuid())
-  createdBy       User           @relation(fields: [createdById], references: [id], onDelete: Cascade)
-  createdById     String           
+  id              String             @id @default(uuid())
+  createdBy       User               @relation(fields: [createdById], references: [id], onDelete: Cascade)
+  createdById     String
   createdAt       String
   paymentDue      String
   description     String
@@ -24,11 +24,35 @@ model Invoice {
   status          String
   total           Decimal
   items           Item[]
-  clientAddress   ClientAddress? @relation(fields: [clientAddressId], references: [id], onDelete: Cascade)
-  senderAddress   SenderAddress? @relation(fields: [senderAddressId], references: [id], onDelete: Cascade)
-  senderAddressId Int?           @unique
-  clientAddressId Int?           @unique
+  clientAddress   ClientAddress?     @relation(fields: [clientAddressId], references: [id], onDelete: Cascade)
+  senderAddress   SenderAddress?     @relation(fields: [senderAddressId], references: [id], onDelete: Cascade)
+  senderAddressId Int?               @unique
+  clientAddressId Int?               @unique
+  revisions       InvoiceRevision[]
 
+  @@index([createdById])
+}
+
+/// Append-only snapshot of an invoice. Every meaningful mutation (create, edit, restore)
+/// produces a new row. Rows are never updated or deleted; history is preserved for audit.
+model InvoiceRevision {
+  id                     String   @id @default(uuid())
+  invoice                Invoice  @relation(fields: [invoiceId], references: [id], onDelete: Cascade)
+  invoiceId              String
+  revisionNumber         Int
+  createdAt              DateTime @default(now())
+  createdById            String?
+  createdBy              User?    @relation(fields: [createdById], references: [id], onDelete: SetNull)
+  changeType             String
+  restoredFromRevisionId String?
+  message                String?
+  /// Full serialized state of the invoice at this revision. Shape:
+  /// { clientAddress, senderAddress, clientEmail, clientName, createdAt, description,
+  ///   items: [{ id, name, price, quantity, total }], paymentDue, paymentTerms, status, total }
+  snapshot               Json
+
+  @@unique([invoiceId, revisionNumber])
+  @@index([invoiceId])
   @@index([createdById])
 }
 
@@ -63,11 +87,12 @@ model SenderAddress {
 }
 
 model User {
-  id           String    @id @default(uuid())
-  invoices     Invoice[]
-  name         String?
-  username     String @unique
-  role         Role   @default(USER)
+  id        String            @id @default(uuid())
+  invoices  Invoice[]
+  revisions InvoiceRevision[]
+  name      String?
+  username  String            @unique
+  role      Role              @default(USER)
 }
 
 

@@ -2,6 +2,8 @@ const TYPES = {
   InvoiceService: Symbol.for("InvoiceService"),
   InvoiceRepository: Symbol.for("InvoiceRepository"),
   IInvoiceRepo: Symbol.for("IInvoiceRepo"),
+  IInvoiceRevisionRepo: Symbol.for("IInvoiceRevisionRepo"),
+  InvoiceRevisionService: Symbol.for("InvoiceRevisionService"),
   IUserRepo: Symbol.for("IUserRepo"),
   UserService: Symbol.for("UserService"),
   Controller: Symbol.for("Controller"),

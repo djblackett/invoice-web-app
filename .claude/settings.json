@@ -5,5 +5,6 @@
       "Bash(docker network:*)",
       "Bash(xargs -I{} docker port {})"
     ]
-  }
+  },
+  "showThinkingSummaries": true
 }
