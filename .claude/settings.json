@@ -1,0 +1,9 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(docker compose:*)",
+      "Bash(docker network:*)",
+      "Bash(xargs -I{} docker port {})"
+    ]
+  }
+}
