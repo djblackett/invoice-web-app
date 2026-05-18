@@ -4,6 +4,7 @@ import container from "@/config/inversify.config";
 import TYPES from "@/constants/identifiers";
 import type { IUserRepo } from "@/repositories/userRepo";
 import type { Logger } from "@/config/logger.config";
+import { comparePassword } from "@/utils/crypto.util";
 
 const getLogger = (): Logger => container.get<Logger>(TYPES.Logger);
 
@@ -20,33 +21,39 @@ export function configureLocalStrategy() {
         usernameField: "email", // Use email instead of username
         passwordField: "password",
       },
-      (email, _password, done) => {
+      (email, password, done) => {
         void (async () => {
           try {
             const userRepo = container.get<IUserRepo>(TYPES.IUserRepo);
 
-            const user = await userRepo.getUserById(email);
+            const user = await userRepo.getUserForAuthentication(email);
 
-            if (!user || !user.id) {
+            if (!user) {
               getLogger().warn(`Login attempt for non-existent user: ${email}`);
               return done(null, false, {
                 message: "Invalid email or password",
               });
             }
 
-            const userWithPassword = await userRepo.getUserByIdSafely(user.id);
-
-            if (!userWithPassword) {
+            if (!user.passwordHash) {
               return done(null, false, {
                 message: "Invalid email or password",
               });
             }
 
-            getLogger().warn(
-              "Password verification not yet implemented - requires getUserForAuthentication method",
-            );
-            return done(null, false, {
-              message: "Authentication not yet fully implemented",
+            const isValid = await comparePassword(password, user.passwordHash);
+            if (!isValid) {
+              getLogger().warn(`Failed login attempt for: ${email}`);
+              return done(null, false, {
+                message: "Invalid email or password",
+              });
+            }
+
+            return done(null, {
+              id: user.id,
+              name: user.name,
+              username: user.username,
+              role: user.role,
             });
           } catch (error) {
             const message =

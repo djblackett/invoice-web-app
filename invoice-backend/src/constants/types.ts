@@ -149,3 +149,11 @@ export interface UserIdAndRole {
   username?: string | undefined;
   name: string | undefined;
 }
+
+export interface UserWithPasswordHash {
+  id: string;
+  name: string | undefined;
+  username: string;
+  role: "USER" | "ADMIN" | undefined;
+  passwordHash: string | null;
+}

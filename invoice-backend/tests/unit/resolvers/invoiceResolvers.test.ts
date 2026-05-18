@@ -492,7 +492,7 @@ describe("Mutation.removeInvoice", () => {
       mockContext,
     );
 
-    expect(result).toEqual(removedInvoice);
+    expect(result).toEqual({ acknowledged: removedInvoice });
     expect(invoiceServiceMock.deleteInvoice).toHaveBeenCalledWith(args.id);
   });
 

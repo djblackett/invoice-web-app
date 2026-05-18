@@ -6,6 +6,7 @@ import type {
   UserDTO,
   UserEntity,
   UserIdAndRole,
+  UserWithPasswordHash,
 } from "../../constants/types";
 import { PrismaClientKnownRequestError } from "@prisma/client/runtime/library";
 import TYPES from "../../constants/identifiers";
@@ -114,6 +115,27 @@ export class PrismaUserRepository implements IUserRepo {
     } catch (e: unknown) {
       this.logger.error(String(e));
       throw new Error("Failed to fetch user");
+    }
+  }
+
+  async getUserForAuthentication(email: string): Promise<UserWithPasswordHash | null> {
+    try {
+      const user = await this.prisma.user.findUnique({
+        select: {
+          id: true,
+          name: true,
+          username: true,
+          role: true,
+          passwordHash: true,
+        },
+        where: {
+          username: email,
+        },
+      });
+      return user ? { ...user, name: user.name ?? undefined } : null;
+    } catch (e: unknown) {
+      this.logger.error(String(e));
+      throw new Error("Failed to fetch user for authentication");
     }
   }
 

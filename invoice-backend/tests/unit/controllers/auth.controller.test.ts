@@ -1,7 +1,7 @@
 import { describe, it, expect, beforeEach, vi } from "vitest";
 import { mockDeep } from "vitest-mock-extended";
 import type { Request, Response } from "express";
-import { register } from "@/controllers/auth.controller";
+import { register, login } from "@/controllers/auth.controller";
 import type { IUserRepo } from "@/repositories/userRepo";
 import type { IAuthRepo } from "@/repositories/authRepo";
 import { AuthService } from "@/services/auth.service";
@@ -391,6 +391,133 @@ describe("Auth Controller", () => {
       );
 
       process.env.NODE_ENV = originalEnv;
+    });
+  });
+
+  describe("login", () => {
+    it("should login successfully with correct credentials", async () => {
+      const { validateRequest } = await import("@/validators/auth.validator");
+      vi.mocked(validateRequest).mockReturnValue({
+        success: true,
+        data: {
+          email: "test@example.com",
+          password: "Password123",
+        },
+      });
+
+      mockUserRepo.getUserForAuthentication.mockResolvedValue({
+        id: "user-123",
+        name: "Test User",
+        username: "test@example.com",
+        role: "USER",
+        passwordHash: "hashed-password",
+      });
+
+      vi.mocked(cryptoUtil.comparePassword).mockResolvedValue(true);
+
+      mockAuthService.generateTokenPair.mockResolvedValue({
+        accessToken: "access-token",
+        refreshToken: "refresh-token",
+        expiresIn: 900,
+      });
+
+      mockReq.body = {
+        email: "test@example.com",
+        password: "Password123",
+      };
+
+      await login(mockReq as Request, mockRes as Response);
+
+      expect(cryptoUtil.comparePassword).toHaveBeenCalledWith(
+        "Password123",
+        "hashed-password",
+      );
+      expect(mockRes.cookie).toHaveBeenCalledWith(
+        "refreshToken",
+        "refresh-token",
+        expect.objectContaining({
+          httpOnly: true,
+          sameSite: "strict",
+        }),
+      );
+    });
+
+    it("should return 401 for wrong password", async () => {
+      const { validateRequest } = await import("@/validators/auth.validator");
+      vi.mocked(validateRequest).mockReturnValue({
+        success: true,
+        data: {
+          email: "test@example.com",
+          password: "WrongPassword123",
+        },
+      });
+
+      mockUserRepo.getUserForAuthentication.mockResolvedValue({
+        id: "user-123",
+        name: "Test User",
+        username: "test@example.com",
+        role: "USER",
+        passwordHash: "hashed-password",
+      });
+
+      vi.mocked(cryptoUtil.comparePassword).mockResolvedValue(false);
+
+      await login(mockReq as Request, mockRes as Response);
+
+      expect(mockRes.status).toHaveBeenCalledWith(401);
+    });
+
+    it("should return 401 for non-existent user", async () => {
+      const { validateRequest } = await import("@/validators/auth.validator");
+      vi.mocked(validateRequest).mockReturnValue({
+        success: true,
+        data: {
+          email: "nonexistent@example.com",
+          password: "Password123",
+        },
+      });
+
+      mockUserRepo.getUserForAuthentication.mockResolvedValue(null);
+
+      await login(mockReq as Request, mockRes as Response);
+
+      expect(mockRes.status).toHaveBeenCalledWith(401);
+    });
+
+    it("should return 401 for OAuth-only user without password", async () => {
+      const { validateRequest } = await import("@/validators/auth.validator");
+      vi.mocked(validateRequest).mockReturnValue({
+        success: true,
+        data: {
+          email: "oauth@example.com",
+          password: "Password123",
+        },
+      });
+
+      mockUserRepo.getUserForAuthentication.mockResolvedValue({
+        id: "user-456",
+        name: "OAuth User",
+        username: "oauth@example.com",
+        role: "USER",
+        passwordHash: null,
+      });
+
+      await login(mockReq as Request, mockRes as Response);
+
+      expect(mockRes.status).toHaveBeenCalledWith(401);
+      expect(cryptoUtil.comparePassword).not.toHaveBeenCalled();
+    });
+
+    it("should return 400 for invalid request body", async () => {
+      const { validateRequest } = await import("@/validators/auth.validator");
+      vi.mocked(validateRequest).mockReturnValue({
+        success: false,
+        errors: ["Email is required"],
+      });
+
+      await login(mockReq as Request, mockRes as Response);
+
+      expect(mockRes.status).toHaveBeenCalledWith(400);
     });
   });
 });

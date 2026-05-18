@@ -3,6 +3,7 @@ import type {
   ReturnedUser,
   UserDTO,
   UserIdAndRole,
+  UserWithPasswordHash,
 } from "@/constants/types";
 
 export interface IUserRepo {
@@ -12,6 +13,7 @@ export interface IUserRepo {
   getUserById: (id: string) => Promise<UserDTO | null>;
   getUserByIdSafely: (id: string) => Promise<UserIdAndRole | null>;
   getUserByUsername: (username: string) => Promise<UserIdAndRole | null>;
+  getUserForAuthentication: (email: string) => Promise<UserWithPasswordHash | null>;
   deleteAllUsers: () => Promise<boolean>;
   deleteAllUsersKeepAdmin: () => Promise<boolean>;
 }

@@ -6,7 +6,7 @@ import type { IAuthRepo } from "@/repositories/authRepo";
 import { AuthService } from "@/services/auth.service";
 import { TokenService } from "@/services/token.service";
 import type { Logger } from "@/config/logger.config";
-import { hashPassword, validatePasswordStrength } from "@/utils/crypto.util";
+import { hashPassword, comparePassword, validatePasswordStrength } from "@/utils/crypto.util";
 import {
   registerSchema,
   loginSchema,
@@ -146,39 +146,34 @@ export async function login(req: Request, res: Response) {
       });
     }
 
-    const { email } = validation.data;
+    const { email, password } = validation.data;
 
     const userRepo = container.get<IUserRepo>(TYPES.IUserRepo);
     const authService = container.get(AuthService);
 
-    // Find user
-    const user = await userRepo.getUserByIdSafely(email);
+    // Find user with password hash for verification
+    const user = await userRepo.getUserForAuthentication(email);
     if (!user || !user.username || !user.role) {
       return res.status(401).json({
         error: "Invalid email or password",
       });
     }
 
-    // For now, we need to get the passwordHash from the user
-    // This is a limitation of the current IUserRepo interface
-    // TODO: Add getUserForAuthentication method
-    // Temporary workaround: we'll need to extend the interface
+    // OAuth-only users don't have a password set
+    if (!user.passwordHash) {
+      return res.status(401).json({
+        error: "Invalid email or password",
+      });
+    }
 
-    getLogger().warn(
-      "Password verification temporarily disabled - needs getUserForAuthentication",
-    );
-
-    // Future implementation:
-    // const userWithPassword = await userRepo.getUserForAuthentication(email);
-    // if (!userWithPassword || !userWithPassword.passwordHash) {
-    //   return res.status(401).json({ error: "Invalid email or password" });
-    // }
-    //
-    // const isValidPassword = await comparePassword(password, userWithPassword.passwordHash);
-    // if (!isValidPassword) {
-    //   getLogger().warn(`Failed login attempt for: ${email}`);
-    //   return res.status(401).json({ error: "Invalid email or password" });
-    // }
+    // Verify password
+    const isValidPassword = await comparePassword(password, user.passwordHash);
+    if (!isValidPassword) {
+      getLogger().warn(`Failed login attempt for: ${email}`);
+      return res.status(401).json({
+        error: "Invalid email or password",
+      });
+    }
 
     // Generate tokens
     const metadata: { userAgent?: string; ipAddress?: string } = {};

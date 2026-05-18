@@ -19,6 +19,11 @@ vi.mock("@/config/inversify.config", () => ({
   },
 }));
 
+// Mock crypto util
+vi.mock("@/utils/crypto.util", () => ({
+  comparePassword: vi.fn(),
+}));
+
 describe("Local Strategy", () => {
   let mockLogger: ReturnType<typeof mockDeep<Logger>>;
   let mockUserRepo: ReturnType<typeof mockDeep<IUserRepo>>;
@@ -61,12 +66,11 @@ describe("Local Strategy", () => {
       const strategy = strategyCall[0] as any;
       const verify = strategy._verify;
 
-      mockUserRepo.getUserById.mockResolvedValue(null);
+      mockUserRepo.getUserForAuthentication.mockResolvedValue(null);
 
       const done = vi.fn();
       verify("nonexistent@test.com", "password123", done);
 
-      // Wait for async execution
       await new Promise((resolve) => setTimeout(resolve, 10));
 
       expect(mockLogger.warn).toHaveBeenCalledWith(
@@ -77,18 +81,19 @@ describe("Local Strategy", () => {
       });
     });
 
-    it("should return error when user has no id", async () => {
+    it("should return error for user without password hash (OAuth-only)", async () => {
       configureLocalStrategy();
 
       const strategyCall = vi.mocked(passport.use).mock.calls[0];
       const strategy = strategyCall[0] as any;
       const verify = strategy._verify;
 
-      mockUserRepo.getUserById.mockResolvedValue({
-        id: undefined as any,
-        email: "test@test.com",
+      mockUserRepo.getUserForAuthentication.mockResolvedValue({
+        id: "user-123",
         name: "Test User",
+        username: "test@test.com",
         role: "USER",
+        passwordHash: null,
       });
 
       const done = vi.fn();
@@ -101,61 +106,65 @@ describe("Local Strategy", () => {
       });
     });
 
-    it("should return error when getUserByIdSafely returns null", async () => {
+    it("should return error for wrong password", async () => {
+      const { comparePassword } = await import("@/utils/crypto.util");
+
       configureLocalStrategy();
 
       const strategyCall = vi.mocked(passport.use).mock.calls[0];
       const strategy = strategyCall[0] as any;
       const verify = strategy._verify;
 
-      mockUserRepo.getUserById.mockResolvedValue({
+      mockUserRepo.getUserForAuthentication.mockResolvedValue({
         id: "user-123",
-        email: "test@test.com",
         name: "Test User",
+        username: "test@test.com",
         role: "USER",
+        passwordHash: "hashed-password",
       });
-      mockUserRepo.getUserByIdSafely.mockResolvedValue(null);
+      vi.mocked(comparePassword).mockResolvedValue(false);
 
       const done = vi.fn();
-      verify("test@test.com", "password123", done);
-
-      await new Promise((resolve) => setTimeout(resolve, 10));
-
-      expect(done).toHaveBeenCalledWith(null, false, {
-        message: "Invalid email or password",
-      });
-    });
-
-    it("should warn about unimplemented password verification", async () => {
-      configureLocalStrategy();
-
-      const strategyCall = vi.mocked(passport.use).mock.calls[0];
-      const strategy = strategyCall[0] as any;
-      const verify = strategy._verify;
-
-      mockUserRepo.getUserById.mockResolvedValue({
-        id: "user-123",
-        email: "test@test.com",
-        name: "Test User",
-        role: "USER",
-      });
-      mockUserRepo.getUserByIdSafely.mockResolvedValue({
-        id: "user-123",
-        email: "test@test.com",
-        name: "Test User",
-        role: "USER",
-      });
-
-      const done = vi.fn();
-      verify("test@test.com", "password123", done);
+      verify("test@test.com", "wrongpassword", done);
 
       await new Promise((resolve) => setTimeout(resolve, 10));
 
       expect(mockLogger.warn).toHaveBeenCalledWith(
-        expect.stringContaining("Password verification not yet implemented"),
+        expect.stringContaining("Failed login attempt for"),
       );
       expect(done).toHaveBeenCalledWith(null, false, {
-        message: "Authentication not yet fully implemented",
+        message: "Invalid email or password",
+      });
+    });
+
+    it("should authenticate successfully with correct password", async () => {
+      const { comparePassword } = await import("@/utils/crypto.util");
+
+      configureLocalStrategy();
+
+      const strategyCall = vi.mocked(passport.use).mock.calls[0];
+      const strategy = strategyCall[0] as any;
+      const verify = strategy._verify;
+
+      mockUserRepo.getUserForAuthentication.mockResolvedValue({
+        id: "user-123",
+        name: "Test User",
+        username: "test@test.com",
+        role: "USER",
+        passwordHash: "hashed-password",
+      });
+      vi.mocked(comparePassword).mockResolvedValue(true);
+
+      const done = vi.fn();
+      verify("test@test.com", "correctpassword", done);
+
+      await new Promise((resolve) => setTimeout(resolve, 10));
+
+      expect(done).toHaveBeenCalledWith(null, {
+        id: "user-123",
+        name: "Test User",
+        username: "test@test.com",
+        role: "USER",
       });
     });
 
@@ -167,7 +176,7 @@ describe("Local Strategy", () => {
       const verify = strategy._verify;
 
       const testError = new Error("Database connection failed");
-      mockUserRepo.getUserById.mockRejectedValue(testError);
+      mockUserRepo.getUserForAuthentication.mockRejectedValue(testError);
 
       const done = vi.fn();
       verify("test@test.com", "password123", done);
@@ -187,7 +196,7 @@ describe("Local Strategy", () => {
       const strategy = strategyCall[0] as any;
       const verify = strategy._verify;
 
-      mockUserRepo.getUserById.mockRejectedValue("String error");
+      mockUserRepo.getUserForAuthentication.mockRejectedValue("String error");
 
       const done = vi.fn();
       verify("test@test.com", "password123", done);
