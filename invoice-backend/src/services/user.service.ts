@@ -10,11 +10,14 @@ import { IUserRepo } from "../repositories/userRepo";
 import { validateUserCreate, validateUserList } from "../utils/utils";
 import {
   InternalServerException,
+  ForbiddenException,
   NotFoundException,
+  UnauthorizedException,
   ValidationException,
 } from "../config/exception.config";
 import TYPES from "@/constants/identifiers";
 import { Logger } from "@/config/logger.config";
+import { DEMO_ID } from "../../prisma/demoWorkspace.cjs";
 
 @injectable()
 export class UserService {
@@ -25,7 +28,30 @@ export class UserService {
     @inject(TYPES.Logger) private readonly logger: Logger,
   ) {}
 
+  private requireUser(): UserIdAndRole {
+    if (!this.userContext?.id || !this.userContext.role)
+      throw new UnauthorizedException("User not authenticated");
+    return this.userContext;
+  }
+
+  private isAdmin(user: UserIdAndRole): boolean {
+    return user.role === "ADMIN" && !user.isDemo && user.id !== DEMO_ID;
+  }
+
+  private requireAdmin(): void {
+    if (!this.isAdmin(this.requireUser()))
+      throw new ForbiddenException("Only admin can manage users");
+  }
+
+  private authorizeProfile(id: string): void {
+    const user = this.requireUser();
+    // Reject before loading a foreign record, with the same missing-user error.
+    if (!id || (!this.isAdmin(user) && user.id !== id))
+      throw new NotFoundException("User not found");
+  }
+
   createUser = async (args: CreateUserDTO): Promise<UserDTO> => {
+    this.requireAdmin();
     try {
       const validatedArgs = validateUserCreate(args);
       const hashedPassword = await bcrypt.hash(args.password, 10);
@@ -52,7 +78,22 @@ export class UserService {
   };
 
   createUserWithAuth0 = async (args: UserIdAndRole): Promise<UserIdAndRole> => {
-    const createdUser = await this.userRepo.createUserWithAuth0(args);
+    const user = this.requireUser();
+    if (
+      args.id !== user.id ||
+      (user.id === DEMO_ID && (!user.isDemo || user.role !== "USER")) ||
+      (user.isDemo && user.id !== DEMO_ID)
+    )
+      throw new ForbiddenException(
+        "Only authenticated self-provisioning is allowed",
+      );
+    // Identity, initial role and profile come from the verified bound context.
+    const createdUser = await this.userRepo.createUserWithAuth0({
+      id: user.id,
+      role: user.role,
+      name: user.name,
+      username: user.username,
+    });
 
     const userDTO: UserIdAndRole = {
       id: createdUser.id,
@@ -65,15 +106,7 @@ export class UserService {
   };
 
   getUsers = async () => {
-    if (!this.userContext) {
-      throw new ValidationException("Unauthorized");
-    }
-
-    const { id } = this.userContext;
-
-    if (!id) {
-      throw new ValidationException("Unauthorized");
-    }
+    this.requireAdmin();
     try {
       const userList = await this.userRepo.getAllUsers();
       const validatedUserList: UserDTO[] = validateUserList(userList);
@@ -85,13 +118,7 @@ export class UserService {
   };
 
   getUser = async (id: string) => {
-    if (!this.userContext) {
-      throw new ValidationException("Unauthorized");
-    }
-
-    if (!id) {
-      throw new ValidationException("Unauthorized");
-    }
+    this.authorizeProfile(id);
     const user = await this.userRepo.getUserById(id);
 
     if (!user) {
@@ -107,37 +134,18 @@ export class UserService {
   };
 
   getUserByIdSafely = async (id: string) => {
+    this.authorizeProfile(id);
     const user = await this.userRepo.getUserByIdSafely(id);
     return user;
   };
 
   deleteUsers = async (): Promise<boolean> => {
-    if (!this.userContext) {
-      throw new ValidationException("Unauthorized");
-    }
-
-    const { id } = this.userContext;
-
-    if (!id) {
-      throw new ValidationException("Unauthorized");
-    }
+    this.requireAdmin();
     return await this.userRepo.deleteAllUsers();
   };
 
   deleteUsersKeepAdmin = async (): Promise<boolean> => {
-    if (!this.userContext) {
-      throw new ValidationException("Unauthorized");
-    }
-
-    const { role, id } = this.userContext;
-
-    if (!id) {
-      throw new ValidationException("Unauthorized");
-    }
-
-    if (role !== "ADMIN") {
-      throw new ValidationException("Unauthorized - must be ADMIN");
-    }
+    this.requireAdmin();
     return await this.userRepo.deleteAllUsersKeepAdmin();
   };
 }

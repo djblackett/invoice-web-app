@@ -18,6 +18,7 @@ import {
 } from "vitest";
 import type { InjectedQueryContext } from "../../src/constants/types";
 import { toSnapshot } from "../../src/services/invoiceDiff";
+import { canonicalDemoRecords } from "../../prisma/demoWorkspace.cjs";
 
 // Ordinary red tests intentionally capture the Portfolio v1 contract. Do not
 // replace failures with skips/.fails or change production behavior in Slice 4A.
@@ -307,9 +308,13 @@ function harness(enabled: boolean, seed = false, signedUsers = false) {
       }),
     };
   }
-  function authToken(user: typeof userA | typeof admin | typeof demo) {
+  function authToken(
+    user: typeof userA | typeof admin | typeof demo,
+    extraClaims: Record<string, unknown> = {},
+  ) {
     return jwt.sign(
       {
+        ...extraClaims,
         sub: user.id,
         name: user.name,
         "invoice-web-app/email": user.username,
@@ -761,5 +766,152 @@ describe("canonical demo reset", () => {
         isDemo: true,
       });
     }
+  });
+});
+
+describe("Slice 4C adversarial Demo regressions", () => {
+  const h = harness(true, false, true);
+  const reset = "mutation { resetDemoData }";
+
+  it("ignores signed JWT isDemo claims and rejects reset without any database changes", async () => {
+    const before = {
+      ...(await h.state()),
+      users: await h.db().user.findMany({ orderBy: { id: "asc" } }),
+      clients: await h.db().clientAddress.findMany({ orderBy: { id: "asc" } }),
+      senders: await h.db().senderAddress.findMany({ orderBy: { id: "asc" } }),
+    };
+    const token = h.authToken(demo, { isDemo: true, role: "USER" });
+    expect(jwt.decode(token)).toMatchObject({ sub: demo.id, isDemo: true });
+    const ctx = await h.context(token);
+    expect(ctx.user).toMatchObject({ id: demo.id, role: Role.USER });
+    expect(ctx.user?.isDemo).not.toBe(true);
+    const result = await h.execute(reset, {}, token);
+    expect(result.errors?.map((error) => error.extensions?.["code"])).toEqual([
+      "FORBIDDEN",
+    ]);
+    expect({
+      ...(await h.state()),
+      users: await h.db().user.findMany({ orderBy: { id: "asc" } }),
+      clients: await h.db().clientAddress.findMany({ orderBy: { id: "asc" } }),
+      senders: await h.db().senderAddress.findMany({ orderBy: { id: "asc" } }),
+    }).toEqual(before);
+    expect(
+      await h.db().invoice.count({ where: { createdById: demo.id } }),
+    ).toBe(1);
+  });
+
+  it("rejects invoiceAdded with real WebSocket Demo context despite a persisted ADMIN role", async () => {
+    await h
+      .db()
+      .user.update({ where: { id: demo.id }, data: { role: Role.ADMIN } });
+    expect(
+      await h.db().user.findUnique({ where: { id: demo.id } }),
+    ).toMatchObject({ role: Role.ADMIN });
+    const ctx = await h.context("demo-token", "WebSocket");
+    expect(ctx.user).toMatchObject({
+      id: demo.id,
+      role: Role.USER,
+      isDemo: true,
+    });
+    const { getInvoiceResolvers } = await vi.importActual<
+      typeof import("../../src/resolvers/invoiceResolvers")
+    >("../../src/resolvers/invoiceResolvers");
+    const subscribe = getInvoiceResolvers().Subscription.invoiceAdded.subscribe;
+    const iterator = vi.spyOn(ctx.pubsub!, "asyncIterator");
+    expect(() =>
+      subscribe(undefined as never, undefined as never, ctx),
+    ).toThrowError(
+      expect.objectContaining({
+        message: "Not authorized to subscribe",
+        extensions: { code: "FORBIDDEN" },
+      }),
+    );
+    expect(iterator).not.toHaveBeenCalled();
+    iterator.mockRestore();
+    expect((await h.context()).user).toMatchObject({
+      id: demo.id,
+      role: Role.USER,
+      isDemo: true,
+    });
+  });
+
+  it("serializes five concurrent GraphQL resets and restores canonical invoices/history without changing real users", async () => {
+    const before = await h.state();
+    const realInvoices = before.invoices.filter(
+      (invoice) => invoice.createdById !== demo.id,
+    );
+    const realRevisions = before.revisions.filter((revision) =>
+      realInvoices.some((invoice) => invoice.id === revision.invoiceId),
+    );
+    const realUsers = await h
+      .db()
+      .user.findMany({
+        where: { id: { not: demo.id } },
+        orderBy: { id: "asc" },
+      });
+    await h
+      .db()
+      .user.update({ where: { id: demo.id }, data: { role: Role.ADMIN } });
+    const results = await Promise.all(
+      Array.from({ length: 5 }, () => h.execute(reset)),
+    );
+    for (const result of results) {
+      expect(result.errors).toBeUndefined();
+      expect(result.data?.["resetDemoData"]).toBe(true);
+    }
+    const after = await h.state();
+    const invoices = after.invoices.filter(
+      (invoice) => invoice.createdById === demo.id,
+    );
+    const records = canonicalDemoRecords();
+    expect(records).toHaveLength(7);
+    expect(invoices.map((invoice) => invoice.id)).toEqual(
+      records.map((record) => record.id).sort(),
+    );
+    expect(new Set(invoices.map((invoice) => invoice.id)).size).toBe(7);
+    const revisions = after.revisions.filter((revision) =>
+      invoices.some((invoice) => invoice.id === revision.invoiceId),
+    );
+    const expectedRevisionCount = records.reduce(
+      (count, record) => count + record.snapshots.length,
+      0,
+    );
+    expect(expectedRevisionCount).toBe(11);
+    expect(revisions).toHaveLength(expectedRevisionCount);
+    for (const record of records) {
+      const invoice = invoices.find((invoice) => invoice.id === record.id)!;
+      expect(toSnapshot(invoice)).toEqual(record.invoice);
+      const history = revisions
+        .filter((revision) => revision.invoiceId === record.id)
+        .sort((a, b) => a.revisionNumber - b.revisionNumber);
+      expect(history.map((revision) => revision.snapshot)).toEqual(
+        record.snapshots,
+      );
+      expect(history.map((revision) => revision.revisionNumber)).toEqual(
+        record.snapshots.map((_snapshot, index) => index + 1),
+      );
+      expect(
+        history.every((revision) => revision.createdById === demo.id),
+      ).toBe(true);
+    }
+    expect(
+      after.invoices.filter((invoice) => invoice.createdById !== demo.id),
+    ).toEqual(realInvoices);
+    expect(
+      after.revisions.filter((revision) =>
+        realInvoices.some((invoice) => invoice.id === revision.invoiceId),
+      ),
+    ).toEqual(realRevisions);
+    expect(
+      await h
+        .db()
+        .user.findMany({
+          where: { id: { not: demo.id } },
+          orderBy: { id: "asc" },
+        }),
+    ).toEqual(realUsers);
+    expect(
+      await h.db().user.findUnique({ where: { id: demo.id } }),
+    ).toMatchObject({ role: Role.USER });
   });
 });

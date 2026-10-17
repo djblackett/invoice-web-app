@@ -19,6 +19,7 @@ import { NODE_ENV } from "@/config/server.config";
 import type { Logger } from "@/config/logger.config";
 import type { Context } from "graphql-ws";
 import type { Request } from "express";
+import type { IUserRepo } from "../repositories/userRepo";
 
 const logger = container.get<Logger>(TYPES.Logger);
 
@@ -154,11 +155,27 @@ export async function createContext({
     const childContainer = setupContainer(user);
     const services = getServices(childContainer);
     const dbUser = await getOrCreateDbUser(user, services.userService);
+    const effectiveUser = user.isDemo
+      ? { ...dbUser, role: "USER" as const, isDemo: true }
+      : dbUser;
+    // User API policy follows the returned HTTP identity (including stored role).
+    // Keep the existing token-bound invoice/revision services unchanged.
+    childContainer
+      .rebind<UserService>(TYPES.UserService)
+      .toDynamicValue(
+        () =>
+          new UserService(
+            childContainer.get<IUserRepo>(TYPES.IUserRepo),
+            effectiveUser,
+            logger,
+          ),
+      );
+    services.userService = childContainer.get<UserService>(TYPES.UserService);
 
     logger.info(`User: ${dbUser.username}`);
 
     return {
-      user: user.isDemo ? { ...dbUser, role: "USER", isDemo: true } : dbUser,
+      user: effectiveUser,
       ...services,
       container: childContainer,
     };
