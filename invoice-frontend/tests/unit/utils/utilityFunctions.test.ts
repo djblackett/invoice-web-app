@@ -7,7 +7,7 @@ import {
   convertStringToDate,
   createInvoiceObject,
 } from "@/features/shared/utils/utilityFunctions.ts";
-import { FieldValues } from "react-hook-form";
+import { FormType } from "@/features/invoices/types/invoiceTypes";
 import { parse } from "date-fns";
 
 describe("utilityFunctions", () => {
@@ -59,7 +59,7 @@ describe("utilityFunctions", () => {
 
   describe("createInvoiceObject", () => {
     it("should create a new invoice object", () => {
-      const data: FieldValues = {
+      const data: FormType = {
         clientName: "John Doe",
         clientCity: "New York",
         clientCountry: "USA",
@@ -71,9 +71,10 @@ describe("utilityFunctions", () => {
         streetAddress: "456 Elm St",
         clientEmail: "john.doe@example.com",
         projectDescription: "Web development",
+        status: "draft",
         items: [
-          { quantity: 2, price: 100, total: 200 },
-          { quantity: 1, price: 300, total: 300 },
+          { id: "", name: "Item 1", quantity: 2, price: 100, total: 200 },
+          { id: "", name: "Item 2", quantity: 1, price: 300, total: 300 },
         ],
       };
       const startDate = new Date("2023-10-05");

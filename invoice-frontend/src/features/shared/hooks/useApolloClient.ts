@@ -1,3 +1,4 @@
+import { Kind, OperationTypeNode } from "graphql";
 import { useMemo } from "react";
 import {
   ApolloClient,
@@ -30,34 +31,36 @@ const useGraphQLClient = () => {
   // Memoize the Apollo Client to prevent unnecessary re-creations
   const client = useMemo(() => {
     // Authentication Link to attach the token to headers
-    const authLink = setContext(async (_, { headers }) => {
-      try {
-        const options = {
-          authorizationParams: {
-            audience: import.meta.env.VITE_AUDIENCE,
-            scope: import.meta.env.VITE_SCOPE,
-          },
-        };
+    const authLink = setContext(
+      async (_, { headers }: { headers?: Record<string, string> }) => {
+        try {
+          const options = {
+            authorizationParams: {
+              audience: import.meta.env.VITE_AUDIENCE,
+              scope: import.meta.env.VITE_SCOPE,
+            },
+          };
 
-        let token;
+          let token;
 
-        // Demo mode does not require authentication
-        if (isDemoMode) {
-          token = "demo-token";
-        } else {
-          token = await getAccessTokenSilently(options);
+          // Demo mode does not require authentication
+          if (isDemoMode) {
+            token = "demo-token";
+          } else {
+            token = await getAccessTokenSilently(options);
+          }
+          return {
+            headers: {
+              ...headers,
+              ...(token ? { Authorization: `Bearer ${token}` } : {}),
+            },
+          };
+        } catch (error) {
+          console.error("Error fetching access token:", error);
+          return { headers };
         }
-        return {
-          headers: {
-            ...headers,
-            ...(token ? { Authorization: `Bearer ${token}` } : {}),
-          },
-        };
-      } catch (error) {
-        console.error("Error fetching access token:", error);
-        return { headers };
-      }
-    });
+      },
+    );
 
     // HTTP Link for queries and mutations
     const httpLink = createHttpLink({
@@ -108,8 +111,8 @@ const useGraphQLClient = () => {
       ({ query }) => {
         const definition = getMainDefinition(query);
         return (
-          definition.kind === "OperationDefinition" &&
-          definition.operation === "subscription"
+          definition.kind === Kind.OPERATION_DEFINITION &&
+          definition.operation === OperationTypeNode.SUBSCRIPTION
         );
       },
       wsLink,

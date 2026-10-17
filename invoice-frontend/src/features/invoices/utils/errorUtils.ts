@@ -9,7 +9,7 @@ export interface ItemError {
 }
 
 export interface FormErrors {
-  [key: string]: ErrorDetail | unknown;
+  [key: string]: unknown;
   items?: ItemError[];
 }
 
@@ -53,6 +53,8 @@ export function clearErrorsByType(
 
   for (const key in errors) {
     if (errors[key]?.type === type) {
+      // Error field names come from React Hook Form; removal preserves its existing shape.
+      // eslint-disable-next-line @typescript-eslint/no-dynamic-delete
       delete errors[key];
     }
   }
@@ -62,6 +64,7 @@ export function clearErrorsByType(
       if (itemError && typeof itemError === "object") {
         Object.keys(itemError).forEach((key: string) => {
           if (itemError[key]?.type === type) {
+            // eslint-disable-next-line @typescript-eslint/no-dynamic-delete -- remove the matching item error
             delete itemError[key];
           }
         });

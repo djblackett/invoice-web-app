@@ -1,8 +1,6 @@
 import styled from "styled-components";
 import {
-  FieldArray,
   FieldArrayMethodProps,
-  FieldValues,
   useForm,
   useFormContext,
 } from "react-hook-form";
@@ -43,9 +41,15 @@ const ButtonText = styled.p`
   margin-left: 0.25rem;
 `;
 
+type NewItemInput = Omit<Item, "quantity" | "price" | "total"> & {
+  quantity: number | string;
+  price: number | string;
+  total: number | string;
+};
+
 export type NewItemButtonProps = {
   append: (
-    value: FieldArray<FieldValues, string> | FieldArray<FieldValues, string>[],
+    value: NewItemInput | NewItemInput[],
     options?: FieldArrayMethodProps,
   ) => void;
   items: Item[];

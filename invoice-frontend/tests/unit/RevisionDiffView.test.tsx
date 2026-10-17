@@ -49,8 +49,20 @@ describe("RevisionDiffView", () => {
         {
           itemKey: "i1",
           changeType: "modified",
-          before: { id: "i1", name: "Banner", price: 100, quantity: 1, total: 100 },
-          after: { id: "i1", name: "Banner", price: 150, quantity: 1, total: 150 },
+          before: {
+            id: "i1",
+            name: "Banner",
+            price: 100,
+            quantity: 1,
+            total: 100,
+          },
+          after: {
+            id: "i1",
+            name: "Banner",
+            price: 150,
+            quantity: 1,
+            total: 150,
+          },
           fieldChanges: [
             { field: "price", before: "100", after: "150" },
             { field: "total", before: "100", after: "150" },
@@ -60,13 +72,25 @@ describe("RevisionDiffView", () => {
           itemKey: "i2",
           changeType: "added",
           before: null,
-          after: { id: "i2", name: "Logo", price: 500, quantity: 1, total: 500 },
+          after: {
+            id: "i2",
+            name: "Logo",
+            price: 500,
+            quantity: 1,
+            total: 500,
+          },
           fieldChanges: [],
         },
         {
           itemKey: "i3",
           changeType: "removed",
-          before: { id: "i3", name: "Old Item", price: 50, quantity: 1, total: 50 },
+          before: {
+            id: "i3",
+            name: "Old Item",
+            price: 50,
+            quantity: 1,
+            total: 50,
+          },
           after: null,
           fieldChanges: [],
         },
@@ -115,8 +139,6 @@ describe("RevisionDiffView", () => {
     renderWithTheme(
       <RevisionDiffView diff={diff} loading={false} isInitial={true} />,
     );
-    expect(
-      screen.getByText(/initial revision/i),
-    ).toBeInTheDocument();
+    expect(screen.getByText(/initial revision/i)).toBeInTheDocument();
   });
 });

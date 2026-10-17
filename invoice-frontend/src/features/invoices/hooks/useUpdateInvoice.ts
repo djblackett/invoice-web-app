@@ -3,8 +3,9 @@ import { EDIT_INVOICE, GET_INVOICE_BY_ID } from "../graphql/invoice.queries";
 import { Invoice } from "../types/invoiceTypes";
 
 export const useUpdateInvoice = () => {
-  const [updateInvoice] = useMutation(EDIT_INVOICE, {
-    update: (cache, { data: { editInvoice } }) => {
+  const [updateInvoice] = useMutation<{ editInvoice: Invoice }>(EDIT_INVOICE, {
+    update: (cache, { data }) => {
+      const { editInvoice } = data as { editInvoice: Invoice };
       cache.writeQuery({
         query: GET_INVOICE_BY_ID,
         variables: { getInvoiceById: editInvoice.id },

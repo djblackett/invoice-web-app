@@ -25,7 +25,13 @@ function AuthProbe() {
         {auth.isAuthenticated ? auth.user?.id : "anonymous"}
       </output>
       <output data-testid="role">{auth.user?.role}</output>
-      <button onClick={() => auth.loginWithRedirect()}>Demo login</button>
+      <button
+        onClick={() => {
+          void auth.loginWithRedirect();
+        }}
+      >
+        Demo login
+      </button>
       <button onClick={() => auth.toggleAdmin()}>
         Historical admin toggle
       </button>
@@ -83,7 +89,7 @@ describe("demo initialization contract", () => {
     expect(screen.getByTestId("demo-app")).toBeInTheDocument();
   });
 
-  it("logs in as the normal demo USER without an Auth0 provider or network login", async () => {
+  it("logs in as the normal demo USER without an Auth0 provider or network login", () => {
     render(
       <DemoAuthProvider>
         <AuthProbe />

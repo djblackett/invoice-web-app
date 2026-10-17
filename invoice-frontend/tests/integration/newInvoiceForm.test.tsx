@@ -1,35 +1,38 @@
 import { beforeEach, describe, expect, it, vi, afterEach } from "vitest";
-import { cleanup, fireEvent, render, screen } from "../testUtils";
+import { act } from "react";
+import { cleanup, fireEvent, render, screen, within } from "../testUtils";
 import { NewInvoiceProvider } from "@/features/invoices/forms/NewInvoiceContextProvider";
 import NewInvoice from "@/features/invoices/pages/NewInvoice";
-import { prettyDOM } from "@testing-library/react";
-// import { logTestingPlaygroundURL } from "@testing-library/react";
 
-// one shared clean-up for *all* describes
+// Rendering the real lazy form must finish inside async act. Otherwise React 19
+// can leave the first render suspended while parallel workers load its modules.
 afterEach(() => {
-  cleanup(); // unmount React trees
-  // vi.resetModules(); // drop cached modules (incl. your store)
   cleanup();
-  vi.restoreAllMocks(); // reset mocks to original implementation
-  vi.unstubAllEnvs(); // revert NODE_ENV stub
+  vi.restoreAllMocks();
+  vi.unstubAllEnvs();
 });
 
-describe("First integration test", () => {
-  beforeEach(() => {
-    vi.stubEnv("NODE_ENV", "production");
+async function renderOpenInvoice() {
+  await act(async () => {
+    // Load the real lazy children before mounting: module transformation can be
+    // delayed by other workers, and DateAndPayment suspends the whole form.
+    await Promise.all([
+      import("@/features/invoices/forms/date/DateAndPayment"),
+      import("@/features/invoices/forms/date/ExampleCustomInput"),
+      import("@/features/invoices/forms/newInvoice/NewInvoiceBottomMenu"),
+    ]);
     render(
-      <NewInvoiceProvider
-        initialState={{ isNewInvoiceOpen: true }}
-        key={crypto.randomUUID()} // forces remount if anything slips through
-      >
+      <NewInvoiceProvider initialState={{ isNewInvoiceOpen: true }}>
         <NewInvoice />
       </NewInvoiceProvider>,
     );
   });
+}
+
+describe("First integration test", () => {
+  beforeEach(renderOpenInvoice);
 
   it("should render New Invoice title in the new invoice form", async () => {
-    console.log("My printed DOM:", prettyDOM(document.body));
-    // logTestingPlaygroundURL();
     const title = await screen.findByRole(
       "heading",
       { name: /new invoice/i },
@@ -55,13 +58,7 @@ describe("First integration test", () => {
 });
 
 describe("NewInvoiceForm - basic DOM elements", () => {
-  beforeEach(() => {
-    render(
-      <NewInvoiceProvider initialState={{ isNewInvoiceOpen: true }}>
-        <NewInvoice />
-      </NewInvoiceProvider>,
-    );
-  });
+  beforeEach(renderOpenInvoice);
 
   it("renders all label texts", async () => {
     // Bill From section
@@ -122,13 +119,48 @@ describe("NewInvoiceForm - basic DOM elements", () => {
     expect(screen.getByTestId("Net 30 Days-testID")).toBeInTheDocument();
   });
 
-  it("should close the new invoice form when isNewInvoiceOpen is false", async () => {
+  it("updates quantity, price and totals on a second item", async () => {
+    fireEvent.click(await screen.findByTestId("newItemButton"));
+    const rows = screen.getAllByTestId("invoice-item");
+    expect(rows).toHaveLength(2);
+    const second = within(rows[1]);
+    fireEvent.change(second.getByPlaceholderText("0"), {
+      target: { value: "3" },
+    });
+    fireEvent.change(second.getByPlaceholderText("0.00"), {
+      target: { value: "12.50" },
+    });
+    expect(second.getByText("37.50")).toBeInTheDocument();
+  });
+
+  it("preserves quantity and price pattern errors on save", async () => {
+    fireEvent.change(await screen.findByPlaceholderText("0"), {
+      target: { value: "invalid" },
+    });
+    fireEvent.change(screen.getByPlaceholderText("0.00"), {
+      target: { value: "invalid" },
+    });
+    fireEvent.click(await screen.findByText("Save"));
+    expect(
+      await screen.findByText("Only numbers are allowed"),
+    ).toBeInTheDocument();
+    expect(
+      await screen.findByText(
+        "Only numbers are allowed - max 2 decimal places",
+      ),
+    ).toBeInTheDocument();
+  });
+
+  it("should close the new invoice form when isNewInvoiceOpen is false", () => {
+    cleanup();
     render(
       <NewInvoiceProvider initialState={{ isNewInvoiceOpen: false }}>
         <NewInvoice />
       </NewInvoiceProvider>,
     );
-    const newInvoiceForm = screen.queryByTestId("newInvoicePage");
+    const newInvoiceForm = screen.queryByRole("heading", {
+      name: /new invoice/i,
+    });
     expect(newInvoiceForm).not.toBeInTheDocument();
   });
 });

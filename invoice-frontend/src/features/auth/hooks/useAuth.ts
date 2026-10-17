@@ -12,9 +12,9 @@ interface IAuthContext {
   isLoading: boolean;
   user: User | Auth0User | null;
   getAccessTokenSilently: (options: GetTokenSilentlyOptions) => Promise<string>;
-  loginWithRedirect: () => void;
+  loginWithRedirect: () => void | Promise<void>;
   toggleAdmin: () => void;
-  logout: (logoutParams: LogoutOptions) => void;
+  logout: (logoutParams: LogoutOptions) => void | Promise<void>;
 }
 
 export const AuthContext = createContext<IAuthContext>({
@@ -25,7 +25,7 @@ export const AuthContext = createContext<IAuthContext>({
   loginWithRedirect: () => {},
   logout: () => {},
   toggleAdmin: () => {},
-  getAccessTokenSilently: async () => "",
+  getAccessTokenSilently: () => Promise.resolve(""),
 });
 
 export const useAuth = () => useContext(AuthContext);

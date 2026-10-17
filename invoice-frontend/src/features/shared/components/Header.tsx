@@ -212,7 +212,7 @@ function Header({ themeToggler, theme }: HeaderProps) {
 
   const logoutWithRedirect = () => {
     if (isDemoMode) setIsDemoMode(false);
-    logout({
+    void logout({
       logoutParams: {
         returnTo: VITE_REDIRECT_URI,
       },

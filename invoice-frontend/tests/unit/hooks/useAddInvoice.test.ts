@@ -1,4 +1,4 @@
-import { cleanup } from "@testing-library/react-hooks";
+import { cleanup } from "@testing-library/react";
 import { afterEach, beforeEach, describe, expect, it, Mock, vi } from "vitest";
 import { act } from "react";
 import { useAddInvoice } from "../../../src/features/invoices/hooks/useAddInvoice";

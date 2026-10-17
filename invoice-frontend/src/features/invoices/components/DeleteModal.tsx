@@ -33,7 +33,7 @@ function DeleteModal({
   const [deleteInvoice] = useMutation(REMOVE_INVOICE, {
     refetchQueries: [{ query: ALL_INVOICES }],
     onCompleted: () => {
-      navigate("/");
+      void navigate("/");
     },
     onError: (error) => {
       console.error(error.graphQLErrors[0]);
@@ -76,7 +76,11 @@ function DeleteModal({
               text="Cancel"
               style={{ margin: "0.25rem" }}
             />
-            <DeleteButton handleClick={handleClick} />
+            <DeleteButton
+              handleClick={() => {
+                void handleClick();
+              }}
+            />
           </ButtonContainer>
         </ModalContainer>
       </ClickOutsideProvider>

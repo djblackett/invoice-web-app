@@ -14,6 +14,8 @@ import blankDefaultValues from "../defaultValues.ts";
 import { useSubmitDraft } from "../../hooks/useSubmitDraft.ts";
 import { useSubmitNewInvoice } from "../../hooks/useSubmitNewInvoice.ts";
 
+import { FormType } from "../../types/invoiceTypes";
+
 type NewInvoiceBottemMenuProps = {
   closeText: string;
   justifyCancel?: string;
@@ -23,7 +25,7 @@ function NewInvoiceBottomMenu({
   closeText,
   justifyCancel,
 }: NewInvoiceBottemMenuProps) {
-  const { clearErrors, handleSubmit } = useFormContext();
+  const { clearErrors, handleSubmit } = useFormContext<FormType>();
 
   const {
     setIsNewInvoiceOpen,
@@ -35,7 +37,6 @@ function NewInvoiceBottomMenu({
 
   const { reset } = methods;
 
-  // TODO - fix these types - Code works fine, but I can't please TypeScript
   const onSubmit = useSubmitNewInvoice();
   const onSubmitDraft = useSubmitDraft();
 
@@ -69,9 +70,17 @@ function NewInvoiceBottomMenu({
           data-testid="saveDraft"
           type="button"
           value={width > 325 ? "Save as draft" : "Draft"}
-          onClick={() => onSubmitDraft()}
+          onClick={() => {
+            void onSubmitDraft();
+          }}
         />
-        <Save type="button" value="Save" onClick={handleSubmit(onSubmit)} />
+        <Save
+          type="button"
+          value="Save"
+          onClick={(event) => {
+            void handleSubmit(onSubmit)(event);
+          }}
+        />
       </SaveAndDraftContainer>
     </MenuContainer>
   );

@@ -2,8 +2,8 @@
 import { defineConfig } from "vite";
 import react from "@vitejs/plugin-react";
 import tsconfigPaths from "vite-tsconfig-paths";
-import path from "path";
-import fs from "fs";
+import * as path from "node:path";
+import * as fs from "node:fs";
 import { visualizer } from "rollup-plugin-visualizer";
 
 const isDemoMode = process.env.VITE_DEMO_MODE === "true";

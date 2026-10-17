@@ -75,10 +75,7 @@ export const INVOICE_REVISIONS = gql`
 `;
 
 export const INVOICE_REVISION_DIFF = gql`
-  query InvoiceRevisionDiff(
-    $fromRevisionId: String
-    $toRevisionId: String!
-  ) {
+  query InvoiceRevisionDiff($fromRevisionId: String, $toRevisionId: String!) {
     invoiceRevisionDiff(
       fromRevisionId: $fromRevisionId
       toRevisionId: $toRevisionId
@@ -126,14 +123,8 @@ export const INVOICE_REVISION_DIFF = gql`
 `;
 
 export const RESTORE_INVOICE_REVISION = gql`
-  mutation RestoreInvoiceRevision(
-    $invoiceId: String!
-    $revisionId: String!
-  ) {
-    restoreInvoiceRevision(
-      invoiceId: $invoiceId
-      revisionId: $revisionId
-    ) {
+  mutation RestoreInvoiceRevision($invoiceId: String!, $revisionId: String!) {
+    restoreInvoiceRevision(invoiceId: $invoiceId, revisionId: $revisionId) {
       id
       clientEmail
       clientName

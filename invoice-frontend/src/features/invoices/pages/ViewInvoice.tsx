@@ -1,3 +1,4 @@
+import { Invoice } from "../types/invoiceTypes";
 import { Suspense, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import InvoiceToolbar from "../components/InvoiceToolbar.tsx";
@@ -27,15 +28,18 @@ function ViewInvoice() {
   const [isHistoryOpen, setIsHistoryOpen] = useState(false);
   const { id } = useParams();
 
-  const { data, loading, error } = useQuery(GET_INVOICE_BY_ID, {
-    variables: { getInvoiceById: id },
-    fetchPolicy: "cache-and-network",
-  });
+  const { data, loading, error } = useQuery<{ getInvoiceById: Invoice }>(
+    GET_INVOICE_BY_ID,
+    {
+      variables: { getInvoiceById: id },
+      fetchPolicy: "cache-and-network",
+    },
+  );
 
-  const invoice = data?.getInvoiceById;
+  const invoice = data?.getInvoiceById as Invoice;
 
   const goBack = () => {
-    navigate("/invoices");
+    void navigate("/invoices");
   };
 
   if (loading) {

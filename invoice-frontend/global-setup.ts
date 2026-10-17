@@ -59,8 +59,8 @@ async function globalSetup() {
     fs.writeFileSync("page.html", htmlContent);
   }
 
-  await invoiceMainPage.page.getByLabel("Email address").fill(TEST_LOGIN!);
-  await invoiceMainPage.page.getByLabel("Password").fill(TEST_PASSWORD!);
+  await invoiceMainPage.page.getByLabel("Email address").fill(TEST_LOGIN);
+  await invoiceMainPage.page.getByLabel("Password").fill(TEST_PASSWORD);
   await invoiceMainPage.page
     .getByRole("button", {
       name: "Continue",

@@ -97,7 +97,7 @@ function RevisionHistoryPanel({ invoiceId, open, onClose }: Props) {
       onCompleted: () => {
         toast.success("Invoice restored");
         setConfirming(false);
-        refetch();
+        void refetch();
       },
       onError: (err) => {
         console.error(err);
@@ -222,7 +222,10 @@ function RevisionHistoryPanel({ invoiceId, open, onClose }: Props) {
       </Panel>
 
       {confirming && selected && (
-        <ConfirmModal role="alertdialog" aria-labelledby="confirm-restore-title">
+        <ConfirmModal
+          role="alertdialog"
+          aria-labelledby="confirm-restore-title"
+        >
           <div>
             <h3 id="confirm-restore-title" style={{ margin: 0 }}>
               Restore revision #{selected.revisionNumber}?
@@ -240,7 +243,7 @@ function RevisionHistoryPanel({ invoiceId, open, onClose }: Props) {
               </CloseButton>
               <RestoreButton
                 onClick={() =>
-                  restoreInvoiceRevision({
+                  void restoreInvoiceRevision({
                     variables: {
                       invoiceId,
                       revisionId: selected.id,

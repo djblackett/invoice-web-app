@@ -60,7 +60,7 @@ describe.skip("useFormCaching hook", () => {
   });
 
   it("should restore cached data on mount when isCacheActive is true", () => {
-    const { result } = renderHook(() => useFormCaching(cacheKey), {
+    renderHook(() => useFormCaching(cacheKey), {
       wrapper: createWrapper(),
     });
 
@@ -75,7 +75,7 @@ describe.skip("useFormCaching hook", () => {
   });
 
   it("should not restore cached data if there is none", () => {
-    const { result } = renderHook(() => useFormCaching(cacheKey), {
+    renderHook(() => useFormCaching(cacheKey), {
       wrapper: createWrapper(),
     });
 

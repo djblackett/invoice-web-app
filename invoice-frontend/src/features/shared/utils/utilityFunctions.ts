@@ -1,7 +1,6 @@
-import { FieldValues } from "react-hook-form";
 import { v4 as uuidv4 } from "uuid";
 import { parse } from "date-fns";
-import { Invoice } from "@/features/invoices/types/invoiceTypes.ts";
+import { FormType, Invoice } from "@/features/invoices/types/invoiceTypes.ts";
 
 export const generateId = () => {
   const list = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
@@ -29,7 +28,7 @@ export function getMoney(amount: number) {
 }
 
 export const createInvoiceObject = (
-  data: FieldValues,
+  data: FormType,
   startDate: Date | null,
   selectedPaymentOption: number,
   id?: string,

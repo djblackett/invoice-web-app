@@ -90,7 +90,8 @@ export const TimelineItem = styled.li<{ selected?: boolean }>`
       background: ${theme.editButtonHover ?? "rgba(124, 93, 250, 0.08)"};
     `}
   &:hover {
-    background: ${({ theme }) => theme.editButtonHover ?? "rgba(124, 93, 250, 0.08)"};
+    background: ${({ theme }) =>
+      theme.editButtonHover ?? "rgba(124, 93, 250, 0.08)"};
   }
   &:focus {
     outline: 2px solid #7c5dfa;
@@ -236,9 +237,14 @@ export const EmptyState = styled.p`
 export const ItemCard = styled.div<{ tone: "added" | "removed" | "modified" }>`
   border-left: 4px solid
     ${({ tone }) =>
-      tone === "added" ? "#33d69f" : tone === "removed" ? "#ec5757" : "#7c5dfa"};
+      tone === "added"
+        ? "#33d69f"
+        : tone === "removed"
+          ? "#ec5757"
+          : "#7c5dfa"};
   padding: 8px 12px;
-  background: ${({ theme }) => theme.editButtonHover ?? "rgba(124, 93, 250, 0.05)"};
+  background: ${({ theme }) =>
+    theme.editButtonHover ?? "rgba(124, 93, 250, 0.05)"};
   border-radius: 4px;
 `;
 

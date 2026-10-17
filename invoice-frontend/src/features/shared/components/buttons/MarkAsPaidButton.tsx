@@ -86,7 +86,13 @@ function MarkAsPaidButton({ invoice, editButtonRef }: MarkPaidProps) {
   };
   return (
     <>
-      <Button onClick={handleClick} type="button" data-testid="mark-as-paid">
+      <Button
+        onClick={() => {
+          void handleClick();
+        }}
+        type="button"
+        data-testid="mark-as-paid"
+      >
         Mark as Paid
       </Button>
     </>

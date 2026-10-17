@@ -20,7 +20,12 @@
     "lint:fix": "eslint --config ./eslint.config.mjs --fix .",
     "lint:css": "stylelint './src/**/*.{ts,tsx}'",
     "format": "prettier --config ./prettier.config.js --write '**/*.ts*'",
-    "codegen": "cross-env VITE_BACKEND_URL=https://localhost:8000/graphql playwright codegen https://localhost:5173/invoice-web-app/ --ignore-https-errors"
+    "codegen": "cross-env VITE_BACKEND_URL=https://localhost:8000/graphql playwright codegen https://localhost:5173/invoice-web-app/ --ignore-https-errors",
+    "typecheck:app": "tsc -p tsconfig.app.json --noEmit",
+    "typecheck:node": "tsc -p tsconfig.node.json --noEmit",
+    "typecheck": "npm run typecheck:app && npm run typecheck:node",
+    "test": "vitest run tests --reporter=default",
+    "check": "npm run typecheck && npm run lint && npm test && npm run build"
   },
   "dependencies": {
     "@apollo/client": "^3.12.2",
@@ -67,6 +72,7 @@
     "@testing-library/react": "^13.2.0",
     "@testing-library/react-hooks": "^8.0.1",
     "@types/node": "^22.10.6",
+    "@types/prop-types": "15.7.14",
     "@types/react": "^19.0.0",
     "@types/react-datepicker": "^4.19.2",
     "@types/react-dom": "^19.0.0",

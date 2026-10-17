@@ -17,7 +17,7 @@ test.beforeEach(async () => {
     ignoreHTTPSErrors: true,
   });
   const page = await context.newPage();
-  await page.goto(TEST_BASE_URL!);
+  await page.goto(TEST_BASE_URL as string);
   const newInvoiceForm = new NewInvoiceForm(page);
   await createExampleInvoice(newInvoiceForm);
 });

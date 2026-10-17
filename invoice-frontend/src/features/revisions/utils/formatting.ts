@@ -89,9 +89,7 @@ export function revisionHeadline(revision: {
     case "edit":
     default: {
       const who =
-        revision.createdBy?.name ??
-        revision.createdBy?.username ??
-        "Someone";
+        revision.createdBy?.name ?? revision.createdBy?.username ?? "Someone";
       return `${who} edited the invoice`;
     }
   }

@@ -51,7 +51,12 @@ function DemoButton() {
 
   return (
     <>
-      <Button onClick={handleClick} disabled={loading}>
+      <Button
+        onClick={() => {
+          void handleClick();
+        }}
+        disabled={loading}
+      >
         {loading ? "Resetting…" : "Reset Demo"}
       </Button>
     </>

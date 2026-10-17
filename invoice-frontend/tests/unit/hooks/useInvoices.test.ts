@@ -2,6 +2,7 @@ import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
 import { cleanup, renderHook } from "@testing-library/react";
 import useInvoices from "../../../src/features/invoices/hooks/useInvoices.ts";
 import { useQuery } from "@apollo/client";
+import { ApolloError } from "@apollo/client/errors";
 import { useSelector } from "react-redux";
 
 // Mock dependencies
@@ -30,13 +31,13 @@ describe("useInvoices", () => {
   });
 
   it("should return empty array when no data is available", () => {
-    (useQuery as any).mockReturnValue({
+    vi.mocked(useQuery, { partial: true }).mockReturnValue({
       data: null,
       loading: false,
-      error: null,
+      error: undefined,
     });
 
-    (useSelector as any).mockReturnValue({
+    vi.mocked(useSelector).mockReturnValue({
       draft: false,
       pending: false,
       paid: false,
@@ -46,7 +47,7 @@ describe("useInvoices", () => {
 
     expect(result.current.invoiceList).toEqual([]);
     expect(result.current.loading).toBe(false);
-    expect(result.current.error).toBe(null);
+    expect(result.current.error).toBeUndefined();
   });
 
   it("should return all invoices when no filter is applied", () => {
@@ -56,13 +57,13 @@ describe("useInvoices", () => {
       { id: "3", status: "paid" },
     ];
 
-    (useQuery as any).mockReturnValue({
+    vi.mocked(useQuery, { partial: true }).mockReturnValue({
       data: { allInvoices: mockInvoices },
       loading: false,
-      error: null,
+      error: undefined,
     });
 
-    (useSelector as any).mockReturnValue({
+    vi.mocked(useSelector).mockReturnValue({
       draft: false,
       pending: false,
       paid: false,
@@ -80,13 +81,13 @@ describe("useInvoices", () => {
       { id: "3", status: "paid" },
     ];
 
-    (useQuery as any).mockReturnValue({
+    vi.mocked(useQuery, { partial: true }).mockReturnValue({
       data: { allInvoices: mockInvoices },
       loading: false,
-      error: null,
+      error: undefined,
     });
 
-    (useSelector as any).mockReturnValue({
+    vi.mocked(useSelector).mockReturnValue({
       draft: true,
       pending: false,
       paid: false,
@@ -104,13 +105,13 @@ describe("useInvoices", () => {
       { id: "3", status: "paid" },
     ];
 
-    (useQuery as any).mockReturnValue({
+    vi.mocked(useQuery, { partial: true }).mockReturnValue({
       data: { allInvoices: mockInvoices },
       loading: false,
-      error: null,
+      error: undefined,
     });
 
-    (useSelector as any).mockReturnValue({
+    vi.mocked(useSelector).mockReturnValue({
       draft: false,
       pending: true,
       paid: false,
@@ -130,13 +131,13 @@ describe("useInvoices", () => {
       { id: "3", status: "paid" },
     ];
 
-    (useQuery as any).mockReturnValue({
+    vi.mocked(useQuery, { partial: true }).mockReturnValue({
       data: { allInvoices: mockInvoices },
       loading: false,
-      error: null,
+      error: undefined,
     });
 
-    (useSelector as any).mockReturnValue({
+    vi.mocked(useSelector).mockReturnValue({
       draft: false,
       pending: false,
       paid: true,
@@ -154,13 +155,13 @@ describe("useInvoices", () => {
       { id: "3", status: "paid" },
     ];
 
-    (useQuery as any).mockReturnValue({
+    vi.mocked(useQuery, { partial: true }).mockReturnValue({
       data: { allInvoices: mockInvoices },
       loading: false,
-      error: null,
+      error: undefined,
     });
 
-    (useSelector as any).mockReturnValue({
+    vi.mocked(useSelector).mockReturnValue({
       draft: true,
       pending: true,
       paid: true,
@@ -172,13 +173,13 @@ describe("useInvoices", () => {
   });
 
   it("should handle loading state correctly", () => {
-    (useQuery as any).mockReturnValue({
+    vi.mocked(useQuery, { partial: true }).mockReturnValue({
       data: null,
       loading: true,
-      error: null,
+      error: undefined,
     });
 
-    (useSelector as any).mockReturnValue({
+    vi.mocked(useSelector).mockReturnValue({
       draft: false,
       pending: false,
       paid: false,
@@ -190,15 +191,17 @@ describe("useInvoices", () => {
   });
 
   it("should handle error state correctly", () => {
-    const mockError = new Error("Failed to fetch invoices");
+    const mockError = new ApolloError({
+      errorMessage: "Failed to fetch invoices",
+    });
 
-    (useQuery as any).mockReturnValue({
+    vi.mocked(useQuery, { partial: true }).mockReturnValue({
       data: null,
       loading: false,
       error: mockError,
     });
 
-    (useSelector as any).mockReturnValue({
+    vi.mocked(useSelector).mockReturnValue({
       draft: false,
       pending: false,
       paid: false,

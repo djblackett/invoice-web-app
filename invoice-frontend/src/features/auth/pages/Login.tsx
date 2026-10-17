@@ -64,7 +64,9 @@ const Login = () => {
           >
             <LoginLogoutButton
               whileTap={{ scale: 0.85 }}
-              onClick={() => loginWithRedirect()}
+              onClick={() => {
+                void loginWithRedirect();
+              }}
               disabled={canLogin === false}
               data-testid="login-button"
               aria-label="login button"
