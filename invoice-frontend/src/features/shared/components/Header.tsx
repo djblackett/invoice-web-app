@@ -208,14 +208,16 @@ type HeaderProps = {
 function Header({ themeToggler, theme }: HeaderProps) {
   const { logout, isAuthenticated } = useAuth();
   const location = useLocation();
-  const { isDemoMode } = useDemoModeContext();
+  const { isDemoMode, setIsDemoMode } = useDemoModeContext();
 
-  const logoutWithRedirect = () =>
+  const logoutWithRedirect = () => {
+    if (isDemoMode) setIsDemoMode(false);
     logout({
       logoutParams: {
         returnTo: VITE_REDIRECT_URI,
       },
     });
+  };
 
   return (
     <HeaderContainer role="banner" data-testid="header">

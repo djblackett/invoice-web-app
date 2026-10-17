@@ -182,6 +182,9 @@ const typeDefs = gql`
   }
 
   type Mutation {
+    "Restore the canonical shared demo workspace. Dedicated demo authentication only."
+    resetDemoData: Boolean!
+
     addInvoice(
       clientAddress: ClientInfo
       clientEmail: String

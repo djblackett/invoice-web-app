@@ -1,6 +1,6 @@
 import "reflect-metadata";
-import type { interfaces } from "inversify";
 import { Container } from "inversify";
+import { DemoService } from "../services/demo.service";
 import { InvoiceService } from "../services/invoice.service";
 import { UserService } from "../services/user.service";
 import { InvoiceRevisionService } from "../services/invoiceRevision.service";
@@ -26,27 +26,6 @@ container
     return new PrismaClient();
   })
   .inSingletonScope();
-
-container
-  .bind<PrismaClient>(TYPES.PrismaClientDemo)
-  .toDynamicValue(() => {
-    // This binding is used for demo mode, where we use a different database URL.
-    return new PrismaClient({
-      datasourceUrl: process.env["DATABASE_URL_DEMO"] ?? "",
-    });
-  })
-  .inSingletonScope();
-
-// Bind a factory that returns the correct client based on a flag
-container
-  .bind<interfaces.Factory<PrismaClient, [boolean]>>(TYPES.PrismaClientFactory)
-  .toFactory<PrismaClient, [boolean]>((context: interfaces.Context) => {
-    return (isDemo: boolean) => {
-      return isDemo
-        ? context.container.get<PrismaClient>(TYPES.PrismaClientDemo)
-        : context.container.get<PrismaClient>(TYPES.PrismaClient);
-    };
-  });
 
 container.bind(DatabaseConnection).toSelf().inTransientScope();
 
@@ -79,6 +58,11 @@ container
 container
   .bind<InvoiceRevisionService>(TYPES.InvoiceRevisionService)
   .to(InvoiceRevisionService)
+  .inTransientScope();
+
+container
+  .bind<DemoService>(TYPES.DemoService)
+  .to(DemoService)
   .inTransientScope();
 
 container.bind<Logger>(TYPES.Logger).to(Logger).inSingletonScope();

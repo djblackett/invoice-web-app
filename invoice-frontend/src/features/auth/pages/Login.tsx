@@ -12,7 +12,7 @@ import { startTransition } from "react";
 import React from "react";
 
 const Login = () => {
-  const { isAuthenticated, isLoading, loginWithRedirect } = useAuth();
+  const { isAuthenticated, isLoading, loginWithRedirect, canLogin } = useAuth();
   const { isDemoMode, setIsDemoMode } = useDemoModeContext();
 
   const text = "Please login to view your invoices";
@@ -28,9 +28,8 @@ const Login = () => {
   // }, [isDemoMode, navigate, hasNavigated]);
 
   const loginToDemoAccount = () => {
-    console.log("Demo login triggered");
     // Directly update state and let the effect handle navigation.
-    startTransition(() => setIsDemoMode((prev) => !prev));
+    startTransition(() => setIsDemoMode(true));
     // You can remove flushSync and setTimeout, and let React do its job.
   };
 
@@ -66,31 +65,37 @@ const Login = () => {
             <LoginLogoutButton
               whileTap={{ scale: 0.85 }}
               onClick={() => loginWithRedirect()}
+              disabled={canLogin === false}
               data-testid="login-button"
               aria-label="login button"
             >
               Login
             </LoginLogoutButton>
           </SlidingButton>
-          <SlidingButton
-            initial={{ x: "-100%", opacity: 0 }}
-            animate={{ x: 0, opacity: 1 }}
-            transition={{
-              type: "spring",
-              stiffness: 100,
-              duration: 0.5,
-              delay: 1.1,
-            }}
-          >
-            <DemoButtonStyled
-              whileTap={{ scale: 0.85 }}
-              onClick={loginToDemoAccount}
-              data-testid="demo-login-button"
-              aria-label="demo-login button"
+          {import.meta.env.VITE_DEMO_MODE === "true" && (
+            <SlidingButton
+              initial={{ x: "-100%", opacity: 0 }}
+              animate={{ x: 0, opacity: 1 }}
+              transition={{
+                type: "spring",
+                stiffness: 100,
+                duration: 0.5,
+                delay: 1.1,
+              }}
             >
-              Demo mode: {isDemoMode ? "ON" : "OFF"}
-            </DemoButtonStyled>
-          </SlidingButton>
+              <DemoButtonStyled
+                whileTap={{ scale: 0.85 }}
+                onClick={loginToDemoAccount}
+                data-testid="demo-login-button"
+                aria-label="demo-login button"
+              >
+                Enter Demo Mode
+              </DemoButtonStyled>
+            </SlidingButton>
+          )}
+          {canLogin === false && (
+            <p>Account sign-in is not configured for this deployment.</p>
+          )}
         </ViewContainer>
       )}
     </>

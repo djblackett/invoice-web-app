@@ -2,7 +2,9 @@ import "reflect-metadata";
 import { ApolloServer } from "@apollo/server";
 import { Prisma, PrismaClient, Role } from "@prisma/client";
 import { execFileSync } from "node:child_process";
-import { randomUUID } from "node:crypto";
+import { randomUUID, generateKeyPairSync, type KeyObject } from "node:crypto";
+import { createServer, type Server } from "node:http";
+import jwt from "jsonwebtoken";
 import { createRequest } from "node-mocks-http";
 import type { Request } from "express";
 import {
@@ -85,7 +87,10 @@ const operations = {
     "mutation($id: String!, $first: String!) { restoreInvoiceRevision(invoiceId: $id, revisionId: $first) { id clientName } }",
 };
 
-function harness(enabled: boolean, seed = false) {
+function harness(enabled: boolean, seed = false, signedUsers = false) {
+  let jwks: Server | undefined;
+  let privateKey: KeyObject;
+  let issuer = "http://127.0.0.1:1/";
   const schemaName = `demo_contract_${randomUUID().replaceAll("-", "")}`;
   let prisma: PrismaClient;
   let server: ApolloServer<InjectedQueryContext>;
@@ -110,6 +115,34 @@ function harness(enabled: boolean, seed = false) {
       stdio: "pipe",
     });
 
+    if (signedUsers) {
+      const keys = generateKeyPairSync("rsa", { modulusLength: 2048 });
+      privateKey = keys.privateKey;
+      const publicJwk = keys.publicKey.export({ format: "jwk" });
+      jwks = createServer((_req, res) => {
+        res.setHeader("Content-Type", "application/json");
+        res.end(
+          JSON.stringify({
+            keys: [
+              {
+                ...publicJwk,
+                kid: "demo-contract-key",
+                alg: "RS256",
+                use: "sig",
+              },
+            ],
+          }),
+        );
+      });
+      await new Promise<void>((resolve) =>
+        jwks!.listen(0, "127.0.0.1", resolve),
+      );
+      const address = jwks.address();
+      if (!address || typeof address === "string")
+        throw new Error("JWKS listener unavailable");
+      issuer = `http://127.0.0.1:${address.port}/`;
+    }
+
     // Both cached server.config.NODE_ENV and the per-request NODE_ENV must be
     // production. Otherwise the existing test/CI ADMIN shortcut masks demo auth.
     vi.resetModules();
@@ -119,7 +152,7 @@ function harness(enabled: boolean, seed = false) {
     vi.stubEnv("DATABASE_URL", schemaUrl);
     vi.stubEnv("DEMO_DATABASE_URL", schemaUrl); // actual process-wide config path
     vi.stubEnv("DATABASE_URL_DEMO", schemaUrl);
-    vi.stubEnv("DOMAIN", "http://127.0.0.1:1/");
+    vi.stubEnv("DOMAIN", issuer);
     vi.stubEnv("AUDIENCE", "urn:demo-contract");
     ({ createContext } = await vi.importActual<
       typeof import("../../src/GraphQL/createContext")
@@ -223,6 +256,10 @@ function harness(enabled: boolean, seed = false) {
         }
       }
     } finally {
+      if (jwks)
+        await new Promise<void>((resolve, reject) =>
+          jwks!.close((error) => (error ? reject(error) : resolve())),
+        );
       vi.unstubAllEnvs();
       vi.resetModules();
     }
@@ -249,10 +286,11 @@ function harness(enabled: boolean, seed = false) {
     query: string,
     variables: Record<string, unknown> = {},
     token = "demo-token",
+    transport = "HTTP",
   ) {
     const response = await server.executeOperation(
       { query, variables },
-      { contextValue: await context(token) },
+      { contextValue: await context(token, transport) },
     );
     if (response.body.kind !== "single")
       throw new Error("Expected a single GraphQL response");
@@ -269,7 +307,31 @@ function harness(enabled: boolean, seed = false) {
       }),
     };
   }
-  return { context, execute, state, db: () => prisma };
+  function authToken(user: typeof userA | typeof admin | typeof demo) {
+    return jwt.sign(
+      {
+        sub: user.id,
+        name: user.name,
+        "invoice-web-app/email": user.username,
+        "invoice-web-app/roles": user.role === "ADMIN" ? ["Admin"] : [],
+      },
+      privateKey,
+      {
+        algorithm: "RS256",
+        keyid: "demo-contract-key",
+        issuer,
+        audience: "urn:demo-contract",
+        expiresIn: "5m",
+      },
+    );
+  }
+  function reseed() {
+    execFileSync("npx", ["--no-install", "prisma", "db", "seed"], {
+      env: { ...process.env, DATABASE_URL: schemaUrl },
+      stdio: "pipe",
+    });
+  }
+  return { context, execute, state, authToken, reseed, db: () => prisma };
 }
 
 describe("production demo disabled", () => {
@@ -507,5 +569,197 @@ describe("canonical demo seed", () => {
     expect(result.errors).toBeUndefined();
     const invoices = result.data?.["allInvoices"] as { id: string }[];
     expect(invoices.map((invoice) => invoice.id).sort()).toEqual(canonicalIds);
+  });
+});
+
+describe("canonical demo reset", () => {
+  const h = harness(true, false, true);
+  const reset = "mutation { resetDemoData }";
+  async function realState() {
+    const state = await h.state();
+    const invoices = state.invoices.filter(
+      (invoice) => invoice.createdById !== demo.id,
+    );
+    return {
+      users: await h
+        .db()
+        .user.findMany({
+          where: { id: { not: demo.id } },
+          orderBy: { id: "asc" },
+        }),
+      invoices,
+      revisions: state.revisions.filter((revision) =>
+        invoices.some((invoice) => invoice.id === revision.invoiceId),
+      ),
+    };
+  }
+  async function canonicalState() {
+    const state = await h.state();
+    return {
+      invoices: state.invoices
+        .filter((invoice) => invoice.createdById === demo.id)
+        .map((invoice) => ({
+          id: invoice.id,
+          owner: invoice.createdById,
+          ...toSnapshot(invoice),
+        })),
+      revisions: state.revisions.filter((revision) =>
+        state.invoices.some(
+          (invoice) =>
+            invoice.id === revision.invoiceId &&
+            invoice.createdById === demo.id,
+        ),
+      ),
+    };
+  }
+  async function allRows() {
+    return {
+      ...(await h.state()),
+      users: await h.db().user.findMany({ orderBy: { id: "asc" } }),
+      clients: await h.db().clientAddress.findMany({ orderBy: { id: "asc" } }),
+      senders: await h.db().senderAddress.findMany({ orderBy: { id: "asc" } }),
+    };
+  }
+  beforeEach(async () => {
+    const result = await h.execute(reset);
+    expect(result.errors).toBeUndefined();
+    expect(result.data?.["resetDemoData"]).toBe(true);
+  });
+
+  it("restores canonical fields, items and revisions after visitor edits, payment, deletion, creation and restore", async () => {
+    const canonical = await canonicalState();
+    const real = await realState();
+    const queries = [
+      'mutation { editInvoice(id: "XM9141", clientName: "Visitor", items: [{ name: "Changed", quantity: 2, price: 3 }]) { id } }',
+      'mutation { markAsPaid(id: "AA1449") { id } }',
+      'mutation { removeInvoice(id: "TY9141") { acknowledged } }',
+      'mutation { addInvoice(id: "DD1001", status: "draft", clientName: "Extra visitor invoice") { id } }',
+      'mutation { restoreInvoiceRevision(invoiceId: "RT3080", revisionId: "demo-RT3080-revision-1") { id } }',
+    ];
+    for (const query of queries)
+      expect((await h.execute(query)).errors).toBeUndefined();
+    expect(await canonicalState()).not.toEqual(canonical);
+    expect((await h.execute(reset)).errors).toBeUndefined();
+    expect(await canonicalState()).toEqual(canonical);
+    expect(await realState()).toEqual(real);
+    expect(
+      await h.db().invoice.findUnique({ where: { id: "DD1001" } }),
+    ).toBeNull();
+  });
+
+  it("is idempotent, repairs the stored demo role and does not accumulate addresses or history", async () => {
+    const canonical = await canonicalState();
+    const real = await realState();
+    const clients = await h.db().clientAddress.count();
+    const senders = await h.db().senderAddress.count();
+    await h
+      .db()
+      .user.update({ where: { id: demo.id }, data: { role: Role.ADMIN } });
+    for (let i = 0; i < 2; i++)
+      expect((await h.execute(reset)).errors).toBeUndefined();
+    expect(
+      await h.db().user.findUnique({ where: { id: demo.id } }),
+    ).toMatchObject({ role: Role.USER });
+    expect(await canonicalState()).toEqual(canonical);
+    expect(await realState()).toEqual(real);
+    expect(await h.db().clientAddress.count()).toBe(clients);
+    expect(await h.db().senderAddress.count()).toBe(senders);
+  });
+
+  for (const actor of [userA, userB, admin, demo]) {
+    it(`rejects reset from normal Auth0 identity ${actor.id} even with matching demoId`, async () => {
+      const before = await allRows();
+      const result = await h.execute(reset, {}, h.authToken(actor));
+      expect(result.errors?.map((error) => error.extensions?.["code"])).toEqual(
+        ["FORBIDDEN"],
+      );
+      expect(await allRows()).toEqual(before);
+    });
+  }
+
+  it("rejects reset without authentication", async () => {
+    const before = await allRows();
+    const result = await h.execute(reset, {}, "");
+    expect(result.errors?.map((error) => error.extensions?.["code"])).toEqual([
+      "FORBIDDEN",
+    ]);
+    expect(await allRows()).toEqual(before);
+  });
+
+  it("refuses a canonical ID owned by a real user without deleting or transferring any rows", async () => {
+    await h
+      .db()
+      .invoice.update({
+        where: { id: "RT3080" },
+        data: { createdById: userA.id },
+      });
+    const before = await allRows();
+    expect((await h.execute(reset)).errors).toBeDefined();
+    expect(await allRows()).toEqual(before);
+  });
+
+  it("rolls back the entire reset when a later canonical insert fails", async () => {
+    await h.db().invoice.delete({ where: { id: "RT3080" } });
+    await h
+      .db()
+      .item.update({
+        where: { id: "AA1001-item" },
+        data: { id: "demo-RT3080-item-1" },
+      });
+    await h
+      .db()
+      .user.update({ where: { id: demo.id }, data: { role: Role.ADMIN } });
+    const before = await allRows();
+    expect((await h.execute(reset)).errors).toBeDefined();
+    expect(await allRows()).toEqual(before);
+  });
+
+  it("reseed uses the same canonical reset while preserving normal-user records", async () => {
+    const canonical = await canonicalState();
+    const real = await realState();
+    expect(
+      (await h.execute(operations.editInvoice, { id: "XM9141" })).errors,
+    ).toBeUndefined();
+    h.reseed();
+    h.reseed();
+    expect(await canonicalState()).toEqual(canonical);
+    expect(await realState()).toEqual(real);
+  });
+
+  it("resets on explicit entry over either transport while ordinary requests retain shared edits", async () => {
+    const canonical = await canonicalState();
+    for (const transport of ["HTTP", "WebSocket"]) {
+      expect(
+        (await h.execute(operations.editInvoice, { id: "XM9141" })).errors,
+      ).toBeUndefined();
+      const edited = await h.execute(list);
+      expect(edited.data?.["allInvoices"]).toContainEqual(
+        expect.objectContaining({ id: "XM9141", clientName: "Demo edit" }),
+      );
+      const result = await h.execute(reset, {}, "demo-token", transport);
+      expect(result.errors).toBeUndefined();
+      expect(result.data?.["resetDemoData"]).toBe(true);
+      expect(await canonicalState()).toEqual(canonical);
+    }
+  });
+
+  it("retains stored roles for normal Auth0 users while demo remains USER", async () => {
+    await h
+      .db()
+      .user.update({ where: { id: userB.id }, data: { role: Role.ADMIN } });
+    expect((await h.context(h.authToken(userB))).user).toMatchObject({
+      id: userB.id,
+      role: Role.ADMIN,
+    });
+    await h
+      .db()
+      .user.update({ where: { id: demo.id }, data: { role: Role.ADMIN } });
+    for (const transport of ["HTTP", "WebSocket"]) {
+      expect((await h.context("demo-token", transport)).user).toMatchObject({
+        id: demo.id,
+        role: Role.USER,
+        isDemo: true,
+      });
+    }
   });
 });

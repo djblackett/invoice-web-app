@@ -13,6 +13,7 @@ import {
   StyledToastContainer,
 } from "@/features/shared/styles/AppStyles.tsx";
 import { LazyMotion } from "motion/react";
+import { DemoSessionBoundary } from "../features/auth/components/DemoSessionBoundary";
 
 const WelcomePage = React.lazy(() => import("@/pages/WelcomePage"));
 const ProtectedRoute = React.lazy(
@@ -112,11 +113,13 @@ function App() {
       <ThemeProvider theme={theme === "light" ? lightTheme : darkTheme}>
         <GlobalStyles />
         <LazyMotion features={loadFeatures}>
-          <Main id="container" data-testid="container">
-            <Header themeToggler={themeToggler} theme={theme} />
-            <StyledToastContainer marginTop={width > 1200 ? 0 : "72px"} />
-            {element}
-          </Main>
+          <DemoSessionBoundary>
+            <Main id="container" data-testid="container">
+              <Header themeToggler={themeToggler} theme={theme} />
+              <StyledToastContainer marginTop={width > 1200 ? 0 : "72px"} />
+              {element}
+            </Main>
+          </DemoSessionBoundary>
         </LazyMotion>
       </ThemeProvider>
     </ApolloProvider>

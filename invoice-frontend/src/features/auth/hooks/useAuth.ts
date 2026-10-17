@@ -7,6 +7,7 @@ import {
 import { User } from "@/features/users/types/userTypes.ts";
 
 interface IAuthContext {
+  canLogin?: boolean;
   isAuthenticated: boolean;
   isLoading: boolean;
   user: User | Auth0User | null;
@@ -17,6 +18,7 @@ interface IAuthContext {
 }
 
 export const AuthContext = createContext<IAuthContext>({
+  canLogin: false,
   isAuthenticated: false,
   user: null,
   isLoading: false,

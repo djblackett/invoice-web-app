@@ -1,3 +1,4 @@
+import { getDemoResolvers } from "./demoResolvers";
 import { getInvoiceResolvers } from "./invoiceResolvers";
 import { getInvoiceRevisionResolvers } from "./invoiceRevisionResolvers";
 import { getUserResolvers } from "./userResolvers";
@@ -15,6 +16,7 @@ export function getResolvers() {
     },
     Mutation: {
       ...invoiceResolvers.Mutation,
+      ...getDemoResolvers().Mutation,
       ...revisionResolvers.Mutation,
       ...userResolvers.Mutation,
     },

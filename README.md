@@ -121,20 +121,26 @@ Ensure you have the following installed on your machine:
 
 #### Demo Instructions
 
-1. **Run demo docker compose file**
+1. **Start the local demo** (no Auth0 account or credentials required):
 
    ```bash
    docker compose -f docker-compose.demo.yml up
    ```
 
-2. **Seed demo data**
+2. **Access the application** at <http://localhost:5173/invoice-web-app/>.
+   Startup applies migrations and seeds seven canonical invoices, including revision
+   history. Demo entry restores that dataset; **Reset Demo** restores it again.
 
-   ```bash
-   npx prisma db seed
-   ```
+Demo runs as the dedicated `demoId / USER` identity in the configured application
+database. It cannot access ordinary users' invoices or become an administrator.
+Visitors intentionally share this workspace, so entry or reset can replace another
+visitor's demo edits. Ordinary user records are preserved.
 
-3. **Access the application**  
- Open your browser and navigate to <https://localhost:5173/invoice-web-app/>.
+For a public demo deployment, explicitly set backend `DEMO_MODE=true` and build the
+frontend with `VITE_DEMO_MODE=true` and its `VITE_BACKEND_URL`. Use `DATABASE_URL`
+for the application database; no separate demo-database URL is needed. Both demo
+flags default to disabled in the example environment files. Auth0 remains available
+when configured for normal sign-in.
 
 #### Development Instructions
 

@@ -43,7 +43,7 @@ const useGraphQLClient = () => {
 
         // Demo mode does not require authentication
         if (isDemoMode) {
-          token = "demo-token" + (user?.role === 1 ? "-admin" : "");
+          token = "demo-token";
         } else {
           token = await getAccessTokenSilently(options);
         }
@@ -66,12 +66,9 @@ const useGraphQLClient = () => {
 
     const addressWithoutProtocol = VITE_BACKEND_URL.replace(/https?:\/\//, "");
 
-    let wsProtocol;
-    if (isDemoMode) {
-      wsProtocol = "wss://"; // changing to wss for public demo mode
-    } else {
-      wsProtocol = "wss://";
-    }
+    const wsProtocol = VITE_BACKEND_URL.startsWith("https:")
+      ? "wss://"
+      : "ws://";
 
     // WebSocket Link for subscriptions
     const wsLink = new GraphQLWsLink(
@@ -90,7 +87,7 @@ const useGraphQLClient = () => {
 
             // Demo mode does not require authentication
             if (isDemoMode) {
-              token = "demo-token" + (user?.role === 1 ? "-admin" : "");
+              token = "demo-token";
             } else {
               token = await getAccessTokenSilently(options);
             }
