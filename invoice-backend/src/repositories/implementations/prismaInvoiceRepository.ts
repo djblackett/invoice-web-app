@@ -1,4 +1,5 @@
 import { Prisma, Role } from "@prisma/client";
+import { generateInvoiceId } from "../../services/invoiceDomainRules";
 import { inject, injectable } from "inversify";
 import { Invoice, InvoiceWithCreatedBy } from "@/constants/types";
 import { DatabaseConnection } from "@/database/prisma.database.connection";
@@ -238,6 +239,41 @@ export class PrismaInvoiceRepository implements IInvoiceRepo {
     }
   }
 
+  private async createWithInvoiceIdRetry(data: Prisma.InvoiceCreateInput) {
+    const generateId = !data.id;
+    // The unique constraint arbitrates collisions, including concurrent inserts.
+    // Retry only generated invoice IDs; explicit IDs keep their existing errors.
+    for (let attempt = 1; ; attempt++) {
+      try {
+        return await this.prisma.invoice.create({
+          data: { ...data, id: data.id || generateInvoiceId() },
+          include: {
+            items: true,
+            clientAddress: true,
+            senderAddress: true,
+            createdBy: true,
+          },
+        });
+      } catch (error) {
+        const target =
+          error instanceof Prisma.PrismaClientKnownRequestError
+            ? error.meta?.["target"]
+            : undefined;
+        if (
+          !generateId ||
+          attempt >= 5 ||
+          !(error instanceof Prisma.PrismaClientKnownRequestError) ||
+          error.code !== "P2002" ||
+          !Array.isArray(target) ||
+          target.length !== 1 ||
+          target[0] !== "id"
+        ) {
+          throw error;
+        }
+      }
+    }
+  }
+
   async create(invoice: InvoiceWithCreatedBy): Promise<unknown> {
     try {
       try {
@@ -252,57 +288,49 @@ export class PrismaInvoiceRepository implements IInvoiceRepo {
         throw error;
       }
 
-      const result = await this.prisma.invoice.create({
-        data: {
-          createdBy: {
-            connect: { id: invoice.createdById ?? "" },
-          },
-          id: invoice.id || "",
-          clientEmail: invoice.clientEmail || "",
-          clientName: invoice.clientName || "",
-          createdAt: invoice.createdAt || new Date().toISOString(),
-          description: invoice.description || "",
-          paymentDue:
-            invoice.paymentDue ||
-            new Date(Date.now() + 24 * 60 * 60 * 1000).toISOString(),
-          paymentTerms: invoice.paymentTerms || 14,
-          status: invoice.status || "pending",
-          total: invoice.total || new Prisma.Decimal(0),
-          items: {
-            create: (invoice.items ?? []).map((item) => ({
-              name: item.name ?? "",
-              quantity: item.quantity ?? 0,
-              price: item.price ?? 0,
-              total: item.total ?? 0,
-            })),
-          },
-          ...(invoice.clientAddress && {
-            clientAddress: {
-              create: {
-                city: invoice.clientAddress.city,
-                country: invoice.clientAddress.country,
-                postCode: invoice.clientAddress.postCode,
-                street: invoice.clientAddress.street,
-              },
-            },
-          }),
-          ...(invoice.senderAddress && {
-            senderAddress: {
-              create: {
-                city: invoice.senderAddress.city,
-                country: invoice.senderAddress.country,
-                postCode: invoice.senderAddress.postCode,
-                street: invoice.senderAddress.street,
-              },
-            },
-          }),
+      const result = await this.createWithInvoiceIdRetry({
+        createdBy: {
+          connect: { id: invoice.createdById ?? "" },
         },
-        include: {
-          items: true,
-          clientAddress: true,
-          senderAddress: true,
-          createdBy: true,
+        id: invoice.id || "",
+        clientEmail: invoice.clientEmail || "",
+        clientName: invoice.clientName || "",
+        createdAt: invoice.createdAt || new Date().toISOString(),
+        description: invoice.description || "",
+        paymentDue:
+          invoice.paymentDue ||
+          new Date(Date.now() + 24 * 60 * 60 * 1000).toISOString(),
+        paymentTerms: invoice.paymentTerms || 14,
+        status: invoice.status || "pending",
+        total: invoice.total || new Prisma.Decimal(0),
+        items: {
+          create: (invoice.items ?? []).map((item) => ({
+            name: item.name ?? "",
+            quantity: item.quantity ?? 0,
+            price: item.price ?? 0,
+            total: item.total ?? 0,
+          })),
         },
+        ...(invoice.clientAddress && {
+          clientAddress: {
+            create: {
+              city: invoice.clientAddress.city,
+              country: invoice.clientAddress.country,
+              postCode: invoice.clientAddress.postCode,
+              street: invoice.clientAddress.street,
+            },
+          },
+        }),
+        ...(invoice.senderAddress && {
+          senderAddress: {
+            create: {
+              city: invoice.senderAddress.city,
+              country: invoice.senderAddress.country,
+              postCode: invoice.senderAddress.postCode,
+              street: invoice.senderAddress.street,
+            },
+          },
+        }),
       });
 
       // Convert total from Decimal to number

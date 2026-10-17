@@ -13,6 +13,7 @@ import {
   ValidationException,
 } from "../config/exception.config";
 import { getAuthorizedInvoice } from "./authorizedInvoice";
+import { withCalculatedTotals } from "./invoiceDomainRules";
 import type { InvoiceRevisionService } from "./invoiceRevision.service";
 import {
   toSnapshot,
@@ -79,7 +80,9 @@ export class InvoiceService {
         },
       };
 
-      const fullInvoice = mapPartialInvoiceToInvoice(invoiceWithUserInfo);
+      const fullInvoice = mapPartialInvoiceToInvoice(
+        withCalculatedTotals(invoiceWithUserInfo),
+      );
       const createdInvoice = await this.invoiceRepo.create(fullInvoice);
       const validatedData = validateInvoiceData(createdInvoice);
 
@@ -114,7 +117,10 @@ export class InvoiceService {
     const oldInvoice = await this.getAuthorizedInvoice(id);
 
     try {
-      const newInvoiceUnvalidated = { ...oldInvoice, ...invoiceUpdates };
+      const newInvoiceUnvalidated = withCalculatedTotals({
+        ...oldInvoice,
+        ...invoiceUpdates,
+      });
       const validatedInvoice: Partial<Invoice> = validateInvoiceData(
         newInvoiceUnvalidated,
       );
@@ -223,10 +229,24 @@ export class InvoiceService {
   };
 
   markAsPaid = async (id: string) => {
-    await this.getAuthorizedInvoice(id);
+    const invoice = await this.getAuthorizedInvoice(id);
+    if (invoice.status !== "pending") {
+      throw new ValidationException(
+        "Only pending invoices can be marked as paid",
+      );
+    }
     try {
       const result = await this.invoiceRepo.markAsPaid(id);
-      return validateInvoiceData(result);
+      const validatedInvoice = validateInvoiceData(result);
+      if (this.revisionService) {
+        await this.revisionService.recordIfChanged({
+          invoiceId: id,
+          invoice: result,
+          changeType: "edit",
+          message: "Marked as paid",
+        });
+      }
+      return validatedInvoice;
     } catch (e) {
       console.error(e);
       if (e instanceof ValidationException) {
