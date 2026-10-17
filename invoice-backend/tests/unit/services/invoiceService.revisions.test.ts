@@ -64,7 +64,11 @@ describe("InvoiceService (revision integration)", () => {
     mockReset(invoiceRepo);
     mockReset(revisionRepo);
     vi.clearAllMocks();
-    const revisionService = new InvoiceRevisionService(revisionRepo, user);
+    const revisionService = new InvoiceRevisionService(
+      revisionRepo,
+      user,
+      invoiceRepo,
+    );
     svc = new InvoiceService(invoiceRepo, user, revisionService);
     // Wire validator mocks to pass-through, matching the top-level mock above.
     vi.mocked(InvoiceUtils.validateInvoiceData).mockImplementation(
@@ -73,7 +77,7 @@ describe("InvoiceService (revision integration)", () => {
   });
 
   test("updateInvoice writes a revision when the state actually changes", async () => {
-    invoiceRepo.findById.mockResolvedValue(invoice);
+    invoiceRepo.findByUserIdAndInvoiceId.mockResolvedValue(invoice);
     const updated = { ...invoice, status: "paid", total: 200 };
     invoiceRepo.update.mockResolvedValue(updated);
     revisionRepo.findLatest.mockResolvedValue(null); // no prior history
@@ -91,7 +95,7 @@ describe("InvoiceService (revision integration)", () => {
   });
 
   test("updateInvoice skips writing a revision for a no-op edit", async () => {
-    invoiceRepo.findById.mockResolvedValue(invoice);
+    invoiceRepo.findByUserIdAndInvoiceId.mockResolvedValue(invoice);
     invoiceRepo.update.mockResolvedValue(invoice); // same state returned
     revisionRepo.findLatest.mockResolvedValue(
       fakeStored(invoice as unknown as InvoiceSnapshot, 1),
@@ -120,12 +124,13 @@ describe("InvoiceService (revision integration)", () => {
       total: 50,
     };
 
-    invoiceRepo.findById.mockResolvedValue(invoice);
+    invoiceRepo.findByUserIdAndInvoiceId.mockResolvedValue(invoice);
     invoiceRepo.update.mockImplementation(async (_id, payload) => ({
       ...invoice,
       ...payload,
       items: payload.items ?? invoice.items,
     }));
+    revisionRepo.findInvoiceId.mockResolvedValue("inv-1");
     revisionRepo.findById.mockResolvedValue(fakeStored(oldSnapshot, 3));
     revisionRepo.findLatest.mockResolvedValue(
       fakeStored(invoice as unknown as InvoiceSnapshot, 5),
@@ -150,7 +155,8 @@ describe("InvoiceService (revision integration)", () => {
   });
 
   test("restoreRevision refuses when revision belongs to a different invoice", async () => {
-    invoiceRepo.findById.mockResolvedValue(invoice);
+    invoiceRepo.findByUserIdAndInvoiceId.mockResolvedValue(invoice);
+    revisionRepo.findInvoiceId.mockResolvedValue("OTHER");
     revisionRepo.findById.mockResolvedValue({
       ...fakeStored({} as InvoiceSnapshot, 3),
       invoiceId: "OTHER",

@@ -59,15 +59,17 @@ const include = {
 };
 
 function context(user: UserIdAndRole): InjectedQueryContext {
+  const invoiceRepo = new PrismaInvoiceRepository(connection);
   const invoiceRevisionService = new InvoiceRevisionService(
     new PrismaInvoiceRevisionRepository(connection),
     user,
+    invoiceRepo,
   );
   return {
     user,
     invoiceRevisionService,
     invoiceService: new InvoiceService(
-      new PrismaInvoiceRepository(connection),
+      invoiceRepo,
       user,
       invoiceRevisionService,
     ),
@@ -384,3 +386,188 @@ for (const { label, actor, id, owner } of [
     }
   });
 }
+
+describe("alternate authorization paths", () => {
+  for (const operation of Object.keys(operations) as Operation[]) {
+    it(`${operation} does not distinguish inaccessible and missing IDs`, async () => {
+      const beforeA = await state("AA1001");
+      const beforeB = await state("BB1001");
+      const inaccessible = await execute(
+        userA,
+        operations[operation],
+        variables("BB1001"),
+      );
+      const missing = await execute(userA, operations[operation], {
+        id: "ZZ9999",
+        first: "missing-first-revision",
+        second: "missing-second-revision",
+      });
+      for (const result of [inaccessible, missing]) {
+        expect(result.data?.[operation] ?? null).toBeNull();
+        expect(result.errors).toHaveLength(1);
+        expect(result.errors![0]!.extensions?.["code"]).toBe("NOT_FOUND");
+      }
+      expect(missing.errors![0]!.message).toBe(
+        inaccessible.errors![0]!.message,
+      );
+      expect(await state("AA1001")).toEqual(beforeA);
+      expect(await state("BB1001")).toEqual(beforeB);
+    });
+  }
+
+  for (const [from, to] of [
+    ["AA1001", "BB1001"],
+    ["BB1001", "AA1001"],
+  ]) {
+    it(`denies mixed-owner diff from ${from} to ${to}`, async () => {
+      const beforeA = await state("AA1001");
+      const beforeB = await state("BB1001");
+      const result = await execute(userA, operations.invoiceRevisionDiff, {
+        first: revisions[from!]![0],
+        second: revisions[to!]![1],
+      });
+      expect(result.data?.["invoiceRevisionDiff"] ?? null).toBeNull();
+      expect(result.errors).toEqual([
+        expect.objectContaining({
+          message: "Revision not found",
+          extensions: expect.objectContaining({ code: "NOT_FOUND" }),
+        }),
+      ]);
+      expect(await state("AA1001")).toEqual(beforeA);
+      expect(await state("BB1001")).toEqual(beforeB);
+    });
+  }
+
+  for (const actor of [userA, admin]) {
+    it(`rejects different-invoice diffs even when ${actor.name} can access both`, async () => {
+      // Give A both invoices, so the same-invoice check is tested separately
+      // from ownership. ADMIN already has legitimate access to both.
+      await prisma.invoice.update({
+        where: { id: "BB1001" },
+        data: { createdById: userA.id },
+      });
+      const result = await execute(actor, operations.invoiceRevisionDiff, {
+        first: revisions["AA1001"]![0],
+        second: revisions["BB1001"]![1],
+      });
+      expect(result.data?.["invoiceRevisionDiff"] ?? null).toBeNull();
+      expect(result.errors).toEqual([
+        expect.objectContaining({
+          message: "Revisions belong to different invoices",
+          extensions: expect.objectContaining({ code: "BAD_USER_INPUT" }),
+        }),
+      ]);
+    });
+  }
+
+  const initialDiff =
+    "query($second: String!) { invoiceRevisionDiff(toRevisionId: $second) { fromRevisionId toRevisionId fieldChanges { field before after } } }";
+  it("denies a foreign revision diff with no fromRevisionId", async () => {
+    const result = await execute(userA, initialDiff, variables("BB1001"));
+    expect(result.data?.["invoiceRevisionDiff"] ?? null).toBeNull();
+    expect(result.errors).toEqual([
+      expect.objectContaining({
+        message: "Revision not found",
+        extensions: expect.objectContaining({ code: "NOT_FOUND" }),
+      }),
+    ]);
+  });
+
+  for (const { actor, id } of [
+    { actor: userA, id: "AA1001" },
+    { actor: admin, id: "BB1001" },
+  ]) {
+    it(`allows an initial revision diff for ${actor.name}`, async () => {
+      const result = await execute(actor, initialDiff, variables(id));
+      expect(result.errors).toBeUndefined();
+      expect(result.data?.["invoiceRevisionDiff"]).toMatchObject({
+        fromRevisionId: null,
+        toRevisionId: revisions[id]![1],
+        fieldChanges: expect.arrayContaining([
+          expect.objectContaining({ field: "clientName" }),
+        ]),
+      });
+    });
+  }
+
+  for (const { actor, target, source, message, code } of [
+    {
+      actor: userA,
+      target: "AA1001",
+      source: "BB1001",
+      message: "Revision not found",
+      code: "NOT_FOUND",
+    },
+    {
+      actor: userA,
+      target: "BB1001",
+      source: "AA1001",
+      message: "Invoice not found",
+      code: "NOT_FOUND",
+    },
+    {
+      actor: admin,
+      target: "AA1001",
+      source: "BB1001",
+      message: "Revision does not belong to this invoice",
+      code: "BAD_USER_INPUT",
+    },
+  ]) {
+    it(`rejects ${actor.name} restoring ${source} into ${target} without any writes`, async () => {
+      const beforeA = await state("AA1001");
+      const beforeB = await state("BB1001");
+      const result = await execute(actor, operations.restoreInvoiceRevision, {
+        id: target,
+        first: revisions[source]![0],
+      });
+      expect(result.data?.["restoreInvoiceRevision"] ?? null).toBeNull();
+      expect(result.errors).toEqual([
+        expect.objectContaining({
+          message,
+          extensions: expect.objectContaining({ code }),
+        }),
+      ]);
+      expect(await state("AA1001")).toEqual(beforeA);
+      expect(await state("BB1001")).toEqual(beforeB);
+    });
+  }
+
+  it("denies history access even when the foreign invoice has no revisions", async () => {
+    await prisma.invoiceRevision.deleteMany({ where: { invoiceId: "BB1001" } });
+    const before = await state("BB1001");
+    const result = await execute(
+      userA,
+      operations.invoiceRevisions,
+      variables("BB1001"),
+    );
+    expect(result.data?.["invoiceRevisions"] ?? null).toBeNull();
+    expect(result.errors).toEqual([
+      expect.objectContaining({
+        message: "Invoice not found",
+        extensions: expect.objectContaining({ code: "NOT_FOUND" }),
+      }),
+    ]);
+    expect(await state("BB1001")).toEqual(before);
+  });
+
+  it("derives revision access from invoice ownership rather than revision authorship", async () => {
+    await prisma.invoiceRevision.update({
+      where: { id: revisions["BB1001"]![0] },
+      data: { createdById: userA.id },
+    });
+    const before = await state("BB1001");
+    const result = await execute(
+      userA,
+      operations.invoiceRevision,
+      variables("BB1001"),
+    );
+    expect(result.data?.["invoiceRevision"] ?? null).toBeNull();
+    expect(result.errors).toEqual([
+      expect.objectContaining({
+        message: "Revision not found",
+        extensions: expect.objectContaining({ code: "NOT_FOUND" }),
+      }),
+    ]);
+    expect(await state("BB1001")).toEqual(before);
+  });
+});

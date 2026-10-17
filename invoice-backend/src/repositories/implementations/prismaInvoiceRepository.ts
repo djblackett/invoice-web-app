@@ -89,9 +89,10 @@ export class PrismaInvoiceRepository implements IInvoiceRepo {
   ) {
     try {
       const result = await this.prisma.invoice.findUniqueOrThrow({
-        where: {
-          id: invoiceId,
-        },
+        where:
+          role === "ADMIN"
+            ? { id: invoiceId }
+            : { id: invoiceId, createdById: userId },
         include: {
           items: true,
           clientAddress: true,
@@ -100,10 +101,7 @@ export class PrismaInvoiceRepository implements IInvoiceRepo {
         },
       });
 
-      if (result.createdById === userId || role !== "ADMIN") {
-        return result;
-      }
-      throw new NotFoundException("Don't have necessary permissions");
+      return result;
     } catch (e) {
       if (
         e instanceof Prisma.PrismaClientKnownRequestError &&

@@ -85,6 +85,14 @@ export class PrismaInvoiceRevisionRepository implements IInvoiceRevisionRepo {
     return rows.map(toStored);
   }
 
+  async findInvoiceId(revisionId: string): Promise<string | null> {
+    const row = await this.prisma.invoiceRevision.findUnique({
+      where: { id: revisionId },
+      select: { invoiceId: true },
+    });
+    return row?.invoiceId ?? null;
+  }
+
   async findById(revisionId: string): Promise<StoredRevision | null> {
     const row = await this.prisma.invoiceRevision.findUnique({
       where: { id: revisionId },

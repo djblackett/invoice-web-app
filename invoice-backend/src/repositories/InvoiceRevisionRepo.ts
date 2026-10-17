@@ -35,6 +35,8 @@ export interface StoredRevision {
 export interface IInvoiceRevisionRepo {
   create(input: CreateRevisionInput): Promise<StoredRevision>;
   listByInvoice(invoiceId: string): Promise<StoredRevision[]>;
+  /** Resolve the parent without loading a protected snapshot or its author. */
+  findInvoiceId(revisionId: string): Promise<string | null>;
   findById(revisionId: string): Promise<StoredRevision | null>;
   /** Returns the most recent revision for the invoice, if any. */
   findLatest(invoiceId: string): Promise<StoredRevision | null>;

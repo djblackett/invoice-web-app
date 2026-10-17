@@ -6,7 +6,9 @@ import type {
   IInvoiceRevisionRepo,
   StoredRevision,
 } from "@/repositories/InvoiceRevisionRepo";
+import type { IInvoiceRepo } from "@/repositories/InvoiceRepo";
 import type { UserIdAndRole } from "@/constants/types";
+import { NotFoundException } from "@/config/exception.config";
 import type { InvoiceSnapshot } from "@/services/invoiceDiff";
 
 const mockUser: UserIdAndRole = {
@@ -47,11 +49,17 @@ const fakeStored = (snapshot: InvoiceSnapshot, n = 1): StoredRevision => ({
 
 describe("InvoiceRevisionService", () => {
   const mockRepo = mockDeep<IInvoiceRevisionRepo>();
+  const invoiceRepo = mockDeep<IInvoiceRepo>();
   let service: InvoiceRevisionService;
 
   beforeEach(() => {
     mockReset(mockRepo);
-    service = new InvoiceRevisionService(mockRepo, mockUser);
+    mockReset(invoiceRepo);
+    invoiceRepo.findByUserIdAndInvoiceId.mockResolvedValue({
+      id: "inv-1",
+      createdById: mockUser.id,
+    });
+    service = new InvoiceRevisionService(mockRepo, mockUser, invoiceRepo);
   });
 
   test("recordIfChanged writes a revision when the snapshot differs", async () => {
@@ -117,6 +125,7 @@ describe("InvoiceRevisionService", () => {
       return null;
     });
 
+    mockRepo.findInvoiceId.mockResolvedValue("inv-1");
     const diff = await service.getDiff("rev-1", "rev-2");
 
     expect(diff.fromRevisionId).toBe("rev-1");
@@ -127,15 +136,68 @@ describe("InvoiceRevisionService", () => {
   });
 
   test("listRevisions requires a user context", async () => {
-    const svcNoUser = new InvoiceRevisionService(mockRepo, null);
+    const svcNoUser = new InvoiceRevisionService(mockRepo, null, invoiceRepo);
     await expect(svcNoUser.listRevisions("inv-1")).rejects.toThrow(
       "Unauthorized",
     );
   });
 
   test("getRevision throws NotFound when missing", async () => {
-    mockRepo.findById.mockResolvedValue(null);
+    mockRepo.findInvoiceId.mockResolvedValue(null);
     await expect(service.getRevision("missing")).rejects.toThrow(
+      "Revision not found",
+    );
+  });
+
+  test("denied revision access never loads the snapshot", async () => {
+    service = new InvoiceRevisionService(
+      mockRepo,
+      { ...mockUser, role: "USER" },
+      invoiceRepo,
+    );
+    mockRepo.findInvoiceId.mockResolvedValue("foreign-invoice");
+    // Even an incorrectly scoped repository cannot bypass the service guard.
+    invoiceRepo.findByUserIdAndInvoiceId.mockResolvedValue({
+      createdById: "other-user",
+    });
+    await expect(service.getRevision("foreign-revision")).rejects.toThrow(
+      "Revision not found",
+    );
+    expect(mockRepo.findById).not.toHaveBeenCalled();
+  });
+
+  test("denied history access never queries revisions", async () => {
+    invoiceRepo.findByUserIdAndInvoiceId.mockRejectedValue(
+      new NotFoundException("Invoice not found"),
+    );
+    await expect(service.listRevisions("foreign-invoice")).rejects.toThrow(
+      "Invoice not found",
+    );
+    expect(mockRepo.listByInvoice).not.toHaveBeenCalled();
+  });
+
+  test("denied revision recording never reads history or writes a revision", async () => {
+    invoiceRepo.findByUserIdAndInvoiceId.mockRejectedValue(
+      new NotFoundException("Invoice not found"),
+    );
+    await expect(
+      service.recordIfChanged({
+        invoiceId: "foreign-invoice",
+        invoice: baseSnapshot(),
+        changeType: "edit",
+      }),
+    ).rejects.toThrow("Invoice not found");
+    expect(mockRepo.findLatest).not.toHaveBeenCalled();
+    expect(mockRepo.create).not.toHaveBeenCalled();
+  });
+
+  test("fails closed if a revision's parent changes after authorization", async () => {
+    mockRepo.findInvoiceId.mockResolvedValue("inv-1");
+    mockRepo.findById.mockResolvedValue({
+      ...fakeStored(baseSnapshot()),
+      invoiceId: "foreign-invoice",
+    });
+    await expect(service.getRevision("rev-1")).rejects.toThrow(
       "Revision not found",
     );
   });

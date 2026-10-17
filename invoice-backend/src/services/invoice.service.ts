@@ -12,6 +12,7 @@ import {
   NotFoundException,
   ValidationException,
 } from "../config/exception.config";
+import { getAuthorizedInvoice } from "./authorizedInvoice";
 import type { InvoiceRevisionService } from "./invoiceRevision.service";
 import {
   toSnapshot,
@@ -55,60 +56,11 @@ export class InvoiceService {
     }
   };
 
-  getInvoiceById = async (
-    invoiceId: string,
-  ): Promise<Partial<Invoice> | null> => {
-    if (!this.userContext) {
-      throw new ValidationException("Unauthorized");
-    }
-    const { role, id } = this.userContext;
+  private getAuthorizedInvoice = (invoiceId: string) =>
+    getAuthorizedInvoice(this.invoiceRepo, this.userContext, invoiceId);
 
-    if (!id || !role) {
-      throw new ValidationException("Unauthorized");
-    }
-
-    if (role === "ADMIN") {
-      try {
-        const result = await this.invoiceRepo.findById(invoiceId);
-        if (!result) {
-          console.error("role = ADMIN - Invoice not found");
-          throw new NotFoundException("Invoice not found");
-        }
-        return result;
-      } catch (e) {
-        console.error(e);
-        if (e instanceof ValidationException) {
-          throw e;
-        }
-        if (e instanceof NotFoundException) {
-          throw e;
-        }
-        throw new InternalServerException("Internal server error");
-      }
-    } else {
-      try {
-        const result = await this.invoiceRepo.findByUserIdAndInvoiceId(
-          id,
-          role,
-          invoiceId,
-        );
-        if (!result) {
-          console.error("role = USER - Invoice not found");
-          throw new NotFoundException("Invoice not found");
-        }
-        return result;
-      } catch (e) {
-        console.error(e);
-        if (e instanceof ValidationException) {
-          throw e;
-        }
-        if (e instanceof NotFoundException) {
-          throw e;
-        }
-        throw new InternalServerException("Internal server error");
-      }
-    }
-  };
+  getInvoiceById = async (invoiceId: string): Promise<Partial<Invoice>> =>
+    this.getAuthorizedInvoice(invoiceId);
 
   addInvoice = async (invoice: Invoice) => {
     if (!this.userContext) {
@@ -159,10 +111,7 @@ export class InvoiceService {
   };
 
   updateInvoice = async (id: string, invoiceUpdates: Partial<Invoice>) => {
-    const oldInvoice = await this.getInvoiceById(id);
-    if (!oldInvoice) {
-      throw new NotFoundException("Invoice not found");
-    }
+    const oldInvoice = await this.getAuthorizedInvoice(id);
 
     try {
       const newInvoiceUnvalidated = { ...oldInvoice, ...invoiceUpdates };
@@ -170,8 +119,8 @@ export class InvoiceService {
         newInvoiceUnvalidated,
       );
 
-      delete newInvoiceUnvalidated.createdBy;
-      delete newInvoiceUnvalidated.createdById;
+      delete validatedInvoice.createdBy;
+      delete validatedInvoice.createdById;
       const result = await this.invoiceRepo.update(id, validatedInvoice);
 
       // History is append-only. We record AFTER the write succeeds so that a
@@ -216,12 +165,7 @@ export class InvoiceService {
       throw new InternalServerException("Revision service unavailable");
     }
 
-    const current = (await this.getInvoiceById(invoiceId)) as
-      | (Partial<Invoice> & { id?: string })
-      | null;
-    if (!current) {
-      throw new NotFoundException("Invoice not found");
-    }
+    const current = await this.getAuthorizedInvoice(invoiceId);
 
     const revision = await this.revisionService.getRevision(revisionId);
     if (revision.invoiceId !== invoiceId) {
@@ -279,9 +223,7 @@ export class InvoiceService {
   };
 
   markAsPaid = async (id: string) => {
-    if (!this.userContext) {
-      throw new ValidationException("Unauthorized");
-    }
+    await this.getAuthorizedInvoice(id);
     try {
       const result = await this.invoiceRepo.markAsPaid(id);
       return validateInvoiceData(result);
@@ -295,15 +237,7 @@ export class InvoiceService {
   };
 
   deleteInvoice = async (invoiceId: string) => {
-    if (!this.userContext) {
-      throw new ValidationException("Unauthorized");
-    }
-
-    const { id, role } = this.userContext;
-    const invoice = (await this.getInvoiceById(invoiceId)) as Invoice;
-    if (invoice.createdById !== id || role !== "ADMIN") {
-      throw new ValidationException("Unauthorized");
-    }
+    await this.getAuthorizedInvoice(invoiceId);
     try {
       const result = await this.invoiceRepo.delete(invoiceId);
       if (!result) {
@@ -312,6 +246,7 @@ export class InvoiceService {
       return result;
     } catch (e) {
       console.error(e);
+      if (e instanceof NotFoundException) throw e;
       throw new InternalServerException("Internal server error");
     }
   };

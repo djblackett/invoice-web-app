@@ -1,4 +1,6 @@
 import { inject, injectable } from "inversify";
+import type { IInvoiceRepo } from "@/repositories/InvoiceRepo";
+import { getAuthorizedInvoice } from "./authorizedInvoice";
 import TYPES from "@/constants/identifiers";
 import type {
   IInvoiceRevisionRepo,
@@ -28,8 +30,8 @@ export interface RecordParams {
 
 /**
  * Owns the revision history for invoices: snapshot capture, no-op detection,
- * listing, and diff computation. Pure-ish — the only state it touches is the
- * revision store (via {@link IInvoiceRevisionRepo}). It never mutates invoices
+ * listing, and diff computation. Reads are authorized against the parent
+ * invoice before loading snapshots. It never mutates invoices
  * directly; the orchestration for restore lives in {@link InvoiceService}.
  */
 @injectable()
@@ -39,6 +41,8 @@ export class InvoiceRevisionService {
     private readonly revisionRepo: IInvoiceRevisionRepo,
     @inject(TYPES.UserContext)
     private readonly userContext: UserIdAndRole | null,
+    @inject(TYPES.IInvoiceRepo)
+    private readonly invoiceRepo: IInvoiceRepo,
   ) {}
 
   /**
@@ -52,6 +56,11 @@ export class InvoiceRevisionService {
   recordIfChanged = async (
     params: RecordParams,
   ): Promise<StoredRevision | null> => {
+    await getAuthorizedInvoice(
+      this.invoiceRepo,
+      this.userContext,
+      params.invoiceId,
+    );
     const nextSnapshot = toSnapshot(params.invoice);
     const latest = await this.revisionRepo.findLatest(params.invoiceId);
 
@@ -74,9 +83,7 @@ export class InvoiceRevisionService {
   };
 
   listRevisions = async (invoiceId: string): Promise<StoredRevision[]> => {
-    if (!this.userContext) {
-      throw new ValidationException("Unauthorized");
-    }
+    await getAuthorizedInvoice(this.invoiceRepo, this.userContext, invoiceId);
     return this.revisionRepo.listByInvoice(invoiceId);
   };
 
@@ -84,8 +91,24 @@ export class InvoiceRevisionService {
     if (!this.userContext) {
       throw new ValidationException("Unauthorized");
     }
+    if (!this.userContext.id || !this.userContext.role) {
+      throw new ValidationException("Unauthorized");
+    }
+    const invoiceId = await this.revisionRepo.findInvoiceId(revisionId);
+    if (!invoiceId) {
+      throw new NotFoundException("Revision not found");
+    }
+    try {
+      await getAuthorizedInvoice(this.invoiceRepo, this.userContext, invoiceId);
+    } catch (error) {
+      if (error instanceof NotFoundException) {
+        // Missing and inaccessible revision IDs share the same public contract.
+        throw new NotFoundException("Revision not found");
+      }
+      throw error;
+    }
     const revision = await this.revisionRepo.findById(revisionId);
-    if (!revision) {
+    if (!revision || revision.invoiceId !== invoiceId) {
       throw new NotFoundException("Revision not found");
     }
     return revision;
@@ -93,9 +116,8 @@ export class InvoiceRevisionService {
 
   /**
    * Diff two revisions. If `fromRevisionId` is null, diffs against the empty
-   * state (useful for "initial revision" display). If the two revisions
-   * belong to different invoices, we still diff them — callers should
-   * enforce same-invoice if it matters to them.
+   * state (useful for "initial revision" display). Both revisions must be
+   * accessible to the caller and belong to the same invoice.
    */
   getDiff = async (
     fromRevisionId: string | null,
@@ -104,12 +126,13 @@ export class InvoiceRevisionService {
     if (!this.userContext) {
       throw new ValidationException("Unauthorized");
     }
-    const to = await this.revisionRepo.findById(toRevisionId);
-    if (!to) throw new NotFoundException("Revision not found");
+    const to = await this.getRevision(toRevisionId);
     let fromSnapshot: InvoiceSnapshot | null = null;
     if (fromRevisionId) {
-      const from = await this.revisionRepo.findById(fromRevisionId);
-      if (!from) throw new NotFoundException("Revision not found");
+      const from = await this.getRevision(fromRevisionId);
+      if (from.invoiceId !== to.invoiceId) {
+        throw new ValidationException("Revisions belong to different invoices");
+      }
       fromSnapshot = from.snapshot;
     }
     return diffSnapshots(fromSnapshot, to.snapshot, {
