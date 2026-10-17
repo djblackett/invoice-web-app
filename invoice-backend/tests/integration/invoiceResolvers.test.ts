@@ -66,6 +66,7 @@ describe("Invoice Resolvers Integration Tests", () => {
     schemaName = `test_schema_${randomUUID()}`;
 
     const baseDatabaseUrl =
+      process.env["DATABASE_URL"] ??
       "postgresql://postgres:example@localhost:5432/db-test";
     const newDatabaseUrl = `${baseDatabaseUrl}?schema=${schemaName}`;
     console.log("Env vars:", process.env["DATABASE_URL"]);

@@ -116,6 +116,7 @@ wait_for_backend() {
     info "Backend is ready."
 }
 
+# Compose backend startup applies committed migrations with prisma migrate deploy.
 # ── seed demo data ────────────────────────────────────────────────────────────
 seed_db() {
     heading "Seeding demo data"

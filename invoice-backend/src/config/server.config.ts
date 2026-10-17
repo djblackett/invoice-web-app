@@ -26,7 +26,7 @@ if (!PORT) {
   throw new Error("Server env port not set");
 }
 
-logger.info(`Database URL: ${DATABASE_URL}`);
+logger.info(`Database configured: ${Boolean(DATABASE_URL)}`);
 logger.info(`Server Port: ${PORT}`);
 logger.info(`Node Environment: ${NODE_ENV}`);
 logger.info(`Cert Directory: ${CERT_DIR}`);

@@ -71,6 +71,7 @@ describe("Integration Tests", () => {
   beforeEach(async () => {
     schemaName = `test_schema_${randomUUID()}`;
     const baseDatabaseUrl =
+      process.env["DATABASE_URL"] ??
       "postgresql://postgres:example@localhost:5432/db-test";
     const newDatabaseUrl = `${baseDatabaseUrl}?schema=${schemaName}`;
 

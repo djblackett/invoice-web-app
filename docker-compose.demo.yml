@@ -28,13 +28,13 @@ services:
       dockerfile: dev.Dockerfile
     depends_on:
       db-demo:
-        condition: service_started
+        condition: service_healthy
     restart: unless-stopped
     ports:
       - "8000:8000"
     command: |
       sh -c "npx prisma@6.2.1 generate && \
-      npx prisma@6.2.1 db push && \
+      npx prisma@6.2.1 migrate deploy && \
       DATABASE_URL=postgresql://postgres:example@db-demo:5432/db-demo?schema=public npm run start:test"
     environment:
       - NODE_ENV=test
