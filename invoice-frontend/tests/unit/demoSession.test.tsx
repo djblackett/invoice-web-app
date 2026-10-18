@@ -56,6 +56,7 @@ function Session() {
   );
 }
 beforeEach(() => {
+  sessionStorage.clear();
   vi.stubEnv("VITE_DEMO_MODE", "true");
   vi.stubEnv("VITE_BACKEND_URL", "http://localhost:8000/graphql");
   vi.clearAllMocks();
@@ -66,6 +67,7 @@ beforeEach(() => {
 });
 afterEach(() => {
   cleanup();
+  sessionStorage.clear();
   vi.unstubAllEnvs();
 });
 
@@ -91,6 +93,24 @@ describe("deliberate demo entry", () => {
     await screen.findByText("Canonical invoices ready");
     expect(mocks.mutate).toHaveBeenCalledTimes(1);
     expect(mocks.clearStore).toHaveBeenCalledTimes(1);
+  });
+
+  it("preserves a successfully initialized entry when the provider remounts after reload", async () => {
+    const first = render(
+      <DemoModeProvider>
+        <Session />
+      </DemoModeProvider>,
+    );
+    await screen.findByText("Canonical invoices ready");
+    expect(mocks.mutate).toHaveBeenCalledTimes(1);
+    first.unmount();
+    render(
+      <DemoModeProvider>
+        <Session />
+      </DemoModeProvider>,
+    );
+    await screen.findByText("Canonical invoices ready");
+    expect(mocks.mutate).toHaveBeenCalledTimes(1);
   });
 
   it("resets again on a deliberate leave-and-enter transition", async () => {

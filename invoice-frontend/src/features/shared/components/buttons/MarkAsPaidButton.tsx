@@ -91,6 +91,7 @@ function MarkAsPaidButton({ invoice, editButtonRef }: MarkPaidProps) {
           void handleClick();
         }}
         type="button"
+        disabled={invoice.status !== "pending"}
         data-testid="mark-as-paid"
       >
         Mark as Paid

@@ -32,14 +32,22 @@ interface DemoModeProviderProps {
   children: ReactNode;
 }
 
+// Keep a deliberate demo entry active across reloads in this tab. This is only
+// UI lifecycle state; the backend still authorizes every request as shared demoId.
+const SESSION_KEY = "invoice-demo-session";
+
 // Create the Provider component.
 const DemoModeProvider = ({ children }: DemoModeProviderProps) => {
   const [state, setState] = useState({
-    active: import.meta.env.VITE_DEMO_MODE === "true",
+    active:
+      import.meta.env.VITE_DEMO_MODE === "true" &&
+      sessionStorage.getItem(SESSION_KEY) !== "inactive",
     entryId: 0,
   });
   const initialization = useRef<{ id: number; promise: Promise<void> } | null>(
-    null,
+    sessionStorage.getItem(SESSION_KEY) === "ready"
+      ? { id: 0, promise: Promise.resolve() }
+      : null,
   );
   const setIsDemoMode = useCallback<
     React.Dispatch<React.SetStateAction<boolean>>
@@ -47,6 +55,13 @@ const DemoModeProvider = ({ children }: DemoModeProviderProps) => {
     setState((previous) => {
       const active =
         typeof value === "function" ? value(previous.active) : value;
+      if (active !== previous.active) {
+        initialization.current = null;
+        sessionStorage.setItem(
+          SESSION_KEY,
+          active ? "initializing" : "inactive",
+        );
+      }
       return {
         active,
         entryId: previous.entryId + (!previous.active && active ? 1 : 0),
@@ -63,7 +78,10 @@ const DemoModeProvider = ({ children }: DemoModeProviderProps) => {
           id: state.entryId,
           promise: Promise.resolve()
             .then(reset)
-            .then(() => undefined)
+            .then(() => {
+              if (initialization.current?.id === entryId)
+                sessionStorage.setItem(SESSION_KEY, "ready");
+            })
             .catch((error) => {
               if (initialization.current?.id === entryId)
                 initialization.current = null;

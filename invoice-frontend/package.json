@@ -13,9 +13,8 @@
     "build": "cross-env VITE_BACKEND_URL=https://localhost:8000 vite build",
     "preview": "vite preview",
     "test:unit": "vitest tests",
-    "test:e2e": "cross-env VITE_BACKEND_URL=https://localhost:8000/graphql NODE_ENV=test playwright test --config=playwright.config.ts",
+    "test:e2e": "node qa/scripts/run-e2e.mjs",
     "test:container": "cross-env VITE_BACKEND_URL=https://backend-test:8000/graphql vite",
-    "test:e2e:docker": "cd ../ && cross-env VITE_BACKEND_URL=https://backend-dev:8000/graphql docker compose -f docker-compose.dev.yml create playwright-e2e && cross-env VITE_BACKEND_URL=https://backend-dev:8000/graphql docker compose -f docker-compose.dev.yml start playwright-e2e",
     "lint": "eslint --config ./eslint.config.mjs .",
     "lint:fix": "eslint --config ./eslint.config.mjs --fix .",
     "lint:css": "stylelint './src/**/*.{ts,tsx}'",
@@ -25,7 +24,8 @@
     "typecheck:node": "tsc -p tsconfig.node.json --noEmit",
     "typecheck": "npm run typecheck:app && npm run typecheck:node",
     "test": "vitest run tests --reporter=default",
-    "check": "npm run typecheck && npm run lint && npm test && npm run build"
+    "check": "npm run typecheck && npm run lint && npm test && npm run build",
+    "typecheck:e2e": "tsc -p tsconfig.e2e.json --noEmit"
   },
   "dependencies": {
     "@apollo/client": "^3.12.2",

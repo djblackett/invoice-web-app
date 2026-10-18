@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useState } from "react";
+import { createPortal } from "react-dom";
 import { useMutation, useQuery } from "@apollo/client";
 import { toast } from "react-toastify";
 import {
@@ -111,7 +112,7 @@ function RevisionHistoryPanel({ invoiceId, open, onClose }: Props) {
   const isSelectedHead = selected && revisions[0]?.id === selected.id;
   const isInitial = !previousRevision && !!selected;
 
-  return (
+  return createPortal(
     <PanelBackdrop
       role="dialog"
       aria-modal="true"
@@ -259,7 +260,8 @@ function RevisionHistoryPanel({ invoiceId, open, onClose }: Props) {
           </div>
         </ConfirmModal>
       )}
-    </PanelBackdrop>
+    </PanelBackdrop>,
+    document.body,
   );
 }
 

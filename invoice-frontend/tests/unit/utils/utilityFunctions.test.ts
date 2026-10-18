@@ -34,10 +34,15 @@ describe("utilityFunctions", () => {
 
   describe("convertDateToString", () => {
     it("should convert a Date object to a string in YYYY-MM-DD format", () => {
-      const date = new Date("2023-10-05");
+      const date = new Date(2023, 9, 5);
       const dateString = convertDateToString(date);
       expect(dateString).toBe("2023-10-05");
     });
+  });
+
+  it("keeps the selected local calendar date even late in the evening", () => {
+    const date = new Date(2026, 9, 15, 23, 30);
+    expect(convertDateToString(date)).toBe("2026-10-15");
   });
 
   describe("convertStringToDate", () => {
@@ -77,7 +82,7 @@ describe("utilityFunctions", () => {
           { id: "", name: "Item 2", quantity: 1, price: 300, total: 300 },
         ],
       };
-      const startDate = new Date("2023-10-05");
+      const startDate = new Date(2023, 9, 5);
       const selectedPaymentOption = 30;
 
       const invoice = createInvoiceObject(

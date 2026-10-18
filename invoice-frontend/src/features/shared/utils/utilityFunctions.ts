@@ -81,17 +81,10 @@ export const createInvoiceObject = (
   newInvoice.id = newInvoice.id ? newInvoice.id : generateId();
   newInvoice.paymentTerms = selectedPaymentOption;
 
-  // calculate payment due date
-  const date = new Date(startDate.getTime() + 86400000 * selectedPaymentOption);
-
-  const [month, day, year] = [
-    date.getUTCMonth() + 1,
-    date.getUTCDate(),
-    date.getUTCFullYear(),
-  ];
-  newInvoice.paymentDue = [year, month, day.toString().padStart(2, "0")].join(
-    "-",
-  );
+  // These are calendar dates from the local date picker, not UTC instants.
+  const dueDate = new Date(startDate);
+  dueDate.setDate(dueDate.getDate() + selectedPaymentOption);
+  newInvoice.paymentDue = convertDateToString(dueDate);
   return newInvoice;
 };
 
@@ -106,9 +99,9 @@ export const convertedDate = (paymentDue: string) => {
 
 export const convertDateToString = (date: Date) => {
   const [month, day, year] = [
-    date.getUTCMonth() + 1,
-    date.getUTCDate(),
-    date.getUTCFullYear(),
+    date.getMonth() + 1,
+    date.getDate(),
+    date.getFullYear(),
   ];
   return [year, month, day.toString().padStart(2, "0")].join("-");
 };

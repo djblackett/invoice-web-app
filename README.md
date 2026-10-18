@@ -209,17 +209,14 @@ cd invoice-frontend
 yarn test:unit
 ```
 
-E2e tests:  
-First, run `docker compose -f docker-compose.dev.yml up` to start all microservices
-
-To run E2E tests separately from the dev environment, update `docker-compose.dev.yml` by commenting out the backend start command on line 34 and uncommenting the one on line 36.
-
-Then:
+Browser E2E gate (real local backend and disposable PostgreSQL, no Auth0 account):
 
 ```bash
 cd invoice-frontend
-yarn test:e2e
+PG_BIN=/usr/lib/postgresql/16/bin npm run test:e2e
 ```
+
+Install dependencies in both packages and run `npx --no-install playwright install chromium` once from the frontend. PostgreSQL server tools must be installed; omit `PG_BIN` when they are on PATH. The command provisions data, builds/starts services, runs desktop/mobile Chromium and Demo-disabled coverage, and cleans up. See [browser prerequisites and commands](invoice-frontend/README.md#end-to-end-tests) and [Slice 5C results](docs/audit/slice-5c-playwright-e2e-stabilization.md). The old Compose/live-Auth0 workflow is not required for this gate.
 
 ## Deployment
 

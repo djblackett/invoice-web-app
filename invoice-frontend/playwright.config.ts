@@ -1,72 +1,60 @@
 import { defineConfig, devices } from "@playwright/test";
-import path from "path";
-import { fileURLToPath } from "url";
-import dotenv from "dotenv";
 
-dotenv.config();
-const TEST_BASE_URL = process.env.TEST_BASE_URL;
-
-// Define __dirname in ES Modules
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.dirname(__filename);
-
-/**
- * See https://playwright.dev/docs/test-configuration.
- */
+const artifacts = process.env.E2E_ARTIFACTS || "test-results";
 export default defineConfig({
-  testDir: "qa",
-  testMatch: "**/*.spec.ts",
-  timeout: 30 * 1000,
-  globalSetup: "./global-setup",
-  /* Run tests in files in parallel */
+  testDir: "qa/tests",
   fullyParallel: false,
-  /* Fail the build on CI if you accidentally left test.only in the source code. */
+  workers: 1, // All visitors intentionally share demoId. Never run these in parallel.
   forbidOnly: !!process.env.CI,
-  /* Retry on CI only */
-  retries: process.env.CI ? 1 : 0,
-  /* Opt out of parallel tests on CI. */
-  workers: process.env.CI ? 1 : 1,
-  /* Reporter to use. See https://playwright.dev/docs/test-reporters */
-  reporter: "html",
-  /* Shared settings for all the projects below. See https://playwright.dev/docs/api/class-testoptions. */
+  retries: 0,
+  timeout: 45_000,
+  expect: { timeout: 10_000 },
+  outputDir: `${artifacts}/results`,
+  reporter: [
+    ["list"],
+    ["html", { outputFolder: `${artifacts}/playwright-report`, open: "never" }],
+    ["json", { outputFile: `${artifacts}/results.json` }],
+  ],
   use: {
-    /* Base URL to use in actions like `await page.goto('/')`. */
-    baseURL: TEST_BASE_URL,
-    video: "on",
-    /* Collect trace when retrying the failed test. See https://playwright.dev/docs/trace-viewer */
-    trace: "on-first-retry",
-    ignoreHTTPSErrors: true,
-    storageState: path.resolve(__dirname, "state.json"),
+    baseURL: process.env.E2E_BASE_URL,
+    timezoneId: "America/Halifax",
+    trace: "retain-on-failure",
+    screenshot: "only-on-failure",
+    launchOptions: { executablePath: process.env.E2E_CHROMIUM_EXECUTABLE },
   },
-
-  /* Configure projects for major browsers */
   projects: [
     {
-      name: "chromium",
+      name: "chromium-desktop",
+      testMatch: ["demo.spec.ts", "session.spec.ts"],
       use: {
         ...devices["Desktop Chrome"],
-        launchOptions: {
-          args: ["--ignore-certificate-errors"],
-        },
+        viewport: { width: 1440, height: 1000 },
       },
     },
-    // {
-    //   name: "firefox",
-    //   use: {
-    //     ...devices["Desktop Firefox"],
-    //     launchOptions: {
-    //       args: ["--ignore-certificate-errors"],
-    //     },
-    //   },
-    // },
-    // {
-    //   name: "webkit",
-    //   use: {
-    //     ...devices["Desktop Safari"],
-    //     launchOptions: {
-    //       args: ["--ignore-certificate-errors"],
-    //     },
-    //   },
-    // },
+    {
+      name: "chromium-mobile",
+      testMatch: ["demo.spec.ts", "session.spec.ts"],
+      use: { ...devices["Pixel 5"] },
+    },
+    {
+      name: "demo-disabled",
+      testMatch: "disabled.spec.ts",
+      use: { baseURL: process.env.E2E_DISABLED_URL },
+    },
+    ...(process.env.E2E_FIREFOX_EXECUTABLE
+      ? [
+          {
+            name: "firefox-smoke",
+            testMatch: "demo.spec.ts",
+            grep: /public entry/,
+            use: {
+              ...devices["Desktop Firefox"],
+              launchOptions: {
+                executablePath: process.env.E2E_FIREFOX_EXECUTABLE,
+              },
+            },
+          },
+        ]
+      : []),
   ],
 });

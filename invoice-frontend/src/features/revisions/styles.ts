@@ -6,7 +6,7 @@ export const PanelBackdrop = styled.div`
   background: rgba(0, 0, 0, 0.45);
   display: flex;
   justify-content: flex-end;
-  z-index: 50;
+  z-index: 1001; // Above the fixed navigation header, including on mobile.
 `;
 
 export const Panel = styled.aside`
