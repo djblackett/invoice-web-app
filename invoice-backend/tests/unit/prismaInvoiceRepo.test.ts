@@ -355,7 +355,15 @@ describe("Prisma Query: updateInvoice", () => {
       return mockInvoice;
     });
 
-    prisma.item.deleteMany.mockResolvedValue({ count: 1 });
+    // The update path now reconciles items by id: it first lists the
+    // existing ones, then updates/creates/deletes individually so revision
+    // diffs can stably match line items across edits.
+    prisma.item.findMany.mockResolvedValue([
+      { id: "gjhgjhgjhg" },
+      { id: "hgfdyrdyi456t" },
+    ] as never);
+    prisma.item.update.mockResolvedValue({} as never);
+    prisma.item.deleteMany.mockResolvedValue({ count: 0 });
     prisma.invoice.update.mockResolvedValue(mockInvoice);
     prisma.invoice.findUnique.mockResolvedValue(mockInvoice);
 
@@ -370,9 +378,9 @@ describe("Prisma Query: updateInvoice", () => {
 
     expect(prisma.$transaction).toHaveBeenCalled();
 
-    expect(prisma.item.deleteMany).toHaveBeenCalledWith({
-      where: { invoiceId: "D64FUO" },
-    });
+    // Both input items already exist → two item.update calls and no delete.
+    expect(prisma.item.update).toHaveBeenCalledTimes(2);
+    expect(prisma.item.deleteMany).not.toHaveBeenCalled();
 
     expect(prisma.invoice.update).toHaveBeenCalled();
   });

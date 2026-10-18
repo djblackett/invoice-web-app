@@ -11,7 +11,7 @@ import {
   expect,
 } from "vitest";
 import { PrismaClient } from "@prisma/client";
-import { execSync } from "child_process";
+import { execFileSync } from "child_process";
 import { randomUUID } from "crypto";
 import container from "@/config/inversify.config";
 import TYPES from "@/constants/identifiers";
@@ -71,6 +71,7 @@ describe("Integration Tests", () => {
   beforeEach(async () => {
     schemaName = `test_schema_${randomUUID()}`;
     const baseDatabaseUrl =
+      process.env["DATABASE_URL"] ??
       "postgresql://postgres:example@localhost:5432/db-test";
     const newDatabaseUrl = `${baseDatabaseUrl}?schema=${schemaName}`;
 
@@ -86,8 +87,9 @@ describe("Integration Tests", () => {
     const child = container.createChild();
     child.bind<PrismaClient>(TYPES.PrismaClient).toConstantValue(prisma);
 
-    console.log("Connected to Prisma", newDatabaseUrl);
-    execSync("npx prisma db push", { stdio: "inherit" });
+    execFileSync("npx", ["--no-install", "prisma", "migrate", "deploy"], {
+      stdio: "inherit",
+    });
     [app] = await createServer();
 
     await request(app)

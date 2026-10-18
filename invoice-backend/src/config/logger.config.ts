@@ -16,7 +16,7 @@ const shouldColorize =
 @injectable()
 export class Logger {
   private logger = createLogger({
-    level: "debug",
+    level: process.env["NODE_ENV"] === "production" ? "info" : "debug",
     format: combine(
       label({ label: "[LOGGER]" }),
       timestamp({

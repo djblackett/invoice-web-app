@@ -19,15 +19,13 @@ export interface FormType {
   clientPostalCode: string;
   clientStreetAddress: string;
   country: string;
-  items: [
-    {
-      id: string;
-      name: string;
-      price: number;
-      quantity: number;
-      total: number;
-    },
-  ];
+  items: {
+    id: string;
+    name: string;
+    price: number;
+    quantity: number;
+    total: number;
+  }[];
   postalCode: string;
   projectDescription: string;
   status: string;

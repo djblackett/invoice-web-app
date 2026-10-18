@@ -11,12 +11,15 @@ import container from "@/config/inversify.config";
 import TYPES from "@/constants/identifiers";
 import { InvoiceService } from "@/services/invoice.service";
 import { UserService } from "@/services/user.service";
+import { InvoiceRevisionService } from "@/services/invoiceRevision.service";
 import type { PubSub } from "graphql-subscriptions";
-import { Role } from "@prisma/client";
+import { DemoService } from "../services/demo.service";
+import { DEMO_USER } from "../../prisma/demoWorkspace.cjs";
 import { NODE_ENV } from "@/config/server.config";
 import type { Logger } from "@/config/logger.config";
 import type { Context } from "graphql-ws";
 import type { Request } from "express";
+import type { IUserRepo } from "../repositories/userRepo";
 
 const logger = container.get<Logger>(TYPES.Logger);
 
@@ -62,6 +65,16 @@ export async function retrieveUserFromToken(
   token: string,
   options: VerifyOptions,
 ): Promise<UserIdAndRole | null> {
+  // Demo credentials are handled before the legacy test/CI shortcut too.
+  // eslint-disable-next-line security/detect-possible-timing-attacks -- Public demo selector, not a secret credential.
+  if (token === "demo-token") {
+    return process.env["DEMO_MODE"] === "true"
+      ? { ...DEMO_USER, isDemo: true }
+      : null;
+  }
+  // Retired and unrecognized demo credentials never become normal/test admins.
+  if (token.startsWith("demo-")) return null;
+
   // Handle test/CI environment early return
   if (NODE_ENV === "test" || NODE_ENV === "CI") {
     return {
@@ -96,16 +109,14 @@ async function verifyToken(
 
 // Helper function to extract user data from payload
 function extractUserFromPayload(payload: JwtPayload): UserIdAndRole {
-  const namespace = "invoice-web-app/";
-  const emailClaim = `${namespace}email`;
-  const roleClaim = `${namespace}roles`;
-
   const email =
-    typeof payload[emailClaim] === "string" ? payload[emailClaim] : "";
+    typeof payload["invoice-web-app/email"] === "string"
+      ? payload["invoice-web-app/email"]
+      : "";
   const id = payload.sub ?? "";
   const name = typeof payload["name"] === "string" ? payload["name"] : "user";
-  const roles = Array.isArray(payload[roleClaim])
-    ? (payload[roleClaim] as string[])
+  const roles = Array.isArray(payload["invoice-web-app/roles"])
+    ? (payload["invoice-web-app/roles"] as string[])
     : [];
 
   if (!email) throw new Error("Email claim is missing or invalid");
@@ -119,17 +130,17 @@ export async function createContext({
   req,
   connection,
 }: ContextArgs): Promise<InjectedQueryContext> {
-  logger.info("creating context");
+  logger.debug("creating context");
 
   if (connection) {
     // This branch handles subscription requests, which are initiated through WebSocket connections.
-    logger.info("Subscription request");
+    logger.debug("Subscription request");
     return await createSubscriptionContext(connection);
   }
 
   if (!req) {
     // This branch handles HTTP requests.
-    logger.info("HTTP request");
+    logger.debug("HTTP request");
     return { user: null, container };
   }
 
@@ -143,11 +154,27 @@ export async function createContext({
     const childContainer = setupContainer(user);
     const services = getServices(childContainer);
     const dbUser = await getOrCreateDbUser(user, services.userService);
+    const effectiveUser = user.isDemo
+      ? { ...dbUser, role: "USER" as const, isDemo: true }
+      : dbUser;
+    // User API policy follows the returned HTTP identity (including stored role).
+    // Keep the existing token-bound invoice/revision services unchanged.
+    childContainer
+      .rebind<UserService>(TYPES.UserService)
+      .toDynamicValue(
+        () =>
+          new UserService(
+            childContainer.get<IUserRepo>(TYPES.IUserRepo),
+            effectiveUser,
+            logger,
+          ),
+      );
+    services.userService = childContainer.get<UserService>(TYPES.UserService);
 
-    logger.info(`User: ${dbUser.username}`);
+    logger.debug("Authenticated user context created");
 
     return {
-      user: dbUser,
+      user: effectiveUser,
       ...services,
       container: childContainer,
     };
@@ -171,41 +198,7 @@ async function getUserFromRequest(req: Request): Promise<UserIdAndRole | null> {
     return null;
   }
 
-  // return dummy users for testing, CI, and demo mode
-  if (process.env["NODE_ENV"] === "test" || process.env["NODE_ENV"] === "CI") {
-    return {
-      id: "auth0|12345",
-      role: "ADMIN" as Role,
-      username: "user@example.com",
-      name: "user",
-    };
-  }
-
-  if (token === "demo-token") {
-    return {
-      id: "demoId",
-      role: Role.USER,
-      username: "demo-user@example.com",
-      name: "demo-user",
-    };
-  }
-
-  if (token === "demo-token-admin") {
-    return {
-      id: "demoAdminId",
-      role: Role.ADMIN,
-      username: "demo-admin@example.com",
-      name: "demo-admin",
-    };
-  }
-
-  // return standard user
-  const user = await retrieveUserFromToken(token, options);
-  if (!user) {
-    throw new Error("User not found");
-  }
-
-  return user;
+  return retrieveUserFromToken(token, options);
 }
 
 function setupContainer(user: UserIdAndRole) {
@@ -221,6 +214,15 @@ function setupContainer(user: UserIdAndRole) {
     .bind<InvoiceService>(TYPES.InvoiceService)
     .to(InvoiceService)
     .inTransientScope();
+  childContainer
+    .bind<InvoiceRevisionService>(TYPES.InvoiceRevisionService)
+    .to(InvoiceRevisionService)
+    .inTransientScope();
+
+  childContainer
+    .bind<DemoService>(TYPES.DemoService)
+    .to(DemoService)
+    .inTransientScope();
 
   return childContainer;
 }
@@ -231,7 +233,11 @@ function getServices(childContainer: typeof container) {
     TYPES.InvoiceService,
   );
   const userService = childContainer.tryGet<UserService>(TYPES.UserService);
+  const invoiceRevisionService = childContainer.tryGet<InvoiceRevisionService>(
+    TYPES.InvoiceRevisionService,
+  );
   const pubsub = childContainer.tryGet<PubSub>(TYPES.PubSub);
+  const demoService = childContainer.get<DemoService>(TYPES.DemoService);
 
   if (!invoiceService) {
     throw new Error("Invoice service not found");
@@ -241,11 +247,21 @@ function getServices(childContainer: typeof container) {
     throw new Error("User service not found");
   }
 
+  if (!invoiceRevisionService) {
+    throw new Error("Invoice revision service not found");
+  }
+
   if (!pubsub) {
     throw new Error("PubSub not found");
   }
 
-  return { invoiceService, userService, pubsub };
+  return {
+    invoiceService,
+    userService,
+    invoiceRevisionService,
+    pubsub,
+    demoService,
+  };
 }
 
 async function getOrCreateDbUser(
@@ -277,65 +293,22 @@ async function getOrCreateDbUser(
 }
 
 async function createSubscriptionContext(connection: Context) {
-  const user = await getUserFromSubscriptionConnection(connection);
-  const childContainer = container.createChild();
-
-  if (user) {
-    childContainer.bind<UserIdAndRole>(TYPES.UserContext).toConstantValue(user);
-  }
-
-  const invoiceService = childContainer.get<InvoiceService>(
-    TYPES.InvoiceService,
-  );
-  const userService = childContainer.get<UserService>(TYPES.UserService);
-  const pubsub = childContainer.get<PubSub>(TYPES.PubSub);
-
-  return {
-    user,
-    invoiceService,
-    userService,
-    pubsub,
-    container: childContainer,
-    connection,
-  };
-}
-
-async function getUserFromSubscriptionConnection(
-  connection: Context,
-): Promise<UserIdAndRole | null> {
   const authHeader = (connection.connectionParams?.["Authorization"] ||
     connection.connectionParams?.["authorization"]) as string | undefined;
-
-  if (!authHeader || !authHeader.startsWith("Bearer ")) {
-    return null;
-  }
-
-  const token = authHeader.split(" ")[1];
-
-  if (token === "demo-token") {
-    return {
-      id: "demoId",
-      role: Role.USER,
-      username: "demo-user@example.com",
-      name: "demo-user",
-    };
-  }
-
-  if (token === "demo-token-admin") {
-    return {
-      id: "demoAdminId",
-      role: Role.ADMIN,
-      username: "demo-admin@example.com",
-      name: "demo-admin",
-    };
-  }
+  if (!authHeader?.startsWith("Bearer "))
+    return { user: null, container, connection };
   try {
-    if (!token) {
-      return null;
-    }
-    return await retrieveUserFromToken(token, options);
-  } catch (error) {
-    logger.error("Token verification failed:" + JSON.stringify(error));
-    return null;
+    const token = authHeader.split(" ")[1];
+    const user = token ? await retrieveUserFromToken(token, options) : null;
+    if (!user) return { user: null, container, connection };
+    const childContainer = setupContainer(user);
+    return {
+      user,
+      ...getServices(childContainer),
+      container: childContainer,
+      connection,
+    };
+  } catch {
+    return { user: null, container, connection };
   }
 }

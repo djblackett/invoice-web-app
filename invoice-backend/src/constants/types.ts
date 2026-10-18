@@ -2,8 +2,10 @@ import type express from "express";
 import type { BaseContext } from "@apollo/server";
 import type { Context as GraphQLWSContext } from "graphql-ws";
 import type { Container } from "inversify";
+import type { DemoService } from "../services/demo.service";
 import type { InvoiceService } from "@/services/invoice.service";
 import type { UserService } from "@/services/user.service";
+import type { InvoiceRevisionService } from "@/services/invoiceRevision.service";
 import type { PubSub } from "graphql-subscriptions";
 
 export interface Invoice {
@@ -65,8 +67,10 @@ export interface QueryContext extends BaseContext {
 
 export interface InjectedQueryContext {
   user?: UserIdAndRole | null;
+  demoService?: DemoService;
   invoiceService?: InvoiceService;
   userService?: UserService;
+  invoiceRevisionService?: InvoiceRevisionService;
   pubsub?: PubSub;
   container?: Container;
   connection?: GraphQLWSContext;
@@ -144,6 +148,7 @@ export interface InvoiceCreateArgs {
 export type MarkAsPaidArgs = GetInvoiceByIdArgs;
 
 export interface UserIdAndRole {
+  isDemo?: boolean;
   id: string;
   role: "USER" | "ADMIN" | undefined;
   username?: string | undefined;

@@ -41,7 +41,7 @@ export default function InputFormItem({
 
   const { isCacheActive } = useNewInvoiceContext();
 
-  const watchItems = watch("items", []);
+  const watchItems = watch("items", []) as Invoice["items"];
   const width = useWindowWidth();
   const isInitialRender = useRef(true);
 

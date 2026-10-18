@@ -1,6 +1,6 @@
 import { Quantity } from "@/styles/editFormItemStyles.tsx";
 import { useFormContext } from "react-hook-form";
-import { Invoice } from "../../types/invoiceTypes.ts";
+import { FormType, Invoice } from "../../types/invoiceTypes.ts";
 import { useNewInvoiceContext } from "../NewInvoiceContextProvider.tsx";
 
 interface ItemQuantityProps {
@@ -8,17 +8,17 @@ interface ItemQuantityProps {
   invoice?: Invoice;
 }
 function ItemQuantity({ index, invoice }: ItemQuantityProps) {
-  const { register, formState } = useFormContext();
+  const { register, formState } = useFormContext<FormType>();
   const { errors } = formState;
+  const itemError = errors.items?.[index];
   const { isDraft } = useNewInvoiceContext();
 
-  const isPatternError = () =>
-    errors?.items?.[index]?.quantity?.type === "pattern";
+  const isPatternError = () => itemError?.quantity?.type === "pattern";
 
   return (
     <div style={{ position: "relative" }}>
       <Quantity
-        {...register(`items[${index}].quantity`, {
+        {...register(`items.${index}.quantity`, {
           required: !isDraft,
           max: 1000,
           pattern: {
@@ -31,7 +31,7 @@ function ItemQuantity({ index, invoice }: ItemQuantityProps) {
         type="text"
         style={{
           border:
-            Array.isArray(errors.items) && errors?.items?.[index]?.quantity
+            Array.isArray(errors.items) && itemError?.quantity
               ? "1px solid #EC5757"
               : "",
         }}
@@ -55,7 +55,7 @@ function ItemQuantity({ index, invoice }: ItemQuantityProps) {
             textWrap: "nowrap",
           }}
         >
-          {errors?.items?.[index]?.quantity?.message}
+          {itemError?.quantity?.message}
         </span>
       )}
     </div>

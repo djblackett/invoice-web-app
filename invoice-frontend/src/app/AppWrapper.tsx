@@ -10,11 +10,11 @@ import {
   VITE_REDIRECT_URI,
   VITE_SCOPE,
   VITE_AUDIENCE,
+  hasAuth0Config,
 } from "@/config/config";
 
 const AppWrapper = () => {
   const { isDemoMode } = useDemoModeContext();
-  console.log("AppWrapper, isDemoMode:", isDemoMode);
 
   return isDemoMode ? (
     <DemoAuthProvider>
@@ -22,7 +22,7 @@ const AppWrapper = () => {
         <App />
       </HashRouter>
     </DemoAuthProvider>
-  ) : (
+  ) : hasAuth0Config ? (
     <Auth0ProviderWrapper
       domain={VITE_DOMAIN ?? ""}
       clientId={VITE_CLIENT_ID ?? ""}
@@ -38,6 +38,10 @@ const AppWrapper = () => {
         <App />
       </HashRouter>
     </Auth0ProviderWrapper>
+  ) : (
+    <HashRouter>
+      <App />
+    </HashRouter>
   );
 };
 

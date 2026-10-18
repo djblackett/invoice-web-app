@@ -67,9 +67,6 @@ export function getInvoiceResolvers() {
         }
         try {
           const result = await invoiceService.getInvoiceById(args.id);
-          if (!result) {
-            throw new NotFoundException("Invoice not found");
-          }
           return result;
         } catch (error) {
           if (error instanceof NotFoundException) {
@@ -144,6 +141,11 @@ export function getInvoiceResolvers() {
           const result = await invoiceService.updateInvoice(id, update);
           return result;
         } catch (error) {
+          if (error instanceof NotFoundException) {
+            throw new GraphQLError(error.message, {
+              extensions: { code: "NOT_FOUND" },
+            });
+          }
           console.error(error);
           throw new GraphQLError("Failed to update invoice", {
             extensions: {
@@ -168,7 +170,7 @@ export function getInvoiceResolvers() {
         }
         try {
           const result = await invoiceService.deleteInvoice(args.id);
-          return result;
+          return { acknowledged: result };
         } catch (error) {
           console.error(error);
           if (error instanceof NotFoundException) {

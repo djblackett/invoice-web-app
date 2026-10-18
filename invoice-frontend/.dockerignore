@@ -1,23 +1,16 @@
-# Version control
-.git
-.gitignore
-
-# Environment files
-.env
-.env.local
-
-# Dependencies
 node_modules
-vendor/
-
-# Build artifacts
-dist/
-build/
+.yarn
+.env*
+*.env
+certs
+*.pem
+dist
+build
+coverage
 *.log
-
-# IDE files
-.vscode/
-.idea/
-
-.DS_Store
-fix-pw-permissions.sh
+playwright-report
+test-results
+state.json
+qa/.auth
+bundle-visualization.html
+.git

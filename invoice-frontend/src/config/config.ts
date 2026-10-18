@@ -7,36 +7,18 @@ export const VITE_REDIRECT_URI =
   import.meta.env.VITE_REDIRECT_URI ||
   window.location.origin + "/invoice-web-app/";
 
-// export const isDemoMode = import.meta.env.VITE_DEMO_MODE === "true";
-// export const setIsDemoMode = (value: boolean) => {
-//   import.meta.env.VITE_DEMO_MODE = value ? "true" : "false";
-// };
+export const isDemoMode = import.meta.env.VITE_DEMO_MODE === "true";
+export const hasAuth0Config = Boolean(
+  VITE_AUDIENCE && VITE_SCOPE && VITE_DOMAIN && VITE_CLIENT_ID,
+);
 
 function checkEnvs() {
   if (!VITE_BACKEND_URL) {
     throw new Error("VITE_BACKEND_URL is required");
   }
 
-  // if (isDemoMode) {
-  //   console.log("Demo mode enabled");
-  //   return;
-  // }
-
-  if (!VITE_AUDIENCE) {
-    throw new Error("VITE_AUDIENCE is required");
-  }
-  if (!VITE_SCOPE) {
-    throw new Error("VITE_SCOPE is required");
-  }
-  if (!VITE_DOMAIN) {
-    throw new Error("VITE_DOMAIN is required");
-  }
-  if (!VITE_CLIENT_ID) {
-    throw new Error("VITE_CLIENT_ID is required");
-  }
-  if (!VITE_REDIRECT_URI) {
-    throw new Error("VITE_REDIRECT_URI is required");
-  }
+  // AppWrapper mounts Auth0 only when configured. Missing Auth0 values must
+  // not prevent the public demo (or its entry screen) from booting.
 }
 
 checkEnvs();

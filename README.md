@@ -1,8 +1,8 @@
 # Fullstack Invoice Project
 
 ![License](https://img.shields.io/badge/license-MIT-blue.svg)
-[![Build Status](https://github.com/djblackett/invoice-web-app/actions/workflows/frontend-deploy.yaml/badge.svg)](https://github.com/djblackett/invoice-web-app/actions/workflows/frontend-deploy.yaml)
-![Node.js Version](https://img.shields.io/badge/node-v22.14.0-brightgreen.svg)
+[![Build Status](https://github.com/djblackett/invoice-web-app/actions/workflows/ci-code-quality-tests.yaml/badge.svg)](https://github.com/djblackett/invoice-web-app/actions/workflows/ci-code-quality-tests.yaml)
+![Node.js Version](https://img.shields.io/badge/node-v24.15.0-brightgreen.svg)
 
 ![Frontend screenshot showing the invoice application interface](./diagrams/fm-screenshot.png)
 
@@ -85,151 +85,155 @@ More details on my motivation and approach to writing this app can be found in t
 
 ## Getting Started
 
-### Prerequisites
+Use Linux/macOS Node **24.15.0** (`nvm use`, from `.nvmrc`), Corepack with the
+package-pinned Yarn **4.6.0**, Docker Compose v2, and PostgreSQL 16 server tools for
+the isolated browser gate. Use `corepack yarn`, since a global Yarn 1 ignores the
+package pin. There is no root package or root lockfile.
 
-Ensure you have the following installed on your machine:
+```bash
+(cd invoice-backend && corepack yarn install --immutable && npm run prisma-generate)
+(cd invoice-frontend && corepack yarn install --immutable)
+cp invoice-backend/.env.example invoice-backend/.env
+cp invoice-frontend/.env.example invoice-frontend/.env
+```
 
-- [Node.js](https://nodejs.org/) (LTS recommended)
-- [Docker](https://www.docker.com/get-started)
-- [Docker Compose](https://docs.docker.com/compose/install/)
-- [Git](https://git-scm.com/)
+### Local demo and compiled containers
 
-### Installation
+```bash
+./setup.sh demo
+# Equivalent:
+docker compose -f docker-compose.yml -f docker-compose.demo.yml up -d --build --wait
+# Open http://localhost:5173/invoice-web-app/
+# Stop without deleting data:
+docker compose -f docker-compose.yml -f docker-compose.demo.yml down
+```
 
-#### Demo and Development Mode Instructions
+The demo override explicitly enables both flags. Demo entry and Reset Demo invoke
+the existing canonical transactional reset: seven invoices and eleven revisions
+owned by `demoId / USER`. Visitors share that workspace. Ordinary container startup
+applies committed migrations and **never seeds or resets data**. Explicitly reseed
+only a disposable/local demo database when needed:
 
-1. **Clone the repository:**
+```bash
+docker compose -f docker-compose.yml -f docker-compose.demo.yml exec backend node prisma/seed.mjs
+```
 
-   ```bash
-   git clone https://github.com/djblackett/invoice-web-app.git
-   cd invoice-web-app
-   ```
+`docker compose up -d --build --wait` alone runs the compiled production-like local
+stack with Demo disabled. Its unconfigured account sign-in screen is expected;
+normal login requires your public Auth0 SPA settings and backend issuer/audience.
+This is a local configuration, with loopback-only ports and local-only DB credentials.
+It is not a public hosting configuration.
 
-2. **Install dependencies for the frontend:**
+Frontend configuration is embedded at **build time**, supplied as Compose build
+arguments from the shell/root environment. Changing frontend container runtime
+variables does not rebuild assets. For isolated ports, set all four values together:
 
-   ```bash
-   cd invoice-frontend
-   yarn install
-   ```
+```bash
+FRONTEND_PORT=15173 BACKEND_PORT=18000 \
+VITE_BACKEND_URL=http://localhost:18000 CORS_ORIGIN=http://localhost:15173 \
+docker compose -p invoice-local up -d --build --wait
+# Stop this isolated stack and delete ONLY its disposable volume:
+docker compose -p invoice-local down --volumes
+```
 
-3. **Install dependencies for the backend:**
+The browser API URL is the backend **root**, shared with WebSocket subscriptions.
+Container names such as `backend-dev` are not browser-resolvable addresses. Set one
+exact `CORS_ORIGIN`, including scheme/port, without a path or comma-separated list.
+Both Demo flags default to false; enable them deliberately only for an intended demo.
 
-   ```bash
-   cd invoice-backend  # from project root
-   yarn install
-   ```
+### Source development
 
-#### Demo Instructions
+```bash
+# Start only the local database (localhost:55432):
+docker compose -f docker-compose.dev.yml up -d db-dev
+npm --prefix invoice-backend run migrate:deploy
+# Separate terminals, with the example .env files above:
+npm --prefix invoice-backend run dev
+DEV_HTTPS=false npm --prefix invoice-frontend run dev
+```
 
-1. **Run demo docker compose file**
+For this HTTP-only local workflow use backend `CERT_DIR=` and the example API/origin
+values. Source edits reload through the existing development runners. Normal Auth0
+login additionally requires configured allowed origins/callbacks in your test tenant.
 
-   ```bash
-   docker compose -f docker-compose.demo.yml up
-   ```
+For HTTPS source development in containers, supply the package `.env` files and
+trusted local mkcert files first:
 
-2. **Seed demo data**
+```bash
+mkcert -install
+mkdir -p invoice-backend/certs invoice-frontend/certs
+mkcert -key-file invoice-backend/certs/localhost-key.pem \
+  -cert-file invoice-backend/certs/localhost.pem localhost 127.0.0.1
+cat invoice-backend/certs/localhost.pem "$(mkcert -CAROOT)/rootCA.pem" \
+  > invoice-backend/certs/localhost-fullchain.pem
+cp invoice-backend/certs/localhost{,-key}.pem invoice-frontend/certs/
+./setup.sh dev
+# Open https://localhost:5173/invoice-web-app/
+docker compose -f docker-compose.dev.yml down
+```
 
-   ```bash
-   npx prisma db seed
-   ```
-
-3. **Access the application**  
- Open your browser and navigate to <https://localhost:5173/invoice-web-app/>.
-
-#### Development Instructions
-
-1. **Set up environment variables:**
-
-   Fill in the `.env` files in both `invoice-frontend` and `invoice-backend` directories with Auth0 and testing credentials. All required variables are listed in the `.env` files.
-
-2. **Set up HTTPS certificates:**  
-  mkcert can generate https certificates. MacOS and Linux can install mkcert with [Homebrew](https://formulae.brew.sh/formula/mkcert). Windows users can install it with [chocolatey](https://community.chocolatey.org/packages/mkcert) or with Homebrew if using WSL.
-
-After installation, run:
-
-   ```bash
-   mkcert -install
-   ```
-
-   Create certs with mkcert
-
-   ```bash
-   cd invoice-backend  
-   mkdir certs  
-   cd certs
-   mkcert localhost
-   ```
-
-   Copy certs to frontend directory
-
-   ```bash
-   cp -r invoice-backend/certs invoice-frontend/certs
-   ```
-
-### Running the Application
-
-1. **Start the application using Docker Compose:**  
-   Shut down demo mode if currently running: `docker compose -f docker-compose.demo.yml down`, then run:
-
-   ```bash
-   docker compose -f docker-compose.dev.yml up
-   ```
-
-2. **Access the application:**
-
-   Open your browser and navigate to <https://localhost:5173/invoice-web-app/>.
+Development Compose mounts only source/Prisma/certificates, preserving image Linux
+dependencies. It has no default E2E/Adminer container and does not seed or enable Demo.
 
 ## Testing
 
-The project includes various levels of testing to ensure reliability and maintainability.
-
-- **Backend Unit Tests:** Implemented using Vitest.
-- **Frontend Unit Tests:** Implemented using React Testing Library.
-- **Integration Tests:** Verify interactions between backend GraphQL resolvers and a real PostgreSQL database.
-- **End-to-End (E2E) Tests:** Implemented with PlayWright and tests normal user flows
-
-To run backend tests:
-
 ```bash
-cd invoice-backend
-yarn test:unit
-yarn test:integration
+npm --prefix invoice-frontend run check
+npm --prefix invoice-frontend run build
+npm --prefix invoice-backend run check
+# Backend integration tests require an explicit DISPOSABLE database;
+# test:integration deploys committed migrations, then runs serially.
+DATABASE_URL=postgresql://postgres:local-only@localhost:55432/invoice_checks \
+  npm --prefix invoice-backend run test:integration
 ```
 
-To run frontend tests:
+Create `invoice_checks` explicitly on the local database first if using that example;
+never point integration tests at developer data you want to keep. For a completely
+managed temporary database and combined backend/browser regression:
 
 ```bash
-cd invoice-frontend
-yarn test:unit
+(cd invoice-frontend && npx --no-install playwright install chromium)
+PG_BIN=/usr/lib/postgresql/16/bin E2E_BACKEND_REGRESSION=true \
+  npm --prefix invoice-frontend run test:e2e
 ```
 
-E2e tests:  
-First, run `docker compose -f docker-compose.dev.yml up` to start all microservices
+Omit `E2E_BACKEND_REGRESSION=true` for the normal 17-case browser gate. PostgreSQL
+server tools must be on PATH or in `PG_BIN`; run as a non-root user. CI installs
+Chromium with its OS dependencies. No Auth0 credentials, existing DB, certificates
+or mock GraphQL responses are required. [Browser details](invoice-frontend/README.md#end-to-end-tests).
 
-To run E2E tests separately from the dev environment, update `docker-compose.dev.yml` by commenting out the backend start command on line 34 and uncommenting the one on line 36.
-
-Then:
+Production artifacts:
 
 ```bash
-cd invoice-frontend
-yarn test:e2e
+npm --prefix invoice-backend run build
+VITE_BACKEND_URL=http://localhost:8000 npm --prefix invoice-frontend run build
+# Requires a migrated local database:
+npm --prefix invoice-backend start
+# Local preview only; release image uses nginx:
+DEV_HTTPS=false npm --prefix invoice-frontend run preview
 ```
 
 ## Deployment
 
-The project is configured for deployment using Fly.io and GitHub Pages. Continuous Integration and Continuous Deployment (CI/CD) pipelines are set up with GitHub Actions to automate the build, test, and deployment processes. Upon successful completion of tests, the frontend is built and published to GitHub Pages and the backend to Fly.io.
+CI runs frontend types/lint/Vitest/build, backend types/lint/unit/migrated PostgreSQL
+integration/build, the isolated serial Chromium gate, and production container
+build/startup checks. CodeQL remains separate. Ordinary PRs require no production
+secrets. The historical Fly.io/GitHub Pages deployment and Docker Hub push workflows
+have been retired; these workflows **do not publish or deploy**.
 
-For both the frontend and backend, when changes are made to the dev branch via push or merge request, a CI pipeline runs and checks the code with a workflow that runs the frontend unit tests and the backend unit and integration tests. The backend integration tests are tested against an ephemeral PostgreSQL database spun up on the GitHub action workspace.
-
-If tests pass, the code is merged into dev and docker containers are built and pushed to Docker Hub. These docker images are not currently used, however, because they are intended for use in Kubernetes deployments, which have not been built yet.
-
-Pull requests to main run the same tests plus end-to-end tests. The frontend is built and run in Vite preview mode for e2e tests, while the backend and an ephemeral PostgreSQL database are also started to test the entire stack.
+Slice 6A prepares local release infrastructure. Hosted workflow execution, actual
+staging configuration, existing-data migration reconciliation, TLS/ingress routing,
+and real Auth0 login/refresh/logout verification belong to Slice 6B. The root
+`fly.toml` is an explicitly marked unsupported historical experiment; the backend
+manifest requires a separate release review before use. See the
+[Slice 6A audit](docs/audit/slice-6a-release-infrastructure.md) for exact evidence,
+configuration classification and remaining blockers. No live deployment was tested.
 
 ## Diagrams
 
 ### Architecture Flowchart
 
-This diagram provides a high-level overview of the application's flow. The user interacts with the React (TypeScript) frontend, which communicates with the Node.js/Express backend via a GraphQL API (Apollo Client). The backend uses Prisma ORM to manage data in a PostgreSQL database. A CI/CD pipeline with GitHub Actions automates testing and deployment, deploying the frontend to GitHub Pages and the backend to Fly.io.
+This diagram provides a high-level overview of the application's flow. The user interacts with the React (TypeScript) frontend, which communicates with the Node.js/Express backend via a GraphQL API (Apollo Client). The backend uses Prisma ORM to manage data in a PostgreSQL database. GitHub Actions verifies application checks and local container startup. Live deployment is a separate release step.
 
 <img src="./diagrams/architecture.svg" alt="Architecture Diagram" width="400" />
 

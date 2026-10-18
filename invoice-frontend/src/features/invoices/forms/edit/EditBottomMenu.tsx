@@ -45,7 +45,9 @@ function EditBottomMenu({
       <Save
         type="button"
         value={saveText}
-        onClick={handleSubmit(onSubmitUpdate)}
+        onClick={(event) => {
+          void handleSubmit(onSubmitUpdate)(event);
+        }}
       />
     </MenuContainer>
   );

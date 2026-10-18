@@ -1,3 +1,4 @@
+import { Invoice } from "../types/invoiceTypes";
 import { Suspense, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import InvoiceToolbar from "../components/InvoiceToolbar.tsx";
@@ -17,21 +18,28 @@ import { Button } from "@/features/shared/components/buttons/MarkAsPaidButton.ts
 const EditInvoice = React.lazy(() => import("./EditInvoice.tsx"));
 const DeleteModal = React.lazy(() => import("../components/DeleteModal.tsx"));
 const FullInvoice = React.lazy(() => import("../components/FullInvoice.tsx"));
+const RevisionHistoryPanel = React.lazy(
+  () => import("@/features/revisions/components/RevisionHistoryPanel.tsx"),
+);
 
 function ViewInvoice() {
   const navigate = useNavigate();
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [isHistoryOpen, setIsHistoryOpen] = useState(false);
   const { id } = useParams();
 
-  const { data, loading, error } = useQuery(GET_INVOICE_BY_ID, {
-    variables: { getInvoiceById: id },
-    fetchPolicy: "cache-and-network",
-  });
+  const { data, loading, error } = useQuery<{ getInvoiceById: Invoice }>(
+    GET_INVOICE_BY_ID,
+    {
+      variables: { getInvoiceById: id },
+      fetchPolicy: "cache-and-network",
+    },
+  );
 
-  const invoice = data?.getInvoiceById;
+  const invoice = data?.getInvoiceById as Invoice;
 
   const goBack = () => {
-    navigate("/invoices");
+    void navigate("/invoices");
   };
 
   if (loading) {
@@ -79,7 +87,11 @@ function ViewInvoice() {
           <Icon>{arrowLeft}</Icon>
           <GoBack>Go back</GoBack>
         </GoBackButton>
-        <InvoiceToolbar invoice={invoice} setIsModalOpen={setIsModalOpen} />
+        <InvoiceToolbar
+          invoice={invoice}
+          setIsModalOpen={setIsModalOpen}
+          setIsHistoryOpen={setIsHistoryOpen}
+        />
         <Suspense fallback={<div>Loading...</div>}>
           <FullInvoice invoice={invoice} loading={loading} />
         </Suspense>
@@ -90,6 +102,15 @@ function ViewInvoice() {
             invoice={invoice}
           />
         </Suspense>
+        {isHistoryOpen && invoice?.id && (
+          <Suspense fallback={<div>Loading history…</div>}>
+            <RevisionHistoryPanel
+              invoiceId={invoice.id}
+              open={isHistoryOpen}
+              onClose={() => setIsHistoryOpen(false)}
+            />
+          </Suspense>
+        )}
       </NewInvoiceProvider>
     </ViewContainer>
   );

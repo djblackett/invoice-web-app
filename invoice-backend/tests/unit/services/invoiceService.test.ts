@@ -237,10 +237,10 @@ describe("InvoiceService", () => {
     expect(validateInvoiceListMock).toHaveBeenCalledWith(invoices);
   });
 
-  test("should call findById on invoiceRepo when getInvoiceById is called", async () => {
+  test("should call findByUserIdAndInvoiceId on invoiceRepo when getInvoiceById is called", async () => {
     // Arrange
     const invoice: Invoice = invoices[0]; // Mock data
-    mockInvoiceRepo.findById.mockResolvedValue(invoice);
+    mockInvoiceRepo.findByUserIdAndInvoiceId.mockResolvedValue(invoice);
 
     // Act
     const result = await invoiceService.getInvoiceById(
@@ -248,7 +248,9 @@ describe("InvoiceService", () => {
     );
 
     // Assert
-    expect(mockInvoiceRepo.findById).toHaveBeenCalledWith(
+    expect(mockInvoiceRepo.findByUserIdAndInvoiceId).toHaveBeenCalledWith(
+      mockUserContext.id,
+      mockUserContext.role,
       "e08e99bd-5de6-4378-b2a8-11941bad082d",
     );
     expect(result).toEqual(invoice);
@@ -298,7 +300,7 @@ describe("InvoiceService", () => {
         role: mockUserContext.role,
       },
     };
-    mockInvoiceRepo.findById.mockResolvedValue(oldInvoice);
+    mockInvoiceRepo.findByUserIdAndInvoiceId.mockResolvedValue(oldInvoice);
     const validateInvoiceDataMock = vi.mocked(
       InvoiceUtils.validateInvoiceData,
       true,
@@ -317,7 +319,7 @@ describe("InvoiceService", () => {
 
   test("should call markAsPaid on invoiceRepo when markAsPaid is called", async () => {
     // Arrange
-    const invoice: Invoice = invoices[0]; // Mock data
+    const invoice: Invoice = { ...invoices[0]!, status: "pending" };
     const id = invoice.id;
     const paidInvoice = {
       ...invoice,
@@ -330,6 +332,7 @@ describe("InvoiceService", () => {
       status: "paid",
     };
 
+    mockInvoiceRepo.findByUserIdAndInvoiceId.mockResolvedValue(invoice);
     mockInvoiceRepo.markAsPaid.mockResolvedValue(paidInvoice);
     const validateInvoiceDataMock = vi.mocked(
       InvoiceUtils.validateInvoiceData,
@@ -343,13 +346,14 @@ describe("InvoiceService", () => {
     // Assert
     expect(mockInvoiceRepo.markAsPaid).toHaveBeenCalledWith(id);
     expect(validateInvoiceDataMock).toHaveBeenCalledWith(paidInvoice);
-    expect(result).toEqual(invoice);
+    expect(result).toEqual(paidInvoice);
   });
 
   test("markAsPaid should throw error when validation fails", async () => {
     // Arrange
-    const invoice: Invoice = invoices[0];
+    const invoice: Invoice = { ...invoices[0]!, status: "pending" };
     const id = invoice.id;
+    mockInvoiceRepo.findByUserIdAndInvoiceId.mockResolvedValue(invoice);
     mockInvoiceRepo.markAsPaid.mockResolvedValue(invoice);
     const validateInvoiceDataMock = vi.mocked(
       InvoiceUtils.validateInvoiceData,
@@ -370,7 +374,7 @@ describe("InvoiceService", () => {
   test("deleteInvoice should throw error when invoice does not exist", async () => {
     // Arrange
     const id = "non-existent-id";
-    mockInvoiceRepo.findById.mockResolvedValue(null);
+    mockInvoiceRepo.findByUserIdAndInvoiceId.mockResolvedValue(null);
 
     // Act & Assert
     await expect(invoiceService.deleteInvoice(id)).rejects.toThrow(
@@ -401,25 +405,33 @@ describe("InvoiceService", () => {
   test("should throw error when getInvoiceById is called with non-existent id", async () => {
     // Arrange
     const id = "non-existent-id";
-    mockInvoiceRepo.findById.mockResolvedValue(null);
+    mockInvoiceRepo.findByUserIdAndInvoiceId.mockResolvedValue(null);
 
     // Act & Assert
     await expect(invoiceService.getInvoiceById(id)).rejects.toThrow(
       /Invoice not found/,
     );
-    expect(mockInvoiceRepo.findById).toHaveBeenCalledWith(id);
+    expect(mockInvoiceRepo.findByUserIdAndInvoiceId).toHaveBeenCalledWith(
+      mockUserContext.id,
+      mockUserContext.role,
+      id,
+    );
   });
 
   test("should throw error when updateInvoice is called with non-existent id", async () => {
     // Arrange
     const id = "non-existent-id";
-    mockInvoiceRepo.findById.mockResolvedValue(null);
+    mockInvoiceRepo.findByUserIdAndInvoiceId.mockResolvedValue(null);
 
     // Act & Assert
     await expect(
       invoiceService.updateInvoice(id, { total: 200 }),
     ).rejects.toThrow("Invoice not found");
-    expect(mockInvoiceRepo.findById).toHaveBeenCalledWith(id);
+    expect(mockInvoiceRepo.findByUserIdAndInvoiceId).toHaveBeenCalledWith(
+      mockUserContext.id,
+      mockUserContext.role,
+      id,
+    );
   });
 
   test("updateInvoice should throw error when validation fails during update", async () => {
@@ -427,9 +439,13 @@ describe("InvoiceService", () => {
     const oldInvoice: Invoice = invoices[2];
     const id = oldInvoice.id;
     const invoiceUpdates = { total: 200, status: 32 };
-    const newInvoiceUnvalidated = { ...oldInvoice, ...invoiceUpdates };
+    const newInvoiceUnvalidated = {
+      ...oldInvoice,
+      ...invoiceUpdates,
+      total: 115,
+    };
 
-    mockInvoiceRepo.findById.mockResolvedValue(oldInvoice);
+    mockInvoiceRepo.findByUserIdAndInvoiceId.mockResolvedValue(oldInvoice);
     const validateInvoiceDataMock = vi.mocked(
       InvoiceUtils.validateInvoiceData,
       true,
@@ -445,7 +461,11 @@ describe("InvoiceService", () => {
       // @ts-expect-error - We are testing the error case
       invoiceService.updateInvoice(id, invoiceUpdates),
     ).rejects.toThrow("Validation error during update");
-    expect(mockInvoiceRepo.findById).toHaveBeenCalledWith(id);
+    expect(mockInvoiceRepo.findByUserIdAndInvoiceId).toHaveBeenCalledWith(
+      mockUserContext.id,
+      mockUserContext.role,
+      id,
+    );
 
     expect(validateInvoiceDataMock).toHaveBeenCalledWith(newInvoiceUnvalidated);
     expect(mockInvoiceRepo.update).not.toHaveBeenCalled();

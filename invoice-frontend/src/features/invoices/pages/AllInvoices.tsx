@@ -1,3 +1,4 @@
+import { Invoice } from "../types/invoiceTypes";
 import { MemoizedAllInvoicesToolbar } from "../components/AllInvoicesToolbar.tsx";
 import useWindowWidth from "../../shared/hooks/useWindowWidth.tsx";
 import AllInvoicesView from "../components/AllInvoicesView.tsx";
@@ -20,12 +21,17 @@ function AllInvoices() {
   const width = useWindowWidth();
   const { invoiceList, loading, error } = useInvoices();
 
-  useSubscription(INVOICE_ADDED, {
+  useSubscription<{ invoiceAdded: Invoice }>(INVOICE_ADDED, {
     onData: ({ data, client }) => {
-      const addedInvoice = data.data.invoiceAdded;
-      client.cache.updateQuery({ query: ALL_INVOICES }, ({ allInvoices }) => {
-        return { allInvoices: allInvoices.concat(addedInvoice) };
-      });
+      const addedInvoice = (data.data as { invoiceAdded: Invoice })
+        .invoiceAdded;
+      client.cache.updateQuery<{ allInvoices: Invoice[] }>(
+        { query: ALL_INVOICES },
+        (cached) => {
+          const { allInvoices } = cached as { allInvoices: Invoice[] };
+          return { allInvoices: allInvoices.concat(addedInvoice) };
+        },
+      );
     },
   });
 

@@ -7,23 +7,25 @@ import {
 import { User } from "@/features/users/types/userTypes.ts";
 
 interface IAuthContext {
+  canLogin?: boolean;
   isAuthenticated: boolean;
   isLoading: boolean;
   user: User | Auth0User | null;
   getAccessTokenSilently: (options: GetTokenSilentlyOptions) => Promise<string>;
-  loginWithRedirect: () => void;
+  loginWithRedirect: () => void | Promise<void>;
   toggleAdmin: () => void;
-  logout: (logoutParams: LogoutOptions) => void;
+  logout: (logoutParams: LogoutOptions) => void | Promise<void>;
 }
 
 export const AuthContext = createContext<IAuthContext>({
+  canLogin: false,
   isAuthenticated: false,
   user: null,
   isLoading: false,
   loginWithRedirect: () => {},
   logout: () => {},
   toggleAdmin: () => {},
-  getAccessTokenSilently: async () => "",
+  getAccessTokenSilently: () => Promise.resolve(""),
 });
 
 export const useAuth = () => useContext(AuthContext);

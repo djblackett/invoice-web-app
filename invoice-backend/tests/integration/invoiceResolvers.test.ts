@@ -11,7 +11,7 @@ import {
   afterEach,
 } from "vitest";
 import { PrismaClient } from "@prisma/client";
-import { execSync } from "child_process";
+import { execFileSync } from "child_process";
 import { randomUUID } from "crypto";
 import container from "../../src/config/inversify.config";
 import TYPES from "../../src/constants/identifiers";
@@ -49,8 +49,6 @@ const baseInvoice = {
   total: 1000,
 };
 
-console.log("Env vars:", process.env["DATABASE_URL"]);
-
 let app: unknown;
 let testToken: string;
 let prisma: PrismaClient;
@@ -66,9 +64,9 @@ describe("Invoice Resolvers Integration Tests", () => {
     schemaName = `test_schema_${randomUUID()}`;
 
     const baseDatabaseUrl =
+      process.env["DATABASE_URL"] ??
       "postgresql://postgres:example@localhost:5432/db-test";
     const newDatabaseUrl = `${baseDatabaseUrl}?schema=${schemaName}`;
-    console.log("Env vars:", process.env["DATABASE_URL"]);
 
     prisma = new PrismaClient({
       datasourceUrl: newDatabaseUrl,
@@ -77,7 +75,6 @@ describe("Invoice Resolvers Integration Tests", () => {
     const child = container.createChild();
 
     child.bind<PrismaClient>(TYPES.PrismaClient).toConstantValue(prisma);
-    console.log("Connected to Prisma", newDatabaseUrl);
 
     // process.env.DATABASE_URL = newDatabaseUrl;
 
@@ -85,7 +82,7 @@ describe("Invoice Resolvers Integration Tests", () => {
       `SET search_path TO "${schemaName}", public`,
     );
 
-    execSync("npx prisma db push", {
+    execFileSync("npx", ["--no-install", "prisma", "migrate", "deploy"], {
       stdio: "inherit",
     });
 

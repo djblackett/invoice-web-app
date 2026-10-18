@@ -1,15 +1,8 @@
-FROM node:22.11.0
-
+FROM node:24.15.0-bookworm-slim
 WORKDIR /usr/src/app
-
+RUN corepack enable && corepack prepare yarn@4.6.0 --activate
+COPY package.json yarn.lock .yarnrc.yml ./
+RUN yarn install --immutable
 COPY . .
-
-RUN corepack enable && \
-    yarn set version stable \
-    && yarn install --frozen-lockfile
-
-
-
 EXPOSE 5173
-
-CMD ["yarn", "run", "dev"]
+CMD ["npm", "run", "dev"]

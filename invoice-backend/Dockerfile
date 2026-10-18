@@ -1,54 +1,28 @@
-FROM node:20-bookworm-slim AS build
-ENV NODE_ENV=production
+FROM node:24.15.0-bookworm-slim AS dependencies
+WORKDIR /usr/src/app
+RUN apt-get update && apt-get install -y --no-install-recommends openssl \
+    && rm -rf /var/lib/apt/lists/* \
+    && corepack enable && corepack prepare yarn@4.6.0 --activate
+COPY package.json yarn.lock .yarnrc.yml ./
+COPY prisma ./prisma
+RUN yarn install --immutable
 
-RUN apt-get update -y && \
-    apt-get upgrade -y && \
-    apt-get install -y --no-install-recommends openssl && \
-    corepack enable && \
-    yarn set version stable && \
-    apt-get clean && \
-    rm -rf /var/lib/apt/lists/*
+FROM dependencies AS build
+COPY tsconfig.json tsconfig.build.json eslint.config.mjs ./
+COPY src ./src
+RUN yarn prisma-generate && yarn build
 
-WORKDIR /usr/src/app/
-
-COPY package.json /usr/src/app/
-COPY yarn.lock /usr/src/app/
-COPY .yarnrc.yml /usr/src/app/
-COPY .yarn /usr/src/app/.yarn
-
-RUN yarn install --frozen-lockfile
-
-COPY . /usr/src/app/
-RUN rm -rf libs && rm -rf tests
-
-
-RUN yarn prisma-generate 
-# RUN yarn prisma-push
-RUN yarn build
-CMD ["yarn", "start"]
-# # Stage 2: Production
-# FROM node:20.13.1-bookworm-slim AS production
-
-# RUN apt-get update -y && \
-#     apt-get install -y openssl && \
-#     corepack enable && \
-#     yarn set version stable
-
-# ENV NODE_ENV=production
-# WORKDIR /usr/src/app
-
-# COPY --chown=node:node package.json yarn.lock ./
-# COPY --chown=node:node .yarn .yarnrc.yml ./
-
-# RUN yarn install --frozen-lockfile
-# COPY --from=build /usr/src/app/dist ./dist
-# COPY --chown=node:node --from=build /usr/src/app/dist/src ./dist/src
-# COPY --chown=node:node --from=build /usr/src/app/node_modules/.prisma ./node_modules/.prisma
-# COPY --chown=node:node --from=build /usr/src/app/node_modules/@prisma ./node_modules/@prisma
-# COPY --chown=node:node --from=build /usr/src/app/prisma ./prisma
-# COPY --chown=node:node --from=build /usr/src/app/tsconfig* ./dist
-
-# EXPOSE 8000
-# USER node
-
-# CMD ["yarn", "start"]
+FROM node:24.15.0-bookworm-slim AS runtime
+WORKDIR /usr/src/app
+RUN apt-get update && apt-get install -y --no-install-recommends openssl \
+    && rm -rf /var/lib/apt/lists/*
+ENV NODE_ENV=production DEMO_MODE=false PORT=8000
+COPY --from=build --chown=node:node /usr/src/app/node_modules ./node_modules
+COPY --from=build --chown=node:node /usr/src/app/dist ./dist
+COPY --from=build --chown=node:node /usr/src/app/prisma ./prisma
+COPY --chown=node:node package.json scripts/container-entrypoint.sh ./
+USER node
+EXPOSE 8000
+HEALTHCHECK --interval=10s --timeout=3s --start-period=30s CMD node -e "fetch('http://127.0.0.1:'+(process.env.PORT||8000)+'/health').then(r=>process.exit(r.ok?0:1)).catch(()=>process.exit(1))"
+ENTRYPOINT ["sh", "./container-entrypoint.sh"]
+CMD ["node", "dist/src/index.js"]

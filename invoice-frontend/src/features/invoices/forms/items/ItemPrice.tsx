@@ -1,6 +1,6 @@
 import { Price } from "@/styles/editFormItemStyles.tsx";
 import { useFormContext } from "react-hook-form";
-import { Invoice } from "../../types/invoiceTypes.ts";
+import { FormType, Invoice } from "../../types/invoiceTypes.ts";
 import { useNewInvoiceContext } from "../NewInvoiceContextProvider.tsx";
 
 interface ItemPriceProps {
@@ -9,17 +9,17 @@ interface ItemPriceProps {
 }
 
 function ItemPrice({ index, invoice }: ItemPriceProps) {
-  const { register, formState } = useFormContext();
+  const { register, formState } = useFormContext<FormType>();
   const { errors } = formState;
+  const itemError = errors.items?.[index];
   const { isDraft } = useNewInvoiceContext();
 
-  const isPatternError = () =>
-    errors?.items?.[index]?.price?.type === "pattern";
+  const isPatternError = () => itemError?.price?.type === "pattern";
 
   return (
     <div style={{ position: "relative" }}>
       <Price
-        {...register(`items[${index}].price`, {
+        {...register(`items.${index}.price`, {
           required: !isDraft,
           max: 100000,
           pattern: {
@@ -33,7 +33,7 @@ function ItemPrice({ index, invoice }: ItemPriceProps) {
         defaultValue={invoice ? invoice?.items?.[index]?.price : 0}
         style={{
           border:
-            Array.isArray(errors.items) && errors?.items?.[index]?.price
+            Array.isArray(errors.items) && itemError?.price
               ? "1px solid #EC5757"
               : "",
         }}
@@ -55,7 +55,7 @@ function ItemPrice({ index, invoice }: ItemPriceProps) {
             // textWrap: "nowrap",
           }}
         >
-          {errors?.items?.[index]?.price?.message}
+          {itemError?.price?.message}
         </div>
       )}
     </div>

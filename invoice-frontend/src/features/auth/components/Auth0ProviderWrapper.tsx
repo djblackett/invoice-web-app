@@ -24,6 +24,7 @@ const Auth0Wrapper = ({ children }: Auth0WrapperProps) => {
   return (
     <AuthContext.Provider
       value={{
+        canLogin: true,
         isLoading,
         isAuthenticated,
         user: user || null,

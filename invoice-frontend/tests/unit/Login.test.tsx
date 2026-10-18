@@ -16,7 +16,6 @@ describe("Login Component", () => {
 
   beforeAll(() => {
     vi.stubEnv("VITE_BACKEND_URL", "http://localhost:4000");
-    import.meta.env.VITE_BACKEND_URL = "http://localhost:4000";
   });
 
   beforeEach(() => {

@@ -1,4 +1,5 @@
 import { Prisma, Role } from "@prisma/client";
+import { generateInvoiceId } from "../../services/invoiceDomainRules";
 import { inject, injectable } from "inversify";
 import { Invoice, InvoiceWithCreatedBy } from "@/constants/types";
 import { DatabaseConnection } from "@/database/prisma.database.connection";
@@ -89,9 +90,10 @@ export class PrismaInvoiceRepository implements IInvoiceRepo {
   ) {
     try {
       const result = await this.prisma.invoice.findUniqueOrThrow({
-        where: {
-          id: invoiceId,
-        },
+        where:
+          role === "ADMIN"
+            ? { id: invoiceId }
+            : { id: invoiceId, createdById: userId },
         include: {
           items: true,
           clientAddress: true,
@@ -100,10 +102,7 @@ export class PrismaInvoiceRepository implements IInvoiceRepo {
         },
       });
 
-      if (result.createdById === userId || role !== "ADMIN") {
-        return result;
-      }
-      throw new NotFoundException("Don't have necessary permissions");
+      return result;
     } catch (e) {
       if (
         e instanceof Prisma.PrismaClientKnownRequestError &&
@@ -143,10 +142,51 @@ export class PrismaInvoiceRepository implements IInvoiceRepo {
   async update(id: string, invoiceUpdates: Partial<Invoice>) {
     try {
       const updatedInvoice = await this.prisma.$transaction(async (prisma) => {
-        if (invoiceUpdates.items && invoiceUpdates.items.length >= 1) {
-          await prisma.item.deleteMany({
+        // Items get reconciled by id when possible so that revision diffs
+        // can stably match line items across edits (modify vs. remove+add).
+        // An item with an id that already belongs to this invoice is
+        // UPDATED in place; a new id (or no id) triggers a CREATE; anything
+        // missing from the incoming list is DELETED.
+        if (invoiceUpdates.items !== undefined) {
+          const incomingItems = invoiceUpdates.items ?? [];
+          const existing = await prisma.item.findMany({
             where: { invoiceId: id },
+            select: { id: true },
           });
+          const existingIds = new Set(existing.map((i) => i.id));
+          const incomingIds = new Set(
+            incomingItems.map((i) => i.id).filter((v): v is string => !!v),
+          );
+          const toDelete = [...existingIds].filter(
+            (eid) => !incomingIds.has(eid),
+          );
+          if (toDelete.length > 0) {
+            await prisma.item.deleteMany({
+              where: { invoiceId: id, id: { in: toDelete } },
+            });
+          }
+          for (const item of incomingItems) {
+            const payload = {
+              name: item.name ?? "",
+              price: item.price ?? 0,
+              quantity: item.quantity ?? 0,
+              total: item.total ?? 0,
+            };
+            if (item.id && existingIds.has(item.id)) {
+              await prisma.item.update({
+                where: { id: item.id },
+                data: payload,
+              });
+            } else {
+              await prisma.item.create({
+                data: {
+                  ...payload,
+                  ...(item.id ? { id: item.id } : {}),
+                  Invoice: { connect: { id } },
+                },
+              });
+            }
+          }
         }
 
         const inputUpdateResult = await prisma.invoice.update({
@@ -181,19 +221,6 @@ export class PrismaInvoiceRepository implements IInvoiceRepo {
                   },
                 }
               : undefined,
-            items: {
-              createMany: {
-                data:
-                  invoiceUpdates.items &&
-                  (invoiceUpdates.items.map((item) => ({
-                    name: item.name,
-                    price: item.price,
-                    quantity: item.quantity,
-                    total: item.total,
-                  })) as Prisma.ItemCreateManyInput[]),
-                skipDuplicates: true,
-              },
-            },
           } as Prisma.InvoiceUpdateInput,
           include: {
             items: true,
@@ -212,6 +239,41 @@ export class PrismaInvoiceRepository implements IInvoiceRepo {
     }
   }
 
+  private async createWithInvoiceIdRetry(data: Prisma.InvoiceCreateInput) {
+    const generateId = !data.id;
+    // The unique constraint arbitrates collisions, including concurrent inserts.
+    // Retry only generated invoice IDs; explicit IDs keep their existing errors.
+    for (let attempt = 1; ; attempt++) {
+      try {
+        return await this.prisma.invoice.create({
+          data: { ...data, id: data.id || generateInvoiceId() },
+          include: {
+            items: true,
+            clientAddress: true,
+            senderAddress: true,
+            createdBy: true,
+          },
+        });
+      } catch (error) {
+        const target =
+          error instanceof Prisma.PrismaClientKnownRequestError
+            ? error.meta?.["target"]
+            : undefined;
+        if (
+          !generateId ||
+          attempt >= 5 ||
+          !(error instanceof Prisma.PrismaClientKnownRequestError) ||
+          error.code !== "P2002" ||
+          !Array.isArray(target) ||
+          target.length !== 1 ||
+          target[0] !== "id"
+        ) {
+          throw error;
+        }
+      }
+    }
+  }
+
   async create(invoice: InvoiceWithCreatedBy): Promise<unknown> {
     try {
       try {
@@ -226,57 +288,49 @@ export class PrismaInvoiceRepository implements IInvoiceRepo {
         throw error;
       }
 
-      const result = await this.prisma.invoice.create({
-        data: {
-          createdBy: {
-            connect: { id: invoice.createdById ?? "" },
-          },
-          id: invoice.id || "",
-          clientEmail: invoice.clientEmail || "",
-          clientName: invoice.clientName || "",
-          createdAt: invoice.createdAt || new Date().toISOString(),
-          description: invoice.description || "",
-          paymentDue:
-            invoice.paymentDue ||
-            new Date(Date.now() + 24 * 60 * 60 * 1000).toISOString(),
-          paymentTerms: invoice.paymentTerms || 14,
-          status: invoice.status || "pending",
-          total: invoice.total || new Prisma.Decimal(0),
-          items: {
-            create: (invoice.items ?? []).map((item) => ({
-              name: item.name ?? "",
-              quantity: item.quantity ?? 0,
-              price: item.price ?? 0,
-              total: item.total ?? 0,
-            })),
-          },
-          ...(invoice.clientAddress && {
-            clientAddress: {
-              create: {
-                city: invoice.clientAddress.city,
-                country: invoice.clientAddress.country,
-                postCode: invoice.clientAddress.postCode,
-                street: invoice.clientAddress.street,
-              },
-            },
-          }),
-          ...(invoice.senderAddress && {
-            senderAddress: {
-              create: {
-                city: invoice.senderAddress.city,
-                country: invoice.senderAddress.country,
-                postCode: invoice.senderAddress.postCode,
-                street: invoice.senderAddress.street,
-              },
-            },
-          }),
+      const result = await this.createWithInvoiceIdRetry({
+        createdBy: {
+          connect: { id: invoice.createdById ?? "" },
         },
-        include: {
-          items: true,
-          clientAddress: true,
-          senderAddress: true,
-          createdBy: true,
+        id: invoice.id || "",
+        clientEmail: invoice.clientEmail || "",
+        clientName: invoice.clientName || "",
+        createdAt: invoice.createdAt || new Date().toISOString(),
+        description: invoice.description || "",
+        paymentDue:
+          invoice.paymentDue ||
+          new Date(Date.now() + 24 * 60 * 60 * 1000).toISOString(),
+        paymentTerms: invoice.paymentTerms || 14,
+        status: invoice.status || "pending",
+        total: invoice.total || new Prisma.Decimal(0),
+        items: {
+          create: (invoice.items ?? []).map((item) => ({
+            name: item.name ?? "",
+            quantity: item.quantity ?? 0,
+            price: item.price ?? 0,
+            total: item.total ?? 0,
+          })),
         },
+        ...(invoice.clientAddress && {
+          clientAddress: {
+            create: {
+              city: invoice.clientAddress.city,
+              country: invoice.clientAddress.country,
+              postCode: invoice.clientAddress.postCode,
+              street: invoice.clientAddress.street,
+            },
+          },
+        }),
+        ...(invoice.senderAddress && {
+          senderAddress: {
+            create: {
+              city: invoice.senderAddress.city,
+              country: invoice.senderAddress.country,
+              postCode: invoice.senderAddress.postCode,
+              street: invoice.senderAddress.street,
+            },
+          },
+        }),
       });
 
       // Convert total from Decimal to number

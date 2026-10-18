@@ -23,7 +23,7 @@ vi.stubGlobal("import", {
 describe("useGraphQLClient", () => {
   // const originalEnv = process.env;
   vi.stubEnv("VITE_BACKEND_URL", "http://localhost:4000");
-  // import.meta.env.VITE_BACKEND_URL = "http://localhost:4000";
+  // vi.stubEnv("VITE_BACKEND_URL", "http://localhost:4000");
 
   beforeEach(() => {
     vi.resetModules();
@@ -48,7 +48,6 @@ describe("useGraphQLClient", () => {
 
   it("should throw error if VITE_BACKEND_URL is not set", () => {
     // vi.stubGlobal("import", { meta: { env: {} } });
-    import.meta.env.VITE_BACKEND_URL = null;
     vi.stubEnv("VITE_BACKEND_URL", undefined);
     expect(() =>
       renderHook(() => useGraphQLClient(), { wrapper: DemoModeProvider }),

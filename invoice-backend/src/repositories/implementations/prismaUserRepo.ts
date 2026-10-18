@@ -133,15 +133,18 @@ export class PrismaUserRepository implements IUserRepo {
 
   createUserWithAuth0 = async (args: UserIdAndRole): Promise<UserIdAndRole> => {
     try {
-      return this.prisma.user
-        .create({
+      return await this.prisma.user
+        .upsert({
+          where: { id: args.id },
+          // Repeated/concurrent logins must never overwrite an existing account.
+          update: {},
           select: {
             id: true,
             role: true,
             username: true,
             name: true,
           },
-          data: {
+          create: {
             id: args.id,
             role: args.role ?? "USER",
             username: args.username ?? "",
@@ -154,6 +157,10 @@ export class PrismaUserRepository implements IUserRepo {
         }));
     } catch (e: unknown) {
       if (e instanceof PrismaClientKnownRequestError && e.code === "P2002") {
+        // Prisma can race on an empty-update upsert. Accept only the same
+        // subject's completed insert, never an unrelated account with its email.
+        const existing = await this.getUserByIdSafely(args.id);
+        if (existing) return existing;
         throw new Error("Unique constraint failed on the fields: (`username`)");
       }
       throw new Error("Database error");

@@ -451,32 +451,7 @@ describe("Mutation.editInvoice", () => {
 describe("Mutation.removeInvoice", () => {
   it("should remove an existing invoice", async () => {
     const args: GetInvoiceByIdArgs = { id: "1" };
-    const removedInvoice: Invoice = {
-      id: "1",
-      clientAddress: {
-        city: "CityA",
-        country: "CountryA",
-        postCode: "12345",
-        street: "Street A",
-      },
-      clientEmail: "clientA@example.com",
-      clientName: "Client A",
-      createdAt: "2021-01-01",
-      description: "Invoice A",
-      items: [],
-      paymentDue: "2021-01-15",
-      paymentTerms: 14,
-      senderAddress: {
-        city: "CityB",
-        country: "CountryB",
-        postCode: "54321",
-        street: "Street B",
-      },
-      status: "pending",
-      total: 100.0,
-    };
-
-    invoiceServiceMock.deleteInvoice.mockResolvedValue(removedInvoice as any);
+    invoiceServiceMock.deleteInvoice.mockResolvedValue(true);
 
     const result = await invoiceResolvers.Mutation.removeInvoice(
       {},
@@ -484,7 +459,7 @@ describe("Mutation.removeInvoice", () => {
       mockContext,
     );
 
-    expect(result).toEqual(removedInvoice);
+    expect(result).toEqual({ acknowledged: true });
     expect(invoiceServiceMock.deleteInvoice).toHaveBeenCalledWith(args.id);
   });
 

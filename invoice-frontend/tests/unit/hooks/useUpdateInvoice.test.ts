@@ -1,5 +1,5 @@
 import { describe, it, expect, vi, beforeEach, Mock, afterEach } from "vitest";
-import { cleanup } from "@testing-library/react-hooks";
+import { cleanup } from "@testing-library/react";
 import { act } from "react";
 import { useUpdateInvoice } from "../../../src/features/invoices/hooks/useUpdateInvoice";
 import { GET_INVOICE_BY_ID } from "../../../src/features/invoices/graphql/invoice.queries";

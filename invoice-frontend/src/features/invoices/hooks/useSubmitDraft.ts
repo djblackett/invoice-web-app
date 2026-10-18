@@ -1,5 +1,5 @@
 import { createInvoiceObject } from "@/features/shared/utils/utilityFunctions";
-import { FieldPath, SubmitHandler, useFieldArray } from "react-hook-form";
+import { FieldPath, useFieldArray } from "react-hook-form";
 import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { useNewInvoiceContext } from "../forms/NewInvoiceContextProvider";
@@ -25,7 +25,7 @@ export const useSubmitDraft = () => {
   const { handleAddInvoice } = useAddInvoice();
 
   // Create a new draft invoice (all fields not required)
-  const onSubmitDraft: SubmitHandler<FormType> = async () => {
+  const onSubmitDraft = async () => {
     // Re-calculate errors directly from the current form state
     await trigger();
     const currentErrors = methods.formState.errors;
@@ -73,7 +73,7 @@ export const useSubmitDraft = () => {
 
         itemsArray.forEach((itemError, index) => {
           if (itemError && typeof itemError === "object") {
-            Object.keys(itemError).forEach((fieldName) => {
+            Object.keys(itemError as object).forEach((fieldName) => {
               const errorDetail = (
                 itemError as Record<string, { type: string; message?: string }>
               )[fieldName];
