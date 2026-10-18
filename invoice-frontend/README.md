@@ -46,24 +46,22 @@ Each simulated visitor sends a distinct private test proxy address to the local 
 
 An active Demo entry survives navigation and same-tab refresh. Manual Reset Demo and deliberate logout/re-entry restore the seven canonical invoices and eleven canonical revisions. A fresh browser context starts a new entry. This UI session marker does not isolate visitors or grant authorization.
 
-The historical Compose Playwright container and live-Auth0 CI wiring are not this gate. Use the command above for local/CI browser verification. Real Auth0 redirect, token acquisition/refresh and logout still require a separate configured staging tenant smoke test; they are not claimed verified by this suite.
+GitHub Actions invokes this same managed runner with PostgreSQL 16 tools and the
+locked Playwright Chromium installation. Real Auth0 redirect/token refresh/logout
+still requires the separate Slice 6B staging smoke test.
 
-### Startup backend
+### Local startup and production configuration
 
-Use Docker Compose to start the appropriate backend.
-First `cd ..` to go to root directory
+See the [root developer commands](../README.md#getting-started) for source and
+compiled Docker startup. `docker-compose.demo.yml` is now an explicit override of
+`docker-compose.yml`; use both files, or `./setup.sh demo`.
 
-### Production env
-
-`docker compose up`
-
-### Development environment
-
-`docker compose -f docker-compose.dev.yml up`
-
-### Test env
-
-`docker compose -f docker-compose-test.yml up`
+`npm run build` preserves the configured `VITE_BACKEND_URL` and reads no TLS keys.
+All `VITE_*` values are public build-time settings; never put a client secret or DB
+URL in them. Build the frontend image with its documented `VITE_*` build arguments,
+not runtime environment overrides. `VITE_DEMO_MODE` defaults to false.
+`DEV_HTTPS=false npm run dev`/`npm run preview` explicitly selects local HTTP;
+normal source development otherwise uses the package's mkcert files.
 
 ## Frontend quality gate
 

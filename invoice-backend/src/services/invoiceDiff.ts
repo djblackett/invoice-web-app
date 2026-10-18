@@ -71,10 +71,7 @@ export interface InvoiceDiff {
 }
 
 const SCALAR_FIELDS: Array<
-  keyof Omit<
-    InvoiceSnapshot,
-    "items" | "clientAddress" | "senderAddress"
-  >
+  keyof Omit<InvoiceSnapshot, "items" | "clientAddress" | "senderAddress">
 > = [
   "clientEmail",
   "clientName",
@@ -107,12 +104,14 @@ function scalarsEqual(a: unknown, b: unknown): boolean {
 
 function diffAddress(
   field: AddressChange["field"],
-  before: SnapshotAddress,
-  after: SnapshotAddress,
+  before: Partial<SnapshotAddress> | null | undefined,
+  after: Partial<SnapshotAddress> | null | undefined,
 ): AddressChange | null {
   const changes: AddressFieldChange[] = [];
   for (const key of ADDRESS_KEYS) {
+    // eslint-disable-next-line security/detect-object-injection -- key comes only from the fixed ADDRESS_KEYS allowlist.
     const b = before?.[key] ?? "";
+    // eslint-disable-next-line security/detect-object-injection -- key comes only from the fixed ADDRESS_KEYS allowlist.
     const a = after?.[key] ?? "";
     if (b !== a) {
       changes.push({ key, before: b, after: a });
@@ -125,16 +124,23 @@ function diffItem(
   before: SnapshotItem | null,
   after: SnapshotItem | null,
 ): ScalarFieldChange[] {
-  const fields: Array<keyof SnapshotItem> = ["name", "price", "quantity", "total"];
+  const fields: Array<keyof SnapshotItem> = [
+    "name",
+    "price",
+    "quantity",
+    "total",
+  ];
   const changes: ScalarFieldChange[] = [];
   for (const f of fields) {
+    // eslint-disable-next-line security/detect-object-injection -- f comes only from the fixed item-field allowlist.
     const b = before ? before[f] : null;
+    // eslint-disable-next-line security/detect-object-injection -- f comes only from the fixed item-field allowlist.
     const a = after ? after[f] : null;
     if (!scalarsEqual(b, a)) {
       changes.push({
         field: f,
-        before: (b as string | number | null) ?? null,
-        after: (a as string | number | null) ?? null,
+        before: b ?? null,
+        after: a ?? null,
       });
     }
   }
@@ -171,7 +177,7 @@ function pairItems(
     if (aIdx >= 0) {
       usedAfter.add(aIdx);
       usedBefore.add(bi);
-      pairs.push({ key: b.id, before: b, after: after[aIdx]! });
+      pairs.push({ key: b.id, before: b, after: after.at(aIdx) ?? null });
     }
   });
 
@@ -188,7 +194,7 @@ function pairItems(
       pairs.push({
         key: b.id || `name:${b.name}`,
         before: b,
-        after: after[aIdx]!,
+        after: after.at(aIdx) ?? null,
       });
     }
   });
@@ -231,7 +237,8 @@ export function diffSnapshots(
       fieldChanges.push({
         field: f,
         before: null,
-        after: after[f] as string | number,
+        // eslint-disable-next-line security/detect-object-injection -- f comes only from the fixed SCALAR_FIELDS allowlist.
+        after: after[f],
       });
     }
     const clientInitial = diffAddress(
@@ -259,7 +266,9 @@ export function diffSnapshots(
   }
 
   for (const f of SCALAR_FIELDS) {
+    // eslint-disable-next-line security/detect-object-injection -- f comes only from the fixed SCALAR_FIELDS allowlist.
     const b = before[f];
+    // eslint-disable-next-line security/detect-object-injection -- f comes only from the fixed SCALAR_FIELDS allowlist.
     const a = after[f];
     if (!scalarsEqual(b, a)) {
       fieldChanges.push({
@@ -340,8 +349,8 @@ export function snapshotsEqual(
  */
 export function toSnapshot(input: unknown): InvoiceSnapshot {
   const src = (input ?? {}) as Record<string, unknown>;
-  const addr = (key: string): SnapshotAddress => {
-    const raw = (src[key] ?? {}) as Record<string, unknown>;
+  const addr = (value: unknown): SnapshotAddress => {
+    const raw = (value ?? {}) as Record<string, unknown>;
     return {
       street: typeof raw["street"] === "string" ? raw["street"] : "",
       city: typeof raw["city"] === "string" ? raw["city"] : "",
@@ -352,7 +361,10 @@ export function toSnapshot(input: unknown): InvoiceSnapshot {
   const num = (v: unknown): number => {
     if (typeof v === "number") return v;
     if (typeof v === "string") return Number(v);
-    if (v && typeof (v as { toNumber?: () => number }).toNumber === "function") {
+    if (
+      v &&
+      typeof (v as { toNumber?: () => number }).toNumber === "function"
+    ) {
       return (v as { toNumber: () => number }).toNumber();
     }
     return 0;
@@ -367,12 +379,14 @@ export function toSnapshot(input: unknown): InvoiceSnapshot {
       }))
     : [];
   return {
-    clientAddress: addr("clientAddress"),
-    senderAddress: addr("senderAddress"),
-    clientEmail: typeof src["clientEmail"] === "string" ? src["clientEmail"] : "",
+    clientAddress: addr(src["clientAddress"]),
+    senderAddress: addr(src["senderAddress"]),
+    clientEmail:
+      typeof src["clientEmail"] === "string" ? src["clientEmail"] : "",
     clientName: typeof src["clientName"] === "string" ? src["clientName"] : "",
     createdAt: typeof src["createdAt"] === "string" ? src["createdAt"] : "",
-    description: typeof src["description"] === "string" ? src["description"] : "",
+    description:
+      typeof src["description"] === "string" ? src["description"] : "",
     items,
     paymentDue: typeof src["paymentDue"] === "string" ? src["paymentDue"] : "",
     paymentTerms: num(src["paymentTerms"]),
@@ -386,7 +400,9 @@ export function toSnapshot(input: unknown): InvoiceSnapshot {
  * restored snapshot can't have stale/inconsistent totals. Does not mutate the
  * input; returns a new snapshot.
  */
-export function withRecomputedTotals(snapshot: InvoiceSnapshot): InvoiceSnapshot {
+export function withRecomputedTotals(
+  snapshot: InvoiceSnapshot,
+): InvoiceSnapshot {
   const items = snapshot.items.map((item) => ({
     ...item,
     total: round2(item.price * item.quantity),

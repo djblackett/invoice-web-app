@@ -175,9 +175,7 @@ export class InvoiceService {
 
     const revision = await this.revisionService.getRevision(revisionId);
     if (revision.invoiceId !== invoiceId) {
-      throw new ValidationException(
-        "Revision does not belong to this invoice",
-      );
+      throw new ValidationException("Revision does not belong to this invoice");
     }
 
     const restored: InvoiceSnapshot = withRecomputedTotals(revision.snapshot);

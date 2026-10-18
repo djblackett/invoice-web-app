@@ -1,84 +1,10 @@
-version: "3.8"
+# Use with: docker compose -f docker-compose.yml -f docker-compose.demo.yml ...
+# Explicitly enables public demo in this local stack; entry/reset initializes fixtures.
 services:
-  frontend-demo:
+  frontend:
     build:
-      context: invoice-frontend
-      dockerfile: dev.Dockerfile
-    depends_on:
-      backend-demo:
-        condition: service_started
-    command: npm run demo
+      args:
+        VITE_DEMO_MODE: "true"
+  backend:
     environment:
-      - VITE_BACKEND_URL=http://localhost:8000
-      - VITE_DEMO_MODE=true
-    ports:
-      - "5173:5173"
-    networks:
-      - my_network_test
-
-    healthcheck:
-      test: ["CMD", "curl", "-f", "-k", "http://localhost:5173"]
-      interval: 30s
-      timeout: 10s
-      retries: 3
-
-  backend-demo:
-    build:
-      context: invoice-backend
-      dockerfile: dev.Dockerfile
-    depends_on:
-      db-demo:
-        condition: service_healthy
-    restart: unless-stopped
-    ports:
-      - "8000:8000"
-    command: |
-      sh -c "npx prisma@6.2.1 generate && \
-      npx prisma@6.2.1 migrate deploy && \
-      npx prisma@6.2.1 db seed && npm start"
-    environment:
-      - NODE_ENV=production
-      - DEMO_MODE=true
-      - PORT=8000
-      - CORS_ORIGIN=http://localhost:5173
-      - SECRET=theSecretStuff
-      - DATABASE_URL=postgres://postgres:example@db-demo:5432/db-demo?schema=public&connect_timeout=300
-      - CERT_DIR=../certs
-    networks:
-      - my_network_test
-    volumes:
-      - ./invoice-backend:/usr/src/app/
-    healthcheck:
-      test: ["CMD", "curl", "-f", "-k", "http://localhost:8000/health"]
-      interval: 30s
-      timeout: 10s
-      retries: 3
-      start_period: 30s
-
-  db-demo:
-    image: postgres:16.1
-    restart: always
-    environment:
-      POSTGRES_PASSWORD: example
-      PGUSER: postgres
-      POSTGRES_USER: postgres
-    ports:
-      - "5432:5432"
-    networks:
-      - my_network_test
-    volumes:
-      - pgdata-demo:/var/lib/postgresql/data
-      - ./init.dev.sql:/docker-entrypoint-initdb.d/init.sql
-    healthcheck:
-      test: [ "CMD-SHELL", "pg_isready -U postgres" ]
-      interval: 5s
-      timeout: 5s
-      retries: 5
-
-
-networks:
-  my_network_test:
-    driver: bridge
-
-volumes:
-  pgdata-demo:
+      DEMO_MODE: "true"

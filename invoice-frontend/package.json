@@ -5,16 +5,13 @@
   "type": "module",
   "homepage": "https://localhost:5173/invoice-web-app/",
   "scripts": {
-    "dev": "cross-env VITE_BACKEND_URL=https://localhost:8000 vite",
-    "demo": "cross-env VITE_BACKEND_URL=http://localhost:8000 vite",
-    "dev:container": "cross-env VITE_BACKEND_URL=https://backend-dev:8000/graphql vite",
+    "dev": "vite",
+    "demo": "cross-env VITE_DEMO_MODE=true vite",
     "coverage": "vitest run --coverage",
-    "build:local": "cross-env VITE_BACKEND_URL=http://backend.localhost/api/graphql VITE_REDIRECT_URI=http://frontend.localhost vite build",
-    "build": "cross-env VITE_BACKEND_URL=https://localhost:8000 vite build",
+    "build": "vite build",
     "preview": "vite preview",
     "test:unit": "vitest tests",
     "test:e2e": "node qa/scripts/run-e2e.mjs",
-    "test:container": "cross-env VITE_BACKEND_URL=https://backend-test:8000/graphql vite",
     "lint": "eslint --config ./eslint.config.mjs .",
     "lint:fix": "eslint --config ./eslint.config.mjs --fix .",
     "lint:css": "stylelint './src/**/*.{ts,tsx}'",
@@ -103,5 +100,8 @@
   "optionalDependencies": {
     "@rollup/rollup-linux-x64-musl": "4.9.5"
   },
-  "packageManager": "yarn@4.6.0"
+  "packageManager": "yarn@4.6.0",
+  "engines": {
+    "node": ">=24 <25"
+  }
 }

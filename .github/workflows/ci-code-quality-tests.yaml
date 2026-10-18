@@ -1,235 +1,149 @@
-name: CI Code Quality Checks
+name: CI quality gates
 
 on:
   push:
-    branches:
-      - dev
-      - "feature/**"
-      - "release/**"
-      - "hotfix/**"
+    branches: [main, dev, portfolio-stabilization, 'feature/**', 'release/**', 'hotfix/**']
   pull_request:
-    branches:
-      - dev
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ci-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+env:
+  CI: 'true'
 
 jobs:
   frontend:
-    name: Frontend CI
-    runs-on: ubuntu-latest
+    name: Frontend types, lint, tests and build
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    defaults:
+      run:
+        working-directory: invoice-frontend
     env:
-      VITE_BACKEND_URL: https://localhost:8000
-      NODE_ENV: CI
-      CERT_DIR: "../certs/"
-      VITE_DOMAIN: ${{ secrets.AUTH_DOMAIN }}
-      VITE_AUDIENCE: ${{ secrets.AUDIENCE }}
-      VITE_CLIENT_ID: ${{ secrets.AUTH0_CLIENT_ID }}
-      VITE_CLIENT_SECRET: ${{ secrets.CLIENT_SECRET }}
-      VITE_SCOPE: ${{ secrets.AUTH_SCOPE }}
-
+      VITE_BACKEND_URL: http://localhost:8000
+      VITE_DEMO_MODE: 'false'
     steps:
-      - name: Checkout Code
-        uses: actions/checkout@v4.2.2
-
-      - name: Set up Node.js
-        uses: actions/setup-node@v4.1.0
+      - uses: actions/checkout@v6
         with:
-          node-version: "20.x"
-
-      - name: Enable Corepack and Install Yarn
-        run: |
-          corepack enable
-          yarn set version stable
-
-      - name: Set up mkcert
-        run: |
-          sudo apt-get update
-          sudo apt-get install libnss3-tools
-          wget -O mkcert https://github.com/FiloSottile/mkcert/releases/download/v1.4.3/mkcert-v1.4.3-linux-amd64
-          chmod +x mkcert
-          sudo mv mkcert /usr/local/bin/
-          mkcert -install
-
-      - name: Generate HTTPS certificates
-        run: |
-          cd invoice-backend && mkdir certs && cd certs && \
-          mkcert localhost
-          # This will generate localhost.pem and localhost-key.pem
-
-      - name: Copy certs to frontend directory
-        run: cp -r invoice-backend/certs invoice-frontend/certs
-
-      - name: Restore Frontend Cache
-        uses: actions/cache@v4.2.0
+          persist-credentials: false
+      - uses: actions/setup-node@v6
         with:
-          path: invoice-frontend/node_modules
-          key: ${{ runner.os }}-frontend-yarn-${{ hashFiles('invoice-frontend/yarn.lock') }}
-          restore-keys: |
-            ${{ runner.os }}-frontend-yarn-
-
-      - name: Install Frontend Dependencies
-        run: |
-          cd invoice-frontend
-          yarn install
-
-      - name: Save Frontend Cache
-        uses: actions/cache@v4.2.0
+          node-version-file: .nvmrc
+          package-manager-cache: false
+      - uses: actions/cache@v5
         with:
-          path: invoice-frontend/node_modules
-          key: ${{ runner.os }}-frontend-yarn-${{ hashFiles('invoice-frontend/yarn.lock') }}
-
-      - name: Lint
-        run: |
-          cd invoice-frontend
-          yarn lint:fix
-
-      - name: Run Frontend Tests
-        run: |
-          cd invoice-frontend
-          yarn test:unit
-
-      - name: Build Frontend Docker Image
-        run: |
-          cd invoice-frontend
-          docker build -t djblackett/invoice-frontend:${{ github.sha }} .
-
-      - name: Push Docker Image
-        uses: docker/login-action@v3.3.0
-        with:
-          username: ${{ secrets.DOCKER_USERNAME }}
-          password: ${{ secrets.DOCKERHUB_TOKEN }}
-
-      - name: Push Frontend Image
-        run: |
-          docker push djblackett/invoice-frontend:${{ github.sha }}
+          path: ~/.yarn/berry/cache
+          key: ${{ runner.os }}-yarn-frontend-${{ hashFiles('invoice-frontend/yarn.lock') }}
+      - run: corepack yarn install --immutable
+      - run: npm run check
+      - run: npm run typecheck:e2e
 
   backend:
-    name: Backend CI
+    name: Backend types, lint, unit, integration and build
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    defaults:
+      run:
+        working-directory: invoice-backend
     env:
-      DATABASE_URL: postgres://postgres:example@localhost:5432/db-test
-      REQUEST_ORIGIN: https://localhost:4173
-      SECRET: theSecretStuff # not critical - only for ephemeral testing env
-      VITE_BACKEND_URL: http://localhost:8000
-      NODE_ENV: CI
-      CERT_DIR: "../certs/"
-      DOMAIN: ${{ secrets.AUTH_DOMAIN }}
-      AUDIENCE: ${{ secrets.AUDIENCE }}
-      CLIENT_ID: ${{ secrets.CLIENT_ID }}
-      CLIENT_SECRET: ${{ secrets.CLIENT_SECRET }}
-
-    runs-on: ubuntu-latest
+      DATABASE_URL: postgresql://postgres:ci-only@127.0.0.1:5432/invoice_ci
+      NODE_ENV: test
+      DEMO_MODE: 'false'
+      DOMAIN: ''
+      AUDIENCE: ''
     services:
       postgres:
         image: postgres:16
         env:
           POSTGRES_USER: postgres
-          PG_USER: postgres
-          POSTGRES_PASSWORD: example
-          POSTGRES_DB: db-test
-
-        ports:
-          - 5432:5432
+          POSTGRES_PASSWORD: ci-only
+          POSTGRES_DB: invoice_ci
+        ports: ['5432:5432']
         options: >-
-          --health-cmd="pg_isready -U postgres"
-          --health-interval=10s
-          --health-timeout=5s
-          --health-retries=5
-
+          --health-cmd="pg_isready -U postgres -d invoice_ci"
+          --health-interval=5s
+          --health-timeout=3s
+          --health-retries=10
     steps:
-      - name: Checkout Code
-        uses: actions/checkout@v4.2.2
-
-      - name: Set up Node.js
-        uses: actions/setup-node@v4.1.0
+      - uses: actions/checkout@v6
         with:
-          node-version: "20.x"
+          persist-credentials: false
+      - uses: actions/setup-node@v6
+        with:
+          node-version-file: .nvmrc
+          package-manager-cache: false
+      - uses: actions/cache@v5
+        with:
+          path: ~/.yarn/berry/cache
+          key: ${{ runner.os }}-yarn-backend-${{ hashFiles('invoice-backend/yarn.lock') }}
+      - run: corepack yarn install --immutable
+      - run: npm run prisma-generate
+      - run: npm run check
+      # Applies committed migrations before serial tests. No production secrets.
+      - run: npm run test:integration
 
-      - name: Enable Corepack and Install Yarn
-        run: |
-          corepack enable
-          yarn set version stable
-
-      - name: Set up mkcert
+  browser:
+    name: Real backend Chromium desktop, mobile and Demo-disabled
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    env:
+      PG_BIN: /usr/lib/postgresql/16/bin
+    steps:
+      - uses: actions/checkout@v6
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@v6
+        with:
+          node-version-file: .nvmrc
+          package-manager-cache: false
+      - uses: actions/cache@v5
+        with:
+          path: ~/.yarn/berry/cache
+          key: ${{ runner.os }}-yarn-browser-${{ hashFiles('invoice-backend/yarn.lock', 'invoice-frontend/yarn.lock') }}
+      - run: corepack yarn install --immutable
+        working-directory: invoice-backend
+      - run: corepack yarn install --immutable
+        working-directory: invoice-frontend
+      - name: Install disposable database and browser prerequisites
         run: |
           sudo apt-get update
-          sudo apt-get install libnss3-tools
-          wget -O mkcert https://github.com/FiloSottile/mkcert/releases/download/v1.4.3/mkcert-v1.4.3-linux-amd64
-          chmod +x mkcert
-          sudo mv mkcert /usr/local/bin/
-          mkcert -install
-
-      - name: Generate HTTPS certificates
-        run: |
-          cd invoice-backend && mkdir certs && cd certs && \
-          mkcert localhost
-          cat localhost.pem > localhost-fullchain.pem
-          cat "$(mkcert -CAROOT)/rootCA.pem" >> localhost-fullchain.pem
-
-      - name: Restore Cache
-        uses: actions/cache@v4.2.0
-        with:
-          path: invoice-backend/node_modules
-          key: ${{ runner.os }}-node-${{ hashFiles('invoice-backend/yarn.lock') }}
-          restore-keys: |
-            ${{ runner.os }}-node-
-
-      - name: Install Backend Dependencies
-        run: |
-          cd invoice-backend
-          yarn install --frozen-lockfile
-
-      - name: Save Backend Cache
-        uses: actions/cache@v4.2.0
-        with:
-          path: invoice-backend/node_modules
-          key: ${{ runner.os }}-backend-yarn-${{ hashFiles('invoice-backend/yarn.lock') }}
-
-      - name: Wait for PostgreSQL to be Ready
-        run: |
-          for i in {1..10}; do
-            if pg_isready -h localhost -p 5432 -U postgres; then
-              echo "PostgreSQL is ready!"
-              break
-            fi
-            echo "Waiting for PostgreSQL..."
-            sleep 5
-          done
-
-      - name: Test Database Connection
+          sudo apt-get install -y postgresql-16
+          node invoice-frontend/node_modules/@playwright/test/cli.js install --with-deps chromium
+      - run: npm --prefix invoice-frontend run test:e2e
         env:
-          PGPASSWORD: example
-        run: |
-          psql -h localhost -U postgres -d db-test -c '\l'
-
-      - name: Lint
-        run: |
-          cd invoice-backend
-          yarn lint:fix
-
-      - name: Initialize Prisma
-        run: |
-          cd invoice-backend
-          yarn prisma-generate && yarn prisma-push
-
-      - name: Run Unit Tests
-        run: |
-          cd invoice-backend
-          yarn test:unit
-
-      - name: Run Integration Tests
-        run: |
-          cd invoice-backend
-          yarn test:integration
-
-      - name: Build Docker Image
-        run: |
-          cd invoice-backend
-          docker build -t djblackett/invoice-backend:${{ github.sha }} .
-
-      - name: Push Docker Image
-        uses: docker/login-action@v3.3.0
+          TMPDIR: ${{ runner.temp }}
+      - uses: actions/upload-artifact@v7
+        if: always()
         with:
-          username: ${{ secrets.DOCKER_USERNAME }}
-          password: ${{ secrets.DOCKERHUB_TOKEN }}
+          name: isolated-browser-results
+          retention-days: 7
+          path: |
+            ${{ runner.temp }}/invoice-e2e-*/*.log
+            ${{ runner.temp }}/invoice-e2e-*/results.json
+            ${{ runner.temp }}/invoice-e2e-*/results/**
+            ${{ runner.temp }}/invoice-e2e-*/playwright-report/**
 
-      - name: Push Backend Image
+  containers:
+    name: Production images and fresh Compose startup
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v6
+        with:
+          persist-credentials: false
+      - run: docker compose -p invoice-ci config --quiet
+      - run: docker compose -p invoice-ci up -d --build --wait --wait-timeout 180
+      - name: Check compiled API and static application
         run: |
-          docker push djblackett/invoice-backend:${{ github.sha }}
+          curl --fail http://localhost:8000/health
+          curl --fail http://localhost:5173/invoice-web-app/
+          curl --fail -H 'Content-Type: application/json' --data '{"query":"{ __typename }"}' http://localhost:8000/ | python3 -c 'import json,sys; assert json.load(sys.stdin)["data"]["__typename"] == "Query"'
+      - if: failure()
+        run: docker compose -p invoice-ci logs
+      - if: always()
+        run: docker compose -p invoice-ci down --volumes

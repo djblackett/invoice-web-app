@@ -34,10 +34,12 @@ export const createServer = async () => {
     let httpServer;
     if (CERT_DIR && !isProduction && !isDemo) {
       const sslOptions = {
+        // eslint-disable-next-line security/detect-non-literal-fs-filename -- Certificate directory is operator configuration, never request input.
         key: fs.readFileSync(
           path.join(__dirname, CERT_DIR, "localhost-key.pem"),
           "ascii",
         ),
+        // eslint-disable-next-line security/detect-non-literal-fs-filename -- Certificate directory is operator configuration, never request input.
         cert: fs.readFileSync(
           path.join(__dirname, CERT_DIR, "localhost-fullchain.pem"),
           "ascii",

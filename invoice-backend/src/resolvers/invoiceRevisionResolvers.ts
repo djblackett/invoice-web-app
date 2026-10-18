@@ -1,5 +1,8 @@
 import { GraphQLError } from "graphql/error/GraphQLError";
-import { NotFoundException, ValidationException } from "../config/exception.config";
+import {
+  NotFoundException,
+  ValidationException,
+} from "../config/exception.config";
 import type { InjectedQueryContext } from "../constants/types";
 import type { StoredRevision } from "../repositories/InvoiceRevisionRepo";
 

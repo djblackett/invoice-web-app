@@ -1,3 +1,5 @@
+# HISTORICAL EXPERIMENT: not supported by this release setup.
+# References missing root Dockerfile/bin/migrate; do not deploy this manifest.
 app = "invoice-app"
 
 [build]

@@ -67,9 +67,6 @@ export function getInvoiceResolvers() {
         }
         try {
           const result = await invoiceService.getInvoiceById(args.id);
-          if (!result) {
-            throw new NotFoundException("Invoice not found");
-          }
           return result;
         } catch (error) {
           if (error instanceof NotFoundException) {

@@ -181,37 +181,18 @@ try {
       DATABASE_URL: `postgresql://postgres@127.0.0.1:${dbPort}/backend_regression`,
       NODE_ENV: "test",
       DEMO_MODE: "false",
-      CERT_DIR: "../certs/",
+      CERT_DIR: "",
     };
     await run(
-      process.execPath,
-      ["node_modules/prisma/build/index.js", "migrate", "deploy"],
-      backend,
-      regressionEnv,
-      "backend-migrate",
-    );
-    await run(
-      process.execPath,
-      [
-        "node_modules/vitest/vitest.mjs",
-        "run",
-        "tests/unit",
-        "--reporter=default",
-      ],
+      "npm",
+      ["run", "test:unit"],
       backend,
       regressionEnv,
       "backend-unit",
     );
     await run(
-      process.execPath,
-      [
-        "node_modules/vitest/vitest.mjs",
-        "run",
-        "tests/integration",
-        "--reporter=default",
-        "--no-file-parallelism",
-        "--hookTimeout=60000",
-      ],
+      "npm",
+      ["run", "test:integration"],
       backend,
       regressionEnv,
       "backend-integration",

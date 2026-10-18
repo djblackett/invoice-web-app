@@ -66,6 +66,7 @@ export async function retrieveUserFromToken(
   options: VerifyOptions,
 ): Promise<UserIdAndRole | null> {
   // Demo credentials are handled before the legacy test/CI shortcut too.
+  // eslint-disable-next-line security/detect-possible-timing-attacks -- Public demo selector, not a secret credential.
   if (token === "demo-token") {
     return process.env["DEMO_MODE"] === "true"
       ? { ...DEMO_USER, isDemo: true }
@@ -108,16 +109,14 @@ async function verifyToken(
 
 // Helper function to extract user data from payload
 function extractUserFromPayload(payload: JwtPayload): UserIdAndRole {
-  const namespace = "invoice-web-app/";
-  const emailClaim = `${namespace}email`;
-  const roleClaim = `${namespace}roles`;
-
   const email =
-    typeof payload[emailClaim] === "string" ? payload[emailClaim] : "";
+    typeof payload["invoice-web-app/email"] === "string"
+      ? payload["invoice-web-app/email"]
+      : "";
   const id = payload.sub ?? "";
   const name = typeof payload["name"] === "string" ? payload["name"] : "user";
-  const roles = Array.isArray(payload[roleClaim])
-    ? (payload[roleClaim] as string[])
+  const roles = Array.isArray(payload["invoice-web-app/roles"])
+    ? (payload["invoice-web-app/roles"] as string[])
     : [];
 
   if (!email) throw new Error("Email claim is missing or invalid");
@@ -131,17 +130,17 @@ export async function createContext({
   req,
   connection,
 }: ContextArgs): Promise<InjectedQueryContext> {
-  logger.info("creating context");
+  logger.debug("creating context");
 
   if (connection) {
     // This branch handles subscription requests, which are initiated through WebSocket connections.
-    logger.info("Subscription request");
+    logger.debug("Subscription request");
     return await createSubscriptionContext(connection);
   }
 
   if (!req) {
     // This branch handles HTTP requests.
-    logger.info("HTTP request");
+    logger.debug("HTTP request");
     return { user: null, container };
   }
 
@@ -172,7 +171,7 @@ export async function createContext({
       );
     services.userService = childContainer.get<UserService>(TYPES.UserService);
 
-    logger.info(`User: ${dbUser.username}`);
+    logger.debug("Authenticated user context created");
 
     return {
       user: effectiveUser,
