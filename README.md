@@ -100,49 +100,43 @@ cp invoice-frontend/.env.example invoice-frontend/.env
 
 ### Neon Postgres
 
-The root `neon.ts` declares Postgres for the linked Neon project. `neon deploy`
-pulls the pooled `DATABASE_URL`, direct `DATABASE_URL_UNPOOLED`, and `NEON_BRANCH`
-into root `.env.local` (or `.env` if it exists). These files and `.neon` are ignored
-by Git. The root commands load them before starting the backend, so the pulled
-database credentials take precedence over older package `.env` values. Explicit
-shell variables take precedence over files.
+The existing `invoice-app` project / `production` branch is already connected and
+migrated. Do not repeat provisioning, reset it, or run `neon deploy` as a startup step.
+`neon.ts` records the existing CLI policy (Auth disabled; newly created non-default
+branches expire after seven days). It is not a second application host.
+
+The ignored root `.env.local` holds the pooled `DATABASE_URL` and direct
+`DATABASE_URL_UNPOOLED`, both with `sslmode=require`, plus the application settings
+in root `.env.example`. Explicit shell variables take precedence, followed by root
+`.env.local`, root `.env`, and package dotenv files. Never put database credentials
+in `VITE_*` variables. Neither CI nor local PostgreSQL development needs Neon access.
 
 ```bash
 nvm use
 npm ci
-neon deploy
-# Add the local application settings from root .env.example to .env.local.
-npm run db:migrate
-# Optional: initialize/reset only the shared demoId workspace.
-npm run db:seed:demo
 npm run build
 npm start
+# Open http://localhost:5173/invoice-web-app/ (local preview only).
+# Or start just the compiled API:
+npm run start:backend
+# Read-only live database smoke check, no browser or running API required:
+npm run test:neon
 ```
 
-With the app running and both demo flags enabled, `npm run test:neon` runs a
-Chromium workflow through the built frontend and API, then independently checks
-invoice totals, status, and revisions in Neon. It removes its own test invoice and
-addresses and does not reset the demo workspace. It uses the frontend's installed
-Playwright browser (`cd invoice-frontend && npx playwright install chromium` if
-needed).
+Root build/start commands are optional local coordinators. The production backend
+still builds with `invoice-backend`'s existing TypeScript/alias commands and runs
+`node dist/src/index.js` in its existing Docker image. Prisma 6 remains the singleton
+PostgreSQL TCP client. `npm run db:migrate` and container startup use the direct URL
+only for the migration subprocess, preserving the pooled application URL. Local
+PostgreSQL needs only `DATABASE_URL`. The existing schema and migrations are unchanged.
+Do not run migrations or `db:seed:demo` against hosted data without approval; the seed
+resets the shared demo workspace.
 
-Open `http://localhost:5173/invoice-web-app/`; the API runs on port 8000.
-`npm start` serves the compiled backend and previews the built frontend locally.
-`npm run start:backend` starts only the compiled API. Neon provides the database;
-frontend and API hosting still use the existing deployment configuration.
-
-The existing singleton Prisma 6 client uses PostgreSQL over TCP, suitable for the
-long-running Express server. Application requests use the pooled URL. The root
-`db:migrate` command passes the direct URL to Prisma Migrate without changing the
-application URL. Existing migrations remain the schema source of truth. Database
-credentials are never configured as `VITE_*` variables. See Neon's
-[connection guidance](https://neon.com/docs/connect/choose-connection) and
-[Prisma 6 configuration](https://neon.com/docs/guides/prisma#using-prisma-6-or-earlier).
-
-The demo settings in root `.env.example` use the app's existing shared demo user.
-For normal Auth0 sign-in, disable both demo flags and provide the Auth0 settings
-documented in each package's `.env.example`. Update `VITE_BACKEND_URL` before
-building for a remote API and set `CORS_ORIGIN` to the deployed frontend's origin.
+`test:neon` now enforces PostgreSQL read-only transactions through both connections,
+compares committed migration checksums and reports the existing demo identity/counts.
+The previous browser CRUD version wrote records; use the isolated real-backend E2E
+gate below for CRUD/revision regression instead. Demo Mode works without Auth0.
+See [public demo deployment](docs/deployment.md) for hosted settings and approvals.
 
 ### Local demo and compiled containers
 
@@ -279,16 +273,20 @@ DEV_HTTPS=false npm --prefix invoice-frontend run preview
 CI runs frontend types/lint/Vitest/build, backend types/lint/unit/migrated PostgreSQL
 integration/build, the isolated serial Chromium gate, and production container
 build/startup checks. CodeQL remains separate. Ordinary PRs require no production
-secrets. The historical Fly.io/GitHub Pages deployment and Docker Hub push workflows
-have been retired; these workflows **do not publish or deploy**.
+secrets and do not deploy.
 
-Slice 6A prepares local release infrastructure. Hosted workflow execution, actual
-staging configuration, existing-data migration reconciliation, TLS/ingress routing,
-and real Auth0 login/refresh/logout verification belong to Slice 6B. The root
-`fly.toml` is an explicitly marked unsupported historical experiment; the backend
-manifest requires a separate release review before use. See the
-[Slice 6A audit](docs/audit/slice-6a-release-infrastructure.md) for exact evidence,
-configuration classification and remaining blockers. No live deployment was tested.
+The public demo reuses GitHub Pages, the existing Fly `invoice-backend` app and
+Neon `invoice-app` / `production`. The manual **Publish demo to GitHub Pages** workflow
+builds with `VITE_BACKEND_URL=https://invoice-backend.fly.dev` and `VITE_DEMO_MODE=true`.
+It runs only from `main`, after explicit operator dispatch. Fly deployment remains a
+separate approved CLI action from `invoice-backend/`, using its Dockerfile/manifest.
+The root `fly.toml` remains an unsupported historical experiment.
+
+Follow the [deployment audit and operator checklist](docs/deployment.md) before
+publishing. It records required secrets, existing Machine count, shared demo/reset
+behavior, cold starts, WebSocket limits and costs. No hosted deployment was performed
+as part of preparing these configurations. Historical infrastructure evidence remains
+in the [Slice 6A audit](docs/audit/slice-6a-release-infrastructure.md).
 
 ## Diagrams
 

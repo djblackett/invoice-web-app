@@ -1,0 +1,56 @@
+name: Publish demo to GitHub Pages
+
+# Deliberate operator action after backend deployment; no automatic publishing.
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: github-pages
+  cancel-in-progress: false
+
+jobs:
+  build:
+    if: github.ref == 'refs/heads/main'
+    runs-on: ubuntu-24.04
+    defaults:
+      run:
+        working-directory: invoice-frontend
+    env:
+      VITE_BACKEND_URL: https://invoice-backend.fly.dev
+      VITE_DEMO_MODE: "true"
+      VITE_DOMAIN: ""
+      VITE_CLIENT_ID: ""
+      VITE_AUDIENCE: ""
+      VITE_SCOPE: ""
+      VITE_REDIRECT_URI: ""
+    steps:
+      - uses: actions/checkout@v6
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@v6
+        with:
+          node-version-file: .nvmrc
+          package-manager-cache: false
+      - run: corepack yarn install --immutable
+      - run: npm run build
+      # BrowserRouter deep links need the SPA shell on Pages' 404 route.
+      - run: cp dist/index.html dist/404.html && touch dist/.nojekyll
+      - uses: actions/upload-pages-artifact@v4
+        with:
+          path: invoice-frontend/dist
+
+  deploy:
+    needs: build
+    runs-on: ubuntu-24.04
+    permissions:
+      pages: write
+      id-token: write
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - id: deployment
+        uses: actions/deploy-pages@v4

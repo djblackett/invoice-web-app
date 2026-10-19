@@ -31,16 +31,7 @@ if (task === "build") {
   run("invoice-backend", "build");
   run("invoice-frontend", "build");
 } else if (task === "migrate") {
-  if (!process.env.DATABASE_URL_UNPOOLED) {
-    throw new Error(
-      "Run neon deploy to pull DATABASE_URL_UNPOOLED before migrating.",
-    );
-  }
-  // Prisma 6 reads DATABASE_URL from schema.prisma. CLI schema operations use
-  // the direct connection; the application keeps using the pooled connection.
-  run("invoice-backend", "migrate:deploy", {
-    DATABASE_URL: process.env.DATABASE_URL_UNPOOLED,
-  });
+  run("invoice-backend", "migrate:deploy");
 } else if (task === "seed") {
   const result = spawnSync(process.execPath, ["prisma/seed.mjs"], {
     cwd: path.join(root, "invoice-backend"),
