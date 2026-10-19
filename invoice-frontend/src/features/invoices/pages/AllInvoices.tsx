@@ -14,14 +14,17 @@ import {
   INVOICE_ADDED,
 } from "@/features/invoices/graphql/invoice.queries.ts";
 import FadeOut from "@/features/shared/animations/FadeOutText.tsx";
+import { useDemoModeContext } from "@/features/shared/components/DemoModeProvider";
 
 const NewInvoice = React.lazy(() => import("./NewInvoice.tsx"));
 
 function AllInvoices() {
   const width = useWindowWidth();
   const { invoiceList, loading, error } = useInvoices();
+  const { isDemoMode } = useDemoModeContext();
 
   useSubscription<{ invoiceAdded: Invoice }>(INVOICE_ADDED, {
+    skip: isDemoMode,
     onData: ({ data, client }) => {
       const addedInvoice = (data.data as { invoiceAdded: Invoice })
         .invoiceAdded;

@@ -186,9 +186,9 @@ command argument, enable shell tracing, or supply them as Docker build arguments
 - HTTP GraphQL and `graphql-transport-ws` share port 8000 and path `/`; Fly terminates
   HTTPS/WSS, forwarding plain HTTP internally. CORS applies to HTTP, not WebSocket
   authentication. WS authentication still uses GraphQL connection parameters.
-- The current `invoiceAdded` subscription is ADMIN-only. Demo USER subscriptions
-  receive FORBIDDEN by design; demo CRUD works through HTTP. The frontend currently
-  attempts this subscription, so that authorization error can appear in DevTools.
+- The `invoiceAdded` subscription remains ADMIN-only. The frontend skips it in
+  Demo Mode, avoiding an unnecessary WebSocket connection and FORBIDDEN error for
+  the demo USER. Demo invoice queries and mutations continue through HTTP.
   Cross-visitor live synchronization is not guaranteed; refresh shows current data.
 - PubSub is in-process; restarts lose events and multiple Machines do not share
   subscriptions. Use one Machine for this release. Active sockets may keep it awake;
