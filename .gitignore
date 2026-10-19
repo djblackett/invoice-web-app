@@ -129,3 +129,4 @@ invoice-backend/.env.development
 **/.env.*
 !**/.env.example
 **/*.pem
+.neon

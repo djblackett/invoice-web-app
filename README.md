@@ -88,7 +88,8 @@ More details on my motivation and approach to writing this app can be found in t
 Use Linux/macOS Node **24.15.0** (`nvm use`, from `.nvmrc`), Corepack with the
 package-pinned Yarn **4.6.0**, Docker Compose v2, and PostgreSQL 16 server tools for
 the isolated browser gate. Use `corepack yarn`, since a global Yarn 1 ignores the
-package pin. There is no root package or root lockfile.
+package pin. The root npm package provides Neon configuration and commands that
+coordinate the two application packages; each application retains its Yarn lockfile.
 
 ```bash
 (cd invoice-backend && corepack yarn install --immutable && npm run prisma-generate)
@@ -96,6 +97,52 @@ package pin. There is no root package or root lockfile.
 cp invoice-backend/.env.example invoice-backend/.env
 cp invoice-frontend/.env.example invoice-frontend/.env
 ```
+
+### Neon Postgres
+
+The root `neon.ts` declares Postgres for the linked Neon project. `neon deploy`
+pulls the pooled `DATABASE_URL`, direct `DATABASE_URL_UNPOOLED`, and `NEON_BRANCH`
+into root `.env.local` (or `.env` if it exists). These files and `.neon` are ignored
+by Git. The root commands load them before starting the backend, so the pulled
+database credentials take precedence over older package `.env` values. Explicit
+shell variables take precedence over files.
+
+```bash
+nvm use
+npm ci
+neon deploy
+# Add the local application settings from root .env.example to .env.local.
+npm run db:migrate
+# Optional: initialize/reset only the shared demoId workspace.
+npm run db:seed:demo
+npm run build
+npm start
+```
+
+With the app running and both demo flags enabled, `npm run test:neon` runs a
+Chromium workflow through the built frontend and API, then independently checks
+invoice totals, status, and revisions in Neon. It removes its own test invoice and
+addresses and does not reset the demo workspace. It uses the frontend's installed
+Playwright browser (`cd invoice-frontend && npx playwright install chromium` if
+needed).
+
+Open `http://localhost:5173/invoice-web-app/`; the API runs on port 8000.
+`npm start` serves the compiled backend and previews the built frontend locally.
+`npm run start:backend` starts only the compiled API. Neon provides the database;
+frontend and API hosting still use the existing deployment configuration.
+
+The existing singleton Prisma 6 client uses PostgreSQL over TCP, suitable for the
+long-running Express server. Application requests use the pooled URL. The root
+`db:migrate` command passes the direct URL to Prisma Migrate without changing the
+application URL. Existing migrations remain the schema source of truth. Database
+credentials are never configured as `VITE_*` variables. See Neon's
+[connection guidance](https://neon.com/docs/connect/choose-connection) and
+[Prisma 6 configuration](https://neon.com/docs/guides/prisma#using-prisma-6-or-earlier).
+
+The demo settings in root `.env.example` use the app's existing shared demo user.
+For normal Auth0 sign-in, disable both demo flags and provide the Auth0 settings
+documented in each package's `.env.example`. Update `VITE_BACKEND_URL` before
+building for a remote API and set `CORS_ORIGIN` to the deployed frontend's origin.
 
 ### Local demo and compiled containers
 
