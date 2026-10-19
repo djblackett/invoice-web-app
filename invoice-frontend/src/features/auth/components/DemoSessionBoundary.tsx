@@ -3,7 +3,17 @@ import { useApolloClient } from "@apollo/client";
 import { useDemoModeContext } from "../../shared/components/DemoModeProvider";
 import { RESET_DEMO_DATA } from "../graphql/demo.mutations";
 
-export function DemoSessionBoundary({ children }: { children: ReactNode }) {
+type DemoSessionState = {
+  ready: boolean;
+  error: boolean;
+  retry: () => void;
+};
+
+export function DemoSessionBoundary({
+  children,
+}: {
+  children: ReactNode | ((state: DemoSessionState) => ReactNode);
+}) {
   const client = useApolloClient();
   const { isDemoMode, demoEntryId, initializeDemo } = useDemoModeContext();
   const [ready, setReady] = useState<number | null>(null);
@@ -32,14 +42,17 @@ export function DemoSessionBoundary({ children }: { children: ReactNode }) {
     };
   }, [client, isDemoMode, demoEntryId, initializeDemo, retry]);
 
-  if (!isDemoMode || ready === demoEntryId) return children;
+  const isReady = !isDemoMode || ready === demoEntryId;
+  const retryDemo = () => setRetry((value) => value + 1);
+  // The shell can stay mounted while query/mutation screens remain gated.
+  if (typeof children === "function")
+    return children({ ready: isReady, error, retry: retryDemo });
+  if (isReady) return children;
   if (error)
     return (
       <div role="alert">
         Demo could not be initialized.{" "}
-        <button onClick={() => setRetry((value) => value + 1)}>
-          Retry Demo
-        </button>
+        <button onClick={retryDemo}>Retry Demo</button>
       </div>
     );
   return <p role="status">Preparing demo invoices…</p>;

@@ -204,6 +204,189 @@ beforeEach(async () => {
   await prisma.senderAddress.deleteMany();
 });
 
+describe("invoice deletion integrity", () => {
+  const remove =
+    "mutation($id: String!) { removeInvoice(id: $id) { acknowledged } }";
+
+  async function allRows() {
+    return {
+      users: await prisma.user.findMany({ orderBy: { id: "asc" } }),
+      invoices: await prisma.invoice.findMany({
+        orderBy: { id: "asc" },
+        include: { ...include, revisions: { orderBy: { id: "asc" } } },
+      }),
+      clients: await prisma.clientAddress.findMany({ orderBy: { id: "asc" } }),
+      senders: await prisma.senderAddress.findMany({ orderBy: { id: "asc" } }),
+    };
+  }
+
+  async function unrelatedInvoice() {
+    const owner = await prisma.user.upsert({
+      where: { id: "deletion-other-user" },
+      create: {
+        id: "deletion-other-user",
+        username: "deletion-other@example.test",
+        role: Role.USER,
+      },
+      update: {},
+    });
+    const result = await execute(add, { ...base, id: "BB1001" });
+    expect(result.errors).toBeUndefined();
+    await prisma.invoice.update({
+      where: { id: "BB1001" },
+      data: { createdById: owner.id },
+    });
+  }
+
+  it("deletes both addresses, items and revisions while preserving unrelated rows and pre-existing orphans", async () => {
+    await unrelatedInvoice();
+    // Detached rows have no ownership metadata: never sweep them globally.
+    await prisma.clientAddress.create({ data: address });
+    await prisma.senderAddress.create({ data: address });
+    const before = await allRows();
+    expect(
+      (await execute(add, { ...base, id: "AA1001" })).errors,
+    ).toBeUndefined();
+    const created = (await state("AA1001")).invoice!;
+    expect(created.items).toHaveLength(2);
+    expect((await state("AA1001")).revisions).toHaveLength(1);
+    expect(created.clientAddressId).not.toBeNull();
+    expect(created.senderAddressId).not.toBeNull();
+
+    const result = await execute(remove, { id: "AA1001" });
+    expect(result.errors).toBeUndefined();
+    expect(result.data?.["removeInvoice"]).toEqual({ acknowledged: true });
+    expect(await state("AA1001")).toEqual({ invoice: null, revisions: [] });
+    expect(await prisma.item.count({ where: { invoiceId: "AA1001" } })).toBe(0);
+    expect(await allRows()).toEqual(before);
+  });
+
+  it("rejects cross-user deletion without changing any rows", async () => {
+    await unrelatedInvoice();
+    const before = await allRows();
+    const result = await execute(remove, { id: "BB1001" });
+    expect(result.data?.["removeInvoice"]).toBeNull();
+    expect(result.errors).toMatchObject([
+      { message: "Invoice not found", extensions: { code: "NOT_FOUND" } },
+    ]);
+    expect(await allRows()).toEqual(before);
+  });
+
+  it("preserves the missing-invoice error without changing rows", async () => {
+    await unrelatedInvoice();
+    const before = await allRows();
+    const result = await execute(remove, { id: "AA1001" });
+    expect(result.data?.["removeInvoice"]).toBeNull();
+    expect(result.errors).toMatchObject([
+      { message: "Invoice not found", extensions: { code: "NOT_FOUND" } },
+    ]);
+    expect(await allRows()).toEqual(before);
+  });
+
+  it.each([{ clientAddress: address }, { senderAddress: address }, {}])(
+    "handles optional address relations: %j",
+    async (addresses) => {
+      const {
+        clientAddress: _client,
+        senderAddress: _sender,
+        items,
+        ...fields
+      } = base;
+      await prisma.invoice.create({
+        data: {
+          ...fields,
+          id: "AA1001",
+          createdBy: { connect: { id: user.id } },
+          items: { create: items },
+          ...("clientAddress" in addresses && {
+            clientAddress: { create: addresses.clientAddress },
+          }),
+          ...("senderAddress" in addresses && {
+            senderAddress: { create: addresses.senderAddress },
+          }),
+        },
+      });
+      expect((await execute(remove, { id: "AA1001" })).errors).toBeUndefined();
+      expect(await prisma.invoice.count()).toBe(0);
+      expect(await prisma.clientAddress.count()).toBe(0);
+      expect(await prisma.senderAddress.count()).toBe(0);
+    },
+  );
+
+  it("keeps captured addresses if another invoice references them at cleanup time", async () => {
+    await seed();
+    await unrelatedInvoice();
+    const before = await allRows();
+    // @unique prevents simultaneous sharing. A PostgreSQL trigger transfers
+    // the freed IDs after DELETE, before cleanup, to exercise the relation guard
+    // with real constraints and another user's invoice still referencing them.
+    await prisma.$executeRawUnsafe(`
+      CREATE FUNCTION transfer_deleted_addresses() RETURNS trigger AS $$
+      BEGIN
+        UPDATE "Invoice" SET "clientAddressId" = OLD."clientAddressId",
+          "senderAddressId" = OLD."senderAddressId" WHERE id = 'BB1001';
+        RETURN OLD;
+      END; $$ LANGUAGE plpgsql
+    `);
+    await prisma.$executeRawUnsafe(`
+      CREATE TRIGGER transfer_deleted_addresses AFTER DELETE ON "Invoice"
+      FOR EACH ROW EXECUTE FUNCTION transfer_deleted_addresses()
+    `);
+    try {
+      const result = await execute(remove, { id: "AA1001" });
+      expect(result.errors).toBeUndefined();
+      const after = await allRows();
+      expect(after.clients).toEqual(before.clients);
+      expect(after.senders).toEqual(before.senders);
+      expect(after.invoices).toHaveLength(1);
+      expect(after.invoices[0]).toMatchObject({
+        id: "BB1001",
+        createdById: "deletion-other-user",
+        clientAddressId: before.invoices[0]!.clientAddressId,
+        senderAddressId: before.invoices[0]!.senderAddressId,
+      });
+    } finally {
+      await prisma.$executeRawUnsafe(
+        'DROP TRIGGER transfer_deleted_addresses ON "Invoice"',
+      );
+      await prisma.$executeRawUnsafe(
+        "DROP FUNCTION transfer_deleted_addresses()",
+      );
+    }
+  });
+
+  it("rolls back invoice, cascades and first address cleanup when the second cleanup fails", async () => {
+    await seed();
+    await unrelatedInvoice();
+    const before = await allRows();
+    await prisma.$executeRawUnsafe(`
+      CREATE FUNCTION reject_sender_cleanup() RETURNS trigger AS $$
+      BEGIN RAISE EXCEPTION 'synthetic address cleanup failure'; END;
+      $$ LANGUAGE plpgsql
+    `);
+    await prisma.$executeRawUnsafe(`
+      CREATE TRIGGER reject_sender_cleanup BEFORE DELETE ON "SenderAddress"
+      FOR EACH ROW EXECUTE FUNCTION reject_sender_cleanup()
+    `);
+    try {
+      const result = await execute(remove, { id: "AA1001" });
+      expect(result.data?.["removeInvoice"]).toBeNull();
+      expect(result.errors).toMatchObject([
+        {
+          message: "Invoice could not be removed",
+          extensions: { code: "INTERNAL_SERVER_ERROR" },
+        },
+      ]);
+      expect(await allRows()).toEqual(before);
+    } finally {
+      await prisma.$executeRawUnsafe(
+        'DROP TRIGGER reject_sender_cleanup ON "SenderAddress"',
+      );
+      await prisma.$executeRawUnsafe("DROP FUNCTION reject_sender_cleanup()");
+    }
+  });
+});
+
 describe("creation totals", () => {
   for (const { label, input } of [
     {

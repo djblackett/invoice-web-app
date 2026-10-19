@@ -95,6 +95,51 @@ describe("deliberate demo entry", () => {
     expect(mocks.clearStore).toHaveBeenCalledTimes(1);
   });
 
+  it("exposes a persistent shell but stays unready until reset and cache clearing complete", async () => {
+    let finishReset: (value: {
+      data: { resetDemoData: boolean };
+    }) => void = () => {};
+    let finishClear: () => void = () => {};
+    mocks.mutate.mockReturnValue(
+      new Promise((resolve) => {
+        finishReset = resolve;
+      }),
+    );
+    mocks.clearStore.mockReturnValue(
+      new Promise<void>((resolve) => {
+        finishClear = resolve;
+      }),
+    );
+    render(
+      <StrictMode>
+        <DemoModeProvider>
+          <DemoSessionBoundary>
+            {({ ready }) => (
+              <>
+                <header>Persistent dashboard shell</header>
+                {ready && <div>Canonical invoices ready</div>}
+              </>
+            )}
+          </DemoSessionBoundary>
+        </DemoModeProvider>
+      </StrictMode>,
+    );
+    const header = screen.getByRole("banner");
+    await waitFor(() => expect(mocks.mutate).toHaveBeenCalledTimes(1));
+    expect(
+      screen.queryByText("Canonical invoices ready"),
+    ).not.toBeInTheDocument();
+    finishReset({ data: { resetDemoData: true } });
+    await waitFor(() => expect(mocks.clearStore).toHaveBeenCalledTimes(1));
+    expect(
+      screen.queryByText("Canonical invoices ready"),
+    ).not.toBeInTheDocument();
+    finishClear();
+    await screen.findByText("Canonical invoices ready");
+    expect(screen.getByRole("banner")).toBe(header);
+    expect(mocks.mutate).toHaveBeenCalledTimes(1);
+  });
+
   it("preserves a successfully initialized entry when the provider remounts after reload", async () => {
     const first = render(
       <DemoModeProvider>

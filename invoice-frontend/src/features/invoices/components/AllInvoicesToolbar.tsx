@@ -20,21 +20,23 @@ const FilterDropDown = React.lazy(() => import("./FilterDropDown.tsx"));
 
 type AllInvoicesToolbarProps = {
   invoiceList: Invoice[];
+  loading?: boolean;
+  loadingLabel?: string;
 };
 
-function AllInvoicesToolbar({ invoiceList }: AllInvoicesToolbarProps) {
+// Presentation only: safe to render before the demo has initialized.
+export function InvoiceListToolbar({
+  invoiceList,
+  loading = false,
+  loadingLabel = "Loading invoices…",
+  onNewInvoice,
+}: AllInvoicesToolbarProps & { onNewInvoice: () => void }) {
   const [isFilterOpen, setIsFilterOpen] = useState(false);
   const [filterText, setFilterText] = useState("total");
   const width = useWindowWidth();
 
-  const { setIsNewInvoiceOpen, isNewInvoiceOpen } = useNewInvoiceContext();
-
-  const openNewInvoice = () => {
-    setIsNewInvoiceOpen(!isNewInvoiceOpen);
-  };
-
   const openFilter = () => {
-    if (!isFilterOpen) setIsFilterOpen(true);
+    if (!loading && !isFilterOpen) setIsFilterOpen(true);
   };
 
   const filter = useSelector(selectFilter);
@@ -58,13 +60,19 @@ function AllInvoicesToolbar({ invoiceList }: AllInvoicesToolbarProps) {
       <TitleBox>
         <Title data-testid="invoicesTitle">Invoices</Title>
         <InvoicesLeft>
-          <span className="wideScreenText">There are </span>
-          {invoiceList.length || invoiceNumber}{" "}
-          <span className="wideScreenText"> {filterText} </span>
-          invoices
+          {loading ? (
+            loadingLabel
+          ) : (
+            <>
+              <span className="wideScreenText">There are </span>
+              {invoiceList.length || invoiceNumber}{" "}
+              <span className="wideScreenText"> {filterText} </span>
+              invoices
+            </>
+          )}
         </InvoicesLeft>
       </TitleBox>
-      <ControlBox>
+      <ControlBox as="fieldset" disabled={loading} aria-label="Invoice actions">
         <FilterButton
           onClick={openFilter}
           data-testid="filterButton"
@@ -83,9 +91,19 @@ function AllInvoicesToolbar({ invoiceList }: AllInvoicesToolbarProps) {
             />
           </Suspense>
         </FilterButton>
-        <NewInvoiceButton handleClick={openNewInvoice} />
+        <NewInvoiceButton handleClick={onNewInvoice} />
       </ControlBox>
     </GridContainer>
+  );
+}
+
+function AllInvoicesToolbar(props: AllInvoicesToolbarProps) {
+  const { setIsNewInvoiceOpen } = useNewInvoiceContext();
+  return (
+    <InvoiceListToolbar
+      {...props}
+      onNewInvoice={() => setIsNewInvoiceOpen((open) => !open)}
+    />
   );
 }
 

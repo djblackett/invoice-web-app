@@ -6,7 +6,12 @@ import { useDemoModeContext } from "./DemoModeProvider";
 
 const AvatarBox = styled.div`
   height: 100%;
-  width: 80px;
+  width: 48px;
+  flex-shrink: 0;
+
+  @media (min-width: 600px) {
+    width: 80px;
+  }
   display: flex;
   flex-direction: column;
   justify-content: center;
@@ -16,6 +21,7 @@ const AvatarBox = styled.div`
   padding-bottom: 5px;
 
   @media (min-width: 1200px) {
+    height: 61px;
     border-left: initial;
     width: 100%;
     border-top: 1px solid #494e6e;

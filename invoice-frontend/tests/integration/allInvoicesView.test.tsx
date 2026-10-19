@@ -20,23 +20,30 @@ describe("First integration test", () => {
   });
 
   it("should render the loading state", () => {
-    render(<AllInvoicesView invoiceList={[]} width={1200} loading={true} />);
+    render(
+      <AllInvoicesView invoiceList={invoices} width={1200} loading={true} />,
+    );
     const loadingGrid = screen.getByTestId("grid-loading");
     expect(loadingGrid).toBeInTheDocument();
+    expect(screen.queryAllByTestId("invoice-card")).toHaveLength(0);
   });
 
   it("should render the error state", () => {
     const error = new Error("Test error");
+    const onRetry = vi.fn();
     render(
       <AllInvoicesView
         invoiceList={[]}
         width={1200}
         loading={false}
         error={error}
+        onRetry={onRetry}
       />,
     );
-    const errorMessage = screen.getByText("Test error");
-    expect(errorMessage).toBeInTheDocument();
+    const errorMessage = screen.getByRole("alert");
+    expect(errorMessage).toHaveTextContent("Invoices could not be loaded.");
+    fireEvent.click(screen.getByRole("button", { name: "Retry", exact: true }));
+    expect(onRetry).toHaveBeenCalledTimes(1);
   });
 
   it("should render the empty list state", async () => {
@@ -45,10 +52,10 @@ describe("First integration test", () => {
     expect(emptyList).toBeInTheDocument();
   });
 
-  it("should render the waking up the backend message", () => {
+  it("should render a useful loading message", () => {
     render(<AllInvoicesView invoiceList={[]} width={1200} loading={true} />);
     const wakingUpMessage = screen.getByText(
-      "Waking up the backend containers",
+      "This can take a moment while the demo wakes up.",
     );
     expect(wakingUpMessage).toBeInTheDocument();
   });

@@ -15,6 +15,8 @@ import { GET_INVOICE_BY_ID } from "../graphql/invoice.queries.ts";
 import React from "react";
 import { Button } from "@/features/shared/components/buttons/MarkAsPaidButton.tsx";
 
+import InvoiceContentStatus from "../components/InvoiceContentStatus";
+
 const EditInvoice = React.lazy(() => import("./EditInvoice.tsx"));
 const DeleteModal = React.lazy(() => import("../components/DeleteModal.tsx"));
 const FullInvoice = React.lazy(() => import("../components/FullInvoice.tsx"));
@@ -43,7 +45,11 @@ function ViewInvoice() {
   };
 
   if (loading) {
-    return <h2>Loading</h2>;
+    return (
+      <ViewContainer>
+        <InvoiceContentStatus />
+      </ViewContainer>
+    );
   }
 
   if (error) {

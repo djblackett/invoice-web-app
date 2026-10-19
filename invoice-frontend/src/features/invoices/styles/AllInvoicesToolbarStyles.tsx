@@ -77,6 +77,18 @@ export const InvoicesLeft = styled.p`
 `;
 
 export const ControlBox = styled.div`
+  &:disabled {
+    opacity: 0.6;
+  }
+
+  &:disabled button {
+    cursor: wait;
+  }
+
+  border: 0;
+  padding: 0;
+  margin: 0;
+  min-width: 0;
   display: flex;
   justify-self: center;
   flex-direction: column;
