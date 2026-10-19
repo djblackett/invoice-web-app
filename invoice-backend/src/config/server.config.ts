@@ -3,6 +3,7 @@ import { urlencoded } from "body-parser";
 import type { Application, NextFunction, Request, Response } from "express";
 import express from "express";
 import cors from "cors";
+import { createCorsOptions } from "./cors.config";
 import { BaseException, InternalServerException } from "./exception.config";
 import container from "./inversify.config";
 import type { Logger } from "./logger.config";
@@ -27,22 +28,7 @@ logger.info(`Cert Directory: ${CERT_DIR}`);
 logger.info(`Demo Mode: ${process.env["DEMO_MODE"]}`);
 
 export function serverConfig(app: Application) {
-  if (NODE_ENV === "production") {
-    app.use(
-      cors({
-        origin: process.env["CORS_ORIGIN"] ?? "https://djblackett.github.io", // GitHub Pages URL as default
-        methods: "GET,HEAD,PUT,PATCH,POST,DELETE,OPTIONS",
-        credentials: true,
-      }),
-    );
-  } else {
-    app.use(
-      cors({
-        origin: process.env["CORS_ORIGIN"] ?? "*",
-        credentials: true,
-      }),
-    );
-  }
+  app.use(cors(createCorsOptions(NODE_ENV, process.env["CORS_ORIGIN"])));
 
   app.use(express.json());
   app.use((req, _, next) => {

@@ -141,6 +141,20 @@ Container names such as `backend-dev` are not browser-resolvable addresses. Set 
 exact `CORS_ORIGIN`, including scheme/port, without a path or comma-separated list.
 Both Demo flags default to false; enable them deliberately only for an intended demo.
 
+When `CORS_ORIGIN` is unset, non-production HTTP CORS allows only
+`http://localhost:5173` and `https://localhost:5173`, matching Vite's documented
+HTTP/demo and HTTPS workflows. Production retains its historical default
+`https://djblackett.github.io`; set the exact frontend origin for every release.
+Setting `CORS_ORIGIN` replaces these defaults with that single origin, including
+an exact custom local port when needed. Use the browser's serialized HTTP(S)
+origin (no trailing slash). Empty/malformed values, paths, lists, `null` and
+wildcards fail startup. Wildcards are not accepted with credentialed CORS.
+Unapproved origins and `Origin: null` receive no CORS authorization headers.
+Requests without `Origin`, including health probes, continue normally without
+CORS headers. CORS does not replace API authorization or restrict WebSocket
+handshakes. The browser E2E runner supplies its exact dynamic frontend origin
+through `CORS_ORIGIN`, so it needs no additional default ports.
+
 ### Source development
 
 ```bash
