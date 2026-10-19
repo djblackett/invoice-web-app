@@ -348,9 +348,29 @@ export class PrismaInvoiceRepository implements IInvoiceRepo {
 
   async delete(id: string): Promise<boolean> {
     try {
-      await this.prisma.invoice.delete({
-        where: { id },
-      });
+      await this.prisma.$transaction(
+        async (tx) => {
+          // Capture the IDs from the deleted row; FK cascades only remove
+          // items/revisions, since the invoice holds the address foreign keys.
+          const { clientAddressId, senderAddressId } = await tx.invoice.delete({
+            where: { id },
+            select: { clientAddressId: true, senderAddressId: true },
+          });
+          if (clientAddressId !== null) {
+            await tx.clientAddress.deleteMany({
+              where: { id: clientAddressId, Invoice: { is: null } },
+            });
+          }
+          if (senderAddressId !== null) {
+            await tx.senderAddress.deleteMany({
+              where: { id: senderAddressId, Invoice: { is: null } },
+            });
+          }
+        },
+        // A concurrent address reassignment must not be cascaded away using
+        // a stale reference check. Conflicts fail and roll back the deletion.
+        { isolationLevel: Prisma.TransactionIsolationLevel.Serializable },
+      );
       return true;
     } catch (e) {
       console.error(e);

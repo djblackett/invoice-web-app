@@ -671,6 +671,57 @@ describe("canonical demo reset", () => {
     expect(await h.db().senderAddress.count()).toBe(senders);
   });
 
+  it("does not accumulate orphan addresses across repeated create, delete and reset cycles", async () => {
+    const canonical = await canonicalState();
+    const real = await realState();
+    let before = await allRows();
+    const counts = async () => ({
+      invoices: await h.db().invoice.count(),
+      items: await h.db().item.count(),
+      revisions: await h.db().invoiceRevision.count(),
+      clients: await h.db().clientAddress.count(),
+      senders: await h.db().senderAddress.count(),
+    });
+    const expected = await counts();
+    for (let cycle = 0; cycle < 3; cycle++) {
+      const created = await h.execute(
+        `mutation($client: ClientInfo, $sender: SenderInfo) {
+          addInvoice(id: "DD1001", status: "draft", clientAddress: $client,
+            senderAddress: $sender, items: [{ name: "Synthetic", quantity: 2, price: 3 }]) { id }
+        }`,
+        { client: address, sender: address },
+      );
+      expect(created.errors).toBeUndefined();
+      expect(created.data?.["addInvoice"]).toEqual({ id: "DD1001" });
+      expect(await counts()).toEqual({
+        invoices: expected.invoices + 1,
+        items: expected.items + 1,
+        revisions: expected.revisions + 1,
+        clients: expected.clients + 1,
+        senders: expected.senders + 1,
+      });
+      const deleted = await h.execute(operations.removeInvoice, {
+        id: "DD1001",
+      });
+      expect(deleted.errors).toBeUndefined();
+      expect(deleted.data?.["removeInvoice"]).toEqual({ acknowledged: true });
+      expect(await allRows()).toEqual(before);
+      expect((await h.execute(reset)).errors).toBeUndefined();
+      expect(await counts()).toEqual(expected);
+      expect(await canonicalState()).toEqual(canonical);
+      expect(await realState()).toEqual(real);
+      expect(
+        await h.db().clientAddress.count({ where: { Invoice: { is: null } } }),
+      ).toBe(0);
+      expect(
+        await h.db().senderAddress.count({ where: { Invoice: { is: null } } }),
+      ).toBe(0);
+      // Reset generates new canonical address IDs; compare the next deletion
+      // against its own complete baseline, not the prior reset's IDs.
+      before = await allRows();
+    }
+  });
+
   for (const actor of [userA, userB, admin, demo]) {
     it(`rejects reset from normal Auth0 identity ${actor.id} even with matching demoId`, async () => {
       const before = await allRows();

@@ -454,10 +454,14 @@ describe("Prisma Query: updateInvoice", () => {
 });
 
 describe("Prisma Query: deleteInvoice", () => {
-  test("should return true when invoice is successfully deleted", async () => {
-    // @ts-expect-error Stumped by this TS error - it's like it's using stale cached type defs
-    prisma.invoice.delete.mockResolvedValue(true);
+  beforeEach(() => {
+    prisma.$transaction.mockImplementation(async (callback) =>
+      callback(prisma),
+    );
+    prisma.invoice.delete.mockResolvedValue(mockResponseWithIds);
+  });
 
+  test("should return true when invoice is successfully deleted", async () => {
     const deletedInvoice = await mockRepo.delete("D64FUO");
 
     expect(deletedInvoice).toStrictEqual(true);
@@ -490,6 +494,7 @@ describe("Prisma Query: deleteInvoice", () => {
     expect(deletedInvoice).toStrictEqual(true);
     expect(prisma.invoice.delete).toHaveBeenCalledWith({
       where: { id: "D64FUO" },
+      select: { clientAddressId: true, senderAddressId: true },
     });
   });
 });
