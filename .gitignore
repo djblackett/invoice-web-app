@@ -130,3 +130,6 @@ invoice-backend/.env.development
 !**/.env.example
 **/*.pem
 .neon
+
+
+/portfolio-export/
