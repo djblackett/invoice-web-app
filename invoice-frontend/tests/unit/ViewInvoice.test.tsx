@@ -72,7 +72,7 @@ describe("ViewInvoice", () => {
         </MemoryRouter>
       </MockedProvider>,
     );
-    expect(screen.getByText("Loading")).toBeInTheDocument();
+    expect(screen.getByText("Loading invoices…")).toBeInTheDocument();
   });
 
   it("renders error state", async () => {
@@ -132,7 +132,7 @@ describe("ViewInvoice", () => {
         </MemoryRouter>
       </MockedProvider>,
     );
-    expect(screen.getByText("Loading")).toBeInTheDocument();
+    expect(screen.getByText("Loading invoices…")).toBeInTheDocument();
   });
 
   it("renders error state", async () => {

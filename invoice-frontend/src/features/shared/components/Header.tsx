@@ -226,9 +226,10 @@ const sun = (
 type HeaderProps = {
   theme: string;
   themeToggler: () => void;
+  demoReady?: boolean;
 };
 
-function Header({ themeToggler, theme }: HeaderProps) {
+function Header({ themeToggler, theme, demoReady = true }: HeaderProps) {
   const { logout, isAuthenticated } = useAuth();
   const location = useLocation();
   const { isDemoMode, setIsDemoMode } = useDemoModeContext();
@@ -263,7 +264,9 @@ function Header({ themeToggler, theme }: HeaderProps) {
           </Link>
         </Logo>
         <DemoAndLogoutContainer>
-          {isDemoMode && location.pathname === "/invoices" && <DemoButton />}
+          {isDemoMode && (location.pathname === "/invoices" || !demoReady) && (
+            <DemoButton disabled={!demoReady} />
+          )}
 
           {isAuthenticated && (
             <LogoutButton

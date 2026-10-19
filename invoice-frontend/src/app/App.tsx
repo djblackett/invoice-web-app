@@ -14,6 +14,8 @@ import {
 import { LazyMotion } from "motion/react";
 import { DemoSessionBoundary } from "../features/auth/components/DemoSessionBoundary";
 
+import InvoiceDashboardPlaceholder from "@/features/invoices/components/InvoiceDashboardPlaceholder";
+
 const WelcomePage = React.lazy(() => import("@/pages/WelcomePage"));
 const ProtectedRoute = React.lazy(
   () => import("@/features/shared/components/ProtectedRoute.tsx"),
@@ -59,7 +61,7 @@ function App() {
         {
           index: true,
           element: (
-            <Suspense fallback={<div>Loading...</div>}>
+            <Suspense fallback={<InvoiceDashboardPlaceholder />}>
               <WelcomePage />
             </Suspense>
           ),
@@ -67,7 +69,7 @@ function App() {
         {
           path: "login",
           element: (
-            <Suspense fallback={<div>Loading...</div>}>
+            <Suspense fallback={<InvoiceDashboardPlaceholder />}>
               <MemoizedLogin />
             </Suspense>
           ),
@@ -75,7 +77,7 @@ function App() {
         {
           path: "invoices",
           element: (
-            <Suspense fallback={<div>Loading...</div>}>
+            <Suspense fallback={<InvoiceDashboardPlaceholder />}>
               <ProtectedRoute>
                 <AllInvoices />
               </ProtectedRoute>
@@ -85,7 +87,7 @@ function App() {
         {
           path: "invoices/:id",
           element: (
-            <Suspense fallback={<div>Loading...</div>}>
+            <Suspense fallback={<InvoiceDashboardPlaceholder />}>
               <ProtectedRoute>
                 <ViewInvoice />
               </ProtectedRoute>
@@ -95,7 +97,7 @@ function App() {
         {
           path: "/*",
           element: (
-            <Suspense fallback={<div>Loading...</div>}>
+            <Suspense fallback={<InvoiceDashboardPlaceholder />}>
               <div>404 Not Found</div>
             </Suspense>
           ),
@@ -112,17 +114,33 @@ function App() {
         <GlobalStyles />
         <LazyMotion features={loadFeatures}>
           <DemoSessionBoundary>
-            <Main id="container" data-testid="container">
-              <Header themeToggler={themeToggler} theme={theme} />
-              {element}
-            </Main>
-            <StyledToastContainer
-              position="top-right"
-              colorMode={theme}
-              autoClose={3000}
-              limit={1}
-              pauseOnFocusLoss={false}
-            />
+            {({ ready, error, retry }) => (
+              <>
+                <Main id="container" data-testid="container">
+                  <Header
+                    themeToggler={themeToggler}
+                    theme={theme}
+                    demoReady={ready}
+                  />
+                  {ready ? (
+                    element
+                  ) : (
+                    <InvoiceDashboardPlaceholder
+                      initializing
+                      error={error}
+                      onRetry={retry}
+                    />
+                  )}
+                </Main>
+                <StyledToastContainer
+                  position="top-right"
+                  colorMode={theme}
+                  autoClose={3000}
+                  limit={1}
+                  pauseOnFocusLoss={false}
+                />
+              </>
+            )}
           </DemoSessionBoundary>
         </LazyMotion>
       </ThemeProvider>

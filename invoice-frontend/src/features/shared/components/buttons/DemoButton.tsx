@@ -24,6 +24,11 @@ const Button = styled.button`
     background-color: #9277ff;
   }
 
+  &:disabled {
+    opacity: 0.6;
+    cursor: wait;
+  }
+
   @media (min-width: 1200px) {
     width: calc(100% - 16px);
     margin-left: 0;
@@ -32,7 +37,7 @@ const Button = styled.button`
   }
 `;
 
-function DemoButton() {
+function DemoButton({ disabled = false }: { disabled?: boolean }) {
   const apolloClient = useApolloClient();
   const [reset, { loading }] = useMutation<{ resetDemoData: boolean }>(
     RESET_DEMO_DATA,
@@ -56,7 +61,7 @@ function DemoButton() {
         onClick={() => {
           void handleClick();
         }}
-        disabled={loading}
+        disabled={disabled || loading}
       >
         {loading ? "Resetting…" : "Reset Demo"}
       </Button>

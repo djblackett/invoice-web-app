@@ -17,7 +17,7 @@ describe("AllInvoices Component", () => {
     vi.resetModules();
   });
 
-  it("renders welcome text with correct font-weight when authenticated", () => {
+  it("renders the dashboard heading without a shifting welcome banner when authenticated", () => {
     // Mock authenticated user
     (useAuth as Mock).mockReturnValue({
       isAuthenticated: true,
@@ -27,9 +27,8 @@ describe("AllInvoices Component", () => {
 
     render(<AllInvoices />);
 
-    const welcomeText = screen.getByText(/Welcome testuser@example.com/i);
-    expect(welcomeText).toBeInTheDocument();
-    expect(welcomeText).toHaveStyle("font-weight: 700");
+    expect(screen.getByTestId("invoicesTitle")).toBeInTheDocument();
+    expect(screen.queryByText(/Welcome/i)).not.toBeInTheDocument();
   });
 
   it("shows loading text when authentication is loading", () => {

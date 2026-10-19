@@ -7,12 +7,11 @@ import { Invoice } from "@/features/invoices/types/invoiceTypes.ts";
 
 const useInvoices = () => {
   const filter = useSelector(selectFilter);
-  const { data, loading, error } = useQuery<{ allInvoices: Invoice[] }>(
-    ALL_INVOICES,
-    {
-      errorPolicy: "all",
-    },
-  );
+  const { data, loading, error, refetch } = useQuery<{
+    allInvoices: Invoice[];
+  }>(ALL_INVOICES, {
+    errorPolicy: "all",
+  });
 
   const invoiceList = useMemo(() => {
     if (!data) return [];
@@ -29,7 +28,7 @@ const useInvoices = () => {
     });
   }, [data, filter]);
 
-  return { invoiceList, loading, error };
+  return { invoiceList, loading, error, refetch };
 };
 
 export default useInvoices;

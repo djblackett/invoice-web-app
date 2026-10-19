@@ -1,83 +1,138 @@
-# Toast and dashboard presentation verification
+# Progressive loading and toast presentation verification
 
 Verified locally on 2026-10-19, starting from main (`eec166f`). All browser work
 uses the existing E2E runner's disposable PostgreSQL 16 cluster under `/tmp`,
 production-mode local backend, and built Vite application served under
-`/invoice-web-app/`. No hosted database, deployment, API, schema, authentication,
-or infrastructure changes are included.
+`/invoice-web-app/`. No hosted database, deployment, API, schema, authentication
+rules, or infrastructure changes are included.
 
-## Cause and fix
+## Root causes
 
-The original initial CSS bundle omitted React Toastify's stylesheet. Its only
-imports belonged to invoice form/detail modules. Reset Demo on a fresh dashboard
-therefore rendered a static, unstyled notification: a 300px desktop success SVG
-(390px on mobile), plain message text, and an unstyled close button. The container
-occupied the dashboard's normal flow and pushed the content down.
+1. `DemoSessionBoundary` replaced its entire subtree until reset completed. Since
+   that subtree included `Main`, `Header`, and all routes, visitors saw only plain
+   initialization text while the backend was waking up.
+2. Toastify CSS belonged to lazy invoice modules, rather than the initial bundle.
+   Reset Demo could render a static, unstyled notification with a 300px desktop
+   success SVG (390px on mobile), plain text, and an unstyled close button. The
+   container occupied the dashboard flow and pushed the content down.
+3. The welcome banner changed height after loading. Its collapse moved the invoice
+   list despite no user action. The settled list spacing in the repository's
+   desktop screenshots depended on that banner's remaining margins.
+4. The malformed web-font source list could be masked by a locally installed font.
+   The header lacked explicit top/left anchoring, and its controls could overflow.
 
-- Load Toastify CSS once from `src/index.tsx`; remove both feature-level imports.
-- Move the toast container outside `Main`, remove the unused three-row grid, and
-  explicitly use fixed positioning and a compact 320px width with viewport gutters.
-- Use upper-right notifications with space for the horizontal header and page
-  actions at smaller widths. One notification is visible at a time; Reset Demo
-  notifications dismiss after three seconds. Existing per-action durations stay
-  intact. Close buttons and hover-to-pause remain available.
-- Centralize notification position and theme. Preserve Toastify v9's runtime
-  defaults with React 19, and separate its theme prop from styled-components'
-  theme prop. Toast text/background and close-button colors follow the app theme.
-- Anchor the header at `(0, 0)`, fit its controls at 390px, constrain Reset Demo to
-  the desktop sidebar, and give sidebar theme/avatar controls explicit heights.
-- Correct the malformed `@font-face` source list and regular weight; use `swap`.
-  Vite rewrites the public font URL to
-  `/invoice-web-app/assets/LeagueSpartan-Regular.ttf`. Remove `local()` so a
-  developer's installed font cannot hide a broken web-font request.
+## Repair and preserved contracts
+
+- Expose boundary readiness through a render callback. Keep the shell mounted;
+  mount invoice routes only after reset **and** cache clearing complete. The
+  original initialization effect, reset-on-entry lifecycle, session persistence,
+  and deduplicated entry promise remain unchanged.
+- Render the existing dashboard toolbar immediately, with an unknown count and
+  disabled invoice actions. Keep Reset Demo disabled during initialization while
+  leaving theme switching and logout available.
+- Reuse the existing purple Grid indicator in the invoice region, with decorative
+  placeholders sized to the established cards. Use the same loading presentation
+  during the subsequent invoice query. Initialization failure provides an alert
+  and Retry Demo within the dashboard; invoice-query failure also offers retry.
+- Remove the collapsing welcome banner and preserve its settled 16px spacing at
+  tablet/desktop widths explicitly in `InvoiceGrid`. Compare against
+  `diagrams/fm-screenshot.png`, `fm-mobile-dark.png`, and `frontend-screenshot.png`:
+  preserve the original cards, toolbar, purple accents, and light/dark layouts.
+- Load Toastify CSS once in the entry point, remove lazy imports, and keep compact
+  fixed notifications outside the dashboard flow. Centralize position/theme,
+  preserve Toastify v9's defaults under React 19, and avoid its theme-prop collision
+  with styled-components. Reset notifications dismiss after three seconds;
+  existing per-action durations remain intact.
+- Correct the regular font's `@font-face` syntax and use `swap`. Vite emits
+  `/invoice-web-app/assets/LeagueSpartan-Regular.ttf`; remove `local()` so the
+  browser regression must load the real asset. Fit header/sidebar controls within
+  their bounds at the requested widths.
 
 ## Files changed
 
-Paths below are relative to `invoice-frontend/` unless noted.
+Paths are relative to `invoice-frontend/` unless noted.
 
-| Files | Change |
+| Files | Purpose |
 | --- | --- |
-| `src/index.tsx` | Initial Toastify CSS import |
-| `src/app/App.tsx`, `src/features/shared/styles/AppStyles.tsx` | Toast placement, sizing, theme, dismissal; remove spare dashboard grid |
-| `src/features/shared/styles/index.css` | Valid web-font source and regular weight |
-| `src/features/shared/components/Header.tsx`, `Avatar.tsx`, `buttons/DemoButton.tsx` | Header/sidebar control alignment and bounds |
-| `src/features/shared/components/buttons/MarkAsPaidButton.tsx`, `src/features/invoices/components/DeleteModal.tsx`, `src/features/invoices/hooks/useSubmitDraft.ts` | Remove redundant CSS imports and per-action position/theme overrides |
-| `playwright.config.ts`, `qa/tests/toast.spec.ts` | Built-browser regression matrix and screenshot attachments |
-| `docs/audit/toast-presentation.md` and adjacent image directory (repository root) | Verification report and before/after captures |
+| `src/index.tsx`, `src/app/App.tsx` | Eager CSS; persistent shell and gated routes |
+| `src/features/auth/components/DemoSessionBoundary.tsx` | Expose readiness without changing the reset effect |
+| `src/features/invoices/components/InvoiceDashboardPlaceholder.tsx`, `InvoiceContentStatus.tsx` | Shared dashboard loading/error presentation |
+| `src/features/invoices/components/AllInvoicesToolbar.tsx`, `AllInvoicesView.tsx`, `InvoiceGrid.tsx` | Unknown count, disabled actions, consistent row geometry and spacing |
+| `src/features/invoices/pages/AllInvoices.tsx`, `ViewInvoice.tsx`, `hooks/useInvoices.ts` | Use shared loading UI; remove banner; expose invoice-query retry |
+| `src/features/invoices/styles/AllInvoicesToolbarStyles.tsx` | Normalize the disabled action fieldset |
+| `src/features/shared/styles/AppStyles.tsx`, `index.css` | Fixed themed toasts, remove spare dashboard grid, valid font source |
+| `src/features/shared/components/Header.tsx`, `Avatar.tsx`, `buttons/DemoButton.tsx` | Persistent, bounded navigation controls |
+| `src/features/shared/components/buttons/MarkAsPaidButton.tsx`, `src/features/invoices/components/DeleteModal.tsx`, `hooks/useSubmitDraft.ts` | Remove redundant CSS imports and position/theme overrides |
+| `playwright.config.ts`, `qa/tests/loading.spec.ts`, `session.spec.ts`, `toast.spec.ts` | Built-browser loading, lifecycle, and toast regressions |
+| Unit/integration tests for the session boundary, invoice list and invoice view | Cache-clear readiness contract and changed loading/error UI |
+| This report and adjacent captures (repository root) | Visual evidence and measurements |
 
-## Screenshot comparison
+## Before and after
 
-These are unmodified browser captures of Reset Demo success using synthetic local
-demo data. The original desktop capture includes the app's temporary welcome
-message; final regression captures wait for its existing fade/collapse to finish.
+Unmodified browser captures use synthetic local demo data. Before loading captures
+come from the previous styling commit; before toast captures reproduce main's
+original unstyled notification. After captures correspond to the completed repair.
 
-| Viewport | Before | After |
+| State | Before | After |
 | --- | --- | --- |
-| 1440px desktop | [Original](toast-presentation/desktop-before.png) | [Fixed](toast-presentation/desktop-after.png) |
-| 390px mobile | [Original](toast-presentation/mobile-before.png) | [Fixed](toast-presentation/mobile-after.png) |
+| Delayed initialization, desktop | [Before](toast-presentation/desktop-loading-before.png) | [After](toast-presentation/desktop-loading-after.png) |
+| Delayed initialization, 390px | [Before](toast-presentation/mobile-loading-before.png) | [After](toast-presentation/mobile-loading-after.png) |
+| Reset success, desktop | [Before](toast-presentation/desktop-before.png) | [After](toast-presentation/desktop-after.png) |
+| Reset success, 390px | [Before](toast-presentation/mobile-before.png) | [After](toast-presentation/mobile-after.png) |
 
-The regression report additionally captures initial dashboard, reset success,
-controlled reset failure, creation validation, payment success, and controlled
-deletion failure at 1440px, 768px, and 390px in both themes.
+## Loading measurements
 
-## Checks
+Before: holding reset for 1.5 seconds left **zero header/title elements** at every
+width. The complete dashboard appeared only after the backend reset completed:
 
-- `npm run check`: frontend app/node types, ESLint, 118 passing unit/integration
-  tests (two existing skips), and production build.
+| Width | Plain loading capture | Dashboard visible |
+| --- | --- | --- |
+| 1440px | 1721ms | 2668ms |
+| 768px | 1685ms | 2610ms |
+| 390px | 1653ms | 2614ms |
+
+| Scenario | Width | Shell | Loading region | Invoice DOM |
+| --- | --- | --- | --- | --- |
+| Delayed reset + query | 1440px | 139ms | 139ms | 7067ms |
+| Responsive backend | 1440px | 220ms | 220ms | 1043ms |
+| Delayed reset + query | 768px | 151ms | 151ms | 4869ms |
+| Responsive backend | 768px | 168ms | 168ms | 750ms |
+| Delayed reset + query | 390px | 113ms | 113ms | 5176ms |
+| Responsive backend | 390px | 150ms | 150ms | 656ms |
+
+These are local navigation-relative DOM observations, not production Fly/Neon
+latency claims. The delayed case holds each request for **at least** 1.5 seconds;
+theme checks and screenshot capture add time before release. For example, the
+1440px reset was released at 3205ms and the invoice query at 6786ms. The shell was
+already present at 139ms. All three widths recorded zero heading displacement
+and zero first-row displacement after the existing entrance animations settled.
+A responsive local backend rendered invoice data in 656–1043ms.
+
+
+## Quality gates and browser coverage
+
+- `npm run check`: app/node types, ESLint, 119 passing unit/integration tests
+  (two existing skips), and production build.
 - `npm run typecheck:e2e`: passing.
-- `PG_BIN=/usr/lib/postgresql/16/bin npm run test:e2e`: all 29 tests pass
-  (5.6 minutes), including all 12 new toast cases and the existing desktop, mobile,
-  session recovery, and demo-disabled tests.
-- The new built-browser matrix checks fixed positioning, 320px width, 64–88px
-  height, 20px icons, close buttons, automatic dismissal, theme colors, no overlap
-  with navigation/page actions, header control bounds, no horizontal overflow,
-  unchanged title/first-card bounds after reset success/failure, and an HTTP 200
-  font response plus a loaded `FontFace` under the deployment base path.
-- Text contrast from the asserted computed colors is 18.37:1 in light mode and
-  15.77:1 in dark mode.
-- Negative control: intercept only the local built CSS response and remove its
-  Toastify rules. The same `display: flex` assertion correctly fails, confirming
-  that the regression detects missing vendor CSS without changing source or data.
+- Full built-browser suite: all 35 cases pass (5.2 minutes), including desktop,
+  mobile and demo-disabled workflows. After the final progress-indicator label
+  adjustment, all eight loading/session cases pass again (38.8 seconds).
+- Delayed browser coverage checks the same header DOM node survives initialization,
+  no invoice queries/mutations or stale cards appear before readiness, one reset
+  occurs despite StrictMode/theme changes, unknown counts and disabled controls
+  persist through loading, and title/card geometry stays stable.
+- Responsive-backend cases cover normal loading and direct invoice reload with no
+  extra reset. Session tests cover initialization failure, retained shell and retry.
+- Toast cases cover 1440px, 768px and 390px in both themes: reset success/failure,
+  creation validation, payment success and deletion errors; fixed 320px width,
+  normal 20px icons, automatic dismissal, live theme colors, control overlap,
+  unchanged dashboard geometry, and font HTTP 200/loaded `FontFace` under the base.
+- Text contrast from asserted computed toast colors is 18.37:1 in light mode and
+  15.77:1 in dark mode. Toasts retain their alert announcements; the loading region
+  has a status announcement and a named progress indicator.
+- The browser-only negative control from the initial styling repair removes
+  Toastify CSS from a local built response: the `display: flex` assertion fails as
+  expected. No source or hosted data is changed by that control.
 
 Reproduce with Node 24, installed frontend/backend dependencies, PostgreSQL 16,
 and Playwright Chromium:
@@ -89,21 +144,17 @@ npm run typecheck:e2e
 PG_BIN=/usr/lib/postgresql/16/bin npm run test:e2e
 ```
 
-The runner prints the temporary report directory. Its HTML/JSON report includes
-all 36 screenshots from the new matrix; CI retains these in the existing browser
-artifacts.
+The runner prints its temporary HTML/JSON report directory. Screenshots and timing
+attachments are retained by the existing browser CI artifact workflow. The full
+run contains 53 screenshots; the final loading rerun supplies the measurements
+and loading captures above.
 
-## Scope and remaining behavior
+## Remaining behavior
 
-Successful invoice creation and deletion currently confirm through navigation and
-data updates; they do not emit success toasts. Preserve that behavior. Their
-existing validation/deletion error notifications and payment success notification
-are covered, alongside successful creation and deletion against the local API.
-
-No remaining blocking dashboard/sidebar alignment issues were found at the
-requested widths after reviewing the captures. The existing welcome-message
-fade/collapse is intentionally unchanged; the layout
-regression waits for it before comparing dashboard geometry. Transient overlays
-can cover invoice content while visible, and remain dismissible. Header and page
-actions are checked for overlap. This change preserves purple accents, cards,
-responsive layouts, and both color modes.
+Successful invoice creation/deletion confirm through navigation and data updates;
+no new success notifications were added. Toasts can temporarily cover invoice
+content while visible; navigation and page actions remain clear and the toast is
+both dismissible and automatically timed out. No remaining blocking dashboard/sidebar presentation defects were found at the
+requested widths. Existing card entrance animations
+remain; geometry checks wait for them to settle. This is a frontend regression
+repair with no deployment or backend changes.

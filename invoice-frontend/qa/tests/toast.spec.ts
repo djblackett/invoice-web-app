@@ -135,8 +135,6 @@ for (const width of [1440, 768, 390]) {
         );
         await boot(page);
         expect((await fontResponse).status()).toBe(200);
-        // Exclude the existing welcome-message collapse from toast layout checks.
-        await expect(page.locator(".welcome-text")).toHaveCSS("height", "0px");
         await page.evaluate(() => document.fonts.ready);
       });
 
