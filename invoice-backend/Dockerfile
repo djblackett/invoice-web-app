@@ -20,6 +20,7 @@ ENV NODE_ENV=production DEMO_MODE=false PORT=8000
 COPY --from=build --chown=node:node /usr/src/app/node_modules ./node_modules
 COPY --from=build --chown=node:node /usr/src/app/dist ./dist
 COPY --from=build --chown=node:node /usr/src/app/prisma ./prisma
+COPY --chown=node:node scripts/migrate.cjs ./scripts/migrate.cjs
 COPY --chown=node:node package.json scripts/container-entrypoint.sh ./
 USER node
 EXPOSE 8000

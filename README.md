@@ -88,7 +88,8 @@ More details on my motivation and approach to writing this app can be found in t
 Use Linux/macOS Node **24.15.0** (`nvm use`, from `.nvmrc`), Corepack with the
 package-pinned Yarn **4.6.0**, Docker Compose v2, and PostgreSQL 16 server tools for
 the isolated browser gate. Use `corepack yarn`, since a global Yarn 1 ignores the
-package pin. There is no root package or root lockfile.
+package pin. The root npm package provides Neon configuration and commands that
+coordinate the two application packages; each application retains its Yarn lockfile.
 
 ```bash
 (cd invoice-backend && corepack yarn install --immutable && npm run prisma-generate)
@@ -96,6 +97,46 @@ package pin. There is no root package or root lockfile.
 cp invoice-backend/.env.example invoice-backend/.env
 cp invoice-frontend/.env.example invoice-frontend/.env
 ```
+
+### Neon Postgres
+
+The existing `invoice-app` project / `production` branch is already connected and
+migrated. Do not repeat provisioning, reset it, or run `neon deploy` as a startup step.
+`neon.ts` records the existing CLI policy (Auth disabled; newly created non-default
+branches expire after seven days). It is not a second application host.
+
+The ignored root `.env.local` holds the pooled `DATABASE_URL` and direct
+`DATABASE_URL_UNPOOLED`, both with `sslmode=require`, plus the application settings
+in root `.env.example`. Explicit shell variables take precedence, followed by root
+`.env.local`, root `.env`, and package dotenv files. Never put database credentials
+in `VITE_*` variables. Neither CI nor local PostgreSQL development needs Neon access.
+
+```bash
+nvm use
+npm ci
+npm run build
+npm start
+# Open http://localhost:5173/invoice-web-app/ (local preview only).
+# Or start just the compiled API:
+npm run start:backend
+# Read-only live database smoke check, no browser or running API required:
+npm run test:neon
+```
+
+Root build/start commands are optional local coordinators. The production backend
+still builds with `invoice-backend`'s existing TypeScript/alias commands and runs
+`node dist/src/index.js` in its existing Docker image. Prisma 6 remains the singleton
+PostgreSQL TCP client. `npm run db:migrate` and container startup use the direct URL
+only for the migration subprocess, preserving the pooled application URL. Local
+PostgreSQL needs only `DATABASE_URL`. The existing schema and migrations are unchanged.
+Do not run migrations or `db:seed:demo` against hosted data without approval; the seed
+resets the shared demo workspace.
+
+`test:neon` now enforces PostgreSQL read-only transactions through both connections,
+compares committed migration checksums and reports the existing demo identity/counts.
+The previous browser CRUD version wrote records; use the isolated real-backend E2E
+gate below for CRUD/revision regression instead. Demo Mode works without Auth0.
+See [public demo deployment](docs/deployment.md) for hosted settings and approvals.
 
 ### Local demo and compiled containers
 
@@ -232,16 +273,20 @@ DEV_HTTPS=false npm --prefix invoice-frontend run preview
 CI runs frontend types/lint/Vitest/build, backend types/lint/unit/migrated PostgreSQL
 integration/build, the isolated serial Chromium gate, and production container
 build/startup checks. CodeQL remains separate. Ordinary PRs require no production
-secrets. The historical Fly.io/GitHub Pages deployment and Docker Hub push workflows
-have been retired; these workflows **do not publish or deploy**.
+secrets and do not deploy.
 
-Slice 6A prepares local release infrastructure. Hosted workflow execution, actual
-staging configuration, existing-data migration reconciliation, TLS/ingress routing,
-and real Auth0 login/refresh/logout verification belong to Slice 6B. The root
-`fly.toml` is an explicitly marked unsupported historical experiment; the backend
-manifest requires a separate release review before use. See the
-[Slice 6A audit](docs/audit/slice-6a-release-infrastructure.md) for exact evidence,
-configuration classification and remaining blockers. No live deployment was tested.
+The public demo reuses GitHub Pages, the existing Fly `invoice-backend` app and
+Neon `invoice-app` / `production`. The manual **Publish demo to GitHub Pages** workflow
+builds with `VITE_BACKEND_URL=https://invoice-backend.fly.dev` and `VITE_DEMO_MODE=true`.
+It runs only from `main`, after explicit operator dispatch. Fly deployment remains a
+separate approved CLI action from `invoice-backend/`, using its Dockerfile/manifest.
+The root `fly.toml` remains an unsupported historical experiment.
+
+Follow the [deployment audit and operator checklist](docs/deployment.md) before
+publishing. It records required secrets, existing Machine count, shared demo/reset
+behavior, cold starts, WebSocket limits and costs. No hosted deployment was performed
+as part of preparing these configurations. Historical infrastructure evidence remains
+in the [Slice 6A audit](docs/audit/slice-6a-release-infrastructure.md).
 
 ## Diagrams
 
