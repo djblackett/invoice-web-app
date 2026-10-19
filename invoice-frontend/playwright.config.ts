@@ -25,7 +25,12 @@ export default defineConfig({
   projects: [
     {
       name: "chromium-desktop",
-      testMatch: ["demo.spec.ts", "session.spec.ts"],
+      testMatch: [
+        "demo.spec.ts",
+        "session.spec.ts",
+        "toast.spec.ts",
+        "loading.spec.ts",
+      ],
       use: {
         ...devices["Desktop Chrome"],
         viewport: { width: 1440, height: 1000 },

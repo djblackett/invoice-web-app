@@ -11,7 +11,7 @@ import {
 } from "../../../styles/DeleteModalStyles.tsx";
 import { DarkenScreen } from "../../../styles/editPageStyles.ts";
 import { Description } from "../styles/FullInvoiceStyles.tsx";
-import { toast, Theme } from "react-toastify";
+import { toast } from "react-toastify";
 import { ClickOutsideProvider } from "@shelf/react-outside-click";
 import { Invoice } from "@/features/invoices/types/invoiceTypes.ts";
 
@@ -26,7 +26,6 @@ function DeleteModal({
   setIsModalOpen,
   invoice,
 }: DeleteModalProps) {
-  const colorMode = localStorage.getItem("theme");
   const navigate = useNavigate();
   const { id } = useParams<{ id: string }>();
 
@@ -38,14 +37,12 @@ function DeleteModal({
     onError: (error) => {
       console.error(error.graphQLErrors[0]);
       toast.error("An error occurred!", {
-        position: "top-center",
         autoClose: 3000,
         hideProgressBar: false,
         closeOnClick: true,
         pauseOnHover: true,
         draggable: true,
         progress: undefined,
-        theme: (colorMode as Theme) || undefined,
         toastId: "delete-error-toast",
       });
     },

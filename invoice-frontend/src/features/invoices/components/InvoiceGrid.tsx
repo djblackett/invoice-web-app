@@ -18,6 +18,8 @@ const FlexContainer = styled(m.div)`
   }
 
   @media (min-width: 768px) {
+    /* Preserve the settled spacing formerly supplied by the welcome banner. */
+    margin-top: 16px;
     padding: 0 48px;
   }
 

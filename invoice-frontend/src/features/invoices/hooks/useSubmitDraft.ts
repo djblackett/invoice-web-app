@@ -1,7 +1,6 @@
 import { createInvoiceObject } from "@/features/shared/utils/utilityFunctions";
 import { FieldPath, useFieldArray } from "react-hook-form";
 import { toast } from "react-toastify";
-import "react-toastify/dist/ReactToastify.css";
 import { useNewInvoiceContext } from "../forms/NewInvoiceContextProvider";
 import { FormType } from "../types/invoiceTypes";
 import {
@@ -41,7 +40,6 @@ export const useSubmitDraft = () => {
     if (nonRequiredErrors.length > 0) {
       // There are errors other than "required", so prevent submission.
       toast.error("Please fix the errors before saving as draft", {
-        position: "top-right",
         autoClose: 2000,
         hideProgressBar: true,
         closeOnClick: true,

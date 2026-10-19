@@ -3,10 +3,9 @@ import styled from "styled-components";
 import InvoiceGrid from "./InvoiceGrid.tsx";
 import InvoiceCard from "./InvoiceCard.tsx";
 import EmptyList from "./EmptyList.tsx";
-import { Grid } from "react-loader-spinner";
 import { memo } from "react";
 import { Invoice } from "@/features/invoices/types/invoiceTypes.ts";
-import BreathingText from "@/features/shared/animations/BreathingText.tsx";
+import InvoiceContentStatus from "./InvoiceContentStatus";
 
 interface StyledLinkProps extends LinkProps {
   $isMobile: boolean;
@@ -26,6 +25,7 @@ interface AllInvoicesViewProps {
   width: number;
   loading: boolean;
   error?: Error;
+  onRetry?: () => void;
 }
 
 const AllInvoicesView = ({
@@ -33,34 +33,16 @@ const AllInvoicesView = ({
   width,
   loading,
   error,
+  onRetry,
 }: AllInvoicesViewProps) => {
-  if (loading) {
-    return (
-      <>
-        <Grid
-          visible={true}
-          height="80"
-          width="80"
-          color="#7c5dfa"
-          ariaLabel="grid-loading"
-          radius="12.5"
-          wrapperStyle={{ margin: "50px" }}
-          wrapperClass="grid-wrapper"
-        />
-        {process.env.NODE_ENV === "production" && (
-          <BreathingText text={"Waking up the backend containers"} />
-        )}
-      </>
-    );
-  }
+  if (loading) return <InvoiceContentStatus />;
   if (error)
     return (
-      <>
-        <h1>{error.message}</h1>
-        <p style={{ maxWidth: "50%", alignSelf: "center" }}>
-          {JSON.stringify(error)}
-        </p>
-      </>
+      <InvoiceContentStatus
+        error
+        message="Invoices could not be loaded."
+        onRetry={onRetry}
+      />
     );
 
   return (

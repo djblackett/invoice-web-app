@@ -24,7 +24,12 @@ test("shows initialization loading, handles a real offline failure, and retries"
     await route.continue();
   });
   await page.goto("");
-  await expect(page.getByRole("status")).toHaveText("Preparing demo invoices…");
+  await expect(page.getByRole("status")).toContainText(
+    "Preparing demo invoices…",
+  );
+  await expect(page.getByTestId("header")).toBeVisible();
+  await expect(page.getByTestId("invoicesTitle")).toBeVisible();
+  await expect(page.getByTestId("newInvoiceButton")).toBeDisabled();
   await expect(cards(page)).toHaveCount(0);
   release();
   await dashboard(page);
@@ -36,6 +41,13 @@ test("shows initialization loading, handles a real offline failure, and retries"
   await expect(page.getByRole("alert")).toContainText(
     "Demo could not be initialized.",
   );
+  await expect(page.getByTestId("header")).toBeVisible();
+  await expect(page.getByTestId("invoicesTitle")).toBeVisible();
+  await expect(page.getByTestId("newInvoiceButton")).toBeDisabled();
+  await testInfo.attach("initialization-failure", {
+    body: await page.screenshot({ fullPage: true }),
+    contentType: "image/png",
+  });
   await expect(cards(page)).toHaveCount(0);
   await context.setOffline(false);
   await page.getByRole("button", { name: "Retry Demo", exact: true }).click();

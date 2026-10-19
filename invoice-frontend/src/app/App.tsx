@@ -6,7 +6,6 @@ import GlobalStyles from "../features/shared/styles/GlobalStyles.ts";
 import { lightTheme, darkTheme } from "../features/shared/styles/Themes.ts";
 import Layout from "../features/shared/components/Layout.tsx";
 import { ApolloProvider } from "@apollo/client";
-import useWindowWidth from "@/features/shared/hooks/useWindowWidth.tsx";
 import useGraphQLClient from "@/features/shared/hooks/useApolloClient.ts";
 import {
   Main,
@@ -14,6 +13,8 @@ import {
 } from "@/features/shared/styles/AppStyles.tsx";
 import { LazyMotion } from "motion/react";
 import { DemoSessionBoundary } from "../features/auth/components/DemoSessionBoundary";
+
+import InvoiceDashboardPlaceholder from "@/features/invoices/components/InvoiceDashboardPlaceholder";
 
 const WelcomePage = React.lazy(() => import("@/pages/WelcomePage"));
 const ProtectedRoute = React.lazy(
@@ -35,13 +36,14 @@ const loadFeatures = () =>
   );
 
 function App() {
-  const [theme, setTheme] = useState("light");
+  const [theme, setTheme] = useState<"light" | "dark">("light");
   const client = useGraphQLClient();
 
   useEffect(() => {
     if (localStorage.getItem("theme") !== null) {
       const storedTheme = localStorage.getItem("theme");
-      setTheme(storedTheme as string);
+      if (storedTheme === "light" || storedTheme === "dark")
+        setTheme(storedTheme);
     }
   }, []);
 
@@ -51,8 +53,6 @@ function App() {
     localStorage.setItem("theme", newTheme);
   };
 
-  const width = useWindowWidth();
-
   const routes = [
     {
       path: "/",
@@ -61,7 +61,7 @@ function App() {
         {
           index: true,
           element: (
-            <Suspense fallback={<div>Loading...</div>}>
+            <Suspense fallback={<InvoiceDashboardPlaceholder />}>
               <WelcomePage />
             </Suspense>
           ),
@@ -69,7 +69,7 @@ function App() {
         {
           path: "login",
           element: (
-            <Suspense fallback={<div>Loading...</div>}>
+            <Suspense fallback={<InvoiceDashboardPlaceholder />}>
               <MemoizedLogin />
             </Suspense>
           ),
@@ -77,7 +77,7 @@ function App() {
         {
           path: "invoices",
           element: (
-            <Suspense fallback={<div>Loading...</div>}>
+            <Suspense fallback={<InvoiceDashboardPlaceholder />}>
               <ProtectedRoute>
                 <AllInvoices />
               </ProtectedRoute>
@@ -87,7 +87,7 @@ function App() {
         {
           path: "invoices/:id",
           element: (
-            <Suspense fallback={<div>Loading...</div>}>
+            <Suspense fallback={<InvoiceDashboardPlaceholder />}>
               <ProtectedRoute>
                 <ViewInvoice />
               </ProtectedRoute>
@@ -97,7 +97,7 @@ function App() {
         {
           path: "/*",
           element: (
-            <Suspense fallback={<div>Loading...</div>}>
+            <Suspense fallback={<InvoiceDashboardPlaceholder />}>
               <div>404 Not Found</div>
             </Suspense>
           ),
@@ -114,11 +114,33 @@ function App() {
         <GlobalStyles />
         <LazyMotion features={loadFeatures}>
           <DemoSessionBoundary>
-            <Main id="container" data-testid="container">
-              <Header themeToggler={themeToggler} theme={theme} />
-              <StyledToastContainer marginTop={width > 1200 ? 0 : "72px"} />
-              {element}
-            </Main>
+            {({ ready, error, retry }) => (
+              <>
+                <Main id="container" data-testid="container">
+                  <Header
+                    themeToggler={themeToggler}
+                    theme={theme}
+                    demoReady={ready}
+                  />
+                  {ready ? (
+                    element
+                  ) : (
+                    <InvoiceDashboardPlaceholder
+                      initializing
+                      error={error}
+                      onRetry={retry}
+                    />
+                  )}
+                </Main>
+                <StyledToastContainer
+                  position="top-right"
+                  colorMode={theme}
+                  autoClose={3000}
+                  limit={1}
+                  pauseOnFocusLoss={false}
+                />
+              </>
+            )}
           </DemoSessionBoundary>
         </LazyMotion>
       </ThemeProvider>

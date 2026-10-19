@@ -10,28 +10,34 @@ const Button = styled.button`
   color: white;
   font-family: ${({ theme }) => theme.font};
   font-weight: 700;
-  margin-left: 1rem;
+  margin-left: 8px;
   height: 44px;
-  min-width: 110px;
+  min-width: 0;
   display: flex;
   align-items: center;
   justify-content: center;
   cursor: pointer;
-  padding-left: 0.5rem;
+  padding: 0 12px;
   border: none;
 
   &:hover {
     background-color: #9277ff;
   }
 
+  &:disabled {
+    opacity: 0.6;
+    cursor: wait;
+  }
+
   @media (min-width: 1200px) {
+    width: calc(100% - 16px);
     margin-left: 0;
     justify-self: flex-end;
     margin-bottom: 1rem;
   }
 `;
 
-function DemoButton() {
+function DemoButton({ disabled = false }: { disabled?: boolean }) {
   const apolloClient = useApolloClient();
   const [reset, { loading }] = useMutation<{ resetDemoData: boolean }>(
     RESET_DEMO_DATA,
@@ -55,7 +61,7 @@ function DemoButton() {
         onClick={() => {
           void handleClick();
         }}
-        disabled={loading}
+        disabled={disabled || loading}
       >
         {loading ? "Resetting…" : "Reset Demo"}
       </Button>

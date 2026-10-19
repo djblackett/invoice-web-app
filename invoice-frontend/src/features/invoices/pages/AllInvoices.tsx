@@ -13,14 +13,13 @@ import {
   ALL_INVOICES,
   INVOICE_ADDED,
 } from "@/features/invoices/graphql/invoice.queries.ts";
-import FadeOut from "@/features/shared/animations/FadeOutText.tsx";
 import { useDemoModeContext } from "@/features/shared/components/DemoModeProvider";
 
 const NewInvoice = React.lazy(() => import("./NewInvoice.tsx"));
 
 function AllInvoices() {
   const width = useWindowWidth();
-  const { invoiceList, loading, error } = useInvoices();
+  const { invoiceList, loading, error, refetch } = useInvoices();
   const { isDemoMode } = useDemoModeContext();
 
   useSubscription<{ invoiceAdded: Invoice }>(INVOICE_ADDED, {
@@ -38,7 +37,7 @@ function AllInvoices() {
     },
   });
 
-  const { isAuthenticated, user, isLoading } = useAuth();
+  const { isAuthenticated, isLoading } = useAuth();
 
   if (isLoading) {
     return <h1>Loading</h1>;
@@ -51,18 +50,22 @@ function AllInvoices() {
           <NewInvoiceProvider>
             <MemoizedAllInvoicesToolbar
               invoiceList={invoiceList}
+              loading={loading || !!error}
+              loadingLabel={error ? "Count unavailable" : undefined}
               data-testid="invoices-toolbar"
             />
             <Suspense>
               <NewInvoice />
             </Suspense>
           </NewInvoiceProvider>
-          <FadeOut className="welcome-text" username={user?.email}></FadeOut>
           <AllInvoicesView
             invoiceList={invoiceList}
             width={width}
             loading={loading}
             error={error}
+            onRetry={() => {
+              void refetch().catch(() => {});
+            }}
           />
         </>
       )}

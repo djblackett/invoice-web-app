@@ -1,6 +1,5 @@
 import styled from "styled-components";
-import { toast, Theme } from "react-toastify";
-import "react-toastify/dist/ReactToastify.css";
+import { toast } from "react-toastify";
 import { useMutation } from "@apollo/client";
 import { MARK_AS_PAID } from "../../../invoices/graphql/invoice.queries.ts";
 import { MutableRefObject } from "react";
@@ -38,8 +37,6 @@ type MarkPaidProps = {
 };
 
 function MarkAsPaidButton({ invoice, editButtonRef }: MarkPaidProps) {
-  const colorMode = localStorage.getItem("theme");
-
   const [markAsPaid] = useMutation(MARK_AS_PAID, {
     onError: (error) => {
       console.error(error.graphQLErrors[0].message);
@@ -55,14 +52,12 @@ function MarkAsPaidButton({ invoice, editButtonRef }: MarkPaidProps) {
       });
       if (response.data) {
         toast.success("💸 Invoice paid!", {
-          position: "top-center",
           autoClose: 5000,
           hideProgressBar: false,
           closeOnClick: true,
           pauseOnHover: true,
           draggable: true,
           progress: undefined,
-          theme: (colorMode as Theme) || undefined,
           toastId: "mark-as-paid-success-toast",
         });
       }
@@ -72,14 +67,12 @@ function MarkAsPaidButton({ invoice, editButtonRef }: MarkPaidProps) {
       }
 
       toast.error("Cannot mark drafts as paid", {
-        position: "top-right",
         autoClose: 1000,
         hideProgressBar: true,
         closeOnClick: true,
         pauseOnHover: true,
         draggable: false,
         progress: undefined,
-        theme: (colorMode as Theme) || undefined,
         toastId: "mark-as-paid-error-toast",
       });
     }
