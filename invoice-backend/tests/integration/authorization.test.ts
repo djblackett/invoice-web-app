@@ -298,6 +298,17 @@ for (const { label, actor, id, owner } of [
           expect.soft(value).toEqual({ acknowledged: true });
           expect.soft(after.invoice).toBeNull();
           expect.soft(after.revisions).toEqual([]);
+          expect(await prisma.item.count({ where: { invoiceId: id } })).toBe(0);
+          expect(
+            await prisma.clientAddress.findUnique({
+              where: { id: before.invoice!.clientAddressId! },
+            }),
+          ).toBeNull();
+          expect(
+            await prisma.senderAddress.findUnique({
+              where: { id: before.invoice!.senderAddressId! },
+            }),
+          ).toBeNull();
           return;
         }
         expect.soft(after.invoice?.createdById).toBe(owner.id);
