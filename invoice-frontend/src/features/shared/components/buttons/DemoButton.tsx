@@ -10,14 +10,14 @@ const Button = styled.button`
   color: white;
   font-family: ${({ theme }) => theme.font};
   font-weight: 700;
-  margin-left: 1rem;
+  margin-left: 8px;
   height: 44px;
-  min-width: 110px;
+  min-width: 0;
   display: flex;
   align-items: center;
   justify-content: center;
   cursor: pointer;
-  padding-left: 0.5rem;
+  padding: 0 12px;
   border: none;
 
   &:hover {
@@ -25,6 +25,7 @@ const Button = styled.button`
   }
 
   @media (min-width: 1200px) {
+    width: calc(100% - 16px);
     margin-left: 0;
     justify-self: flex-end;
     margin-bottom: 1rem;

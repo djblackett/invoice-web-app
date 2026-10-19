@@ -6,7 +6,6 @@ import GlobalStyles from "../features/shared/styles/GlobalStyles.ts";
 import { lightTheme, darkTheme } from "../features/shared/styles/Themes.ts";
 import Layout from "../features/shared/components/Layout.tsx";
 import { ApolloProvider } from "@apollo/client";
-import useWindowWidth from "@/features/shared/hooks/useWindowWidth.tsx";
 import useGraphQLClient from "@/features/shared/hooks/useApolloClient.ts";
 import {
   Main,
@@ -35,13 +34,14 @@ const loadFeatures = () =>
   );
 
 function App() {
-  const [theme, setTheme] = useState("light");
+  const [theme, setTheme] = useState<"light" | "dark">("light");
   const client = useGraphQLClient();
 
   useEffect(() => {
     if (localStorage.getItem("theme") !== null) {
       const storedTheme = localStorage.getItem("theme");
-      setTheme(storedTheme as string);
+      if (storedTheme === "light" || storedTheme === "dark")
+        setTheme(storedTheme);
     }
   }, []);
 
@@ -50,8 +50,6 @@ function App() {
     setTheme(newTheme);
     localStorage.setItem("theme", newTheme);
   };
-
-  const width = useWindowWidth();
 
   const routes = [
     {
@@ -116,9 +114,15 @@ function App() {
           <DemoSessionBoundary>
             <Main id="container" data-testid="container">
               <Header themeToggler={themeToggler} theme={theme} />
-              <StyledToastContainer marginTop={width > 1200 ? 0 : "72px"} />
               {element}
             </Main>
+            <StyledToastContainer
+              position="top-right"
+              colorMode={theme}
+              autoClose={3000}
+              limit={1}
+              pauseOnFocusLoss={false}
+            />
           </DemoSessionBoundary>
         </LazyMotion>
       </ThemeProvider>

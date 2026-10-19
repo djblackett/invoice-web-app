@@ -19,13 +19,15 @@ const HeaderContainer = styled.div`
   background: ${({ theme }) => theme.headerBackground};
   z-index: 1000;
   position: fixed;
+  top: 0;
+  left: 0;
 
   @media (min-width: 1200px) {
     flex-direction: column;
     display: flex;
     justify-self: start;
     width: 103px;
-    height: 100%;
+    height: 100vh;
     max-height: 100vh;
     grid-area: 1 / 1 / 4 / 2;
     border-radius: 0 20px 20px 0;
@@ -33,6 +35,7 @@ const HeaderContainer = styled.div`
 `;
 
 const Logo = styled.div`
+  flex-shrink: 0;
   height: 100%;
   width: 72px;
   display: flex;
@@ -63,6 +66,7 @@ const DarkModeProfileContainer = styled.div`
     flex-direction: column;
     width: 100%;
     height: 117px;
+    flex-shrink: 0;
     align-items: center;
   }
 `;
@@ -78,13 +82,23 @@ const BottomColorBoxForLogo = styled.div`
 
 const DarkLightBox = styled.button`
   height: 100%;
-  width: 80px;
+  width: 48px;
+  flex-shrink: 0;
+
+  @media (min-width: 600px) {
+    width: 80px;
+  }
   display: flex;
   justify-content: center;
   align-items: center;
   cursor: pointer;
   background-color: ${({ theme }) => theme.headerBackground};
   border: none;
+
+  @media (min-width: 1200px) {
+    width: 100%;
+    height: 56px;
+  }
 `;
 
 const LogoLogoutContainer = styled.div`
@@ -99,6 +113,9 @@ const LogoLogoutContainer = styled.div`
   @media (min-width: 1200px) {
     flex-direction: column;
     width: 100%;
+    height: auto;
+    min-height: 0;
+    flex: 1;
     justify-content: space-between;
   }
 `;
@@ -137,7 +154,13 @@ export const DemoButtonStyled = styled(LoginLogoutButton)`
 
 const LogoutButton = styled(LoginLogoutButton)`
   justify-self: start;
-  margin-left: 16px;
+  width: 64px;
+  margin-left: 8px;
+
+  @media (min-width: 600px) {
+    width: 90px;
+    margin-left: 16px;
+  }
   @media (min-width: 1200px) {
     margin-left: 0;
   }

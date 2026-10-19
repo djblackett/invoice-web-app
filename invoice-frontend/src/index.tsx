@@ -1,6 +1,7 @@
 import React from "react";
 import { createRoot } from "react-dom/client";
 import { Provider as ReduxProvider } from "react-redux";
+import "react-toastify/dist/ReactToastify.css";
 import "./features/shared/styles/index.css";
 import store from "./app/store";
 import { DemoModeProvider } from "@/features/shared/components/DemoModeProvider.tsx";
