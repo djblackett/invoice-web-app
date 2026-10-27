@@ -1,6 +1,7 @@
 import { inject, injectable } from "inversify";
 import { PrismaClient } from "@prisma/client";
 import type {
+  AtomicOptions,
   DbClient,
   IDatabaseConnection,
   RepositoryDatabase,
@@ -25,8 +26,11 @@ export class DatabaseConnection
     return this.prisma;
   }
 
-  public atomic<T>(work: (tx: DbClient) => Promise<T>): Promise<T> {
-    return this.prisma.$transaction(work);
+  public atomic<T>(
+    work: (tx: DbClient) => Promise<T>,
+    options?: AtomicOptions,
+  ): Promise<T> {
+    return this.prisma.$transaction(work, options);
   }
 
   public async initConnection(): Promise<void> {
@@ -49,6 +53,7 @@ export class DatabaseConnection
 export class TransactionDatabaseConnection implements RepositoryDatabase {
   constructor(public readonly client: DbClient) {}
 
+  // Joins: the owner chose the isolation level, so `options` cannot apply.
   public atomic<T>(work: (tx: DbClient) => Promise<T>): Promise<T> {
     return work(this.client);
   }

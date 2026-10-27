@@ -131,4 +131,5 @@ invoice-backend/.env.development
 **/*.pem
 .neon
 
-portfolio-export/*
+
+/portfolio-export/

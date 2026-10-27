@@ -354,9 +354,38 @@ export class PrismaInvoiceRepository implements IInvoiceRepo {
 
   async delete(id: string): Promise<boolean> {
     try {
-      await this.prisma.invoice.delete({
-        where: { id },
-      });
+      await this.databaseConnection.atomic(
+        async (tx) => {
+          // Capture the IDs from the deleted row; FK cascades only remove
+          // items/revisions, since the invoice holds the address foreign keys.
+          const { clientAddressId, senderAddressId } = await tx.invoice.delete({
+            where: { id },
+            select: { clientAddressId: true, senderAddressId: true },
+          });
+          // Lock each captured row before the reference check. A concurrent
+          // reference needs KEY SHARE on it for its FK check, so it either
+          // committed first (and the check sees it) or waits and then fails.
+          // This keeps the guard sound when a coordinated write joins this
+          // unit at READ COMMITTED, where the Serializable option is ignored.
+          if (clientAddressId !== null) {
+            await tx.$executeRaw`
+              SELECT 1 FROM "ClientAddress" WHERE "id" = ${clientAddressId} FOR UPDATE`;
+            await tx.clientAddress.deleteMany({
+              where: { id: clientAddressId, Invoice: { is: null } },
+            });
+          }
+          if (senderAddressId !== null) {
+            await tx.$executeRaw`
+              SELECT 1 FROM "SenderAddress" WHERE "id" = ${senderAddressId} FOR UPDATE`;
+            await tx.senderAddress.deleteMany({
+              where: { id: senderAddressId, Invoice: { is: null } },
+            });
+          }
+        },
+        // A concurrent address reassignment must not be cascaded away using
+        // a stale reference check. Conflicts fail and roll back the deletion.
+        { isolationLevel: Prisma.TransactionIsolationLevel.Serializable },
+      );
       return true;
     } catch (e) {
       console.error(e);

@@ -1,4 +1,5 @@
 import {
+  AtomicOptions,
   DbClient,
   IDatabaseConnection,
   RepositoryDatabase,
@@ -18,6 +19,8 @@ export class DatabaseConnectionMock
   get client(): DbClient {
     return prismaClient;
   }
-  atomic = <T>(work: (tx: DbClient) => Promise<T>): Promise<T> =>
-    prismaClient.$transaction(work);
+  atomic = <T>(
+    work: (tx: DbClient) => Promise<T>,
+    options?: AtomicOptions,
+  ): Promise<T> => prismaClient.$transaction(work, options);
 }
