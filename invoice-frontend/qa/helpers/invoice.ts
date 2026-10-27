@@ -1,15 +1,16 @@
 import { expect } from "@playwright/test";
 import type { Page, Response } from "@playwright/test";
 
-export const canonicalIds = [
-  "AA1449",
-  "FV2353",
-  "RG0314",
-  "RT2080",
-  "RT3080",
-  "TY9141",
-  "XM9141",
-];
+export const canonicalBusinesses = {
+  AA1449: "Willow Design Co.",
+  FV2353: "Juniper Works",
+  RG0314: "Fieldwork Studio",
+  RT2080: "Oakline Creative",
+  RT3080: "Northstar Studio",
+  TY9141: "Harbour Collective",
+  XM9141: "Cedar & Finch",
+};
+export const canonicalIds = Object.keys(canonicalBusinesses);
 export const cards = (page: Page) => page.locator('a[href*="/invoices/"]');
 export function operation(page: Page, name: string) {
   return page.waitForResponse((response) => {
@@ -25,8 +26,11 @@ export async function result(response: Response) {
 }
 export async function dashboard(page: Page) {
   await expect(cards(page)).toHaveCount(7);
-  for (const id of canonicalIds)
-    await expect(cards(page).filter({ hasText: id })).toBeVisible();
+  for (const [id, clientName] of Object.entries(canonicalBusinesses)) {
+    const card = cards(page).filter({ hasText: id });
+    await expect(card).toBeVisible();
+    await expect(card).toContainText(clientName);
+  }
 }
 export async function boot(page: Page) {
   await page.clock.setFixedTime(new Date("2026-10-17T23:30:00-03:00"));

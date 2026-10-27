@@ -575,6 +575,74 @@ describe("canonical demo seed", () => {
     const invoices = result.data?.["allInvoices"] as { id: string }[];
     expect(invoices.map((invoice) => invoice.id).sort()).toEqual(canonicalIds);
   });
+
+  it("persists canonical fictional contacts and complete snapshots for all seven invoices", async () => {
+    const state = await h.state();
+    for (const record of canonicalDemoRecords()) {
+      const invoice = state.invoices.find(({ id }) => id === record.id)!;
+      expect(toSnapshot(invoice)).toEqual(record.invoice);
+      const history = state.revisions
+        .filter(({ invoiceId }) => invoiceId === record.id)
+        .sort((a, b) => a.revisionNumber - b.revisionNumber);
+      expect(history.map(({ snapshot }) => snapshot)).toEqual(record.snapshots);
+    }
+  });
+
+  it("restores every initial snapshot without reintroducing legacy contacts and appends matching history", async () => {
+    for (const record of canonicalDemoRecords()) {
+      const originalHistory = await h.db().invoiceRevision.findMany({
+        where: { invoiceId: record.id },
+        orderBy: { revisionNumber: "asc" },
+      });
+      for (const [index, snapshot] of record.snapshots.entries()) {
+        const revisionId = `demo-${record.id}-revision-${index + 1}`;
+        const result = await h.execute(operations.restoreInvoiceRevision, {
+          id: record.id,
+          first: revisionId,
+        });
+        expect(result.errors).toBeUndefined();
+        expect(result.data?.["restoreInvoiceRevision"]).toEqual({
+          id: record.id,
+          clientName: record.invoice.clientName,
+        });
+        const restored = await h.db().invoice.findUniqueOrThrow({
+          where: { id: record.id },
+          include,
+        });
+        // A removed item receives a fresh ID when restored, and database reads
+        // may order those IDs differently. Compare business fields by name.
+        const restoredState = toSnapshot(restored);
+        restoredState.items.sort((a, b) => a.name.localeCompare(b.name));
+        expect(restoredState).toEqual({
+          ...snapshot,
+          items: snapshot.items
+            .map((item) => ({ ...item, id: expect.any(String) }))
+            .sort((a, b) => a.name.localeCompare(b.name)),
+        });
+        const latest = await h.db().invoiceRevision.findFirstOrThrow({
+          where: { invoiceId: record.id },
+          orderBy: { revisionNumber: "desc" },
+        });
+        expect(latest).toMatchObject({
+          revisionNumber: record.snapshots.length + index + 1,
+          changeType: "restore",
+          restoredFromRevisionId: revisionId,
+        });
+        const latestState = toSnapshot(latest.snapshot);
+        latestState.items.sort((a, b) => a.name.localeCompare(b.name));
+        expect(latestState).toEqual(restoredState);
+      }
+      expect(
+        await h.db().invoiceRevision.findMany({
+          where: { invoiceId: record.id },
+          orderBy: { revisionNumber: "asc" },
+          take: originalHistory.length,
+        }),
+      ).toEqual(originalHistory);
+    }
+    expect(await h.db().invoice.count()).toBe(7);
+    expect(await h.db().invoiceRevision.count()).toBe(22);
+  });
 });
 
 describe("canonical demo reset", () => {

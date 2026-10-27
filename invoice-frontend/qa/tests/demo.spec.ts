@@ -189,6 +189,8 @@ test("inspects canonical revision diffs and restores an earlier revision", async
   await page.getByTestId("confirm-restore-button").click();
   const restoredInvoice = (await result(await restored)).restoreInvoiceRevision;
   expect(restoredInvoice).toMatchObject({
+    clientName: "Northstar Studio",
+    clientEmail: "rt3080@example.com",
     description: "Website re-brand + logo",
     status: "draft",
     total: 1800.9,
@@ -203,6 +205,18 @@ test("inspects canonical revision diffs and restores an earlier revision", async
     page.getByText(restoredInvoice.description, { exact: true }),
   ).toBeVisible();
   await expect(page.getByTestId("invoice-toolbar")).toContainText("Draft");
+  await expect(
+    page.getByText("Northstar Studio", { exact: true }),
+  ).toBeVisible();
+  await expect(
+    page.getByText("rt3080@example.com", { exact: true }),
+  ).toBeVisible();
+  await expect(
+    page.getByText("42 Sample Street", { exact: true }),
+  ).toBeVisible();
+  await expect(
+    page.getByText("18 Example Lane", { exact: true }),
+  ).toBeVisible();
   await expect(page.getByText("£ 1,800.90", { exact: true })).toBeVisible();
   await page.getByTestId("history-button").click();
   await expect(page.getByTestId(/revision-item-/)).toHaveCount(6);
