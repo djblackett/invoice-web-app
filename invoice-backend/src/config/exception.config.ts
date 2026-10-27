@@ -50,3 +50,9 @@ export class ValidationException extends BaseException {
     super("ValidationException", 400, message);
   }
 }
+
+export class PayloadTooLargeException extends BaseException {
+  constructor(message: string) {
+    super("PayloadTooLargeException", 413, message);
+  }
+}

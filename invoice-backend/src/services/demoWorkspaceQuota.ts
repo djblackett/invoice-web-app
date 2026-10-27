@@ -108,6 +108,9 @@ export function assertDemoInvoiceText(invoice: Partial<Invoice>) {
   }
 }
 
+// The application's recognized statuses (frontend `StatusKey`).
+export const DEMO_INVOICE_STATUSES = ["draft", "pending", "paid"] as const;
+
 const UUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
 const RECORD_ID = /^[A-Za-z0-9-]+$/;
 
@@ -124,6 +127,16 @@ function text(field: string, value: unknown): string {
 }
 const optionalText = (field: string, value: unknown) =>
   present(value) ? text(field, value) : undefined;
+
+function optionalStatus(value: unknown) {
+  const status = optionalText("status", value);
+  if (
+    status !== undefined &&
+    !(DEMO_INVOICE_STATUSES as readonly string[]).includes(status)
+  )
+    throw new ValidationException("status is invalid");
+  return status;
+}
 
 function bounded(
   field: string,
@@ -206,7 +219,9 @@ function prepareItems(value: unknown): Item[] | undefined {
  * allowlist, so `id`, totals and ownership fields never arrive (totals are
  * recomputed by the service). Item IDs must be UUID-shaped; whether one
  * belongs to the visitor's invoice is decided in the transaction, where
- * unknown IDs are ignored. Errors name only the offending field, never data.
+ * unknown IDs are ignored. `status` must be draft, pending or paid; other
+ * fields may be empty, so incomplete drafts still save. Errors name only the
+ * offending field, never data.
  */
 export function prepareDemoInvoiceInput(input: unknown): Partial<Invoice> {
   if (!isRecord(input)) throw new ValidationException("Invalid invoice input");
@@ -214,7 +229,7 @@ export function prepareDemoInvoiceInput(input: unknown): Partial<Invoice> {
     clientName: optionalText("clientName", input["clientName"]),
     clientEmail: optionalText("clientEmail", input["clientEmail"]),
     description: optionalText("description", input["description"]),
-    status: optionalText("status", input["status"]),
+    status: optionalStatus(input["status"]),
     createdAt: optionalText("createdAt", input["createdAt"]),
     paymentDue: optionalText("paymentDue", input["paymentDue"]),
     paymentTerms: present(input["paymentTerms"])

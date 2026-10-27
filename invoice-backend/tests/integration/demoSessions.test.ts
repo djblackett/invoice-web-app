@@ -666,7 +666,7 @@ describe("temporary demo sessions", () => {
     }
   });
 
-  it("blocks every GraphQL mutation and service mutation for temporary sessions with zero database changes", async () => {
+  it("denies every unapproved GraphQL mutation, and every service mutation outside the coordinator, with zero database changes", async () => {
     const session = await allocateDemoSession(prisma);
     const ctx = await context(session.credential);
     const invoice = (await ctx.invoiceService!.getInvoices())[0]!;
@@ -675,17 +675,29 @@ describe("temporary demo sessions", () => {
     });
     const before = await snapshotDatabase();
     const { getResolvers } = await import("../../src/resolvers");
-    for (const resolver of Object.values(getResolvers().Mutation)) {
-      expect(() => resolver({}, {}, ctx)).toThrow("read-only");
-    }
+    const approved = [
+      "addInvoice",
+      "editInvoice",
+      "markAsPaid",
+      "removeInvoice",
+      "restoreInvoiceRevision",
+    ];
+    const names = Object.keys(getResolvers().Mutation);
+    expect(names).toEqual(expect.arrayContaining(approved));
+    // Everything else, including any mutation added later, is denied by name.
+    for (const [name, resolver] of Object.entries(getResolvers().Mutation))
+      if (!approved.includes(name))
+        expect(() => resolver({}, {}, ctx)).toThrow(
+          "cannot use this operation",
+        );
     for (const query of [
-      `mutation { editInvoice(id: "${invoice.id}", clientName: "Attack") { id } }`,
-      `mutation { markAsPaid(id: "${invoice.id}") { id } }`,
-      `mutation { removeInvoice(id: "${invoice.id}") { acknowledged } }`,
-      `mutation { restoreInvoiceRevision(invoiceId: "${invoice.id}", revisionId: "${revision.id}") { id } }`,
       "mutation { resetDemoData }",
-      "mutation { deleteUsers { acknowledged } }",
       "mutation { deleteAllInvoices { acknowledged } }",
+      `mutation { deleteInvoicesByUserId(userId: "${realUser.id}") { acknowledged } }`,
+      `mutation { createUser(username: "x@example.test", password: "secret") { id } }`,
+      "mutation { deleteUsers { acknowledged } }",
+      "mutation { deleteUsersKeepAdmins { acknowledged } }",
+      `mutation { login(username: "x", password: "y") { token } }`,
     ])
       for (const ws of [false, true]) {
         expect(
@@ -693,6 +705,18 @@ describe("temporary demo sessions", () => {
             ?.extensions?.["code"],
         ).toBe("FORBIDDEN");
       }
+    // The approved five are coordinated over HTTP only.
+    for (const query of [
+      `mutation { editInvoice(id: "${invoice.id}", clientName: "Attack") { id } }`,
+      `mutation { markAsPaid(id: "${invoice.id}") { id } }`,
+      `mutation { removeInvoice(id: "${invoice.id}") { acknowledged } }`,
+      `mutation { restoreInvoiceRevision(invoiceId: "${invoice.id}", revisionId: "${revision.id}") { id } }`,
+      `mutation { addInvoice(clientName: "Attack") { id } }`,
+    ])
+      expect(
+        (await execute(session.credential, query, {}, true)).errors?.[0]
+          ?.extensions?.["code"],
+      ).toBe("FORBIDDEN");
     const service = ctx.invoiceService!;
     for (const call of [
       () => service.addInvoice(invoice),
@@ -722,7 +746,7 @@ describe("temporary demo sessions", () => {
     });
     const { getResolvers } = await import("../../src/resolvers");
     const wsCtx = await context(session.credential, true);
-    // Its own message: this denial must outlive the read-only guard (Slice 3B).
+    // Its own message: this denial outlives the read-only guard (Slice 3B.1).
     for (const resolver of Object.values(getResolvers().Mutation))
       expect(() => resolver({}, {}, wsCtx)).toThrow(
         "cannot mutate over WebSocket",
@@ -820,8 +844,8 @@ describe("temporary demo sessions", () => {
         query: `mutation { editInvoice(id: "${own.id}", clientName: "${"x".repeat(150 * 1024)}") { id } }`,
       }),
     });
-    expect(oversized.status).toBeGreaterThanOrEqual(400);
-    expect(await oversized.text()).not.toContain('"data"');
+    expect(oversized.status).toBe(413);
+    expect(await oversized.json()).toMatchObject({ statusCode: 413 });
     expect(await snapshotDatabase()).toEqual(before);
   });
 

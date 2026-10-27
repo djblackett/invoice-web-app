@@ -16,6 +16,8 @@ const TYPES = {
   Logger: Symbol.for("Logger"),
   // Bound only inside a coordinated-write transaction scope.
   TransactionScope: Symbol.for("TransactionScope"),
+  // Bound only by the coordinator, for one admitted temporary-session operation.
+  DemoWriteCapability: Symbol.for("DemoWriteCapability"),
 } as const;
 
 export default TYPES;

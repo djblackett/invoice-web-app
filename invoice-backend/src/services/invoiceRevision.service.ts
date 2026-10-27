@@ -1,5 +1,8 @@
-import { requireDemoMutationAllowed } from "./demoSessionPolicy";
-import { inject, injectable } from "inversify";
+import {
+  requireDemoMutationAllowed,
+  type DemoWriteCapability,
+} from "./demoSessionPolicy";
+import { inject, injectable, optional } from "inversify";
 import type { IInvoiceRepo } from "@/repositories/InvoiceRepo";
 import { getAuthorizedInvoice } from "./authorizedInvoice";
 import TYPES from "@/constants/identifiers";
@@ -44,6 +47,9 @@ export class InvoiceRevisionService {
     private readonly userContext: UserIdAndRole | null,
     @inject(TYPES.IInvoiceRepo)
     private readonly invoiceRepo: IInvoiceRepo,
+    @optional()
+    @inject(TYPES.DemoWriteCapability)
+    private readonly demoWrite: DemoWriteCapability | null = null,
   ) {}
 
   /**
@@ -57,7 +63,15 @@ export class InvoiceRevisionService {
   recordIfChanged = async (
     params: RecordParams,
   ): Promise<StoredRevision | null> => {
-    requireDemoMutationAllowed(this.userContext);
+    // Every granted operation that records history; deletion records none.
+    requireDemoMutationAllowed(
+      this.userContext,
+      this.demoWrite,
+      "create",
+      "edit",
+      "pay",
+      "restore",
+    );
     await getAuthorizedInvoice(
       this.invoiceRepo,
       this.userContext,

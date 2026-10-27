@@ -4,7 +4,11 @@ import type { Application, NextFunction, Request, Response } from "express";
 import express from "express";
 import cors from "cors";
 import { createCorsOptions } from "./cors.config";
-import { BaseException, InternalServerException } from "./exception.config";
+import {
+  BaseException,
+  InternalServerException,
+  PayloadTooLargeException,
+} from "./exception.config";
 import container from "./inversify.config";
 import type { Logger } from "./logger.config";
 import TYPES from "@/constants/identifiers";
@@ -53,6 +57,14 @@ export function serverErrorConfig(app: Application) {
       if (err instanceof BaseException) {
         logger.error(err.message);
         return res.status(err.statusCode).json(err);
+      } else if (
+        err &&
+        (err as { type?: unknown }).type === "entity.too.large"
+      ) {
+        // express.json's MAX_REQUEST_BYTES rejection, before any context.
+        logger.warn(err.message);
+        const tooLarge = new PayloadTooLargeException("Request body too large");
+        return res.status(tooLarge.statusCode).json(tooLarge);
       } else if (err) {
         logger.error(err.message);
         return res.status(500).json(new InternalServerException(err.message));

@@ -1,4 +1,7 @@
-import { requireDemoMutationAllowed } from "./demoSessionPolicy";
+import {
+  requireDemoMutationAllowed,
+  type DemoWriteCapability,
+} from "./demoSessionPolicy";
 import { Invoice, UserIdAndRole } from "../constants/types";
 import {
   mapPartialInvoiceToInvoice,
@@ -37,6 +40,11 @@ export class InvoiceService {
     @optional()
     @inject(TYPES.TransactionScope)
     private readonly revisionsRequired: boolean = false,
+    // Present only in a coordinated temporary-session write; it admits that
+    // session to the one operation the coordinator granted, nothing else.
+    @optional()
+    @inject(TYPES.DemoWriteCapability)
+    private readonly demoWrite: DemoWriteCapability | null = null,
   ) {}
 
   getInvoices = async (): Promise<Invoice[]> => {
@@ -70,7 +78,7 @@ export class InvoiceService {
     this.getAuthorizedInvoice(invoiceId);
 
   addInvoice = async (invoice: Invoice) => {
-    requireDemoMutationAllowed(this.userContext);
+    requireDemoMutationAllowed(this.userContext, this.demoWrite, "create");
     if (!this.userContext) {
       throw new ValidationException("Unauthorized");
     }
@@ -122,7 +130,7 @@ export class InvoiceService {
   };
 
   updateInvoice = async (id: string, invoiceUpdates: Partial<Invoice>) => {
-    requireDemoMutationAllowed(this.userContext);
+    requireDemoMutationAllowed(this.userContext, this.demoWrite, "edit");
     const oldInvoice = await this.getAuthorizedInvoice(id);
 
     try {
@@ -174,7 +182,7 @@ export class InvoiceService {
    * stale line-item math.
    */
   restoreRevision = async (invoiceId: string, revisionId: string) => {
-    requireDemoMutationAllowed(this.userContext);
+    requireDemoMutationAllowed(this.userContext, this.demoWrite, "restore");
     if (!this.userContext) {
       throw new ValidationException("Unauthorized");
     }
@@ -238,7 +246,7 @@ export class InvoiceService {
   };
 
   markAsPaid = async (id: string) => {
-    requireDemoMutationAllowed(this.userContext);
+    requireDemoMutationAllowed(this.userContext, this.demoWrite, "pay");
     const invoice = await this.getAuthorizedInvoice(id);
     if (invoice.status !== "pending") {
       throw new ValidationException(
@@ -267,7 +275,7 @@ export class InvoiceService {
   };
 
   deleteInvoice = async (invoiceId: string) => {
-    requireDemoMutationAllowed(this.userContext);
+    requireDemoMutationAllowed(this.userContext, this.demoWrite, "delete");
     await this.getAuthorizedInvoice(invoiceId);
     try {
       const result = await this.invoiceRepo.delete(invoiceId);

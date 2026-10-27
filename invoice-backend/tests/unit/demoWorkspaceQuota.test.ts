@@ -5,15 +5,20 @@ import {
   assertDemoInvoiceText,
   assertDemoRecordId,
   DEMO_INPUT_LIMITS,
+  DEMO_INVOICE_STATUSES,
   DEMO_TEXT_LIMITS,
   DEMO_WORKSPACE_LIMITS,
   exceedsWorkspaceLimits,
   prepareDemoInvoiceInput,
 } from "../../src/services/demoWorkspaceQuota";
 import {
+  issueDemoWriteCapability,
   requireDemoMutationAllowed,
   requireHttpForDemoMutation,
+  type DemoWriteCapability,
 } from "../../src/services/demoSessionPolicy";
+import { readdirSync, readFileSync } from "node:fs";
+import path from "node:path";
 
 const address = {
   street: "1 Main",
@@ -170,6 +175,36 @@ describe("temporary-session input preparation (before any transaction)", () => {
     ).toThrow("items.0.id is invalid");
   });
 
+  it("accepts only the application's statuses, while incomplete drafts keep empty fields", () => {
+    expect(DEMO_INVOICE_STATUSES).toEqual(["draft", "pending", "paid"]);
+    for (const status of DEMO_INVOICE_STATUSES)
+      expect(prepareDemoInvoiceInput({ status }).status).toBe(status);
+    for (const status of ["", "Paid", "archived", "void", "x".repeat(16)])
+      expect(() => prepareDemoInvoiceInput({ status })).toThrow(
+        "status is invalid",
+      );
+    // An omitted status stays omitted; create then uses the service default.
+    expect(prepareDemoInvoiceInput({ clientName: "" })).toEqual({
+      clientName: "",
+    });
+    // The shape the frontend sends for a blank "Save as Draft".
+    expect(
+      prepareDemoInvoiceInput({
+        status: "draft",
+        clientName: "",
+        clientEmail: "",
+        description: "",
+        clientAddress: { street: "", city: "", postCode: "", country: "" },
+        senderAddress: { street: "", city: "", postCode: "", country: "" },
+        items: [{ id: "", name: "", quantity: 0, price: 0, total: 0 }],
+        paymentTerms: 30,
+      }),
+    ).toMatchObject({
+      status: "draft",
+      items: [{ name: "", quantity: 0, price: 0 }],
+    });
+  });
+
   it("bounds record IDs by length and character set", () => {
     const visible = `RT3080-${randomUUID()}`;
     expect(assertDemoRecordId("invoiceId", visible)).toBe(visible);
@@ -210,5 +245,102 @@ describe("temporary-session transport policy", () => {
     expect(() => requireHttpForDemoMutation(null, true)).not.toThrow();
     expect(() => requireDemoMutationAllowed(temporary)).toThrow("read-only");
     expect(() => requireDemoMutationAllowed(ordinary)).not.toThrow();
+  });
+});
+
+describe("temporary-session write capability", () => {
+  const temporary = {
+    id: "demo-session:user",
+    demoSessionId: "session",
+    name: "Demo visitor",
+    role: "USER" as const,
+  };
+  const ordinary = { id: "auth0|user", name: "User", role: "USER" as const };
+  const issue = (overrides = {}) =>
+    issueDemoWriteCapability({
+      sessionId: "session",
+      userId: temporary.id,
+      operation: "edit",
+      ...overrides,
+    });
+
+  it("admits a temporary session only for the granted operation, session and user", () => {
+    const { capability } = issue();
+    expect(() =>
+      requireDemoMutationAllowed(temporary, capability, "edit"),
+    ).not.toThrow();
+    expect(() =>
+      requireDemoMutationAllowed(temporary, capability, "create", "edit"),
+    ).not.toThrow();
+    for (const other of ["create", "pay", "delete", "restore"] as const)
+      expect(() =>
+        requireDemoMutationAllowed(temporary, capability, other),
+      ).toThrow("read-only");
+    // No operations named (bulk deletes, user administration): never admitted.
+    expect(() => requireDemoMutationAllowed(temporary, capability)).toThrow(
+      "read-only",
+    );
+    for (const user of [
+      { ...temporary, demoSessionId: "another-session" },
+      { ...temporary, id: "demo-session:another-user" },
+      // The reserved ID alone is still temporary, and has no session to match.
+      { id: temporary.id, name: temporary.name, role: temporary.role },
+    ])
+      expect(() =>
+        requireDemoMutationAllowed(user, capability, "edit"),
+      ).toThrow("read-only");
+  });
+
+  it("is spent on revocation, and cannot be forged, copied or deserialized", () => {
+    const { capability, revoke } = issue();
+    revoke();
+    expect(() =>
+      requireDemoMutationAllowed(temporary, capability, "edit"),
+    ).toThrow("read-only");
+    const live = issue().capability;
+    expect(Object.isFrozen(live)).toBe(true);
+    expect(Object.keys(live)).toEqual([]);
+    for (const forged of [
+      {},
+      { ...live },
+      Object.create(live) as object,
+      JSON.parse(JSON.stringify(live)) as object,
+      { sessionId: "session", userId: temporary.id, operation: "edit" },
+    ])
+      expect(() =>
+        requireDemoMutationAllowed(
+          temporary,
+          forged as DemoWriteCapability,
+          "edit",
+        ),
+      ).toThrow("read-only");
+    expect(() => requireDemoMutationAllowed(temporary, null, "edit")).toThrow(
+      "read-only",
+    );
+  });
+
+  it("leaves ordinary identities unaffected, with or without a capability", () => {
+    expect(() => requireDemoMutationAllowed(ordinary)).not.toThrow();
+    expect(() =>
+      requireDemoMutationAllowed(ordinary, null, "delete"),
+    ).not.toThrow();
+    expect(() => requireDemoMutationAllowed(null)).not.toThrow();
+  });
+
+  it("is issued only by the session-write coordinator", () => {
+    const src = path.resolve(__dirname, "../../src");
+    const files = readdirSync(src, { recursive: true, encoding: "utf8" })
+      .filter((file) => file.endsWith(".ts"))
+      .filter((file) =>
+        readFileSync(path.join(src, file), "utf8").includes(
+          "issueDemoWriteCapability(",
+        ),
+      )
+      .map((file) => file.replaceAll(path.sep, "/"))
+      .sort();
+    expect(files).toEqual([
+      "services/demoSessionPolicy.ts",
+      "services/demoSessionWrite.ts",
+    ]);
   });
 });

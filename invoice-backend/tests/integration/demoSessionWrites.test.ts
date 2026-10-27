@@ -46,28 +46,14 @@ import {
   type DemoWriteKind,
 } from "../../src/services/demoSessionWrite";
 import { DEMO_WORKSPACE_LIMITS } from "../../src/services/demoWorkspaceQuota";
+import type { DemoInvoiceOperation } from "../../src/services/demoSessionPolicy";
 import { canonicalDemoRecords } from "../../prisma/demoWorkspace.cjs";
 
-// Slice 3A harness. Every `work` below is test-only: it calls the ORDINARY
-// repositories resolved from the coordinator's transaction scope. No route or
-// resolver reaches runDemoSessionWrite; temporary sessions remain read-only.
-
-// Slice 3B.0 seam: a test that sets `guard.lifted` disables ONLY the service
-// read-only guard, so the real InvoiceService sequence can run inside the
-// coordinator. Every other test, and every route, keeps the real guard.
-const guard = vi.hoisted(() => ({ lifted: false }));
-vi.mock("../../src/services/demoSessionPolicy", async (importOriginal) => {
-  const actual =
-    await importOriginal<
-      typeof import("../../src/services/demoSessionPolicy")
-    >();
-  return {
-    ...actual,
-    requireDemoMutationAllowed: (
-      user: Parameters<typeof actual.requireDemoMutationAllowed>[0],
-    ) => (guard.lifted ? undefined : actual.requireDemoMutationAllowed(user)),
-  };
-});
+// Slice 3A/3B.0 harness. Most `work` below is test-only and calls the
+// ordinary repositories from the coordinator's transaction scope. A write
+// that names an `operation` receives the real coordinator capability, so the
+// ordinary InvoiceService runs with its production guard (no test bypass).
+// The resolver wiring itself is tested in demoSessionMutations.test.ts.
 
 const schema = `demo_writes_${randomUUID().replaceAll("-", "")}`;
 const include = { items: true, clientAddress: true, senderAddress: true };
@@ -129,8 +115,12 @@ async function createWithRevision(scope: interfaces.Container) {
 const write = <T>(
   user: UserIdAndRole,
   work: (scope: interfaces.Container) => Promise<T>,
-  { client = prisma, kind = "mutation" as DemoWriteKind } = {},
-) => runDemoSessionWrite(client, container, user, kind, work);
+  {
+    client = prisma,
+    kind = "mutation" as DemoWriteKind,
+    operation = undefined as DemoInvoiceOperation | undefined,
+  } = {},
+) => runDemoSessionWrite(client, container, user, kind, work, operation);
 
 function gate() {
   let open!: () => void;
@@ -251,7 +241,6 @@ beforeAll(async () => {
   container.rebind<PrismaClient>(TYPES.PrismaClient).toConstantValue(prisma);
 });
 beforeEach(async () => {
-  guard.lifted = false;
   vi.stubEnv("DEMO_SESSIONS_ENABLED", "true");
   await prisma.demoSession.deleteMany();
   await prisma.invoice.deleteMany();
@@ -335,7 +324,7 @@ describe("transaction scope", () => {
   });
 });
 
-describe("coordinated temporary-session writes (internal harness only)", () => {
+describe("coordinated temporary-session writes (internal harness)", () => {
   it("commits an invoice edit and its revision together, or rolls both back when the revision write fails", async () => {
     const user = await newSession();
     const invoice = await ownInvoice(user);
@@ -408,6 +397,48 @@ describe("coordinated temporary-session writes (internal harness only)", () => {
           .get<InvoiceService>(TYPES.InvoiceService)
           .deleteInvoice(invoice.id),
       ),
+    ).rejects.toThrow("read-only");
+    expect(await snapshotDatabase()).toEqual(before);
+  });
+
+  it("grants exactly the requested operation for one write, and revokes it when that write settles", async () => {
+    const user = await newSession();
+    const invoice = await ownInvoice(user);
+    const before = await snapshotDatabase();
+    let captured: InvoiceService | undefined;
+    await expect(
+      write(
+        user,
+        async (scope) => {
+          captured = scope.get<InvoiceService>(TYPES.InvoiceService);
+          await captured.updateInvoice(invoice.id, { clientName: "Granted" });
+          // The same scope cannot stretch an "edit" grant to anything else.
+          for (const denied of [
+            () => captured!.markAsPaid(invoice.id),
+            () => captured!.deleteInvoice(invoice.id),
+            () => captured!.addInvoice({} as never),
+            () => captured!.restoreRevision(invoice.id, randomUUID()),
+            () => captured!.deleteAllInvoices(),
+            () => captured!.deleteInvoicesByUserId(),
+            () => scope.get<UserService>(TYPES.UserService).deleteUsers(),
+            () =>
+              scope
+                .get<UserService>(TYPES.UserService)
+                .createUserWithAuth0({ ...user, id: "auth0|x" }),
+          ])
+            await expect(denied()).rejects.toThrow("read-only");
+          await expect(
+            scope.get<DemoService>(TYPES.DemoService).reset(),
+          ).rejects.toThrow("Only the authenticated demo user");
+          throw new Error("roll back the granted edit");
+        },
+        { operation: "edit" },
+      ),
+    ).rejects.toThrow("roll back the granted edit");
+    // Revoked before the transaction settled: the guard refuses before any
+    // query reaches the closed transaction.
+    await expect(
+      captured!.updateInvoice(invoice.id, { clientName: "Late" }),
     ).rejects.toThrow("read-only");
     expect(await snapshotDatabase()).toEqual(before);
   });
@@ -868,7 +899,7 @@ describe("coordinated temporary-session writes (internal harness only)", () => {
   });
 });
 
-describe("Slice 3B.0 mutation safety (internal harness only)", () => {
+describe("Slice 3B.0 mutation safety (internal harness)", () => {
   const orphans = async () =>
     (
       await prisma.$queryRaw<{ client: number; sender: number }[]>`
@@ -1068,7 +1099,6 @@ describe("Slice 3B.0 mutation safety (internal harness only)", () => {
 
   describe("D3: mandatory revisions in coordinated writes", () => {
     it("propagates a non-database revision failure from addInvoice and updateInvoice, committing neither the change nor usage", async () => {
-      guard.lifted = true;
       const user = await newSession();
       const invoice = await ownInvoice(user);
       const before = await snapshotDatabase();
@@ -1080,29 +1110,40 @@ describe("Slice 3B.0 mutation safety (internal harness only)", () => {
         return scope.get<InvoiceService>(TYPES.InvoiceService);
       };
       await expect(
-        write(user, (scope) =>
-          withFailingHistory(scope).updateInvoice(invoice.id, {
-            clientName: "Edited without history",
-          }),
+        write(
+          user,
+          (scope) =>
+            withFailingHistory(scope).updateInvoice(invoice.id, {
+              clientName: "Edited without history",
+            }),
+          { operation: "edit" },
         ),
       ).rejects.toThrow();
       await expect(
-        write(user, (scope) =>
-          withFailingHistory(scope).addInvoice(template() as never),
+        write(
+          user,
+          (scope) => withFailingHistory(scope).addInvoice(template() as never),
+          { operation: "create" },
         ),
       ).rejects.toThrow();
       expect(await snapshotDatabase()).toEqual(before);
 
       // Control: the same service calls commit WITH history when it succeeds.
-      await write(user, (scope) =>
-        scope
-          .get<InvoiceService>(TYPES.InvoiceService)
-          .updateInvoice(invoice.id, { clientName: "Edited with history" }),
+      await write(
+        user,
+        (scope) =>
+          scope
+            .get<InvoiceService>(TYPES.InvoiceService)
+            .updateInvoice(invoice.id, { clientName: "Edited with history" }),
+        { operation: "edit" },
       );
-      const created = await write(user, (scope) =>
-        scope
-          .get<InvoiceService>(TYPES.InvoiceService)
-          .addInvoice(template() as never),
+      const created = await write(
+        user,
+        (scope) =>
+          scope
+            .get<InvoiceService>(TYPES.InvoiceService)
+            .addInvoice(template() as never),
+        { operation: "create" },
       );
       expect(
         await prisma.invoiceRevision.count({
@@ -1128,7 +1169,7 @@ describe("Slice 3B.0 mutation safety (internal harness only)", () => {
       const waiting = await lockWaiters();
       const transactions = vi.spyOn(prisma, "$transaction");
       const item = { name: "Item", price: 10, quantity: 1 };
-      const invalid: Parameters<typeof runDemoInvoiceWrite>[3][] = [
+      const invalid: Parameters<typeof runDemoInvoiceWrite>[4][] = [
         { invoice: { ...template(), items: Array(21).fill(item) } },
         { invoice: { ...template(), clientName: "x".repeat(101) } },
         {
@@ -1153,16 +1194,38 @@ describe("Slice 3B.0 mutation safety (internal harness only)", () => {
         { invoice: { items: [{ ...item, id: "x".repeat(10_000) }] } },
         { invoice: { clientName: 42 as never } },
         { invoice: { items: "not-a-list" as never } },
+        { invoice: { ...template(), status: "archived" } },
+        { invoice: { ...template(), status: "PAID" } },
         { invoiceId: "x".repeat(10_000) },
         { invoiceId: own.id, revisionId: "x".repeat(10_000) },
+        // Required fields are required: nothing reaches the transaction.
+        { invoiceId: own.id },
+        {},
       ];
       let ran = 0;
       try {
+        // Each request fails for the operation it would need, and the
+        // operation-agnostic cases fail for every operation.
         for (const request of invalid) {
+          const operation: DemoInvoiceOperation =
+            "revisionId" in request
+              ? "restore"
+              : "invoice" in request
+                ? "create"
+                : "invoiceId" in request
+                  ? "restore"
+                  : "pay";
           await expect(
-            runDemoInvoiceWrite(prisma, container, user, request, async () => {
-              ran++;
-            }),
+            runDemoInvoiceWrite(
+              prisma,
+              container,
+              user,
+              operation,
+              request,
+              async () => {
+                ran++;
+              },
+            ),
           ).rejects.toBeInstanceOf(ValidationException);
         }
         expect(transactions).not.toHaveBeenCalled();
@@ -1176,7 +1239,6 @@ describe("Slice 3B.0 mutation safety (internal harness only)", () => {
     });
 
     it("never lets client IDs collide with, or reveal, another user's invoice or item", async () => {
-      guard.lifted = true;
       const { runDemoInvoiceWrite } = demoWrites;
       const user = await newSession();
       const own = await ownInvoice(user);
@@ -1200,6 +1262,7 @@ describe("Slice 3B.0 mutation safety (internal harness only)", () => {
         prisma,
         container,
         user,
+        "create",
         { invoice: { ...template(), id: other.id } },
         (scope, { invoice }) =>
           scope
@@ -1215,6 +1278,7 @@ describe("Slice 3B.0 mutation safety (internal harness only)", () => {
           prisma,
           container,
           user,
+          "edit",
           {
             invoiceId: own.id,
             invoice: {
@@ -1224,7 +1288,7 @@ describe("Slice 3B.0 mutation safety (internal harness only)", () => {
           (scope, { invoiceId, invoice }) =>
             scope
               .get<InvoiceService>(TYPES.InvoiceService)
-              .updateInvoice(invoiceId!, invoice!) as Promise<{
+              .updateInvoice(invoiceId, invoice) as Promise<{
               items: { id: string }[];
             }>,
         );
@@ -1237,6 +1301,7 @@ describe("Slice 3B.0 mutation safety (internal harness only)", () => {
         prisma,
         container,
         user,
+        "edit",
         {
           invoiceId: own.id,
           invoice: {
@@ -1248,7 +1313,7 @@ describe("Slice 3B.0 mutation safety (internal harness only)", () => {
         (scope, { invoiceId, invoice }) =>
           scope
             .get<InvoiceService>(TYPES.InvoiceService)
-            .updateInvoice(invoiceId!, invoice!) as Promise<{
+            .updateInvoice(invoiceId, invoice) as Promise<{
             items: { id: string }[];
           }>,
       );

@@ -5,6 +5,8 @@ import { createTransactionScope } from "../database/transactionScope";
 import {
   DEMO_SESSION_USER_PREFIX,
   demoSessionsEnabled,
+  issueDemoWriteCapability,
+  type DemoInvoiceOperation,
 } from "./demoSessionPolicy";
 import {
   assertDemoRecordId,
@@ -53,9 +55,11 @@ const isLockTimeout = (e: unknown) =>
   (e.meta as { code?: unknown } | undefined)?.code === "55P03";
 
 /**
- * The single coordinated write path for a temporary session. NOT wired to any
- * route or resolver: temporary sessions remain read-only, and `work` resolves
- * the ordinary (still guarded) services from the scope.
+ * The single coordinated write path for a temporary session. `work` resolves
+ * the ordinary services from the scope. Those services stay closed to the
+ * session unless `operation` is given: then, and only after the lock and
+ * revalidation, a capability for exactly that operation is bound into this
+ * scope, and it is revoked as soon as `work` settles.
  *
  * Lock order, all transaction-scoped:
  *   1. advisory lock 8372402: allocation and cleanup only, never taken here;
@@ -74,6 +78,7 @@ export async function runDemoSessionWrite<T>(
   user: UserIdAndRole,
   kind: DemoWriteKind,
   work: (scope: interfaces.Container) => Promise<T>,
+  operation?: DemoInvoiceOperation,
 ): Promise<T> {
   const sessionId = user.demoSessionId;
   if (!sessionId) throw new DemoSessionWriteError("SESSION_INVALID");
@@ -121,17 +126,34 @@ export async function runDemoSessionWrite<T>(
           throw new DemoSessionWriteError("RESET_COOLDOWN");
       }
 
-      // The scope's identity comes from the locked row, not the request.
-      const result = await work(
-        createTransactionScope(parent, tx, {
-          id: session.userId,
-          username: session.username,
-          name: session.name ?? "Demo visitor",
-          role: "USER",
-          isDemo: true,
-          demoSessionId: sessionId,
-        }),
-      );
+      // The scope's identity and grant come from the locked row, not the request.
+      const grant = operation
+        ? issueDemoWriteCapability({
+            sessionId,
+            userId: session.userId,
+            operation,
+          })
+        : undefined;
+      let result: T;
+      try {
+        result = await work(
+          createTransactionScope(
+            parent,
+            tx,
+            {
+              id: session.userId,
+              username: session.username,
+              name: session.name ?? "Demo visitor",
+              role: "USER",
+              isDemo: true,
+              demoSessionId: sessionId,
+            },
+            grant?.capability,
+          ),
+        );
+      } finally {
+        grant?.revoke();
+      }
 
       if (
         exceedsWorkspaceLimits(await measureWorkspaceUsage(tx, session.userId))
@@ -163,37 +185,68 @@ export interface DemoInvoiceRequest {
   invoice?: unknown;
 }
 
-export interface PreparedDemoInvoiceRequest {
-  invoiceId?: string;
-  revisionId?: string;
-  invoice?: Partial<Invoice>;
+// What each operation needs. Every listed field is required and validated;
+// anything else in the request is dropped before the transaction.
+const DEMO_REQUEST_FIELDS = {
+  create: ["invoice"],
+  edit: ["invoiceId", "invoice"],
+  pay: ["invoiceId"],
+  delete: ["invoiceId"],
+  restore: ["invoiceId", "revisionId"],
+} as const satisfies Record<
+  DemoInvoiceOperation,
+  readonly (keyof DemoInvoiceRequest)[]
+>;
+
+interface PreparedFields {
+  invoiceId: string;
+  revisionId: string;
+  invoice: Partial<Invoice>;
 }
+
+export type PreparedDemoInvoiceRequest<O extends DemoInvoiceOperation> = Pick<
+  PreparedFields,
+  (typeof DEMO_REQUEST_FIELDS)[O][number]
+>;
 
 /**
  * The entry point for temporary-session invoice operations (create, edit,
  * pay, delete, restore). IDs and invoice input are bounded and rebuilt BEFORE
  * any transaction or lock, so oversized or malformed requests cost no pooled
- * connection, and validation never consults another user's records. NOT
- * wired to any resolver: the read-only guards still deny every mutation.
+ * connection, and validation never consults another user's records. The
+ * coordinator then grants `work` exactly this one operation.
  */
-export async function runDemoInvoiceWrite<T>(
+export async function runDemoInvoiceWrite<O extends DemoInvoiceOperation, T>(
   prisma: PrismaClient,
   parent: interfaces.Container,
   user: UserIdAndRole,
+  operation: O,
   request: DemoInvoiceRequest,
   work: (
     scope: interfaces.Container,
-    prepared: PreparedDemoInvoiceRequest,
+    prepared: PreparedDemoInvoiceRequest<O>,
   ) => Promise<T>,
 ): Promise<T> {
-  const prepared: PreparedDemoInvoiceRequest = {};
-  if (request.invoiceId !== undefined)
-    prepared.invoiceId = assertDemoRecordId("invoiceId", request.invoiceId);
-  if (request.revisionId !== undefined)
-    prepared.revisionId = assertDemoRecordId("revisionId", request.revisionId);
-  if (request.invoice !== undefined)
-    prepared.invoice = prepareDemoInvoiceInput(request.invoice);
-  return runDemoSessionWrite(prisma, parent, user, "mutation", (scope) =>
-    work(scope, prepared),
+  const fields: readonly (keyof PreparedFields)[] =
+    // eslint-disable-next-line security/detect-object-injection -- `operation` is a typed union chosen by server code, not request input.
+    DEMO_REQUEST_FIELDS[operation];
+  const prepared = {
+    ...(fields.includes("invoiceId") && {
+      invoiceId: assertDemoRecordId("invoiceId", request.invoiceId),
+    }),
+    ...(fields.includes("revisionId") && {
+      revisionId: assertDemoRecordId("revisionId", request.revisionId),
+    }),
+    ...(fields.includes("invoice") && {
+      invoice: prepareDemoInvoiceInput(request.invoice),
+    }),
+  };
+  return runDemoSessionWrite(
+    prisma,
+    parent,
+    user,
+    "mutation",
+    (scope) => work(scope, prepared as PreparedDemoInvoiceRequest<O>),
+    operation,
   );
 }
