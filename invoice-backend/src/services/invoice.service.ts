@@ -1,3 +1,4 @@
+import { requireDemoMutationAllowed } from "./demoSessionPolicy";
 import { Invoice, UserIdAndRole } from "../constants/types";
 import {
   mapPartialInvoiceToInvoice,
@@ -64,6 +65,7 @@ export class InvoiceService {
     this.getAuthorizedInvoice(invoiceId);
 
   addInvoice = async (invoice: Invoice) => {
+    requireDemoMutationAllowed(this.userContext);
     if (!this.userContext) {
       throw new ValidationException("Unauthorized");
     }
@@ -114,6 +116,7 @@ export class InvoiceService {
   };
 
   updateInvoice = async (id: string, invoiceUpdates: Partial<Invoice>) => {
+    requireDemoMutationAllowed(this.userContext);
     const oldInvoice = await this.getAuthorizedInvoice(id);
 
     try {
@@ -164,6 +167,7 @@ export class InvoiceService {
    * stale line-item math.
    */
   restoreRevision = async (invoiceId: string, revisionId: string) => {
+    requireDemoMutationAllowed(this.userContext);
     if (!this.userContext) {
       throw new ValidationException("Unauthorized");
     }
@@ -227,6 +231,7 @@ export class InvoiceService {
   };
 
   markAsPaid = async (id: string) => {
+    requireDemoMutationAllowed(this.userContext);
     const invoice = await this.getAuthorizedInvoice(id);
     if (invoice.status !== "pending") {
       throw new ValidationException(
@@ -255,6 +260,7 @@ export class InvoiceService {
   };
 
   deleteInvoice = async (invoiceId: string) => {
+    requireDemoMutationAllowed(this.userContext);
     await this.getAuthorizedInvoice(invoiceId);
     try {
       const result = await this.invoiceRepo.delete(invoiceId);
@@ -270,6 +276,7 @@ export class InvoiceService {
   };
 
   deleteAllInvoices = async () => {
+    requireDemoMutationAllowed(this.userContext);
     if (!this.userContext) {
       throw new ValidationException("Unauthorized");
     }
@@ -289,6 +296,7 @@ export class InvoiceService {
   };
 
   deleteInvoicesByUserId = async () => {
+    requireDemoMutationAllowed(this.userContext);
     if (!this.userContext) {
       throw new ValidationException("Unauthorized");
     }

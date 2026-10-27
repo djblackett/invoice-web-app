@@ -18,6 +18,10 @@ import {
 import TYPES from "@/constants/identifiers";
 import { Logger } from "@/config/logger.config";
 import { DEMO_ID } from "../../prisma/demoWorkspace.cjs";
+import {
+  isReservedDemoUser,
+  requireDemoMutationAllowed,
+} from "./demoSessionPolicy";
 
 @injectable()
 export class UserService {
@@ -35,10 +39,13 @@ export class UserService {
   }
 
   private isAdmin(user: UserIdAndRole): boolean {
-    return user.role === "ADMIN" && !user.isDemo && user.id !== DEMO_ID;
+    return (
+      user.role === "ADMIN" && !user.isDemo && !isReservedDemoUser(user.id)
+    );
   }
 
   private requireAdmin(): void {
+    requireDemoMutationAllowed(this.userContext);
     if (!this.isAdmin(this.requireUser()))
       throw new ForbiddenException("Only admin can manage users");
   }
@@ -78,6 +85,7 @@ export class UserService {
   };
 
   createUserWithAuth0 = async (args: UserIdAndRole): Promise<UserIdAndRole> => {
+    requireDemoMutationAllowed(this.userContext);
     const user = this.requireUser();
     if (
       args.id !== user.id ||

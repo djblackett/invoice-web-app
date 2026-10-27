@@ -20,6 +20,9 @@ import type { Logger } from "@/config/logger.config";
 import type { Context } from "graphql-ws";
 import type { Request } from "express";
 import type { IUserRepo } from "../repositories/userRepo";
+import type { PrismaClient } from "@prisma/client";
+import { resolveDemoSession } from "../services/demoSession.service";
+import { isReservedDemoUser } from "../services/demoSessionPolicy";
 
 const logger = container.get<Logger>(TYPES.Logger);
 
@@ -65,6 +68,12 @@ export async function retrieveUserFromToken(
   token: string,
   options: VerifyOptions,
 ): Promise<UserIdAndRole | null> {
+  if (token.startsWith("demo-session")) {
+    return resolveDemoSession(
+      container.get<PrismaClient>(TYPES.PrismaClient),
+      token,
+    );
+  }
   // Demo credentials are handled before the legacy test/CI shortcut too.
   // eslint-disable-next-line security/detect-possible-timing-attacks -- Public demo selector, not a secret credential.
   if (token === "demo-token") {
@@ -121,6 +130,7 @@ function extractUserFromPayload(payload: JwtPayload): UserIdAndRole {
 
   if (!email) throw new Error("Email claim is missing or invalid");
   if (!id) throw new Error("Id claim is missing or invalid");
+  if (isReservedDemoUser(id)) throw new Error("Reserved demo identity");
 
   const role = roles.includes("Admin") ? "ADMIN" : "USER";
   return { id, role, username: email, name };
@@ -155,7 +165,12 @@ export async function createContext({
     const services = getServices(childContainer);
     const dbUser = await getOrCreateDbUser(user, services.userService);
     const effectiveUser = user.isDemo
-      ? { ...dbUser, role: "USER" as const, isDemo: true }
+      ? {
+          ...dbUser,
+          role: "USER" as const,
+          isDemo: true,
+          ...(user.demoSessionId ? { demoSessionId: user.demoSessionId } : {}),
+        }
       : dbUser;
     // User API policy follows the returned HTTP identity (including stored role).
     // Keep the existing token-bound invoice/revision services unchanged.
@@ -272,6 +287,8 @@ async function getOrCreateDbUser(
     let dbUser = await userService.getUserByIdSafely(user.id);
 
     if (!dbUser) {
+      if (user.demoSessionId)
+        throw new Error("Demo workspace no longer exists");
       logger.info("User not found, creating user");
       dbUser = await userService.createUserWithAuth0({
         id: user.id,

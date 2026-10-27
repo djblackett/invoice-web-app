@@ -148,6 +148,7 @@ export interface InvoiceCreateArgs {
 export type MarkAsPaidArgs = GetInvoiceByIdArgs;
 
 export interface UserIdAndRole {
+  demoSessionId?: string;
   isDemo?: boolean;
   id: string;
   role: "USER" | "ADMIN" | undefined;

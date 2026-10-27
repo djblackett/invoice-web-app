@@ -87,12 +87,33 @@ model SenderAddress {
 }
 
 model User {
+  demoSession DemoSession?
   id        String            @id @default(uuid())
   invoices  Invoice[]
   revisions InvoiceRevision[]
   name      String?
   username  String            @unique
   role      Role              @default(USER)
+}
+
+// A reserved, server-created USER owns exactly one temporary workspace.
+model DemoSession {
+  id             String   @id @default(uuid())
+  userId         String   @unique
+  user           User     @relation(fields: [userId], references: [id], onDelete: Restrict)
+  credentialHash String   @unique
+  createdAt      DateTime @default(now()) @db.Timestamptz(3)
+  expiresAt      DateTime @db.Timestamptz(3)
+  revokedAt      DateTime? @db.Timestamptz(3)
+
+  @@index([expiresAt])
+}
+
+// Persistent global token bucket, retained even after session cleanup.
+model DemoAllocationState {
+  id               Int      @id
+  tokens           Float    @default(10)
+  updatedAt        DateTime @db.Timestamptz(3)
 }
 
 

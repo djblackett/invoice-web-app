@@ -12,6 +12,8 @@ import rateLimit from "express-rate-limit";
 import express from "express";
 import { PrismaClient } from "@prisma/client";
 import TYPES from "./constants/identifiers";
+import { demoSessionHandler } from "./routes/demoSession";
+import { demoSessionsEnabled } from "./services/demoSessionPolicy";
 import type { Logger } from "./config/logger.config";
 
 const logger = container.get<Logger>(TYPES.Logger);
@@ -70,6 +72,20 @@ export const createApp = async () => {
       app.use(limiter);
     }
 
+    const allocateSession = demoSessionHandler(database.getDatabase());
+    app.post(
+      "/demo/sessions",
+      rateLimit({
+        windowMs: 10 * 60 * 1000,
+        limit: 5,
+        standardHeaders: true,
+        legacyHeaders: false,
+        skip: () => !demoSessionsEnabled(),
+      }),
+      (req, res, next) => {
+        void allocateSession(req, res).catch(next);
+      },
+    );
     return app;
   } catch (error) {
     logger.error("Error during app initialization: " + JSON.stringify(error));

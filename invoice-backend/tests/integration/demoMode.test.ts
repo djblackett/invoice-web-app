@@ -841,7 +841,7 @@ describe("Slice 4C adversarial Demo regressions", () => {
   const h = harness(true, false, true);
   const reset = "mutation { resetDemoData }";
 
-  it("ignores signed JWT isDemo claims and rejects reset without any database changes", async () => {
+  it("rejects signed JWT impersonation of reserved demoId and reset without any database changes", async () => {
     const before = {
       ...(await h.state()),
       users: await h.db().user.findMany({ orderBy: { id: "asc" } }),
@@ -851,8 +851,8 @@ describe("Slice 4C adversarial Demo regressions", () => {
     const token = h.authToken(demo, { isDemo: true, role: "USER" });
     expect(jwt.decode(token)).toMatchObject({ sub: demo.id, isDemo: true });
     const ctx = await h.context(token);
-    expect(ctx.user).toMatchObject({ id: demo.id, role: Role.USER });
-    expect(ctx.user?.isDemo).not.toBe(true);
+    // Slice 2 rejects reserved subjects before creating authenticated services.
+    expect(ctx.user).toBeNull();
     const result = await h.execute(reset, {}, token);
     expect(result.errors?.map((error) => error.extensions?.["code"])).toEqual([
       "FORBIDDEN",

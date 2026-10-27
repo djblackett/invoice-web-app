@@ -1,3 +1,4 @@
+import { requireDemoMutationAllowed } from "./demoSessionPolicy";
 import { inject, injectable } from "inversify";
 import type { IInvoiceRepo } from "@/repositories/InvoiceRepo";
 import { getAuthorizedInvoice } from "./authorizedInvoice";
@@ -56,6 +57,7 @@ export class InvoiceRevisionService {
   recordIfChanged = async (
     params: RecordParams,
   ): Promise<StoredRevision | null> => {
+    requireDemoMutationAllowed(this.userContext);
     await getAuthorizedInvoice(
       this.invoiceRepo,
       this.userContext,
