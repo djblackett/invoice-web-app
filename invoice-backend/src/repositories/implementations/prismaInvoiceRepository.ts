@@ -1,6 +1,8 @@
 import { Prisma, Role } from "@prisma/client";
+import { randomUUID } from "node:crypto";
 import { generateInvoiceId } from "../../services/invoiceDomainRules";
-import { inject, injectable } from "inversify";
+import { inject, injectable, optional } from "inversify";
+import TYPES from "@/constants/identifiers";
 import { Invoice, InvoiceWithCreatedBy } from "@/constants/types";
 import { DatabaseConnection } from "@/database/prisma.database.connection";
 import type {
@@ -22,6 +24,12 @@ export class PrismaInvoiceRepository implements IInvoiceRepo {
   constructor(
     @inject(DatabaseConnection)
     private readonly databaseConnection: RepositoryDatabase,
+    // In a coordinated write, client-supplied invoice/item IDs are ignored:
+    // they are global keys, so honouring them would let a visitor probe
+    // other users' records through unique-constraint errors.
+    @optional()
+    @inject(TYPES.TransactionScope)
+    private readonly serverControlledIds: boolean = false,
   ) {
     this.prisma = databaseConnection.client;
   }
@@ -186,7 +194,9 @@ export class PrismaInvoiceRepository implements IInvoiceRepo {
                 await prisma.item.create({
                   data: {
                     ...payload,
-                    ...(item.id ? { id: item.id } : {}),
+                    ...(item.id && !this.serverControlledIds
+                      ? { id: item.id }
+                      : {}),
                     Invoice: { connect: { id } },
                   },
                 });
@@ -298,7 +308,12 @@ export class PrismaInvoiceRepository implements IInvoiceRepo {
         createdBy: {
           connect: { id: invoice.createdById ?? "" },
         },
-        id: invoice.id || "",
+        // A UUID suffix cannot collide, so no in-transaction retry is needed
+        // (a unique violation would abort the enclosing transaction); the
+        // six-character prefix keeps the familiar displayed number.
+        id: this.serverControlledIds
+          ? `${generateInvoiceId()}-${randomUUID()}`
+          : invoice.id || "",
         clientEmail: invoice.clientEmail || "",
         clientName: invoice.clientName || "",
         createdAt: invoice.createdAt || new Date().toISOString(),
@@ -362,11 +377,11 @@ export class PrismaInvoiceRepository implements IInvoiceRepo {
             where: { id },
             select: { clientAddressId: true, senderAddressId: true },
           });
-          // Lock each captured row before the reference check. A concurrent
-          // reference needs KEY SHARE on it for its FK check, so it either
-          // committed first (and the check sees it) or waits and then fails.
-          // This keeps the guard sound when a coordinated write joins this
-          // unit at READ COMMITTED, where the Serializable option is ignored.
+          // A coordinated write joins this unit at READ COMMITTED, where the
+          // Serializable option is ignored. The @unique address keys already
+          // make a concurrent attacher wait on the deleted row and then fail
+          // its FK check; locking each captured row keeps the reference guard
+          // sound without relying on that (an attacher needs KEY SHARE).
           if (clientAddressId !== null) {
             await tx.$executeRaw`
               SELECT 1 FROM "ClientAddress" WHERE "id" = ${clientAddressId} FOR UPDATE`;

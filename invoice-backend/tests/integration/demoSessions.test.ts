@@ -145,6 +145,13 @@ async function expire(userId: string) {
     },
   });
 }
+async function until(condition: () => boolean) {
+  const deadline = Date.now() + 5000;
+  while (!condition()) {
+    if (Date.now() > deadline) throw new Error("Timed out");
+    await new Promise((resolve) => setTimeout(resolve, 10));
+  }
+}
 async function identity(credential: string) {
   const user = await resolveDemoSession(prisma, credential);
   if (!user) throw new Error("Session rejected");
@@ -704,6 +711,117 @@ describe("temporary demo sessions", () => {
     ]) {
       await expect(call()).rejects.toThrow("read-only");
     }
+    expect(await snapshotDatabase()).toEqual(before);
+  });
+
+  it("denies temporary-session mutations over WebSocket as a separate rule, and bounds request size on both transports before any database work", async () => {
+    const session = await allocateDemoSession(prisma);
+    const user = await identity(session.credential);
+    const own = await prisma.invoice.findFirstOrThrow({
+      where: { createdById: user.id },
+    });
+    const { getResolvers } = await import("../../src/resolvers");
+    const wsCtx = await context(session.credential, true);
+    // Its own message: this denial must outlive the read-only guard (Slice 3B).
+    for (const resolver of Object.values(getResolvers().Mutation))
+      expect(() => resolver({}, {}, wsCtx)).toThrow(
+        "cannot mutate over WebSocket",
+      );
+    // Ordinary users keep their WebSocket mutation behaviour.
+    const ordinaryEdit = await execute(
+      signedToken(),
+      `mutation { editInvoice(id: "real-invoice", clientName: "WS edit") { clientName } }`,
+      {},
+      true,
+    );
+    expect(ordinaryEdit.errors).toBeUndefined();
+    expect(ordinaryEdit.data?.["editInvoice"]).toEqual({
+      clientName: "WS edit",
+    });
+    const before = await snapshotDatabase();
+
+    // Real transport: the same rule through ws + graphql-ws + createContext.
+    const client = createClient({
+      url: wsUrl,
+      webSocketImpl: WebSocket,
+      retryAttempts: 0,
+      connectionParams: { Authorization: `Bearer ${session.credential}` },
+    });
+    try {
+      const result = await new Promise<{
+        errors?: readonly { message: string; extensions?: unknown }[];
+      }>((resolve, reject) => {
+        let last = {};
+        client.subscribe(
+          { query: `mutation { markAsPaid(id: "${own.id}") { id } }` },
+          {
+            next: (value) => (last = value),
+            error: reject,
+            complete: () => resolve(last),
+          },
+        );
+      });
+      expect(result.errors?.[0]).toMatchObject({
+        message: "Temporary demo sessions cannot mutate over WebSocket",
+        extensions: { code: "FORBIDDEN" },
+      });
+    } finally {
+      await client.dispose();
+    }
+
+    // A frame above the bound closes the socket (1009) before graphql-ws
+    // parses it; one just below the bound is still processed normally.
+    const raw = async (padding: number) => {
+      const socket = new WebSocket(wsUrl, "graphql-transport-ws");
+      const messages: { type: string }[] = [];
+      const closed = new Promise<number>((resolve) =>
+        socket.on("close", (code) => resolve(code)),
+      );
+      socket.on("message", (data) =>
+        messages.push(JSON.parse(String(data)) as { type: string }),
+      );
+      await new Promise((resolve) => socket.on("open", resolve));
+      socket.send(
+        JSON.stringify({
+          type: "connection_init",
+          payload: { Authorization: `Bearer ${session.credential}` },
+        }),
+      );
+      await until(() => messages.some((m) => m.type === "connection_ack"));
+      socket.send(
+        JSON.stringify({
+          id: "1",
+          type: "subscribe",
+          payload: {
+            query: `{ allInvoices { id } } #${"x".repeat(padding)}`,
+          },
+        }),
+      );
+      const outcome = await Promise.race([
+        closed,
+        until(() => messages.some((m) => m.type === "complete")).then(
+          () => "complete",
+        ),
+      ]);
+      socket.terminate();
+      return outcome;
+    };
+    expect(await raw(90 * 1024)).toBe("complete");
+    expect(await raw(150 * 1024)).toBe(1009);
+
+    // HTTP: the JSON parser rejects the body before context creation.
+    const oversized = await fetch(wsUrl.replace("ws://", "http://") + "/", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${session.credential}`,
+      },
+      body: JSON.stringify({
+        query: `mutation { editInvoice(id: "${own.id}", clientName: "${"x".repeat(150 * 1024)}") { id } }`,
+      }),
+    });
+    expect(oversized.status).toBeGreaterThanOrEqual(400);
+    expect(await oversized.text()).not.toContain('"data"');
     expect(await snapshotDatabase()).toEqual(before);
   });
 

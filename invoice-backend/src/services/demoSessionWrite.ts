@@ -1,24 +1,32 @@
 import type { interfaces } from "inversify";
 import { Prisma, type PrismaClient } from "@prisma/client";
-import type { UserIdAndRole } from "../constants/types";
+import type { Invoice, UserIdAndRole } from "../constants/types";
 import { createTransactionScope } from "../database/transactionScope";
 import {
   DEMO_SESSION_USER_PREFIX,
   demoSessionsEnabled,
 } from "./demoSessionPolicy";
 import {
+  assertDemoRecordId,
   DEMO_WORKSPACE_LIMITS,
   exceedsWorkspaceLimits,
   measureWorkspaceUsage,
+  prepareDemoInvoiceInput,
 } from "./demoWorkspaceQuota";
 
 export type DemoWriteKind = "mutation" | "reset";
+
+// How long a write may wait for its session's row lock (and any later row
+// lock) before failing with SESSION_BUSY. Same-session writes are serialized,
+// so a burst would otherwise park pooled connections until the 10 s timeout.
+export const DEMO_WRITE_LOCK_WAIT_MS = 2000;
 
 export class DemoSessionWriteError extends Error {
   constructor(
     public readonly code:
       | "DISABLED"
       | "SESSION_INVALID"
+      | "SESSION_BUSY"
       | "MUTATION_BUDGET"
       | "RESET_ALLOWANCE"
       | "RESET_COOLDOWN"
@@ -39,6 +47,11 @@ interface LockedSession {
   live: boolean;
 }
 
+const isLockTimeout = (e: unknown) =>
+  e instanceof Prisma.PrismaClientKnownRequestError &&
+  e.code === "P2010" &&
+  (e.meta as { code?: unknown } | undefined)?.code === "55P03";
+
 /**
  * The single coordinated write path for a temporary session. NOT wired to any
  * route or resolver: temporary sessions remain read-only, and `work` resolves
@@ -52,7 +65,8 @@ interface LockedSession {
  * Writes skip lock 1, so they never wait behind (or block) other sessions.
  *
  * One transaction: lock -> revalidate -> budget -> work -> measure -> count.
- * Any failure, including a late counter update, rolls everything back.
+ * Any failure, including a late counter update, rolls everything back. Lock
+ * waits are bounded by DEMO_WRITE_LOCK_WAIT_MS (`SET LOCAL lock_timeout`).
  */
 export async function runDemoSessionWrite<T>(
   prisma: PrismaClient,
@@ -66,8 +80,18 @@ export async function runDemoSessionWrite<T>(
   if (!demoSessionsEnabled()) throw new DemoSessionWriteError("DISABLED");
   return prisma.$transaction(
     async (tx) => {
+      // SET cannot take a bind parameter; the value is a numeric constant.
+      await tx.$executeRawUnsafe(
+        `SET LOCAL lock_timeout = '${DEMO_WRITE_LOCK_WAIT_MS}ms'`,
+      );
       const locked = await tx.$executeRaw`
-        SELECT 1 FROM "DemoSession" WHERE "id" = ${sessionId} FOR UPDATE`;
+        SELECT 1 FROM "DemoSession" WHERE "id" = ${sessionId} FOR UPDATE`.catch(
+        (e: unknown) => {
+          throw isLockTimeout(e)
+            ? new DemoSessionWriteError("SESSION_BUSY")
+            : e;
+        },
+      );
       if (locked !== 1) throw new DemoSessionWriteError("SESSION_INVALID");
       // A separate statement after the lock: its snapshot and clock postdate
       // any wait, so revocation/expiry/cleanup during the wait is observed.
@@ -129,5 +153,47 @@ export async function runDemoSessionWrite<T>(
       maxWait: 5000,
       timeout: 10000,
     },
+  );
+}
+
+/** Untrusted request fields, exactly as a resolver would receive them. */
+export interface DemoInvoiceRequest {
+  invoiceId?: unknown;
+  revisionId?: unknown;
+  invoice?: unknown;
+}
+
+export interface PreparedDemoInvoiceRequest {
+  invoiceId?: string;
+  revisionId?: string;
+  invoice?: Partial<Invoice>;
+}
+
+/**
+ * The entry point for temporary-session invoice operations (create, edit,
+ * pay, delete, restore). IDs and invoice input are bounded and rebuilt BEFORE
+ * any transaction or lock, so oversized or malformed requests cost no pooled
+ * connection, and validation never consults another user's records. NOT
+ * wired to any resolver: the read-only guards still deny every mutation.
+ */
+export async function runDemoInvoiceWrite<T>(
+  prisma: PrismaClient,
+  parent: interfaces.Container,
+  user: UserIdAndRole,
+  request: DemoInvoiceRequest,
+  work: (
+    scope: interfaces.Container,
+    prepared: PreparedDemoInvoiceRequest,
+  ) => Promise<T>,
+): Promise<T> {
+  const prepared: PreparedDemoInvoiceRequest = {};
+  if (request.invoiceId !== undefined)
+    prepared.invoiceId = assertDemoRecordId("invoiceId", request.invoiceId);
+  if (request.revisionId !== undefined)
+    prepared.revisionId = assertDemoRecordId("revisionId", request.revisionId);
+  if (request.invoice !== undefined)
+    prepared.invoice = prepareDemoInvoiceInput(request.invoice);
+  return runDemoSessionWrite(prisma, parent, user, "mutation", (scope) =>
+    work(scope, prepared),
   );
 }

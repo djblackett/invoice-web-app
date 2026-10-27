@@ -12,7 +12,10 @@ import {
   it,
   vi,
 } from "vitest";
+import { createRequest } from "node-mocks-http";
+import type { Request } from "express";
 import container from "../../src/config/inversify.config";
+import { ValidationException } from "../../src/config/exception.config";
 import TYPES from "../../src/constants/identifiers";
 import type {
   InvoiceWithCreatedBy,
@@ -27,12 +30,16 @@ import type { IInvoiceRepo } from "../../src/repositories/InvoiceRepo";
 import type { IInvoiceRevisionRepo } from "../../src/repositories/InvoiceRevisionRepo";
 import type { DemoService } from "../../src/services/demo.service";
 import type { InvoiceService } from "../../src/services/invoice.service";
+import type { UserService } from "../../src/services/user.service";
+import type { RepositoryDatabase } from "../../src/database/database.connection";
+import { createContext } from "../../src/GraphQL/createContext";
 import { toSnapshot } from "../../src/services/invoiceDiff";
 import {
   allocateDemoSession,
   cleanupExpiredDemoSessions,
   resolveDemoSession,
 } from "../../src/services/demoSession.service";
+import * as demoWrites from "../../src/services/demoSessionWrite";
 import {
   DemoSessionWriteError,
   runDemoSessionWrite,
@@ -45,10 +52,28 @@ import { canonicalDemoRecords } from "../../prisma/demoWorkspace.cjs";
 // repositories resolved from the coordinator's transaction scope. No route or
 // resolver reaches runDemoSessionWrite; temporary sessions remain read-only.
 
+// Slice 3B.0 seam: a test that sets `guard.lifted` disables ONLY the service
+// read-only guard, so the real InvoiceService sequence can run inside the
+// coordinator. Every other test, and every route, keeps the real guard.
+const guard = vi.hoisted(() => ({ lifted: false }));
+vi.mock("../../src/services/demoSessionPolicy", async (importOriginal) => {
+  const actual =
+    await importOriginal<
+      typeof import("../../src/services/demoSessionPolicy")
+    >();
+  return {
+    ...actual,
+    requireDemoMutationAllowed: (
+      user: Parameters<typeof actual.requireDemoMutationAllowed>[0],
+    ) => (guard.lifted ? undefined : actual.requireDemoMutationAllowed(user)),
+  };
+});
+
 const schema = `demo_writes_${randomUUID().replaceAll("-", "")}`;
 const include = { items: true, clientAddress: true, senderAddress: true };
 let prisma: PrismaClient;
 let secondClient: PrismaClient;
+let schemaUrl: string;
 const ordinary = {
   id: "auth0|ordinary-writer",
   username: "ordinary-writer@example.test",
@@ -215,7 +240,7 @@ beforeAll(async () => {
   if (!["127.0.0.1", "localhost", "[::1]"].includes(url.hostname))
     throw new Error("Local PostgreSQL only");
   url.searchParams.set("schema", schema);
-  const schemaUrl = url.toString();
+  schemaUrl = url.toString();
   prisma = new PrismaClient({ datasourceUrl: schemaUrl });
   secondClient = new PrismaClient({ datasourceUrl: schemaUrl });
   execFileSync(
@@ -226,6 +251,7 @@ beforeAll(async () => {
   container.rebind<PrismaClient>(TYPES.PrismaClient).toConstantValue(prisma);
 });
 beforeEach(async () => {
+  guard.lifted = false;
   vi.stubEnv("DEMO_SESSIONS_ENABLED", "true");
   await prisma.demoSession.deleteMany();
   await prisma.invoice.deleteMany();
@@ -840,6 +866,495 @@ describe("coordinated temporary-session writes (internal harness only)", () => {
     expect(ran).toBe(false);
     expect(await usage(user)).toMatchObject({ mutationCount: 0 });
   });
+});
+
+describe("Slice 3B.0 mutation safety (internal harness only)", () => {
+  const orphans = async () =>
+    (
+      await prisma.$queryRaw<{ client: number; sender: number }[]>`
+        SELECT
+          (SELECT count(*)::int FROM "ClientAddress" a WHERE NOT EXISTS
+            (SELECT 1 FROM "Invoice" i WHERE i."clientAddressId" = a."id"))
+            AS "client",
+          (SELECT count(*)::int FROM "SenderAddress" a WHERE NOT EXISTS
+            (SELECT 1 FROM "Invoice" i WHERE i."senderAddressId" = a."id"))
+            AS "sender"`
+    )[0]!;
+  const ordinaryRows = () =>
+    prisma.invoice.findMany({
+      where: { createdById: ordinary.id },
+      include: { ...include, revisions: { orderBy: { id: "asc" } } },
+      orderBy: { id: "asc" },
+    });
+  async function ordinaryInvoice(id = "OR0001") {
+    const { items, clientAddress, senderAddress, ...fields } =
+      canonicalDemoRecords()[1]!.invoice;
+    return prisma.invoice.create({
+      data: {
+        ...fields,
+        id,
+        createdBy: { connect: { id: ordinary.id } },
+        items: { create: items.map((i) => ({ ...i, id: randomUUID() })) },
+        clientAddress: { create: clientAddress },
+        senderAddress: { create: senderAddress },
+      },
+      include,
+    });
+  }
+  const template = () => {
+    const { items, ...fields } = canonicalDemoRecords()[0]!.invoice;
+    return { ...fields, items: items.map(({ id: _item, ...i }) => i) };
+  };
+  const removeOwn = (user: UserIdAndRole, invoiceId: string) =>
+    write(user, (scope) => repos(scope).invoices.delete(invoiceId));
+  /** Holds the session row lock from another connection until released. */
+  async function holdSessionLock(user: UserIdAndRole) {
+    const release = gate();
+    const held = gate();
+    const holder = secondClient.$transaction(
+      async (tx) => {
+        await tx.$executeRaw`
+          SELECT 1 FROM "DemoSession" WHERE "userId" = ${user.id} FOR UPDATE`;
+        held.open();
+        await release.opened;
+      },
+      { timeout: 20_000 },
+    );
+    await held.opened;
+    return async () => {
+      release.open();
+      await holder;
+    };
+  }
+
+  describe("D1: address cleanup inside the transaction scope", () => {
+    it("deletes a workspace invoice with both addresses, items and revisions, preserving other users' rows", async () => {
+      const user = await newSession();
+      await ordinaryInvoice();
+      const others = await ordinaryRows();
+      const target = await ownInvoice(user);
+      expect(target.clientAddressId).not.toBeNull();
+      expect(target.senderAddressId).not.toBeNull();
+      expect(await removeOwn(user, target.id)).toBe(true);
+      expect(await prisma.invoice.count({ where: { id: target.id } })).toBe(0);
+      expect(await prisma.item.count({ where: { invoiceId: target.id } })).toBe(
+        0,
+      );
+      expect(
+        await prisma.invoiceRevision.count({ where: { invoiceId: target.id } }),
+      ).toBe(0);
+      expect(
+        await prisma.clientAddress.count({
+          where: { id: target.clientAddressId! },
+        }),
+      ).toBe(0);
+      expect(
+        await prisma.senderAddress.count({
+          where: { id: target.senderAddressId! },
+        }),
+      ).toBe(0);
+      expect(await orphans()).toEqual({ client: 0, sender: 0 });
+      expect(await ordinaryRows()).toEqual(others);
+      expect(await usage(user)).toMatchObject({ mutationCount: 1 });
+    });
+
+    it("leaves no orphan addresses after repeated create/delete cycles", async () => {
+      const user = await newSession();
+      await ordinaryInvoice();
+      const others = await ordinaryRows();
+      const addresses = async () => [
+        await prisma.clientAddress.count(),
+        await prisma.senderAddress.count(),
+      ];
+      const baseline = await addresses();
+      for (let cycle = 0; cycle < 5; cycle++) {
+        const created = await write(user, createWithRevision);
+        expect(await addresses()).toEqual(baseline.map((n) => n + 1));
+        expect(await removeOwn(user, created.id)).toBe(true);
+        expect(await addresses()).toEqual(baseline);
+        expect(await orphans()).toEqual({ client: 0, sender: 0 });
+      }
+      expect(await ordinaryRows()).toEqual(others);
+      expect(await usage(user)).toMatchObject({ mutationCount: 10 });
+    });
+
+    it("rolls back the invoice, cascades, first address cleanup and usage when the second cleanup fails", async () => {
+      const user = await newSession();
+      const target = await ownInvoice(user);
+      const before = await snapshotDatabase();
+      await withTrigger("SenderAddress", "BEFORE DELETE", "TRUE", async () => {
+        await expect(removeOwn(user, target.id)).rejects.toThrow(
+          "injected slice 3A failure",
+        );
+      });
+      expect(await snapshotDatabase()).toEqual(before);
+    });
+
+    it("makes a concurrent attachment of a captured address wait, then fail, without touching its invoice", async () => {
+      const user = await newSession();
+      const target = await ownInvoice(user);
+      const other = await ordinaryInvoice();
+      const hold = gate();
+      const deleted = gate();
+      const deletion = write(user, async (scope) => {
+        await repos(scope).invoices.delete(target.id);
+        deleted.open();
+        await hold.opened;
+      });
+      await deleted.opened;
+      const waiting = await lockWaiters();
+      const attach = prisma.$executeRaw`
+        UPDATE "Invoice" SET "clientAddressId" = ${target.clientAddressId}
+        WHERE "id" = ${other.id}`;
+      const attached = attach.then(
+        () => "attached",
+        (e: unknown) => e,
+      );
+      await until(async () => (await lockWaiters()) > waiting, "attachment");
+      hold.open();
+      await deletion;
+      expect(String(await attached)).toMatch(/foreign key/i);
+      expect(
+        await prisma.invoice.findUniqueOrThrow({
+          where: { id: other.id },
+          include,
+        }),
+      ).toEqual(other);
+      expect(
+        await prisma.clientAddress.count({
+          where: { id: target.clientAddressId! },
+        }),
+      ).toBe(0);
+      expect(await orphans()).toEqual({ client: 0, sender: 0 });
+    });
+
+    it("keeps captured addresses that the same transaction re-attaches before the reference check", async () => {
+      const user = await newSession();
+      const target = await ownInvoice(user);
+      const other = await ordinaryInvoice();
+      await prisma.$executeRawUnsafe(`
+        CREATE FUNCTION slice3b_transfer() RETURNS trigger AS $$
+        BEGIN
+          UPDATE "Invoice" SET "clientAddressId" = OLD."clientAddressId",
+            "senderAddressId" = OLD."senderAddressId" WHERE id = '${other.id}';
+          RETURN OLD;
+        END; $$ LANGUAGE plpgsql`);
+      await prisma.$executeRawUnsafe(`
+        CREATE TRIGGER slice3b_transfer AFTER DELETE ON "Invoice"
+        FOR EACH ROW WHEN (OLD."id" = '${target.id}')
+        EXECUTE FUNCTION slice3b_transfer()`);
+      try {
+        expect(await removeOwn(user, target.id)).toBe(true);
+      } finally {
+        await prisma.$executeRawUnsafe(
+          `DROP TRIGGER slice3b_transfer ON "Invoice"`,
+        );
+        await prisma.$executeRawUnsafe(`DROP FUNCTION slice3b_transfer()`);
+      }
+      expect(
+        await prisma.invoice.findUniqueOrThrow({
+          where: { id: other.id },
+          include,
+        }),
+      ).toMatchObject({
+        createdById: ordinary.id,
+        clientAddressId: target.clientAddressId,
+        senderAddressId: target.senderAddressId,
+        clientAddress: target.clientAddress,
+        senderAddress: target.senderAddress,
+      });
+    });
+  });
+
+  describe("D3: mandatory revisions in coordinated writes", () => {
+    it("propagates a non-database revision failure from addInvoice and updateInvoice, committing neither the change nor usage", async () => {
+      guard.lifted = true;
+      const user = await newSession();
+      const invoice = await ownInvoice(user);
+      const before = await snapshotDatabase();
+      const withFailingHistory = (scope: interfaces.Container) => {
+        scope.rebind(TYPES.InvoiceRevisionService).toConstantValue({
+          recordIfChanged: () =>
+            Promise.reject(new Error("non-database revision failure")),
+        });
+        return scope.get<InvoiceService>(TYPES.InvoiceService);
+      };
+      await expect(
+        write(user, (scope) =>
+          withFailingHistory(scope).updateInvoice(invoice.id, {
+            clientName: "Edited without history",
+          }),
+        ),
+      ).rejects.toThrow();
+      await expect(
+        write(user, (scope) =>
+          withFailingHistory(scope).addInvoice(template() as never),
+        ),
+      ).rejects.toThrow();
+      expect(await snapshotDatabase()).toEqual(before);
+
+      // Control: the same service calls commit WITH history when it succeeds.
+      await write(user, (scope) =>
+        scope
+          .get<InvoiceService>(TYPES.InvoiceService)
+          .updateInvoice(invoice.id, { clientName: "Edited with history" }),
+      );
+      const created = await write(user, (scope) =>
+        scope
+          .get<InvoiceService>(TYPES.InvoiceService)
+          .addInvoice(template() as never),
+      );
+      expect(
+        await prisma.invoiceRevision.count({
+          where: { invoiceId: invoice.id },
+        }),
+      ).toBe(6);
+      expect(
+        await prisma.invoiceRevision.count({
+          where: { invoiceId: created.id },
+        }),
+      ).toBe(1);
+      expect(await usage(user)).toMatchObject({ mutationCount: 2 });
+    });
+  });
+
+  describe("D4/D5: input bounds and server-controlled identifiers", () => {
+    it("rejects oversized or malformed input before taking the session lock or touching the database", async () => {
+      const { runDemoInvoiceWrite } = demoWrites;
+      const user = await newSession();
+      const own = await ownInvoice(user);
+      const before = await snapshotDatabase();
+      const release = await holdSessionLock(user);
+      const waiting = await lockWaiters();
+      const transactions = vi.spyOn(prisma, "$transaction");
+      const item = { name: "Item", price: 10, quantity: 1 };
+      const invalid: Parameters<typeof runDemoInvoiceWrite>[3][] = [
+        { invoice: { ...template(), items: Array(21).fill(item) } },
+        { invoice: { ...template(), clientName: "x".repeat(101) } },
+        {
+          invoice: {
+            ...template(),
+            items: [{ ...item, name: "x".repeat(101) }],
+          },
+        },
+        {
+          invoice: {
+            clientAddress: { ...own.clientAddress!, street: "x".repeat(121) },
+          },
+        },
+        { invoice: { items: [{ ...item, price: Number.NaN }] } },
+        { invoice: { items: [{ ...item, price: -1 }] } },
+        { invoice: { items: [{ ...item, price: 1e12 }] } },
+        { invoice: { items: [{ ...item, quantity: 1.5 }] } },
+        { invoice: { items: [{ ...item, quantity: -1 }] } },
+        { invoice: { items: [{ ...item, quantity: 1e9 }] } },
+        { invoice: { paymentTerms: 1e6 } },
+        { invoice: { items: [{ ...item, id: "OR0001-item" }] } },
+        { invoice: { items: [{ ...item, id: "x".repeat(10_000) }] } },
+        { invoice: { clientName: 42 as never } },
+        { invoice: { items: "not-a-list" as never } },
+        { invoiceId: "x".repeat(10_000) },
+        { invoiceId: own.id, revisionId: "x".repeat(10_000) },
+      ];
+      let ran = 0;
+      try {
+        for (const request of invalid) {
+          await expect(
+            runDemoInvoiceWrite(prisma, container, user, request, async () => {
+              ran++;
+            }),
+          ).rejects.toBeInstanceOf(ValidationException);
+        }
+        expect(transactions).not.toHaveBeenCalled();
+        expect(await lockWaiters()).toBe(waiting);
+      } finally {
+        transactions.mockRestore();
+        await release();
+      }
+      expect(ran).toBe(0);
+      expect(await snapshotDatabase()).toEqual(before);
+    });
+
+    it("never lets client IDs collide with, or reveal, another user's invoice or item", async () => {
+      guard.lifted = true;
+      const { runDemoInvoiceWrite } = demoWrites;
+      const user = await newSession();
+      const own = await ownInvoice(user);
+      const other = await ordinaryInvoice("OR0001");
+      const others = await ordinaryRows();
+      const visible =
+        /^[A-Z]{2}\d{4}-[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/;
+
+      // Repository level, even if a caller skipped input preparation.
+      const direct = (await write(user, (scope) =>
+        repos(scope).invoices.create({
+          ...template(),
+          id: other.id,
+          createdById: user.id,
+        } as unknown as InvoiceWithCreatedBy),
+      )) as { id: string };
+      expect(direct.id).toMatch(visible);
+
+      // Service path through the pre-lock preparation: `id` never arrives.
+      const viaService = await runDemoInvoiceWrite(
+        prisma,
+        container,
+        user,
+        { invoice: { ...template(), id: other.id } },
+        (scope, { invoice }) =>
+          scope
+            .get<InvoiceService>(TYPES.InvoiceService)
+            .addInvoice(invoice as never),
+      );
+      expect(viaService.id).toMatch(visible);
+
+      // A foreign item ID and an unused one behave identically: a new item
+      // with a server ID; the foreign item is untouched.
+      for (const foreign of [other.items[0]!.id, randomUUID()]) {
+        const edited = await runDemoInvoiceWrite(
+          prisma,
+          container,
+          user,
+          {
+            invoiceId: own.id,
+            invoice: {
+              items: [{ id: foreign, name: "Probe", price: 1, quantity: 1 }],
+            },
+          },
+          (scope, { invoiceId, invoice }) =>
+            scope
+              .get<InvoiceService>(TYPES.InvoiceService)
+              .updateInvoice(invoiceId!, invoice!) as Promise<{
+              items: { id: string }[];
+            }>,
+        );
+        expect(edited.items).toHaveLength(1);
+        expect(edited.items[0]!.id).not.toBe(foreign);
+      }
+      // A kept item of the visitor's own invoice keeps its ID.
+      const current = await ownInvoice(user);
+      const kept = await runDemoInvoiceWrite(
+        prisma,
+        container,
+        user,
+        {
+          invoiceId: own.id,
+          invoice: {
+            items: [
+              { id: current.items[0]!.id, name: "Kept", price: 2, quantity: 1 },
+            ],
+          },
+        },
+        (scope, { invoiceId, invoice }) =>
+          scope
+            .get<InvoiceService>(TYPES.InvoiceService)
+            .updateInvoice(invoiceId!, invoice!) as Promise<{
+            items: { id: string }[];
+          }>,
+      );
+      expect(kept.items.map((i) => i.id)).toEqual([current.items[0]!.id]);
+      expect(await ordinaryRows()).toEqual(others);
+      expect(await usage(user)).toMatchObject({ mutationCount: 5 });
+    });
+  });
+
+  it("D7: resolves UserService against the transaction even when the parent is a request container", async () => {
+    const { credential } = await allocateDemoSession(prisma);
+    const ctx = await createContext({
+      req: createRequest<Request>({
+        headers: { authorization: `Bearer ${credential}` },
+      }),
+    });
+    expect(ctx.user?.demoSessionId).toBeTruthy();
+    const seen = await runDemoSessionWrite(
+      prisma,
+      ctx.container!,
+      ctx.user!,
+      "mutation",
+      async (scope) => {
+        const tx = scope.get<RepositoryDatabase>(DatabaseConnection).client;
+        await tx.user.update({
+          where: { id: ctx.user!.id },
+          data: { name: "Uncommitted name" },
+        });
+        // Only the transaction itself can see its uncommitted change.
+        const users = scope.get<UserService>(TYPES.UserService);
+        return (await users.getUserByIdSafely(ctx.user!.id))?.name;
+      },
+    );
+    expect(seen).toBe("Uncommitted name");
+  });
+
+  it("D8: rechecks the feature flag after acquiring the session lock", async () => {
+    const user = await newSession();
+    const release = await holdSessionLock(user);
+    const waiting = await lockWaiters();
+    let ran = false;
+    const queued = write(
+      user,
+      async () => {
+        ran = true;
+      },
+      { client: prisma },
+    );
+    const outcome = queued.then(
+      () => "committed",
+      (e: unknown) => e,
+    );
+    try {
+      await until(async () => (await lockWaiters()) > waiting, "queued write");
+      vi.stubEnv("DEMO_SESSIONS_ENABLED", "false");
+    } finally {
+      await release();
+    }
+    expect(await outcome).toMatchObject({ code: "DISABLED" });
+    expect(ran).toBe(false);
+    expect(await usage(user)).toMatchObject({ mutationCount: 0 });
+  });
+
+  it("bounds same-session lock waits so a burst cannot hold a small connection pool", async () => {
+    const url = new URL(schemaUrl);
+    url.searchParams.set("connection_limit", "2");
+    const small = new PrismaClient({ datasourceUrl: url.toString() });
+    const [user, neighbour] = [await newSession(), await newSession()];
+    const hold = gate();
+    const entered = gate();
+    const holder = write(user, async () => {
+      entered.open();
+      await hold.opened;
+    });
+    try {
+      await entered.opened;
+      let ran = 0;
+      const started = Date.now();
+      const burst = await Promise.allSettled(
+        Array.from({ length: 4 }, () =>
+          write(
+            user,
+            async () => {
+              ran++;
+            },
+            { client: small },
+          ),
+        ),
+      );
+      const burstMs = Date.now() - started;
+      expect(
+        burst.map((r) => r.status === "rejected" && r.reason.code),
+      ).toEqual(Array(4).fill("SESSION_BUSY"));
+      expect(ran).toBe(0);
+      expect(burstMs).toBeLessThan(4 * 2000 + 2000);
+      // The pool is free again for another visitor while the lock is still held.
+      await write(neighbour, async () => undefined, { client: small });
+      expect(await usage(neighbour)).toMatchObject({ mutationCount: 1 });
+    } finally {
+      hold.open();
+      await holder.catch(() => undefined);
+      await small.$disconnect();
+    }
+    await holder;
+    expect(await usage(user)).toMatchObject({ mutationCount: 1 });
+  }, 30_000);
 });
 
 describe("ordinary users outside any scope (unchanged behaviour)", () => {

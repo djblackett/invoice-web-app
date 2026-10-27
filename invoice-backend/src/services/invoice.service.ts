@@ -32,6 +32,11 @@ export class InvoiceService {
     @optional()
     @inject(TYPES.InvoiceRevisionService)
     private readonly revisionService: InvoiceRevisionService | null = null,
+    // Coordinated writes must never commit an invoice change without its
+    // revision; ordinary requests keep best-effort history recording.
+    @optional()
+    @inject(TYPES.TransactionScope)
+    private readonly revisionsRequired: boolean = false,
   ) {}
 
   getInvoices = async (): Promise<Invoice[]> => {
@@ -98,6 +103,7 @@ export class InvoiceService {
             message: "Invoice created",
           });
         } catch (err) {
+          if (this.revisionsRequired) throw err;
           console.error("Failed to record initial revision", err);
         }
       }
@@ -143,6 +149,7 @@ export class InvoiceService {
             changeType: "edit",
           });
         } catch (err) {
+          if (this.revisionsRequired) throw err;
           console.error("Failed to record edit revision", err);
         }
       }

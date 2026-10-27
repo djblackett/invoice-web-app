@@ -14,6 +14,8 @@ const TYPES = {
   PrismaClient: Symbol.for("PrismaClient"),
   DemoService: Symbol.for("DemoService"),
   Logger: Symbol.for("Logger"),
+  // Bound only inside a coordinated-write transaction scope.
+  TransactionScope: Symbol.for("TransactionScope"),
 } as const;
 
 export default TYPES;

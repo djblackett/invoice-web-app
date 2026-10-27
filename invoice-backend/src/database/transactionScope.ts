@@ -10,6 +10,7 @@ import { PrismaInvoiceRevisionRepository } from "@/repositories/implementations/
 import { PrismaUserRepository } from "@/repositories/implementations/prismaUserRepo";
 import { InvoiceService } from "@/services/invoice.service";
 import { InvoiceRevisionService } from "@/services/invoiceRevision.service";
+import { UserService } from "@/services/user.service";
 import type { DbClient, RepositoryDatabase } from "./database.connection";
 import {
   DatabaseConnection,
@@ -23,6 +24,9 @@ import {
  * committing separately. The root Prisma client is not resolvable here, so
  * code in the scope cannot mix clients. The caller owns the transaction, and
  * must not use the scope after it settles (Prisma then rejects every query).
+ *
+ * `TYPES.TransactionScope` marks the stricter coordinated-write semantics:
+ * revision failures propagate, and invoice/item IDs are server-generated.
  */
 export function createTransactionScope(
   parent: interfaces.Container,
@@ -37,7 +41,10 @@ export function createTransactionScope(
     throw new Error("Root database client is unavailable in a transaction");
   });
   scope.bind<UserIdAndRole>(TYPES.UserContext).toConstantValue(user);
+  scope.bind<boolean>(TYPES.TransactionScope).toConstantValue(true);
   // Rebind locally so no dependency is resolved from (or cached by) the parent.
+  // That includes UserService: a request container rebinds it to a closure
+  // over its own (root-client) repository, which would escape the transaction.
   scope.bind<IInvoiceRepo>(TYPES.IInvoiceRepo).to(PrismaInvoiceRepository);
   scope
     .bind<IInvoiceRevisionRepo>(TYPES.IInvoiceRevisionRepo)
@@ -47,5 +54,6 @@ export function createTransactionScope(
   scope
     .bind<InvoiceRevisionService>(TYPES.InvoiceRevisionService)
     .to(InvoiceRevisionService);
+  scope.bind<UserService>(TYPES.UserService).to(UserService);
   return scope;
 }

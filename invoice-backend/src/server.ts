@@ -11,7 +11,7 @@ import {
 import { createApp } from "./app";
 import { makeExecutableSchema } from "@graphql-tools/schema";
 import typeDefs from "./GraphQL/typeDefs";
-import { CERT_DIR, NODE_ENV } from "./config/server.config";
+import { CERT_DIR, MAX_REQUEST_BYTES, NODE_ENV } from "./config/server.config";
 import { expressMiddleware } from "@apollo/server/express4";
 import { createContext } from "./GraphQL/createContext";
 import path from "path";
@@ -54,6 +54,9 @@ export const createServer = async () => {
     const wsServer = new WebSocketServer({
       server: httpServer,
       path: "/",
+      // Without this, `ws` accepts 100 MiB messages. Larger frames close the
+      // socket (1009) before graphql-ws parses them or any context is built.
+      maxPayload: MAX_REQUEST_BYTES,
     });
 
     const resolvers = getResolvers();

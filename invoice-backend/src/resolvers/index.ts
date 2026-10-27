@@ -1,5 +1,9 @@
 import { GraphQLError } from "graphql";
-import { requireDemoMutationAllowed } from "../services/demoSessionPolicy";
+import { ForbiddenException } from "../config/exception.config";
+import {
+  requireDemoMutationAllowed,
+  requireHttpForDemoMutation,
+} from "../services/demoSessionPolicy";
 import type { InjectedQueryContext } from "../constants/types";
 import { getDemoResolvers } from "./demoResolvers";
 import { getInvoiceResolvers } from "./invoiceResolvers";
@@ -27,11 +31,16 @@ export function getResolvers() {
         name,
         (...args: [unknown, unknown, InjectedQueryContext]) => {
           try {
+            // `connection` is set only by the server's WebSocket context.
+            requireHttpForDemoMutation(args[2].user, !!args[2].connection);
             requireDemoMutationAllowed(args[2].user);
-          } catch {
-            throw new GraphQLError("Temporary demo sessions are read-only", {
-              extensions: { code: "FORBIDDEN" },
-            });
+          } catch (e) {
+            throw new GraphQLError(
+              e instanceof ForbiddenException
+                ? e.message
+                : "Temporary demo sessions are read-only",
+              { extensions: { code: "FORBIDDEN" } },
+            );
           }
           // Preserve each resolver's argument contract; the wrapper only inspects context.
           return (
