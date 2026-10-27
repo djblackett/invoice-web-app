@@ -110,7 +110,8 @@ export function mapPartialInvoiceToInvoice(
       createdById: invoice.createdById,
       status: invoice.status ?? "draft",
       paymentDue: invoice.paymentDue ?? new Date().toISOString(),
-      paymentTerms: invoice.paymentTerms ?? 0,
+      // Omitted means the default term; an explicit 0 is kept.
+      paymentTerms: invoice.paymentTerms ?? 14,
       clientAddress: {
         street: invoice.clientAddress?.street ?? "",
         city: invoice.clientAddress?.city ?? "",

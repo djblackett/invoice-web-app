@@ -1,4 +1,5 @@
 import type { InvoiceSnapshot } from "@/services/invoiceDiff";
+import type { RepositoryDatabase } from "@/database/database.connection";
 
 export type RevisionChangeType = "create" | "edit" | "restore";
 
@@ -33,6 +34,8 @@ export interface StoredRevision {
  * way to update or delete a revision row — history is the source of truth.
  */
 export interface IInvoiceRevisionRepo {
+  /** What every statement uses; the demo write guard checks its identity. */
+  readonly databaseConnection: RepositoryDatabase;
   create(input: CreateRevisionInput): Promise<StoredRevision>;
   listByInvoice(invoiceId: string): Promise<StoredRevision[]>;
   /** Resolve the parent without loading a protected snapshot or its author. */

@@ -11,7 +11,6 @@ import { PrismaUserRepository } from "@/repositories/implementations/prismaUserR
 import { InvoiceService } from "@/services/invoice.service";
 import { InvoiceRevisionService } from "@/services/invoiceRevision.service";
 import { UserService } from "@/services/user.service";
-import type { DemoWriteCapability } from "@/services/demoSessionPolicy";
 import type { DbClient, RepositoryDatabase } from "./database.connection";
 import {
   DatabaseConnection,
@@ -28,14 +27,14 @@ import {
  *
  * `TYPES.TransactionScope` marks the stricter coordinated-write semantics:
  * revision failures propagate, and invoice/item IDs are server-generated.
- * `TYPES.DemoWriteCapability` is what lets a temporary session's guarded
- * service call through, and only for the operation it was issued for.
+ * A temporary session's guarded services stay closed here unless the
+ * coordinator also binds `TYPES.DemoWriteCapability`, issued for this
+ * scope's `DatabaseConnection` (see demoSessionWrite.ts).
  */
 export function createTransactionScope(
   parent: interfaces.Container,
   tx: DbClient,
   user: UserIdAndRole,
-  capability?: DemoWriteCapability,
 ): interfaces.Container {
   const scope = parent.createChild();
   scope
@@ -46,11 +45,6 @@ export function createTransactionScope(
   });
   scope.bind<UserIdAndRole>(TYPES.UserContext).toConstantValue(user);
   scope.bind<boolean>(TYPES.TransactionScope).toConstantValue(true);
-  // Only the coordinator passes one; no other container ever binds it.
-  if (capability)
-    scope
-      .bind<DemoWriteCapability>(TYPES.DemoWriteCapability)
-      .toConstantValue(capability);
   // Rebind locally so no dependency is resolved from (or cached by) the parent.
   // That includes UserService: a request container rebinds it to a closure
   // over its own (root-client) repository, which would escape the transaction.

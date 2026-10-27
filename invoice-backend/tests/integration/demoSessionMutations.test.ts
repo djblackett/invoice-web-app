@@ -21,6 +21,7 @@ import {
 } from "../../prisma/demoWorkspace.cjs";
 import { toSnapshot } from "../../src/services/invoiceDiff";
 import { resolveDemoSession } from "../../src/services/demoSession.service";
+import { DEMO_WORKSPACE_LIMITS } from "../../src/services/demoWorkspaceQuota";
 
 // Slice 3B.1: temporary-session invoice mutations through the PRODUCTION
 // wiring (`createServer`: express + Apollo over HTTP, ws + graphql-ws), with
@@ -34,6 +35,10 @@ let prisma: PrismaClient;
 let secondClient: PrismaClient;
 let jwks: Server;
 let realServer: Server;
+// A second application instance on its own module graph and pool (3B.2).
+let otherServer: Server;
+let otherUrl: string;
+let instanceClient: PrismaClient;
 let baseUrl: string;
 let issuer: string;
 let privateKey: KeyObject;
@@ -132,6 +137,26 @@ async function gql(
   });
   return (await response.json()) as GraphQLResult;
 }
+/** A raw POST, for transport-level assertions (HTTP status, batching). */
+async function post(
+  token: string,
+  body: unknown,
+  { url = baseUrl, ip = nextIp() } = {},
+) {
+  const response = await fetch(`${url}/`, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${token}`,
+      "X-Forwarded-For": ip,
+    },
+    body: JSON.stringify(body),
+  });
+  return {
+    status: response.status,
+    body: (await response.json()) as GraphQLResult,
+  };
+}
 const byId = (invoice: InvoiceResult) => ({
   ...invoice,
   items: [...invoice.items].sort((x, y) => x.id.localeCompare(y.id)),
@@ -184,6 +209,17 @@ async function wsExecute(
   }
 }
 
+/** The close code when the server refuses the connection (Slice 3B.2). */
+const wsRefusal = (
+  token: string,
+  query: string,
+  variables: Record<string, unknown> = {},
+) =>
+  wsExecute(token, query, variables).then(
+    () => "completed",
+    (closed: { code?: number }) => closed.code,
+  );
+
 function signedToken(
   profile: { id: string; username: string; name: string },
   roles: string[] = [],
@@ -234,6 +270,22 @@ const usage = async (userId: string) =>
       select: { mutationCount: true },
     })
   ).mutationCount;
+const attempts = async (userId: string) =>
+  (
+    await prisma.demoSession.findUniqueOrThrow({
+      where: { userId },
+      select: { attemptCount: true },
+    })
+  ).attemptCount;
+/** Each result as its error code (with any quota), or "ok". */
+const outcomes = (results: GraphQLResult[]) =>
+  results
+    .map((r) => {
+      if (!r.errors) return "ok";
+      const { code, quota } = failure(r) as { code: string; quota?: string };
+      return quota ? `${code}:${quota}` : code;
+    })
+    .sort();
 const counts = async (userId: string) => ({
   invoices: await prisma.invoice.count({ where: { createdById: userId } }),
   revisions: await prisma.invoiceRevision.count({
@@ -247,7 +299,11 @@ const orphanAddresses = async () =>
 async function snapshotDatabase() {
   return {
     users: await prisma.user.findMany({ orderBy: { id: "asc" } }),
-    sessions: await prisma.demoSession.findMany({ orderBy: { id: "asc" } }),
+    // Attempts are asserted explicitly (Slice 3B.2): every admitted attempt
+    // is recorded, so including them here would hide every other change.
+    sessions: (
+      await prisma.demoSession.findMany({ orderBy: { id: "asc" } })
+    ).map(({ attemptCount: _attempts, ...session }) => session),
     invoices: await prisma.invoice.findMany({
       include,
       orderBy: { id: "asc" },
@@ -354,14 +410,21 @@ async function holdSessionLock(userId: string) {
   };
 }
 
-/** Fires `requests` while the session is locked, then releases them together. */
+/**
+ * Fires `requests` while the session is locked, then releases them together.
+ * Only the session's write slots can queue; the rest are refused at once.
+ */
 async function racing<T>(userId: string, requests: (() => Promise<T>)[]) {
   const release = await holdSessionLock(userId);
   const waiting = await lockWaiters();
   const results = Promise.all(requests.map((request) => request()));
+  const admitted = Math.min(
+    requests.length,
+    DEMO_WORKSPACE_LIMITS.concurrentWrites,
+  );
   await until(
-    async () => (await lockWaiters()) >= waiting + requests.length,
-    "all requests queued on the session lock",
+    async () => (await lockWaiters()) >= waiting + admitted,
+    "admitted requests queued on the session lock",
   );
   await release(async () => undefined);
   return results;
@@ -457,6 +520,23 @@ beforeAll(async () => {
     realServer.listen(0, "127.0.0.1", resolve),
   );
   baseUrl = `http://127.0.0.1:${(realServer.address() as { port: number }).port}`;
+
+  // A second instance: a fresh module graph (its own container, coordinator
+  // and capability issuer) and connection pool, on the same database.
+  instanceClient = new PrismaClient({ datasourceUrl: schemaUrl });
+  vi.resetModules();
+  const { default: otherContainer } = await import(
+    "../../src/config/inversify.config"
+  );
+  otherContainer
+    .rebind<PrismaClient>(TYPES.PrismaClient)
+    .toConstantValue(instanceClient);
+  const { createServer: createOtherServer } = await import("../../src/server");
+  otherServer = (await createOtherServer())[1] as Server;
+  await new Promise<void>((resolve) =>
+    otherServer.listen(0, "127.0.0.1", resolve),
+  );
+  otherUrl = `http://127.0.0.1:${(otherServer.address() as { port: number }).port}`;
 });
 beforeEach(async () => {
   vi.stubEnv("DEMO_SESSIONS_ENABLED", "true");
@@ -474,7 +554,8 @@ beforeEach(async () => {
 });
 afterAll(async () => {
   realServer?.closeAllConnections();
-  for (const listener of [jwks, realServer])
+  otherServer?.closeAllConnections();
+  for (const listener of [jwks, realServer, otherServer])
     if (listener)
       await new Promise<void>((resolve, reject) =>
         listener.close((e) => (e ? reject(e) : resolve())),
@@ -484,6 +565,7 @@ afterAll(async () => {
     await prisma.$disconnect();
   }
   await secondClient?.$disconnect();
+  await instanceClient?.$disconnect();
   vi.unstubAllEnvs();
   vi.resetModules();
 });
@@ -997,11 +1079,11 @@ describe("temporary-session quotas over HTTP", () => {
 });
 
 describe("temporary-session concurrency over HTTP", () => {
-  it("cannot exceed the mutation budget with simultaneous requests", async () => {
+  it("cannot exceed the mutation budget with simultaneous requests, and admits at most two at once", async () => {
     const v = await visitor();
     await prisma.demoSession.update({
       where: { userId: v.id },
-      data: { mutationCount: 197 },
+      data: { mutationCount: DEMO_WORKSPACE_LIMITS.mutations - 1 },
     });
     const invoice = await ownInvoice(v.id, "RT2080");
     const revisions = (await counts(v.id)).revisions;
@@ -1013,23 +1095,30 @@ describe("temporary-session concurrency over HTTP", () => {
           gql(v.token, EDIT, { id: invoice.id, clientName: `Racer ${i}` }),
       ),
     );
-    const succeeded = results.filter((r) => !r.errors);
-    expect(succeeded).toHaveLength(3);
-    for (const r of results.filter((r) => r.errors))
-      expect(failure(r)).toMatchObject({ quota: "mutations" });
-    expect(await usage(v.id)).toBe(200);
-    expect((await counts(v.id)).revisions).toBe(revisions + 3);
+    // Two take the session's write slots and queue on its lock; the other
+    // four are refused without waiting. Of the two, the budget admits one.
+    expect(outcomes(results)).toEqual([
+      "QUOTA_EXCEEDED:mutations",
+      "SESSION_BUSY",
+      "SESSION_BUSY",
+      "SESSION_BUSY",
+      "SESSION_BUSY",
+      "ok",
+    ]);
+    expect(await usage(v.id)).toBe(DEMO_WORKSPACE_LIMITS.mutations);
+    expect(await attempts(v.id)).toBe(2);
+    expect((await counts(v.id)).revisions).toBe(revisions + 1);
     expect(
-      succeeded.map(
-        (r) => (r.data!["editInvoice"] as InvoiceResult).clientName,
+      results.flatMap((r) =>
+        r.errors ? [] : [(r.data!["editInvoice"] as InvoiceResult).clientName],
       ),
-    ).toContain((await ownInvoice(v.id, "RT2080")).clientName);
+    ).toEqual([(await ownInvoice(v.id, "RT2080")).clientName]);
   });
 
-  it("cannot exceed the invoice cap with simultaneous creates, and rolled-back creates leave no rows", async () => {
+  it("cannot exceed the invoice cap with simultaneous creates, and a rolled-back create leaves no rows", async () => {
     const v = await visitor();
     const template = await ownInvoice(v.id, "TY9141");
-    for (let i = 0; i < 21; i++)
+    for (let i = 0; i < 22; i++)
       await prisma.invoice.create({
         data: {
           id: `PD${String(i).padStart(4, "0")}-${randomUUID()}`,
@@ -1044,7 +1133,7 @@ describe("temporary-session concurrency over HTTP", () => {
           total: 0,
         },
       });
-    expect(await counts(v.id)).toMatchObject({ invoices: 28 });
+    expect(await counts(v.id)).toMatchObject({ invoices: 29 });
     const addresses = await prisma.clientAddress.count();
     const results = await racing(
       v.id,
@@ -1054,31 +1143,65 @@ describe("temporary-session concurrency over HTTP", () => {
           gql(v.token, ADD, frontendInvoice({ clientName: `Racer ${i}` })),
       ),
     );
-    expect(results.filter((r) => !r.errors)).toHaveLength(2);
-    for (const r of results.filter((r) => r.errors))
-      expect(failure(r)).toMatchObject({ quota: "workspace" });
+    expect(outcomes(results)).toEqual([
+      "QUOTA_EXCEEDED:workspace",
+      "SESSION_BUSY",
+      "SESSION_BUSY",
+      "SESSION_BUSY",
+      "ok",
+    ]);
     expect(await counts(v.id)).toMatchObject({ invoices: 30 });
-    expect(await prisma.clientAddress.count()).toBe(addresses + 2);
-    expect(await usage(v.id)).toBe(2);
+    expect(await prisma.clientAddress.count()).toBe(addresses + 1);
+    expect(await usage(v.id)).toBe(1);
+    expect(await attempts(v.id)).toBe(2);
   });
 
-  it("runs different visitors' simultaneous writes independently", async () => {
+  it("runs different visitors' simultaneous writes independently, even while one session is saturated", async () => {
     const [a, b] = [await visitor(), await visitor()];
     const [aInvoice, bInvoice] = [
       await ownInvoice(a.id, "XM9141"),
       await ownInvoice(b.id, "XM9141"),
     ];
     const results = await Promise.all(
-      Array.from({ length: 8 }, (_, i) =>
+      Array.from({ length: 4 }, (_, i) =>
         i % 2
           ? gql(a.token, EDIT, { id: aInvoice.id, clientName: `A${i}` })
           : gql(b.token, EDIT, { id: bInvoice.id, clientName: `B${i}` }),
       ),
     );
     expect(results.filter((r) => r.errors)).toEqual([]);
-    expect([await usage(a.id), await usage(b.id)]).toEqual([4, 4]);
+    expect([await usage(a.id), await usage(b.id)]).toEqual([2, 2]);
     expect((await ownInvoice(a.id, "XM9141")).clientName).toMatch(/^A/);
     expect((await ownInvoice(b.id, "XM9141")).clientName).toMatch(/^B/);
+
+    // A's slots are full (two writes queued behind its held lock): A's next
+    // write is refused at once, and B is neither blocked nor refused.
+    const release = await holdSessionLock(a.id);
+    const waiting = await lockWaiters();
+    const queued = [1, 2].map((i) =>
+      gql(a.token, EDIT, { id: aInvoice.id, clientName: `A queued ${i}` }),
+    );
+    await until(
+      async () => (await lockWaiters()) >= waiting + 2,
+      "A's two slots queued on its lock",
+    );
+    expect(
+      failure(await gql(a.token, EDIT, { id: aInvoice.id, clientName: "A3" })),
+    ).toEqual({
+      message: "Another change to this demo is in progress; try again",
+      code: "SESSION_BUSY",
+    });
+    ok(
+      await gql(b.token, EDIT, {
+        id: bInvoice.id,
+        clientName: "B while A full",
+      }),
+      "editInvoice",
+    );
+    await release(async () => undefined);
+    expect(outcomes(await Promise.all(queued))).toEqual(["ok", "ok"]);
+    expect([await usage(a.id), await usage(b.id)]).toEqual([4, 3]);
+    expect([await attempts(a.id), await attempts(b.id)]).toEqual([4, 3]);
   });
 });
 
@@ -1270,18 +1393,17 @@ describe("temporary-session isolation and transport boundaries", () => {
       );
       expect(received.at(-1)).toBe("Sentinel 2");
 
-      // Visitors cannot subscribe to the feed either.
-      const denied = await wsExecute(
-        v.token,
-        "subscription { invoiceAdded { id } }",
-      );
-      expect(denied.errors?.[0]?.extensions?.["code"]).toBe("FORBIDDEN");
+      // Visitors cannot subscribe to the feed either: their credential cannot
+      // open a WebSocket at all (Slice 3B.2).
+      expect(
+        await wsRefusal(v.token, "subscription { invoiceAdded { id } }"),
+      ).toBe(4403);
     } finally {
       await feed.dispose();
     }
   });
 
-  it("keeps all five operations forbidden over WebSocket", async () => {
+  it("refuses the WebSocket connection itself for all five operations", async () => {
     const v = await visitor();
     const invoice = await ownInvoice(v.id, "XM9141");
     const revision = await prisma.invoiceRevision.findFirstOrThrow({
@@ -1295,11 +1417,9 @@ describe("temporary-session isolation and transport boundaries", () => {
       [REMOVE, { id: invoice.id }],
       [RESTORE, { invoiceId: invoice.id, revisionId: revision.id }],
     ] as const)
-      expect(failure(await wsExecute(v.token, query, variables))).toEqual({
-        message: "Temporary demo sessions cannot mutate over WebSocket",
-        code: "FORBIDDEN",
-      });
+      expect(await wsRefusal(v.token, query, variables)).toBe(4403);
     expect(await snapshotDatabase()).toEqual(before);
+    expect(await attempts(v.id)).toBe(0);
   });
 
   it("keeps every unapproved mutation forbidden over HTTP, including fields without a resolver", async () => {
@@ -1399,5 +1519,504 @@ describe("temporary-session isolation and transport boundaries", () => {
     ).not.toBe("Shared edit");
     expect(await rowsOf(v.id)).toEqual(visitorRows);
     expect(await usage(v.id)).toBe(0);
+  });
+});
+
+// Slice 3B.2: the independent 3B.1 review's confirmed findings, reproduced
+// exactly as reported, then the surrounding cases.
+describe("Slice 3B.2 review reproductions over HTTP", () => {
+  it("P1: rejects the reviewer's 300-alias request before any coordinated transaction", async () => {
+    const v = await visitor();
+    // RT3080 is already paid, so each markAsPaid used to fail INSIDE its own
+    // coordinated transaction: 300 transactions, no budget, one IP allowance.
+    const paid = await ownInvoice(v.id, "RT3080");
+    const query = `mutation ($id: String!) { ${Array.from(
+      { length: 300 },
+      (_, i) => `m${i}: markAsPaid(id: $id) { id status }`,
+    ).join(" ")} }`;
+    expect(query.length).toBeGreaterThan(10 * 1024);
+    const before = await snapshotDatabase();
+    const transactions = vi.spyOn(prisma, "$transaction");
+    try {
+      const { status, body } = await post(v.token, {
+        query,
+        variables: { id: paid.id },
+      });
+      expect(transactions).not.toHaveBeenCalled();
+      expect(status).toBe(400);
+      expect(body).toEqual({
+        errors: [
+          {
+            message: "Temporary demo sessions may run one mutation per request",
+            extensions: { code: "SINGLE_MUTATION_REQUIRED" },
+          },
+        ],
+      });
+    } finally {
+      transactions.mockRestore();
+    }
+    expect(await snapshotDatabase()).toEqual(before);
+    expect(await usage(v.id)).toBe(0);
+  });
+
+  it("P2: rejects duplicate item IDs before any transaction, so a saved total always matches its items", async () => {
+    const v = await visitor();
+    const invoice = await ownInvoice(v.id, "RT3080");
+    const existing = invoice.items[0]!.id;
+    const before = await snapshotDatabase();
+    const transactions = vi.spyOn(prisma, "$transaction");
+    try {
+      // The reviewer's case: saved total 30, retained items totalling 20.
+      expect(
+        failure(
+          await gql(v.token, EDIT, {
+            id: invoice.id,
+            items: [
+              { id: existing, name: "First", price: 10, quantity: 1 },
+              { id: existing, name: "Second", price: 20, quantity: 1 },
+            ],
+          }),
+        ),
+      ).toEqual({
+        message: "items.1.id is duplicated",
+        code: "BAD_USER_INPUT",
+      });
+      expect(transactions).not.toHaveBeenCalled();
+    } finally {
+      transactions.mockRestore();
+    }
+    expect(await snapshotDatabase()).toEqual(before);
+    expect(await usage(v.id)).toBe(0);
+  });
+  it("P1: counts every root field however the document spells it, and runs exactly one transaction per admitted request", async () => {
+    const v = await visitor();
+    const invoice = await ownInvoice(v.id, "XM9141");
+    const before = await snapshotDatabase();
+    const transactions = vi.spyOn(prisma, "$transaction");
+    const edit = (alias: string, name: string) =>
+      `${alias}: editInvoice(id: $id, clientName: "${name}") { id }`;
+    try {
+      for (const [query, operationName] of [
+        [`mutation ($id: String) { ${edit("a", "A")} ${edit("b", "B")} }`],
+        [
+          `mutation ($id: String!) { markAsPaid(id: $id) { id } markAsPaid(id: $id) { id } }`,
+        ],
+        [`mutation ($id: String) { ${edit("a", "A")} __typename }`],
+        [
+          `mutation ($id: String) { ...F } fragment F on Mutation { ${edit("a", "A")} ${edit("b", "B")} }`,
+        ],
+        [
+          `mutation ($id: String) { ...F ...F } fragment F on Mutation { ${edit("a", "A")} }`,
+        ],
+        [
+          `mutation ($id: String) { ...F } fragment F on Mutation { ${edit("a", "A")} ...G } fragment G on Mutation { ${edit("b", "B")} }`,
+        ],
+        [
+          `mutation ($id: String) { ... on Mutation { ${edit("a", "A")} } ... { ${edit("b", "B")} } }`,
+        ],
+        [
+          `mutation ($id: String) { a: editInvoice(id: $id, clientName: "A") @skip(if: true) { id } ${edit("b", "B")} }`,
+        ],
+        [
+          `mutation One($id: String) { ${edit("a", "A")} } mutation Two($id: String) { ${edit("a", "A")} ${edit("b", "B")} }`,
+          "Two",
+        ],
+      ] as const) {
+        const { status, body } = await post(v.token, {
+          query,
+          operationName,
+          variables: { id: invoice.id },
+        });
+        expect({
+          query,
+          status,
+          code: body.errors?.[0]?.extensions?.["code"],
+        }).toEqual({
+          query,
+          status: 400,
+          code: "SINGLE_MUTATION_REQUIRED",
+        });
+      }
+      expect(transactions).not.toHaveBeenCalled();
+      expect(await snapshotDatabase()).toEqual(before);
+
+      // One root field, through an alias, a fragment, an inline fragment or
+      // a selected operation: admitted, exactly one transaction each.
+      for (const [query, operationName] of [
+        [`mutation ($id: String) { ${edit("only", "Alias")} }`],
+        [
+          `mutation ($id: String) { ...F } fragment F on Mutation { ${edit("only", "Fragment")} }`,
+        ],
+        [
+          `mutation ($id: String) { ... on Mutation { ${edit("only", "Inline")} } }`,
+        ],
+        [
+          `mutation One($id: String) { ${edit("only", "Selected")} } mutation Two($id: String) { ${edit("a", "A")} ${edit("b", "B")} }`,
+          "One",
+        ],
+      ] as const) {
+        transactions.mockClear();
+        const { status, body } = await post(v.token, {
+          query,
+          operationName,
+          variables: { id: invoice.id },
+        });
+        expect(status).toBe(200);
+        expect(body.errors).toBeUndefined();
+        expect(transactions).toHaveBeenCalledTimes(1);
+      }
+    } finally {
+      transactions.mockRestore();
+    }
+    expect((await ownInvoice(v.id, "XM9141")).clientName).toBe("Selected");
+    expect(await usage(v.id)).toBe(4);
+    expect(await attempts(v.id)).toBe(4);
+  });
+
+  it("P1: closes batched and GET mutation paths, and leaves ordinary users' multi-field mutations unchanged", async () => {
+    const v = await visitor();
+    const invoice = await ownInvoice(v.id, "XM9141");
+    const before = await snapshotDatabase();
+    const transactions = vi.spyOn(prisma, "$transaction");
+    try {
+      const single = {
+        query: `mutation ($id: String!) { markAsPaid(id: $id) { id } }`,
+        variables: { id: invoice.id },
+      };
+      const batched = await post(v.token, [single, single, single]);
+      expect(batched.status).toBe(400);
+      const get = await fetch(
+        `${baseUrl}/?query=${encodeURIComponent(`mutation { markAsPaid(id: "${invoice.id}") { id } }`)}`,
+        {
+          headers: {
+            Authorization: `Bearer ${v.token}`,
+            "Apollo-Require-Preflight": "true",
+            "X-Forwarded-For": nextIp(),
+          },
+        },
+      );
+      expect(get.status).toBe(405);
+      expect(transactions).not.toHaveBeenCalled();
+    } finally {
+      transactions.mockRestore();
+    }
+    expect(await snapshotDatabase()).toEqual(before);
+    expect(await attempts(v.id)).toBe(0);
+
+    // Ordinary Auth0 users: several root mutations per request, as before.
+    const both = await gql(
+      signedToken(ordinary),
+      `mutation { a: editInvoice(id: "OR0001", clientName: "First") { clientName }
+        b: editInvoice(id: "OR0001", description: "Second") { description } }`,
+    );
+    expect(both).toEqual({
+      data: { a: { clientName: "First" }, b: { description: "Second" } },
+    });
+  });
+
+  it("P1: counts every admitted attempt, failed ones included, from one IP or many, and stops at the attempt bound", async () => {
+    const v = await visitor();
+    const [paid, pending] = [
+      await ownInvoice(v.id, "RT3080"),
+      await ownInvoice(v.id, "XM9141"),
+    ];
+    const ip = "203.0.113.7";
+    const send = (query: string, variables: Record<string, unknown>) =>
+      post(v.token, { query, variables }, { ip }).then(({ body }) => body);
+    // Failures INSIDE the coordinated transaction, all from one IP.
+    for (const [query, variables, code] of [
+      [PAY, { id: paid.id }, "BAD_USER_INPUT"],
+      [PAY, { id: "OR0001" }, "NOT_FOUND"],
+      [EDIT, { id: `ZZ0000-${randomUUID()}`, clientName: "x" }, "NOT_FOUND"],
+      [
+        RESTORE,
+        { invoiceId: pending.id, revisionId: randomUUID() },
+        "NOT_FOUND",
+      ],
+    ] as const)
+      expect(failure(await send(query, variables)).code).toBe(code);
+    expect(await attempts(v.id)).toBe(4);
+    expect(await usage(v.id)).toBe(0);
+    // Refused before any transaction: not counted (they cost no database work).
+    expect(failure(await send(PAY, { id: "bad id!" })).code).toBe(
+      "BAD_USER_INPUT",
+    );
+    expect(
+      (
+        await post(
+          v.token,
+          {
+            query: `mutation { a: markAsPaid(id: "x") { id } b: markAsPaid(id: "x") { id } }`,
+          },
+          { ip },
+        )
+      ).status,
+    ).toBe(400);
+    expect(await attempts(v.id)).toBe(4);
+    // A success is an attempt too.
+    ok(await send(PAY, { id: pending.id }), "markAsPaid");
+    expect([await attempts(v.id), await usage(v.id)]).toEqual([5, 1]);
+
+    // At the bound, from fresh IPs: the last admitted attempt fails, then
+    // even a valid change is refused, with nothing recorded or changed.
+    await prisma.demoSession.update({
+      where: { userId: v.id },
+      data: { attemptCount: DEMO_WORKSPACE_LIMITS.attempts - 1 },
+    });
+    expect(failure(await gql(v.token, PAY, { id: paid.id })).code).toBe(
+      "BAD_USER_INPUT",
+    );
+    expect(await attempts(v.id)).toBe(DEMO_WORKSPACE_LIMITS.attempts);
+    const before = await snapshotDatabase();
+    for (const [query, variables] of [
+      [EDIT, { id: pending.id, clientName: "Valid change" }],
+      [ADD, frontendInvoice()],
+      [PAY, { id: paid.id }],
+    ] as const)
+      expect(failure(await gql(v.token, query, variables))).toEqual({
+        message: "This demo session has made too many change attempts",
+        code: "QUOTA_EXCEEDED",
+        quota: "attempts",
+      });
+    expect(await snapshotDatabase()).toEqual(before);
+    expect([await attempts(v.id), await usage(v.id)]).toEqual([
+      DEMO_WORKSPACE_LIMITS.attempts,
+      1,
+    ]);
+  });
+
+  it("P1: holds the concurrency and attempt bounds across two application instances", async () => {
+    const v = await visitor();
+    const invoice = await ownInvoice(v.id, "XM9141");
+    const results = await racing(
+      v.id,
+      Array.from(
+        { length: 6 },
+        (_, i) => () =>
+          post(
+            v.token,
+            { query: EDIT, variables: { id: invoice.id, clientName: `I${i}` } },
+            { url: i % 2 ? otherUrl : baseUrl },
+          ).then(({ body }) => body),
+      ),
+    );
+    expect(outcomes(results)).toEqual([
+      "SESSION_BUSY",
+      "SESSION_BUSY",
+      "SESSION_BUSY",
+      "SESSION_BUSY",
+      "ok",
+      "ok",
+    ]);
+    expect([await attempts(v.id), await usage(v.id)]).toEqual([2, 2]);
+
+    // One attempt counter, whichever instance admits the request.
+    await prisma.demoSession.update({
+      where: { userId: v.id },
+      data: { attemptCount: DEMO_WORKSPACE_LIMITS.attempts - 1 },
+    });
+    const paid = await ownInvoice(v.id, "RT3080");
+    const via = (url: string) =>
+      post(v.token, { query: PAY, variables: { id: paid.id } }, { url }).then(
+        ({ body }) => failure(body),
+      );
+    expect(await via(otherUrl)).toMatchObject({ code: "BAD_USER_INPUT" });
+    expect(await via(baseUrl)).toMatchObject({ quota: "attempts" });
+    expect(await via(otherUrl)).toMatchObject({ quota: "attempts" });
+    expect(await attempts(v.id)).toBe(DEMO_WORKSPACE_LIMITS.attempts);
+  });
+
+  it("P2: rejects every duplicate-ID shape, and keeps totals equal to the persisted items and history after valid item edits", async () => {
+    const v = await visitor();
+    const invoice = await ownInvoice(v.id, "XM9141");
+    const [first, second] = invoice.items.map((i) => i.id);
+    const before = await snapshotDatabase();
+    const transactions = vi.spyOn(prisma, "$transaction");
+    try {
+      for (const [items, field] of [
+        [
+          [
+            { id: first, name: "A", price: 5, quantity: 1 },
+            { id: first, name: "A", price: 5, quantity: 4 },
+          ],
+          "items.1.id",
+        ],
+        [
+          [
+            { id: first, name: "A", price: 1, quantity: 1 },
+            { id: second, name: "B", price: 1, quantity: 1 },
+            { id: first, name: "C", price: 1, quantity: 1 },
+            { id: first, name: "D", price: 1, quantity: 1 },
+          ],
+          "items.2.id",
+        ],
+        [
+          [
+            { id: first, name: "A", price: 1, quantity: 1 },
+            { id: first!.toUpperCase(), name: "B", price: 2, quantity: 1 },
+          ],
+          "items.1.id",
+        ],
+      ] as const)
+        expect(
+          failure(await gql(v.token, EDIT, { id: invoice.id, items })),
+        ).toEqual({
+          message: `${field} is duplicated`,
+          code: "BAD_USER_INPUT",
+        });
+      expect(transactions).not.toHaveBeenCalled();
+    } finally {
+      transactions.mockRestore();
+    }
+    expect(await snapshotDatabase()).toEqual(before);
+    expect([await attempts(v.id), await usage(v.id)]).toEqual([0, 0]);
+
+    const persisted = async () => {
+      const row = await ownInvoice(v.id, "XM9141");
+      const latest = await prisma.invoiceRevision.findFirstOrThrow({
+        where: { invoiceId: row.id },
+        orderBy: { revisionNumber: "desc" },
+      });
+      const snapshot = latest.snapshot as unknown as {
+        total: number;
+        items: { id: string; price: number; quantity: number; total: number }[];
+      };
+      const sum = row.items.reduce(
+        (total, i) => total + Number(i.price) * i.quantity,
+        0,
+      );
+      // Stored total = stored items = the revision snapshot, item for item.
+      expect(Number(row.total)).toBe(sum);
+      expect(snapshot.total).toBe(sum);
+      expect(
+        snapshot.items.map((i) => [i.id, i.price, i.quantity]).sort(),
+      ).toEqual(
+        row.items.map((i) => [i.id, Number(i.price), i.quantity]).sort(),
+      );
+      return row;
+    };
+    // A legitimate update of an existing item keeps its ID.
+    ok(
+      await gql(v.token, EDIT, {
+        id: invoice.id,
+        items: [
+          { id: first, name: "Kept", price: 12.5, quantity: 4 },
+          { id: second, name: "Also kept", price: 3, quantity: 1 },
+        ],
+      }),
+      "editInvoice",
+    );
+    let row = await persisted();
+    expect(row.items.map((i) => i.id).sort()).toEqual([first, second].sort());
+    expect(Number(row.total)).toBe(53);
+    // Existing + new (client UUID and blank) items, one existing dropped.
+    ok(
+      await gql(v.token, EDIT, {
+        id: invoice.id,
+        items: [
+          { id: first, name: "Kept", price: 10, quantity: 2 },
+          { id: randomUUID(), name: "New", price: 7, quantity: 3 },
+          { id: "", name: "Blank", price: 1, quantity: 1 },
+        ],
+      }),
+      "editInvoice",
+    );
+    row = await persisted();
+    expect(row.items).toHaveLength(3);
+    expect(row.items.map((i) => i.id)).toContain(first);
+    expect(row.items.map((i) => i.id)).not.toContain(second);
+    expect(Number(row.total)).toBe(42);
+    expect([await attempts(v.id), await usage(v.id)]).toEqual([2, 2]);
+
+    // Ordinary users: the repository refuses the same inconsistency.
+    const ordinaryBefore = await rowsOf(ordinary.id);
+    const ordinaryItem = ordinaryBefore[0]!.items[0]!.id;
+    const duplicate = await gql(signedToken(ordinary), EDIT, {
+      id: "OR0001",
+      items: [
+        { id: ordinaryItem, name: "A", price: 10, quantity: 1 },
+        { id: ordinaryItem, name: "B", price: 20, quantity: 1 },
+      ],
+    });
+    // (The ordinary resolver's existing generic edit error; logs name the rule.)
+    expect(failure(duplicate)).toEqual({
+      message: "Failed to update invoice",
+      code: "INTERNAL_SERVER_ERROR",
+    });
+    expect(await rowsOf(ordinary.id)).toEqual(ordinaryBefore);
+  });
+
+  it("P3: keeps omitted address fields and an explicit zero payment term, in the invoice and its history", async () => {
+    const latestSnapshot = async (invoiceId: string) =>
+      (
+        await prisma.invoiceRevision.findFirstOrThrow({
+          where: { invoiceId },
+          orderBy: { revisionNumber: "desc" },
+        })
+      ).snapshot as unknown as {
+        paymentTerms: number;
+        clientAddress: Record<string, string>;
+        senderAddress: Record<string, string>;
+      };
+    const v = await visitor();
+    for (const [token, id] of [
+      [v.token, (await ownInvoice(v.id, "RT3080")).id],
+      [signedToken(ordinary), "OR0001"],
+    ] as const) {
+      const stored = await prisma.invoice.findUniqueOrThrow({
+        where: { id },
+        include,
+      });
+      const { id: _c, ...client } = stored.clientAddress!;
+      const { id: _s, ...sender } = stored.senderAddress!;
+      const edited = ok<{
+        clientAddress: Record<string, string>;
+        senderAddress: Record<string, string>;
+      }>(
+        await gql(token, EDIT, {
+          id,
+          clientAddress: { city: "Truro" },
+          senderAddress: { postCode: "B0N 1A0" },
+        }),
+        "editInvoice",
+      );
+      const expected = {
+        clientAddress: { ...client, city: "Truro" },
+        senderAddress: { ...sender, postCode: "B0N 1A0" },
+      };
+      expect(edited).toMatchObject(expected);
+      const row = await prisma.invoice.findUniqueOrThrow({
+        where: { id },
+        include,
+      });
+      expect(row).toMatchObject(expected);
+      expect(await latestSnapshot(id)).toMatchObject(expected);
+
+      // An explicit 0 survives edits and creates; an omitted term is 14.
+      ok(await gql(token, EDIT, { id, paymentTerms: 0 }), "editInvoice");
+      expect(
+        (await prisma.invoice.findUniqueOrThrow({ where: { id } }))
+          .paymentTerms,
+      ).toBe(0);
+      expect((await latestSnapshot(id)).paymentTerms).toBe(0);
+      for (const [terms, persisted] of [
+        [0, 0],
+        [undefined, 14],
+        [30, 30],
+      ] as const) {
+        const { id: created } = ok<{ id: string }>(
+          await gql(token, ADD, {
+            ...frontendInvoice({ id: undefined }),
+            paymentTerms: terms,
+          }),
+          "addInvoice",
+        );
+        expect(
+          (await prisma.invoice.findUniqueOrThrow({ where: { id: created } }))
+            .paymentTerms,
+        ).toBe(persisted);
+        expect((await latestSnapshot(created)).paymentTerms).toBe(persisted);
+      }
+    }
   });
 });

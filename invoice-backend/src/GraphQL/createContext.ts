@@ -22,7 +22,10 @@ import type { Request } from "express";
 import type { IUserRepo } from "../repositories/userRepo";
 import type { PrismaClient } from "@prisma/client";
 import { resolveDemoSession } from "../services/demoSession.service";
-import { isReservedDemoUser } from "../services/demoSessionPolicy";
+import {
+  isReservedDemoUser,
+  isTemporaryDemoToken,
+} from "../services/demoSessionPolicy";
 
 const logger = container.get<Logger>(TYPES.Logger);
 
@@ -68,7 +71,7 @@ export async function retrieveUserFromToken(
   token: string,
   options: VerifyOptions,
 ): Promise<UserIdAndRole | null> {
-  if (token.startsWith("demo-session")) {
+  if (isTemporaryDemoToken(token)) {
     return resolveDemoSession(
       container.get<PrismaClient>(TYPES.PrismaClient),
       token,
@@ -309,14 +312,22 @@ async function getOrCreateDbUser(
   }
 }
 
+/** The bearer token a WebSocket connection presents (fixed per connection). */
+export function connectionToken(
+  connectionParams: Context["connectionParams"],
+): string | undefined {
+  const authHeader: unknown =
+    connectionParams?.["Authorization"] || connectionParams?.["authorization"];
+  return typeof authHeader === "string" && authHeader.startsWith("Bearer ")
+    ? authHeader.split(" ")[1]
+    : undefined;
+}
+
 async function createSubscriptionContext(connection: Context) {
-  const authHeader = (connection.connectionParams?.["Authorization"] ||
-    connection.connectionParams?.["authorization"]) as string | undefined;
-  if (!authHeader?.startsWith("Bearer "))
-    return { user: null, container, connection };
+  const token = connectionToken(connection.connectionParams);
+  if (!token) return { user: null, container, connection };
   try {
-    const token = authHeader.split(" ")[1];
-    const user = token ? await retrieveUserFromToken(token, options) : null;
+    const user = await retrieveUserFromToken(token, options);
     if (!user) return { user: null, container, connection };
     const childContainer = setupContainer(user);
     return {

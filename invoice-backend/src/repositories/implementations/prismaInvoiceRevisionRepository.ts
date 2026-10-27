@@ -44,7 +44,7 @@ export class PrismaInvoiceRevisionRepository implements IInvoiceRevisionRepo {
 
   constructor(
     @inject(DatabaseConnection)
-    private readonly databaseConnection: RepositoryDatabase,
+    readonly databaseConnection: RepositoryDatabase,
   ) {
     this.prisma = databaseConnection.client;
   }

@@ -67,6 +67,10 @@ export class InvoiceRevisionService {
     requireDemoMutationAllowed(
       this.userContext,
       this.demoWrite,
+      [
+        this.revisionRepo.databaseConnection,
+        this.invoiceRepo.databaseConnection,
+      ],
       "create",
       "edit",
       "pay",

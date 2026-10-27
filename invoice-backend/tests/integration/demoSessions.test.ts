@@ -480,90 +480,72 @@ describe("temporary demo sessions", () => {
     }
   });
 
-  it("re-authenticates every operation on one persistent real WebSocket: the admin feed stays denied, and revocation or expiry cuts off access", async () => {
-    type Outcome = {
-      payloads: number; // results carrying data; a denial is an errors-only result
-      data?: Record<string, unknown> | null | undefined;
-      errors?: readonly { extensions?: Record<string, unknown> }[] | undefined;
-    };
-    const operation = (client: Client, query: string) =>
-      new Promise<Outcome>((resolve) => {
-        const outcome: Outcome = { payloads: 0 };
-        client.subscribe(
-          { query },
-          {
-            next: (value) => {
-              if (value.data) outcome.payloads++;
-              outcome.data = value.data;
-              outcome.errors = value.errors;
-            },
-            error: (errors) =>
-              resolve({
-                ...outcome,
-                errors: Array.isArray(errors) ? errors : [errors as never],
-              }),
-            complete: () => resolve(outcome),
-          },
-        );
-      });
-    for (const ending of ["revoked", "expired"] as const) {
-      const session = await allocateDemoSession(prisma);
-      const user = await identity(session.credential);
-      const owned = (
-        await prisma.invoice.findMany({
-          where: { createdById: user.id },
-          select: { id: true },
-        })
-      )
-        .map((i) => i.id)
-        .sort();
-      let connections = 0;
+  // Slice 3B.2: temporary sessions need no WebSocket operation (the browser
+  // sends only subscriptions there, and the administrator feed is closed to
+  // them), so their credentials no longer open a socket at all. Revocation or
+  // expiry during a connection is therefore moot; Auth0 sockets still
+  // re-authenticate per operation.
+  it("refuses temporary credentials at WebSocket connection_init, valid or not, before any database work", async () => {
+    const connect = async (token: string) => {
+      let connected = false;
       const client = createClient({
         url: wsUrl,
         webSocketImpl: WebSocket,
-        lazy: false, // one socket for the whole test, not one per operation
-        retryAttempts: 0, // a dropped socket must fail the test, not reconnect
-        connectionParams: { Authorization: `Bearer ${session.credential}` },
-        on: { connected: () => void connections++ },
+        lazy: false,
+        retryAttempts: 0,
+        connectionParams: { Authorization: `Bearer ${token}` },
+        on: { connected: () => void (connected = true) },
       });
       try {
-        const list = await operation(client, "{ allInvoices { id } }");
-        expect(list.errors).toBeUndefined();
-        expect(
-          (list.data?.["allInvoices"] as { id: string }[])
-            .map((i) => i.id)
-            .sort(),
-        ).toEqual(owned);
-        const feed = await operation(
-          client,
-          "subscription { invoiceAdded { id } }",
+        const outcome = await new Promise<number | string>((resolve) =>
+          client.subscribe(
+            { query: "{ allInvoices { id } }" },
+            {
+              next: () => undefined,
+              error: (closed) =>
+                resolve((closed as { code?: number }).code ?? "error"),
+              complete: () => resolve("completed"),
+            },
+          ),
         );
-        expect(feed.payloads).toBe(0);
-        expect(feed.errors?.[0]?.extensions?.["code"]).toBe("FORBIDDEN");
-
-        if (ending === "revoked")
-          await prisma.demoSession.update({
-            where: { userId: user.id },
-            data: { revokedAt: new Date() },
-          });
-        else await expire(user.id);
-
-        // Same socket, same connectionParams: the server re-resolves the
-        // credential for each operation (graphql-ws calls `context` per subscribe).
-        const after = await operation(client, "{ allInvoices { id } }");
-        expect(after.data?.["allInvoices"] ?? null).toBeNull();
-        expect(after.errors?.length).toBeGreaterThan(0);
-        const feedAfter = await operation(
-          client,
-          "subscription { invoiceAdded { id } }",
-        );
-        expect(feedAfter.payloads).toBe(0);
-        expect(feedAfter.errors?.length).toBeGreaterThan(0);
-        expect(connections).toBe(1);
+        return { outcome, connected };
       } finally {
         await client.dispose();
       }
+    };
+    const [live, revoked, expired] = [
+      await allocateDemoSession(prisma),
+      await allocateDemoSession(prisma),
+      await allocateDemoSession(prisma),
+    ];
+    await prisma.demoSession.update({
+      where: { userId: (await identity(revoked.credential)).id },
+      data: { revokedAt: new Date() },
+    });
+    await expire((await identity(expired.credential)).id);
+    const refused = { outcome: 4403, connected: false };
+    const queries = vi.spyOn(prisma, "$queryRaw");
+    try {
+      for (const credential of [
+        live.credential,
+        revoked.credential,
+        expired.credential,
+        "demo-session-v1.not-a-credential",
+      ])
+        expect(await connect(credential)).toEqual(refused);
+      vi.stubEnv("DEMO_SESSIONS_ENABLED", "false");
+      expect(await connect(live.credential)).toEqual(refused);
+      vi.stubEnv("DEMO_SESSIONS_ENABLED", "true");
+      // Not even the credential lookup ran.
+      expect(queries).not.toHaveBeenCalled();
+    } finally {
+      queries.mockRestore();
     }
+    // The same server still serves Auth0 sockets.
+    expect(await connect(signedToken())).toEqual({
+      outcome: "completed",
+      connected: true,
+    });
   });
 
   it("forces USER despite persisted ADMIN and rejects signed Auth0 impersonation of reserved IDs", async () => {
@@ -738,6 +720,33 @@ describe("temporary demo sessions", () => {
     expect(await snapshotDatabase()).toEqual(before);
   });
 
+  it("refuses a multi-field temporary mutation on an execution path without the request plugin, before any coordinated transaction", async () => {
+    // `server` here is a bare ApolloServer over the production resolvers,
+    // without server.ts's plugins: the mutation wrapper must still refuse.
+    const session = await allocateDemoSession(prisma);
+    const user = await identity(session.credential);
+    const own = await prisma.invoice.findFirstOrThrow({
+      where: { createdById: user.id, status: "pending" },
+    });
+    const before = await snapshotDatabase();
+    const transactions = vi.spyOn(prisma, "$transaction");
+    try {
+      const result = await execute(
+        session.credential,
+        `mutation ($id: String!) { ...F } fragment F on Mutation {
+          a: markAsPaid(id: $id) { id } b: markAsPaid(id: $id) { id } }`,
+        { id: own.id },
+      );
+      expect(
+        result.errors?.map((e) => e.extensions?.["code"] as string),
+      ).toEqual(["SINGLE_MUTATION_REQUIRED", "SINGLE_MUTATION_REQUIRED"]);
+      expect(transactions).not.toHaveBeenCalled();
+    } finally {
+      transactions.mockRestore();
+    }
+    expect(await snapshotDatabase()).toEqual(before);
+  });
+
   it("denies temporary-session mutations over WebSocket as a separate rule, and bounds request size on both transports before any database work", async () => {
     const session = await allocateDemoSession(prisma);
     const user = await identity(session.credential);
@@ -764,7 +773,8 @@ describe("temporary demo sessions", () => {
     });
     const before = await snapshotDatabase();
 
-    // Real transport: the same rule through ws + graphql-ws + createContext.
+    // Real transport: since Slice 3B.2 the connection itself is refused, so
+    // the rule above is defense in depth behind it.
     const client = createClient({
       url: wsUrl,
       webSocketImpl: WebSocket,
@@ -772,23 +782,13 @@ describe("temporary demo sessions", () => {
       connectionParams: { Authorization: `Bearer ${session.credential}` },
     });
     try {
-      const result = await new Promise<{
-        errors?: readonly { message: string; extensions?: unknown }[];
-      }>((resolve, reject) => {
-        let last = {};
+      const closed = await new Promise<{ code?: number }>((resolve, reject) =>
         client.subscribe(
           { query: `mutation { markAsPaid(id: "${own.id}") { id } }` },
-          {
-            next: (value) => (last = value),
-            error: reject,
-            complete: () => resolve(last),
-          },
-        );
-      });
-      expect(result.errors?.[0]).toMatchObject({
-        message: "Temporary demo sessions cannot mutate over WebSocket",
-        extensions: { code: "FORBIDDEN" },
-      });
+          { next: () => undefined, error: resolve, complete: reject },
+        ),
+      );
+      expect(closed.code).toBe(4403);
     } finally {
       await client.dispose();
     }
@@ -808,7 +808,7 @@ describe("temporary demo sessions", () => {
       socket.send(
         JSON.stringify({
           type: "connection_init",
-          payload: { Authorization: `Bearer ${session.credential}` },
+          payload: { Authorization: `Bearer ${signedToken()}` },
         }),
       );
       await until(() => messages.some((m) => m.type === "connection_ack"));

@@ -35,6 +35,11 @@ const WRITE_ERRORS: Record<
     code: "SESSION_BUSY",
     message: "Another change to this demo is in progress; try again",
   },
+  ATTEMPT_BUDGET: {
+    code: "QUOTA_EXCEEDED",
+    message: "This demo session has made too many change attempts",
+    quota: "attempts",
+  },
   MUTATION_BUDGET: {
     code: "QUOTA_EXCEEDED",
     message: "This demo session has no changes remaining",

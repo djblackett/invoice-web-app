@@ -109,6 +109,8 @@ model DemoSession {
   mutationCount  Int      @default(0)
   resetCount     Int      @default(0)
   lastResetAt    DateTime? @db.Timestamptz(3)
+  // Every admitted write attempt, including failed ones (never decremented).
+  attemptCount   Int      @default(0)
 
   @@index([expiresAt])
 }

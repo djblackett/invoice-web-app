@@ -1,9 +1,15 @@
-import { defaultFieldResolver, GraphQLError, Kind } from "graphql";
+import {
+  defaultFieldResolver,
+  GraphQLError,
+  Kind,
+  type GraphQLResolveInfo,
+} from "graphql";
 import typeDefs from "../GraphQL/typeDefs";
 import { ForbiddenException } from "../config/exception.config";
 import {
   isTemporaryDemoUser,
   requireHttpForDemoMutation,
+  requireSingleDemoMutation,
 } from "../services/demoSessionPolicy";
 import type { InjectedQueryContext } from "../constants/types";
 import { getDemoResolvers } from "./demoResolvers";
@@ -46,8 +52,10 @@ export function getResolvers() {
         ...userResolvers.Mutation,
       }).map(([name, resolver]) => [
         name,
-        (...args: [unknown, unknown, InjectedQueryContext]) => {
-          const [, input, context] = args;
+        (
+          ...args: [unknown, unknown, InjectedQueryContext, GraphQLResolveInfo?]
+        ) => {
+          const [, input, context, info] = args;
           try {
             // `connection` is set only by the server's WebSocket context.
             requireHttpForDemoMutation(context.user, !!context.connection);
@@ -66,14 +74,23 @@ export function getResolvers() {
               throw forbidden(
                 "Temporary demo sessions cannot use this operation",
               );
+            // Normally refused before execution (server.ts); this also covers
+            // any other execution path. No `info` fails closed.
+            requireSingleDemoMutation(
+              context.user,
+              info?.operation,
+              // eslint-disable-next-line security/detect-object-injection -- graphql-js's own fragment map, keyed by names from the validated document.
+              (fragment) => info?.fragments[fragment],
+            );
             return coordinated(input as Record<string, unknown>, context);
           }
-          // Preserve each resolver's argument contract; the wrapper only inspects context.
+          // Preserve each resolver's argument contract; the wrapper only inspects context and info.
           return (
             resolver as (
               root: unknown,
               input: unknown,
               context: InjectedQueryContext,
+              info?: GraphQLResolveInfo,
             ) => unknown
           )(...args);
         },

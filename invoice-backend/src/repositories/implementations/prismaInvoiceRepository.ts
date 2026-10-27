@@ -23,7 +23,7 @@ export class PrismaInvoiceRepository implements IInvoiceRepo {
 
   constructor(
     @inject(DatabaseConnection)
-    private readonly databaseConnection: RepositoryDatabase,
+    readonly databaseConnection: RepositoryDatabase,
     // In a coordinated write, client-supplied invoice/item IDs are ignored:
     // they are global keys, so honouring them would let a visitor probe
     // other users' records through unique-constraint errors.
@@ -152,6 +152,13 @@ export class PrismaInvoiceRepository implements IInvoiceRepo {
   }
 
   async update(id: string, invoiceUpdates: Partial<Invoice>) {
+    // Reconciliation keeps one row per ID, so a repeated ID would leave the
+    // stored items disagreeing with a total computed from the whole list.
+    const itemIds = (invoiceUpdates.items ?? []).flatMap((i) =>
+      i.id ? [i.id] : [],
+    );
+    if (new Set(itemIds).size !== itemIds.length)
+      throw new ValidationException("Item IDs must be unique");
     try {
       const updatedInvoice = await this.databaseConnection.atomic(
         async (prisma) => {
@@ -321,7 +328,8 @@ export class PrismaInvoiceRepository implements IInvoiceRepo {
         paymentDue:
           invoice.paymentDue ||
           new Date(Date.now() + 24 * 60 * 60 * 1000).toISOString(),
-        paymentTerms: invoice.paymentTerms || 14,
+        // mapPartialInvoiceToInvoice defaults an omitted term; 0 is kept.
+        paymentTerms: invoice.paymentTerms,
         status: invoice.status || "pending",
         total: invoice.total || new Prisma.Decimal(0),
         items: {

@@ -1,5 +1,6 @@
 import {
   requireDemoMutationAllowed,
+  type DemoInvoiceOperation,
   type DemoWriteCapability,
 } from "./demoSessionPolicy";
 import { Invoice, UserIdAndRole } from "../constants/types";
@@ -25,6 +26,19 @@ import {
   type InvoiceSnapshot,
 } from "./invoiceDiff";
 
+const withAddressUpdates = <A extends object>(
+  stored: A | undefined,
+  updates: Partial<A> | undefined,
+) =>
+  updates
+    ? ({
+        ...stored,
+        ...Object.fromEntries(
+          Object.entries(updates).filter(([, value]) => value !== undefined),
+        ),
+      } as A)
+    : stored;
+
 @injectable()
 export class InvoiceService {
   constructor(
@@ -46,6 +60,15 @@ export class InvoiceService {
     @inject(TYPES.DemoWriteCapability)
     private readonly demoWrite: DemoWriteCapability | null = null,
   ) {}
+
+  // The repository must be on the capability's own transaction.
+  private requireWrite = (...operations: DemoInvoiceOperation[]) =>
+    requireDemoMutationAllowed(
+      this.userContext,
+      this.demoWrite,
+      [this.invoiceRepo.databaseConnection],
+      ...operations,
+    );
 
   getInvoices = async (): Promise<Invoice[]> => {
     if (!this.userContext) {
@@ -78,7 +101,7 @@ export class InvoiceService {
     this.getAuthorizedInvoice(invoiceId);
 
   addInvoice = async (invoice: Invoice) => {
-    requireDemoMutationAllowed(this.userContext, this.demoWrite, "create");
+    this.requireWrite("create");
     if (!this.userContext) {
       throw new ValidationException("Unauthorized");
     }
@@ -130,13 +153,23 @@ export class InvoiceService {
   };
 
   updateInvoice = async (id: string, invoiceUpdates: Partial<Invoice>) => {
-    requireDemoMutationAllowed(this.userContext, this.demoWrite, "edit");
+    this.requireWrite("edit");
     const oldInvoice = await this.getAuthorizedInvoice(id);
 
     try {
       const newInvoiceUnvalidated = withCalculatedTotals({
         ...oldInvoice,
         ...invoiceUpdates,
+        // Addresses are edited field by field too: omitted fields keep their
+        // stored values instead of failing validation.
+        clientAddress: withAddressUpdates(
+          oldInvoice.clientAddress,
+          invoiceUpdates.clientAddress,
+        ),
+        senderAddress: withAddressUpdates(
+          oldInvoice.senderAddress,
+          invoiceUpdates.senderAddress,
+        ),
       });
       const validatedInvoice: Partial<Invoice> = validateInvoiceData(
         newInvoiceUnvalidated,
@@ -182,7 +215,7 @@ export class InvoiceService {
    * stale line-item math.
    */
   restoreRevision = async (invoiceId: string, revisionId: string) => {
-    requireDemoMutationAllowed(this.userContext, this.demoWrite, "restore");
+    this.requireWrite("restore");
     if (!this.userContext) {
       throw new ValidationException("Unauthorized");
     }
@@ -246,7 +279,7 @@ export class InvoiceService {
   };
 
   markAsPaid = async (id: string) => {
-    requireDemoMutationAllowed(this.userContext, this.demoWrite, "pay");
+    this.requireWrite("pay");
     const invoice = await this.getAuthorizedInvoice(id);
     if (invoice.status !== "pending") {
       throw new ValidationException(
@@ -275,7 +308,7 @@ export class InvoiceService {
   };
 
   deleteInvoice = async (invoiceId: string) => {
-    requireDemoMutationAllowed(this.userContext, this.demoWrite, "delete");
+    this.requireWrite("delete");
     await this.getAuthorizedInvoice(invoiceId);
     try {
       const result = await this.invoiceRepo.delete(invoiceId);
@@ -291,7 +324,7 @@ export class InvoiceService {
   };
 
   deleteAllInvoices = async () => {
-    requireDemoMutationAllowed(this.userContext);
+    this.requireWrite();
     if (!this.userContext) {
       throw new ValidationException("Unauthorized");
     }
@@ -311,7 +344,7 @@ export class InvoiceService {
   };
 
   deleteInvoicesByUserId = async () => {
-    requireDemoMutationAllowed(this.userContext);
+    this.requireWrite();
     if (!this.userContext) {
       throw new ValidationException("Unauthorized");
     }

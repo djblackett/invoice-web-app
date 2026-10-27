@@ -10,6 +10,12 @@ export const DEMO_WORKSPACE_LIMITS = {
   revisions: 200, // retained, across the whole workspace
   itemsPerInvoice: 20,
   mutations: 200, // per session lifetime; resets consume one and never refund
+  // Admitted write attempts per session lifetime, failed ones included: every
+  // transaction past the session lock counts, so failures cannot be free.
+  attempts: 400,
+  // Coordinated writes a session may have open at once, across all instances:
+  // one running and one waiting for the session lock. Others fail at once.
+  concurrentWrites: 2,
   resets: 5, // per session lifetime
   resetCooldownMs: 2 * 60_000,
 } as const;
@@ -188,11 +194,19 @@ function prepareItems(value: unknown): Item[] | undefined {
     throw new ValidationException(
       `items exceeds ${DEMO_WORKSPACE_LIMITS.itemsPerInvoice} entries`,
     );
+  const seen = new Set<string>();
   return value.map((item: unknown, i): Item => {
     if (!isRecord(item)) throw new ValidationException(`items.${i} is invalid`);
     const { id, name, price, quantity } = item;
     if (present(id) && id !== "" && (typeof id !== "string" || !UUID.test(id)))
       throw new ValidationException(`items.${i}.id is invalid`);
+    // One entry per stored item: reconciliation would keep only the last
+    // duplicate while the total counted them all.
+    if (typeof id === "string" && id !== "") {
+      if (seen.has(id.toLowerCase()))
+        throw new ValidationException(`items.${i}.id is duplicated`);
+      seen.add(id.toLowerCase());
+    }
     return {
       ...(typeof id === "string" && id !== "" ? { id } : {}),
       name: text(`items.${i}.name`, name ?? ""),
@@ -217,9 +231,9 @@ function prepareItems(value: unknown): Item[] | undefined {
  * Pure, database-free preparation of temporary-session invoice input, run
  * BEFORE the coordinator opens a transaction. It rebuilds the input from an
  * allowlist, so `id`, totals and ownership fields never arrive (totals are
- * recomputed by the service). Item IDs must be UUID-shaped; whether one
- * belongs to the visitor's invoice is decided in the transaction, where
- * unknown IDs are ignored. `status` must be draft, pending or paid; other
+ * recomputed by the service). Item IDs must be UUID-shaped and unique;
+ * whether one belongs to the visitor's invoice is decided in the transaction,
+ * where unknown IDs are ignored. `status` must be draft, pending or paid; other
  * fields may be empty, so incomplete drafts still save. Errors name only the
  * offending field, never data.
  */

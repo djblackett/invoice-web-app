@@ -1,4 +1,5 @@
-import { describe, expect, it } from "vitest";
+import { describe, expect, it, vi } from "vitest";
+import { parse, type FragmentDefinitionNode } from "graphql";
 import { ValidationException } from "../../src/config/exception.config";
 import { randomUUID } from "node:crypto";
 import {
@@ -12,11 +13,13 @@ import {
   prepareDemoInvoiceInput,
 } from "../../src/services/demoWorkspaceQuota";
 import {
-  issueDemoWriteCapability,
+  claimDemoWriteIssuer,
   requireDemoMutationAllowed,
   requireHttpForDemoMutation,
+  requireSingleDemoMutation,
   type DemoWriteCapability,
 } from "../../src/services/demoSessionPolicy";
+import type { RepositoryDatabase } from "../../src/database/database.connection";
 import { readdirSync, readFileSync } from "node:fs";
 import path from "node:path";
 
@@ -34,6 +37,13 @@ describe("temporary workspace quota policy", () => {
       revisions: 200,
       itemsPerInvoice: 20,
     });
+    // Slice 3B.2 admission: failures count, and the attempt bound sits above
+    // the change budget so ordinary mistakes never exhaust it first.
+    expect(DEMO_WORKSPACE_LIMITS.attempts).toBe(400);
+    expect(DEMO_WORKSPACE_LIMITS.attempts).toBeGreaterThan(
+      DEMO_WORKSPACE_LIMITS.mutations,
+    );
+    expect(DEMO_WORKSPACE_LIMITS.concurrentWrites).toBe(2);
   });
 
   it("allows usage AT each limit and rejects usage beyond any limit", () => {
@@ -205,6 +215,56 @@ describe("temporary-session input preparation (before any transaction)", () => {
     });
   });
 
+  it("rejects a repeated nonempty item ID (any case, any number of repeats), but not distinct or blank IDs", () => {
+    const [a, b] = [randomUUID(), randomUUID()];
+    expect(
+      prepareDemoInvoiceInput({
+        items: [
+          { ...item, id: a },
+          { ...item, id: b },
+          { ...item, id: "" },
+          { ...item, id: "" },
+          { ...item },
+        ],
+      }).items,
+    ).toHaveLength(5);
+    for (const [items, field] of [
+      [
+        [
+          { ...item, id: a, price: 10 },
+          { ...item, id: a, price: 20 },
+        ],
+        "items.1.id",
+      ],
+      [
+        [
+          { ...item, id: a, quantity: 1 },
+          { ...item, id: a, quantity: 3 },
+        ],
+        "items.1.id",
+      ],
+      [
+        [
+          { ...item, id: a },
+          { ...item, id: b },
+          { ...item, id: a },
+          { ...item, id: a },
+        ],
+        "items.2.id",
+      ],
+      [
+        [
+          { ...item, id: a },
+          { ...item, id: a.toUpperCase() },
+        ],
+        "items.1.id",
+      ],
+    ] as const)
+      expect(() => prepareDemoInvoiceInput({ items })).toThrow(
+        new ValidationException(`${field} is duplicated`),
+      );
+  });
+
   it("bounds record IDs by length and character set", () => {
     const visible = `RT3080-${randomUUID()}`;
     expect(assertDemoRecordId("invoiceId", visible)).toBe(visible);
@@ -256,30 +316,41 @@ describe("temporary-session write capability", () => {
     role: "USER" as const,
   };
   const ordinary = { id: "auth0|user", name: "User", role: "USER" as const };
+  // This module graph never loads the coordinator, so the test can claim.
+  const issueDemoWriteCapability = claimDemoWriteIssuer();
+  const database = {} as RepositoryDatabase;
+  const otherDatabase = {} as RepositoryDatabase;
   const issue = (overrides = {}) =>
     issueDemoWriteCapability({
       sessionId: "session",
       userId: temporary.id,
       operation: "edit",
+      database,
       ...overrides,
     });
 
-  it("admits a temporary session only for the granted operation, session and user", () => {
+  it("admits a temporary session only for the granted operation, session, user and transaction", () => {
     const { capability } = issue();
     expect(() =>
-      requireDemoMutationAllowed(temporary, capability, "edit"),
+      requireDemoMutationAllowed(temporary, capability, [database], "edit"),
     ).not.toThrow();
     expect(() =>
-      requireDemoMutationAllowed(temporary, capability, "create", "edit"),
+      requireDemoMutationAllowed(
+        temporary,
+        capability,
+        [database, database],
+        "create",
+        "edit",
+      ),
     ).not.toThrow();
     for (const other of ["create", "pay", "delete", "restore"] as const)
       expect(() =>
-        requireDemoMutationAllowed(temporary, capability, other),
+        requireDemoMutationAllowed(temporary, capability, [database], other),
       ).toThrow("read-only");
     // No operations named (bulk deletes, user administration): never admitted.
-    expect(() => requireDemoMutationAllowed(temporary, capability)).toThrow(
-      "read-only",
-    );
+    expect(() =>
+      requireDemoMutationAllowed(temporary, capability, [database]),
+    ).toThrow("read-only");
     for (const user of [
       { ...temporary, demoSessionId: "another-session" },
       { ...temporary, id: "demo-session:another-user" },
@@ -287,7 +358,22 @@ describe("temporary-session write capability", () => {
       { id: temporary.id, name: temporary.name, role: temporary.role },
     ])
       expect(() =>
-        requireDemoMutationAllowed(user, capability, "edit"),
+        requireDemoMutationAllowed(user, capability, [database], "edit"),
+      ).toThrow("read-only");
+    // Any database other than the grant's transaction, or none at all.
+    for (const writesThrough of [
+      [],
+      [otherDatabase],
+      [database, otherDatabase],
+      [{ ...database } as RepositoryDatabase],
+    ])
+      expect(() =>
+        requireDemoMutationAllowed(
+          temporary,
+          capability,
+          writesThrough,
+          "edit",
+        ),
       ).toThrow("read-only");
   });
 
@@ -295,7 +381,7 @@ describe("temporary-session write capability", () => {
     const { capability, revoke } = issue();
     revoke();
     expect(() =>
-      requireDemoMutationAllowed(temporary, capability, "edit"),
+      requireDemoMutationAllowed(temporary, capability, [database], "edit"),
     ).toThrow("read-only");
     const live = issue().capability;
     expect(Object.isFrozen(live)).toBe(true);
@@ -305,35 +391,59 @@ describe("temporary-session write capability", () => {
       { ...live },
       Object.create(live) as object,
       JSON.parse(JSON.stringify(live)) as object,
-      { sessionId: "session", userId: temporary.id, operation: "edit" },
+      {
+        sessionId: "session",
+        userId: temporary.id,
+        operation: "edit",
+        database,
+      },
     ])
       expect(() =>
         requireDemoMutationAllowed(
           temporary,
           forged as DemoWriteCapability,
+          [database],
           "edit",
         ),
       ).toThrow("read-only");
-    expect(() => requireDemoMutationAllowed(temporary, null, "edit")).toThrow(
-      "read-only",
-    );
+    expect(() =>
+      requireDemoMutationAllowed(temporary, null, [database], "edit"),
+    ).toThrow("read-only");
   });
 
   it("leaves ordinary identities unaffected, with or without a capability", () => {
     expect(() => requireDemoMutationAllowed(ordinary)).not.toThrow();
     expect(() =>
-      requireDemoMutationAllowed(ordinary, null, "delete"),
+      requireDemoMutationAllowed(ordinary, null, [], "delete"),
     ).not.toThrow();
     expect(() => requireDemoMutationAllowed(null)).not.toThrow();
   });
 
-  it("is issued only by the session-write coordinator", () => {
+  it("hands its issuer out once, so the coordinator either owns it or cannot load", async () => {
+    expect(() => claimDemoWriteIssuer()).toThrow("already claimed");
+    vi.resetModules();
+    // Once the coordinator has loaded, nothing else can claim the issuer...
+    await import("../../src/services/demoSessionWrite");
+    const policy = await import("../../src/services/demoSessionPolicy");
+    expect(() => policy.claimDemoWriteIssuer()).toThrow("already claimed");
+    vi.resetModules();
+    // ...and a module that claimed first stops the coordinator from loading.
+    (
+      await import("../../src/services/demoSessionPolicy")
+    ).claimDemoWriteIssuer();
+    await expect(import("../../src/services/demoSessionWrite")).rejects.toThrow(
+      "already claimed",
+    );
+    vi.resetModules();
+  });
+
+  it("is claimed only by the session-write coordinator", () => {
     const src = path.resolve(__dirname, "../../src");
     const files = readdirSync(src, { recursive: true, encoding: "utf8" })
       .filter((file) => file.endsWith(".ts"))
       .filter((file) =>
         readFileSync(path.join(src, file), "utf8").includes(
-          "issueDemoWriteCapability(",
+          "claimDemoWriteIssuer(",
         ),
       )
       .map((file) => file.replaceAll(path.sep, "/"))
@@ -342,5 +452,77 @@ describe("temporary-session write capability", () => {
       "services/demoSessionPolicy.ts",
       "services/demoSessionWrite.ts",
     ]);
+  });
+});
+
+describe("temporary-session single-mutation rule", () => {
+  const temporary = {
+    id: "demo-session:user",
+    demoSessionId: "session",
+    name: "Demo visitor",
+    role: "USER" as const,
+  };
+  const ordinary = { id: "auth0|user", name: "User", role: "USER" as const };
+  const check = (
+    user: typeof temporary | typeof ordinary | null,
+    source: string,
+    operationName?: string,
+  ) => {
+    const document = parse(source);
+    const operations = document.definitions.filter(
+      (d) => d.kind === "OperationDefinition",
+    );
+    const operation = operationName
+      ? operations.find((o) => o.name?.value === operationName)
+      : operations[0];
+    requireSingleDemoMutation(user, operation, (name) =>
+      document.definitions.find(
+        (d): d is FragmentDefinitionNode =>
+          d.kind === "FragmentDefinition" && d.name.value === name,
+      ),
+    );
+  };
+  const refused = "Temporary demo sessions may run one mutation per request";
+
+  it("admits exactly one root mutation field, however it is spelled", () => {
+    for (const source of [
+      'mutation { markAsPaid(id: "a") { id } }',
+      'mutation { paid: markAsPaid(id: "a") { id } }',
+      'mutation { ...F } fragment F on Mutation { markAsPaid(id: "a") { id } }',
+      'mutation { ... on Mutation { markAsPaid(id: "a") { id } } }',
+      // Many fields BELOW the single root field are fine.
+      'mutation { editInvoice(id: "a") { id items { id name } total } }',
+    ])
+      expect(() => check(temporary, source)).not.toThrow();
+  });
+
+  it("counts aliases, repeats, fragments, inline fragments, directives and __typename", () => {
+    for (const source of [
+      'mutation { a: markAsPaid(id: "a") { id } b: markAsPaid(id: "a") { id } }',
+      'mutation { markAsPaid(id: "a") { id } markAsPaid(id: "a") { id } }',
+      'mutation { markAsPaid(id: "a") { id } __typename }',
+      'mutation { ...F ...F } fragment F on Mutation { markAsPaid(id: "a") { id } }',
+      'mutation { ...F } fragment F on Mutation { a: markAsPaid(id: "a") { id } ...G } fragment G on Mutation { b: removeInvoice(id: "a") { acknowledged } }',
+      'mutation { ... on Mutation { a: markAsPaid(id: "a") { id } } ... { b: markAsPaid(id: "a") { id } } }',
+      'mutation { a: markAsPaid(id: "a") @skip(if: true) { id } b: markAsPaid(id: "a") { id } }',
+      `mutation { ${Array.from({ length: 300 }, (_, i) => `m${i}: markAsPaid(id: "a") { id }`).join(" ")} }`,
+    ])
+      expect(() => check(temporary, source)).toThrow(refused);
+  });
+
+  it("judges only the selected operation, fails closed without one, and leaves queries and ordinary users alone", () => {
+    const two =
+      'mutation Two { a: markAsPaid(id: "a") { id } b: markAsPaid(id: "a") { id } }';
+    const one = 'mutation One { markAsPaid(id: "a") { id } }';
+    expect(() => check(temporary, `${one} ${two}`, "One")).not.toThrow();
+    expect(() => check(temporary, `${one} ${two}`, "Two")).toThrow(refused);
+    expect(() =>
+      requireSingleDemoMutation(temporary, undefined, () => undefined),
+    ).toThrow(refused);
+    expect(() =>
+      check(temporary, "{ allInvoices { id } a: allInvoices { id } }"),
+    ).not.toThrow();
+    for (const user of [ordinary, null])
+      expect(() => check(user, two)).not.toThrow();
   });
 });

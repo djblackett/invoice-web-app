@@ -29,7 +29,8 @@ import { createTransactionScope } from "../../src/database/transactionScope";
 import type { IInvoiceRepo } from "../../src/repositories/InvoiceRepo";
 import type { IInvoiceRevisionRepo } from "../../src/repositories/InvoiceRevisionRepo";
 import type { DemoService } from "../../src/services/demo.service";
-import type { InvoiceService } from "../../src/services/invoice.service";
+import { InvoiceService } from "../../src/services/invoice.service";
+import { PrismaInvoiceRepository } from "../../src/repositories/implementations/prismaInvoiceRepository";
 import type { UserService } from "../../src/services/user.service";
 import type { RepositoryDatabase } from "../../src/database/database.connection";
 import { createContext } from "../../src/GraphQL/createContext";
@@ -46,7 +47,10 @@ import {
   type DemoWriteKind,
 } from "../../src/services/demoSessionWrite";
 import { DEMO_WORKSPACE_LIMITS } from "../../src/services/demoWorkspaceQuota";
-import type { DemoInvoiceOperation } from "../../src/services/demoSessionPolicy";
+import type {
+  DemoInvoiceOperation,
+  DemoWriteCapability,
+} from "../../src/services/demoSessionPolicy";
 import { canonicalDemoRecords } from "../../prisma/demoWorkspace.cjs";
 
 // Slice 3A/3B.0 harness. Most `work` below is test-only and calls the
@@ -185,7 +189,11 @@ const expired = async (user: UserIdAndRole) =>
 async function snapshotDatabase() {
   return {
     users: await prisma.user.findMany({ orderBy: { id: "asc" } }),
-    sessions: await prisma.demoSession.findMany({ orderBy: { id: "asc" } }),
+    // Attempts are asserted explicitly (Slice 3B.2): every admitted attempt
+    // is recorded, so including them here would hide every other change.
+    sessions: (
+      await prisma.demoSession.findMany({ orderBy: { id: "asc" } })
+    ).map(({ attemptCount: _attempts, ...session }) => session),
     invoices: await prisma.invoice.findMany({
       include,
       orderBy: { id: "asc" },
@@ -1464,5 +1472,275 @@ describe("ordinary users outside any scope (unchanged behaviour)", () => {
     expect(
       await prisma.invoiceRevision.count({ where: { invoiceId: created.id } }),
     ).toBe(1);
+  });
+});
+
+// Slice 3B.2 (independent 3B.1 review, P2): a live capability must not
+// authorize a write through any database other than its own transaction.
+describe("Slice 3B.2 capability transaction binding", () => {
+  it("refuses a transferred capability on root-client and foreign-transaction services, so the coordinator's rollback leaves nothing behind", async () => {
+    const user = await newSession();
+    const invoice = await ownInvoice(user);
+    const before = await snapshotDatabase();
+    const outcomes: Record<string, string> = {};
+    const attempt = (name: string, run: () => Promise<unknown>) =>
+      run().then(
+        () => void (outcomes[name] = "wrote"),
+        (e: Error) => void (outcomes[name] = e.message),
+      );
+    await expect(
+      write(
+        user,
+        async (scope) => {
+          const capability = scope.get<DemoWriteCapability>(
+            TYPES.DemoWriteCapability,
+          );
+          const identity = scope.get<UserIdAndRole>(TYPES.UserContext);
+          // The reviewer's reproduction: a hand-built root-client service.
+          await attempt("constructed", () =>
+            new InvoiceService(
+              new PrismaInvoiceRepository(container.get(DatabaseConnection)),
+              identity,
+              null,
+              true,
+              capability,
+            ).updateInvoice(invoice.id, { clientName: "Constructed escape" }),
+          );
+          // Ordinary dependency injection from the root container.
+          const child = container.createChild();
+          child
+            .bind<UserIdAndRole>(TYPES.UserContext)
+            .toConstantValue(identity);
+          child
+            .bind<DemoWriteCapability>(TYPES.DemoWriteCapability)
+            .toConstantValue(capability);
+          child.bind<InvoiceService>(TYPES.InvoiceService).to(InvoiceService);
+          await attempt("injected", () =>
+            child
+              .get<InvoiceService>(TYPES.InvoiceService)
+              .updateInvoice(invoice.id, { clientName: "Injected escape" }),
+          );
+          // A complete, correctly built scope, but on another transaction.
+          await secondClient.$transaction(async (otherTx) => {
+            const other = createTransactionScope(container, otherTx, identity);
+            other
+              .bind<DemoWriteCapability>(TYPES.DemoWriteCapability)
+              .toConstantValue(capability);
+            await attempt("other transaction", () =>
+              other
+                .get<InvoiceService>(TYPES.InvoiceService)
+                .updateInvoice(invoice.id, { clientName: "Foreign escape" }),
+            );
+          });
+          throw new Error("coordinator rolls back");
+        },
+        { operation: "edit" },
+      ),
+    ).rejects.toThrow("coordinator rolls back");
+    expect(outcomes).toEqual({
+      constructed: expect.stringContaining("read-only"),
+      injected: expect.stringContaining("read-only"),
+      "other transaction": expect.stringContaining("read-only"),
+    });
+    expect(await snapshotDatabase()).toEqual(before);
+  });
+  it("invalidates a capability when its operation settles, and never admits it in another session's coordinated scope", async () => {
+    const [a, b] = [await newSession(), await newSession()];
+    const [aInvoice, bInvoice] = [await ownInvoice(a), await ownInvoice(b)];
+    const before = await snapshotDatabase();
+    let spent: DemoWriteCapability | undefined;
+    await write(
+      a,
+      async (scope) =>
+        void (spent = scope.get<DemoWriteCapability>(
+          TYPES.DemoWriteCapability,
+        )),
+      { operation: "edit" },
+    );
+    // Settled: even a correctly built scope for A's own identity refuses it.
+    await expect(
+      prisma.$transaction((tx) => {
+        const scope = createTransactionScope(container, tx, a);
+        scope
+          .bind<DemoWriteCapability>(TYPES.DemoWriteCapability)
+          .toConstantValue(spent!);
+        return scope
+          .get<InvoiceService>(TYPES.InvoiceService)
+          .updateInvoice(aInvoice.id, { clientName: "Spent" });
+      }),
+    ).rejects.toThrow("read-only");
+
+    // Live in A's write, moved into B's own coordinated (edit) scope.
+    const holdA = gate();
+    const aLive = gate();
+    let live: DemoWriteCapability | undefined;
+    const aWrite = write(
+      a,
+      async (scope) => {
+        live = scope.get<DemoWriteCapability>(TYPES.DemoWriteCapability);
+        aLive.open();
+        await holdA.opened;
+      },
+      { operation: "edit" },
+    );
+    await aLive.opened;
+    try {
+      await expect(
+        write(
+          b,
+          (scope) => {
+            scope
+              .rebind<DemoWriteCapability>(TYPES.DemoWriteCapability)
+              .toConstantValue(live!);
+            return scope
+              .get<InvoiceService>(TYPES.InvoiceService)
+              .updateInvoice(bInvoice.id, { clientName: "Borrowed" });
+          },
+          { operation: "edit", client: secondClient },
+        ),
+      ).rejects.toThrow("read-only");
+    } finally {
+      holdA.open();
+      await aWrite;
+    }
+    // Only the two empty A writes committed: usage, nothing else.
+    expect(await snapshotDatabase()).toEqual({
+      ...before,
+      sessions: before.sessions.map((session) =>
+        session.userId === a.id ? { ...session, mutationCount: 2 } : session,
+      ),
+    });
+  });
+});
+
+// Slice 3B.2 (independent 3B.1 review, P1): bounded admission.
+describe("Slice 3B.2 admission", () => {
+  const attempts = async (user: UserIdAndRole) =>
+    (
+      await prisma.demoSession.findUniqueOrThrow({
+        where: { userId: user.id },
+        select: { attemptCount: true },
+      })
+    ).attemptCount;
+
+  it("records a failed attempt, and nothing else, even when the failure aborted the transaction", async () => {
+    const user = await newSession();
+    const invoice = await ownInvoice(user);
+    const before = await snapshotDatabase();
+    // A database error at the coordinator's last statement leaves the
+    // transaction aborted; the savepoint still recovers it to record the try.
+    await withTrigger(
+      "DemoSession",
+      "BEFORE UPDATE",
+      `NEW."mutationCount" <> OLD."mutationCount"`,
+      async () => {
+        await expect(
+          write(user, (scope) =>
+            editWithRevision(scope, invoice.id, "aborted"),
+          ),
+        ).rejects.toThrow("injected slice 3A failure");
+      },
+    );
+    // An application error inside `work`, and a budget refusal, count too.
+    await expect(
+      write(user, () => Promise.reject(new Error("work failed"))),
+    ).rejects.toThrow("work failed");
+    await prisma.demoSession.update({
+      where: { userId: user.id },
+      data: { mutationCount: DEMO_WORKSPACE_LIMITS.mutations },
+    });
+    await expect(write(user, async () => undefined)).rejects.toMatchObject({
+      code: "MUTATION_BUDGET",
+    });
+    await prisma.demoSession.update({
+      where: { userId: user.id },
+      data: { mutationCount: 0 },
+    });
+    expect(await snapshotDatabase()).toEqual(before);
+    expect(await attempts(user)).toBe(3);
+  });
+
+  it("counts nothing for refusals before admission, and refuses at the attempt bound before any work", async () => {
+    const user = await newSession();
+    // Busy: both slots held.
+    const hold = gate();
+    const entered = gate();
+    const holder = write(user, async () => {
+      entered.open();
+      await hold.opened;
+    });
+    await entered.opened;
+    const waiting = await lockWaiters();
+    const queued = write(user, async () => undefined, { client: secondClient });
+    await until(async () => (await lockWaiters()) > waiting, "second slot");
+    let ran = false;
+    await expect(
+      write(user, async () => void (ran = true), { client: secondClient }),
+    ).rejects.toMatchObject({ code: "SESSION_BUSY" });
+    hold.open();
+    await Promise.all([holder, queued]);
+    expect(await attempts(user)).toBe(2); // the holder and the queued write
+
+    // Invalid sessions and a disabled flag: refused before the attempt.
+    vi.stubEnv("DEMO_SESSIONS_ENABLED", "false");
+    await expect(write(user, async () => undefined)).rejects.toMatchObject({
+      code: "DISABLED",
+    });
+    vi.stubEnv("DEMO_SESSIONS_ENABLED", "true");
+    await expect(
+      write({ ...user, demoSessionId: randomUUID() }, async () => undefined),
+    ).rejects.toMatchObject({ code: "SESSION_INVALID" });
+    expect(await attempts(user)).toBe(2);
+
+    await prisma.demoSession.update({
+      where: { userId: user.id },
+      data: { attemptCount: DEMO_WORKSPACE_LIMITS.attempts },
+    });
+    const before = await snapshotDatabase();
+    await expect(
+      write(user, async () => void (ran = true), { operation: "edit" }),
+    ).rejects.toMatchObject({ code: "ATTEMPT_BUDGET" });
+    expect(ran).toBe(false);
+    expect(await snapshotDatabase()).toEqual(before);
+    expect(await attempts(user)).toBe(DEMO_WORKSPACE_LIMITS.attempts);
+  });
+
+  it("admits at most two open writes per session across connection pools, refusing a third at once", async () => {
+    const third = new PrismaClient({ datasourceUrl: schemaUrl });
+    const [user, neighbour] = [await newSession(), await newSession()];
+    const hold = gate();
+    const entered = gate();
+    const holder = write(user, async () => {
+      entered.open();
+      await hold.opened;
+    });
+    try {
+      await entered.opened;
+      const waiting = await lockWaiters();
+      const queued = write(user, async () => "queued", {
+        client: secondClient,
+      });
+      await until(async () => (await lockWaiters()) > waiting, "second slot");
+      let ran = false;
+      const started = Date.now();
+      await expect(
+        write(user, async () => void (ran = true), { client: third }),
+      ).rejects.toMatchObject({ code: "SESSION_BUSY" });
+      // Refused without waiting for the lock (DEMO_WRITE_LOCK_WAIT_MS).
+      expect(Date.now() - started).toBeLessThan(1000);
+      expect(ran).toBe(false);
+      // Another session's slots are independent.
+      await write(neighbour, async () => undefined, { client: third });
+      hold.open();
+      await holder;
+      expect(await queued).toBe("queued");
+    } finally {
+      hold.open();
+      await holder.catch(() => undefined);
+      await third.$disconnect();
+    }
+    expect(await usage(user)).toMatchObject({ mutationCount: 2 });
+    expect(await attempts(user)).toBe(2);
+    expect(await usage(neighbour)).toMatchObject({ mutationCount: 1 });
   });
 });

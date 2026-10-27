@@ -1,7 +1,10 @@
 import type { Role } from "@prisma/client";
 import type { Invoice, InvoiceWithCreatedBy } from "../constants/types";
+import type { RepositoryDatabase } from "../database/database.connection";
 
 export interface IInvoiceRepo {
+  /** What every statement uses; the demo write guard checks its identity. */
+  readonly databaseConnection: RepositoryDatabase;
   findAll: () => Promise<unknown>;
   findByUserId: (userId: string) => Promise<unknown>;
   findById: (id: string) => Promise<unknown>;

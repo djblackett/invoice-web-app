@@ -13,7 +13,9 @@ import { makeExecutableSchema } from "@graphql-tools/schema";
 import typeDefs from "./GraphQL/typeDefs";
 import { CERT_DIR, MAX_REQUEST_BYTES, NODE_ENV } from "./config/server.config";
 import { expressMiddleware } from "@apollo/server/express4";
-import { createContext } from "./GraphQL/createContext";
+import { connectionToken, createContext } from "./GraphQL/createContext";
+import { singleDemoMutationPlugin } from "./GraphQL/singleDemoMutationPlugin";
+import { isTemporaryDemoToken } from "./services/demoSessionPolicy";
 import path from "path";
 import fs from "fs";
 import https from "https";
@@ -65,6 +67,13 @@ export const createServer = async () => {
     const serverCleanup = useServer(
       {
         schema,
+        // Temporary sessions need no WebSocket operation: the browser sends
+        // only subscriptions here, and the only one (the administrator feed)
+        // is closed to them. Their credentials are refused at connection_init
+        // (4403), before any context or database work, so this transport
+        // needs no second rate limit.
+        onConnect: (ctx) =>
+          !isTemporaryDemoToken(connectionToken(ctx.connectionParams) ?? ""),
         // The `ctx` object contains the WebSocket connection context.
         // `ctx.connectionParams` holds the connection parameters (e.g., headers) sent by the client during the connection handshake.
         // This context is used to create a new GraphQL context for each WebSocket connection.
@@ -101,6 +110,7 @@ export const createServer = async () => {
             })
           : ApolloServerPluginLandingPageLocalDefault({ footer: false }),
         createLoggingPlugin(logger),
+        singleDemoMutationPlugin,
       ],
     });
 

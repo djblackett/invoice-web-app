@@ -153,7 +153,8 @@ describe("utils.ts", () => {
           },
           createdById: "1",
           status: "draft",
-          paymentTerms: 0,
+          // Omitted: the default term (Slice 3B.2 kept this meaning).
+          paymentTerms: 14,
           clientAddress: {
             street: "",
             city: "",
@@ -177,6 +178,21 @@ describe("utils.ts", () => {
           ],
           total: 0,
         });
+      });
+
+      it("keeps an explicit paymentTerms of 0 instead of the default", () => {
+        expect(
+          mapPartialInvoiceToInvoice({
+            createdBy: {
+              id: "1",
+              username: "test@example.com",
+              role: Role.USER,
+              name: "",
+            },
+            createdById: "1",
+            paymentTerms: 0,
+          }).paymentTerms,
+        ).toBe(0);
       });
 
       it("should throw ValidationException when createdBy data is missing", () => {
