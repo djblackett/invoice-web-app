@@ -1,11 +1,17 @@
 import { inject, injectable } from "inversify";
 import { PrismaClient } from "@prisma/client";
-import { IDatabaseConnection } from "./database.connection";
+import type {
+  DbClient,
+  IDatabaseConnection,
+  RepositoryDatabase,
+} from "./database.connection";
 import TYPES from "@/constants/identifiers";
 import { Logger } from "@/config/logger.config";
 
 @injectable()
-export class DatabaseConnection implements IDatabaseConnection {
+export class DatabaseConnection
+  implements IDatabaseConnection, RepositoryDatabase
+{
   constructor(
     @inject(TYPES.PrismaClient) public prisma: PrismaClient,
     @inject(TYPES.Logger) public logger: Logger,
@@ -13,6 +19,14 @@ export class DatabaseConnection implements IDatabaseConnection {
 
   public getDatabase() {
     return this.prisma;
+  }
+
+  public get client(): DbClient {
+    return this.prisma;
+  }
+
+  public atomic<T>(work: (tx: DbClient) => Promise<T>): Promise<T> {
+    return this.prisma.$transaction(work);
   }
 
   public async initConnection(): Promise<void> {
@@ -24,5 +38,26 @@ export class DatabaseConnection implements IDatabaseConnection {
       await this.prisma.$disconnect();
       process.exit(1);
     }
+  }
+}
+
+/**
+ * Bound to one open interactive transaction (see transactionScope.ts). The
+ * transaction's owner commits or rolls back; nothing in the scope can reach
+ * the root client to start an independent transaction.
+ */
+export class TransactionDatabaseConnection implements RepositoryDatabase {
+  constructor(public readonly client: DbClient) {}
+
+  public atomic<T>(work: (tx: DbClient) => Promise<T>): Promise<T> {
+    return work(this.client);
+  }
+
+  public getDatabase(): never {
+    throw new Error("Root database client is unavailable in a transaction");
+  }
+
+  public initConnection(): never {
+    throw new Error("Root database client is unavailable in a transaction");
   }
 }

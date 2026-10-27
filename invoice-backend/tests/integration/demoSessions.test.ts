@@ -9,6 +9,8 @@ import {
   type KeyObject,
 } from "node:crypto";
 import { createServer, type Server } from "node:http";
+import { createClient, type Client } from "graphql-ws";
+import WebSocket from "ws";
 import { createRequest } from "node-mocks-http";
 import type { Request } from "express";
 import jwt from "jsonwebtoken";
@@ -42,7 +44,9 @@ let secondClient: PrismaClient;
 let server: ApolloServer<InjectedQueryContext>;
 let http: Server;
 let jwks: Server;
+let realServer: Server;
 let endpoint: string;
+let wsUrl: string;
 let issuer: string;
 let privateKey: KeyObject;
 let contextFactory: typeof import("../../src/GraphQL/createContext").createContext;
@@ -225,6 +229,12 @@ beforeAll(async () => {
   const { createApp } = await import("../../src/app");
   http = createServer(await createApp());
   endpoint = `${await listen(http)}/demo/sessions`;
+  // The production HTTP+WebSocket wiring (ws + graphql-ws + createContext).
+  const { createServer: createProductionServer } = await import(
+    "../../src/server"
+  );
+  realServer = (await createProductionServer())[1] as Server;
+  wsUrl = (await listen(realServer)).replace("http://", "ws://");
 });
 beforeEach(async () => {
   vi.stubEnv("DEMO_SESSIONS_ENABLED", "true");
@@ -264,7 +274,8 @@ beforeEach(async () => {
 });
 afterAll(async () => {
   await server?.stop();
-  for (const listener of [http, jwks])
+  realServer?.closeAllConnections();
+  for (const listener of [http, jwks, realServer])
     if (listener)
       await new Promise<void>((resolve, reject) =>
         listener.close((e) => (e ? reject(e) : resolve())),
@@ -364,6 +375,25 @@ describe("temporary demo sessions", () => {
     const aRevision = await prisma.invoiceRevision.findFirstOrThrow({
       where: { invoiceId: aInvoice.id },
     });
+    const ownedIds = new Map<string, string[]>();
+    for (const [credential, userId] of [
+      [a.credential, aUser.id],
+      [b.credential, bUser.id],
+    ] as const)
+      ownedIds.set(
+        credential,
+        (
+          await prisma.invoice.findMany({
+            where: { createdById: userId },
+            select: { id: true },
+          })
+        )
+          .map((i) => i.id)
+          .sort(),
+      );
+    expect(ownedIds.get(a.credential)).toHaveLength(7);
+    expect(ownedIds.get(a.credential)).toContain(aInvoice.id);
+    expect(ownedIds.get(b.credential)).toContain(bInvoice.id);
     for (const ws of [false, true]) {
       for (const [credential, own, other] of [
         [a.credential, aInvoice.id, bInvoice.id],
@@ -376,7 +406,12 @@ describe("temporary demo sessions", () => {
           ws,
         );
         expect(list.errors).toBeUndefined();
-        expect(list.data?.["allInvoices"]).toHaveLength(7);
+        // Exact complete set: no foreign, shared-demo, ordinary or missing IDs.
+        expect(
+          (list.data?.["allInvoices"] as { id: string }[])
+            .map((i) => i.id)
+            .sort(),
+        ).toEqual(ownedIds.get(credential!));
         const ownResult = await execute(
           credential!,
           "query($id: String!) { getInvoiceById(id: $id) { id clientName } }",
@@ -435,6 +470,92 @@ describe("temporary demo sessions", () => {
         (await execute(a.credential, "{ allUsers { id } }", {}, ws)).errors?.[0]
           ?.extensions?.["code"],
       ).toBe("FORBIDDEN");
+    }
+  });
+
+  it("re-authenticates every operation on one persistent real WebSocket: the admin feed stays denied, and revocation or expiry cuts off access", async () => {
+    type Outcome = {
+      payloads: number; // results carrying data; a denial is an errors-only result
+      data?: Record<string, unknown> | null | undefined;
+      errors?: readonly { extensions?: Record<string, unknown> }[] | undefined;
+    };
+    const operation = (client: Client, query: string) =>
+      new Promise<Outcome>((resolve) => {
+        const outcome: Outcome = { payloads: 0 };
+        client.subscribe(
+          { query },
+          {
+            next: (value) => {
+              if (value.data) outcome.payloads++;
+              outcome.data = value.data;
+              outcome.errors = value.errors;
+            },
+            error: (errors) =>
+              resolve({
+                ...outcome,
+                errors: Array.isArray(errors) ? errors : [errors as never],
+              }),
+            complete: () => resolve(outcome),
+          },
+        );
+      });
+    for (const ending of ["revoked", "expired"] as const) {
+      const session = await allocateDemoSession(prisma);
+      const user = await identity(session.credential);
+      const owned = (
+        await prisma.invoice.findMany({
+          where: { createdById: user.id },
+          select: { id: true },
+        })
+      )
+        .map((i) => i.id)
+        .sort();
+      let connections = 0;
+      const client = createClient({
+        url: wsUrl,
+        webSocketImpl: WebSocket,
+        lazy: false, // one socket for the whole test, not one per operation
+        retryAttempts: 0, // a dropped socket must fail the test, not reconnect
+        connectionParams: { Authorization: `Bearer ${session.credential}` },
+        on: { connected: () => void connections++ },
+      });
+      try {
+        const list = await operation(client, "{ allInvoices { id } }");
+        expect(list.errors).toBeUndefined();
+        expect(
+          (list.data?.["allInvoices"] as { id: string }[])
+            .map((i) => i.id)
+            .sort(),
+        ).toEqual(owned);
+        const feed = await operation(
+          client,
+          "subscription { invoiceAdded { id } }",
+        );
+        expect(feed.payloads).toBe(0);
+        expect(feed.errors?.[0]?.extensions?.["code"]).toBe("FORBIDDEN");
+
+        if (ending === "revoked")
+          await prisma.demoSession.update({
+            where: { userId: user.id },
+            data: { revokedAt: new Date() },
+          });
+        else await expire(user.id);
+
+        // Same socket, same connectionParams: the server re-resolves the
+        // credential for each operation (graphql-ws calls `context` per subscribe).
+        const after = await operation(client, "{ allInvoices { id } }");
+        expect(after.data?.["allInvoices"] ?? null).toBeNull();
+        expect(after.errors?.length).toBeGreaterThan(0);
+        const feedAfter = await operation(
+          client,
+          "subscription { invoiceAdded { id } }",
+        );
+        expect(feedAfter.payloads).toBe(0);
+        expect(feedAfter.errors?.length).toBeGreaterThan(0);
+        expect(connections).toBe(1);
+      } finally {
+        await client.dispose();
+      }
     }
   });
 

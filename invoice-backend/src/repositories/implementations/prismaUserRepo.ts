@@ -2,6 +2,10 @@ import { inject, injectable } from "inversify";
 import type { IUserRepo } from "../userRepo";
 import { DatabaseConnection } from "../../database/prisma.database.connection";
 import type {
+  DbClient,
+  RepositoryDatabase,
+} from "../../database/database.connection";
+import type {
   ReturnedUser,
   UserDTO,
   UserEntity,
@@ -11,13 +15,13 @@ import { PrismaClientKnownRequestError } from "@prisma/client/runtime/library";
 
 @injectable()
 export class PrismaUserRepository implements IUserRepo {
-  protected prisma;
+  protected prisma: DbClient;
 
   constructor(
     @inject(DatabaseConnection)
-    databaseConnection: DatabaseConnection,
+    databaseConnection: RepositoryDatabase,
   ) {
-    this.prisma = databaseConnection.getDatabase();
+    this.prisma = databaseConnection.client;
   }
 
   async deleteAllUsers(): Promise<boolean> {

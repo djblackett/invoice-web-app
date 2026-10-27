@@ -3,6 +3,10 @@ import { generateInvoiceId } from "../../services/invoiceDomainRules";
 import { inject, injectable } from "inversify";
 import { Invoice, InvoiceWithCreatedBy } from "@/constants/types";
 import { DatabaseConnection } from "@/database/prisma.database.connection";
+import type {
+  DbClient,
+  RepositoryDatabase,
+} from "@/database/database.connection";
 import { IInvoiceRepo } from "../InvoiceRepo";
 import {
   BadRequestException,
@@ -13,13 +17,13 @@ import {
 
 @injectable()
 export class PrismaInvoiceRepository implements IInvoiceRepo {
-  protected prisma;
+  protected prisma: DbClient;
 
   constructor(
     @inject(DatabaseConnection)
-    databaseConnection: DatabaseConnection,
+    private readonly databaseConnection: RepositoryDatabase,
   ) {
-    this.prisma = databaseConnection.getDatabase();
+    this.prisma = databaseConnection.client;
   }
 
   async findAll(): Promise<unknown> {
@@ -141,96 +145,98 @@ export class PrismaInvoiceRepository implements IInvoiceRepo {
 
   async update(id: string, invoiceUpdates: Partial<Invoice>) {
     try {
-      const updatedInvoice = await this.prisma.$transaction(async (prisma) => {
-        // Items get reconciled by id when possible so that revision diffs
-        // can stably match line items across edits (modify vs. remove+add).
-        // An item with an id that already belongs to this invoice is
-        // UPDATED in place; a new id (or no id) triggers a CREATE; anything
-        // missing from the incoming list is DELETED.
-        if (invoiceUpdates.items !== undefined) {
-          const incomingItems = invoiceUpdates.items ?? [];
-          const existing = await prisma.item.findMany({
-            where: { invoiceId: id },
-            select: { id: true },
-          });
-          const existingIds = new Set(existing.map((i) => i.id));
-          const incomingIds = new Set(
-            incomingItems.map((i) => i.id).filter((v): v is string => !!v),
-          );
-          const toDelete = [...existingIds].filter(
-            (eid) => !incomingIds.has(eid),
-          );
-          if (toDelete.length > 0) {
-            await prisma.item.deleteMany({
-              where: { invoiceId: id, id: { in: toDelete } },
+      const updatedInvoice = await this.databaseConnection.atomic(
+        async (prisma) => {
+          // Items get reconciled by id when possible so that revision diffs
+          // can stably match line items across edits (modify vs. remove+add).
+          // An item with an id that already belongs to this invoice is
+          // UPDATED in place; a new id (or no id) triggers a CREATE; anything
+          // missing from the incoming list is DELETED.
+          if (invoiceUpdates.items !== undefined) {
+            const incomingItems = invoiceUpdates.items ?? [];
+            const existing = await prisma.item.findMany({
+              where: { invoiceId: id },
+              select: { id: true },
             });
-          }
-          for (const item of incomingItems) {
-            const payload = {
-              name: item.name ?? "",
-              price: item.price ?? 0,
-              quantity: item.quantity ?? 0,
-              total: item.total ?? 0,
-            };
-            if (item.id && existingIds.has(item.id)) {
-              await prisma.item.update({
-                where: { id: item.id },
-                data: payload,
-              });
-            } else {
-              await prisma.item.create({
-                data: {
-                  ...payload,
-                  ...(item.id ? { id: item.id } : {}),
-                  Invoice: { connect: { id } },
-                },
+            const existingIds = new Set(existing.map((i) => i.id));
+            const incomingIds = new Set(
+              incomingItems.map((i) => i.id).filter((v): v is string => !!v),
+            );
+            const toDelete = [...existingIds].filter(
+              (eid) => !incomingIds.has(eid),
+            );
+            if (toDelete.length > 0) {
+              await prisma.item.deleteMany({
+                where: { invoiceId: id, id: { in: toDelete } },
               });
             }
+            for (const item of incomingItems) {
+              const payload = {
+                name: item.name ?? "",
+                price: item.price ?? 0,
+                quantity: item.quantity ?? 0,
+                total: item.total ?? 0,
+              };
+              if (item.id && existingIds.has(item.id)) {
+                await prisma.item.update({
+                  where: { id: item.id },
+                  data: payload,
+                });
+              } else {
+                await prisma.item.create({
+                  data: {
+                    ...payload,
+                    ...(item.id ? { id: item.id } : {}),
+                    Invoice: { connect: { id } },
+                  },
+                });
+              }
+            }
           }
-        }
 
-        const inputUpdateResult = await prisma.invoice.update({
-          where: {
-            id: id,
-          },
-          data: {
-            description: invoiceUpdates.description,
-            clientEmail: invoiceUpdates.clientEmail,
-            clientName: invoiceUpdates.clientName,
-            paymentDue: invoiceUpdates.paymentDue,
-            paymentTerms: invoiceUpdates.paymentTerms,
-            status: invoiceUpdates.status,
-            total: invoiceUpdates.total,
-            clientAddress: invoiceUpdates.clientAddress
-              ? {
-                  update: {
-                    street: invoiceUpdates.clientAddress.street,
-                    city: invoiceUpdates.clientAddress.city,
-                    postCode: invoiceUpdates.clientAddress.postCode,
-                    country: invoiceUpdates.clientAddress.country,
-                  },
-                }
-              : undefined,
-            senderAddress: invoiceUpdates.senderAddress
-              ? {
-                  update: {
-                    street: invoiceUpdates.senderAddress.street,
-                    city: invoiceUpdates.senderAddress.city,
-                    postCode: invoiceUpdates.senderAddress.postCode,
-                    country: invoiceUpdates.senderAddress.country,
-                  },
-                }
-              : undefined,
-          } as Prisma.InvoiceUpdateInput,
-          include: {
-            items: true,
-            clientAddress: true,
-            senderAddress: true,
-          },
-        });
+          const inputUpdateResult = await prisma.invoice.update({
+            where: {
+              id: id,
+            },
+            data: {
+              description: invoiceUpdates.description,
+              clientEmail: invoiceUpdates.clientEmail,
+              clientName: invoiceUpdates.clientName,
+              paymentDue: invoiceUpdates.paymentDue,
+              paymentTerms: invoiceUpdates.paymentTerms,
+              status: invoiceUpdates.status,
+              total: invoiceUpdates.total,
+              clientAddress: invoiceUpdates.clientAddress
+                ? {
+                    update: {
+                      street: invoiceUpdates.clientAddress.street,
+                      city: invoiceUpdates.clientAddress.city,
+                      postCode: invoiceUpdates.clientAddress.postCode,
+                      country: invoiceUpdates.clientAddress.country,
+                    },
+                  }
+                : undefined,
+              senderAddress: invoiceUpdates.senderAddress
+                ? {
+                    update: {
+                      street: invoiceUpdates.senderAddress.street,
+                      city: invoiceUpdates.senderAddress.city,
+                      postCode: invoiceUpdates.senderAddress.postCode,
+                      country: invoiceUpdates.senderAddress.country,
+                    },
+                  }
+                : undefined,
+            } as Prisma.InvoiceUpdateInput,
+            include: {
+              items: true,
+              clientAddress: true,
+              senderAddress: true,
+            },
+          });
 
-        return inputUpdateResult;
-      });
+          return inputUpdateResult;
+        },
+      );
 
       return updatedInvoice;
     } catch (e) {

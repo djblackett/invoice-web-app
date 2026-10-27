@@ -105,6 +105,10 @@ model DemoSession {
   createdAt      DateTime @default(now()) @db.Timestamptz(3)
   expiresAt      DateTime @db.Timestamptz(3)
   revokedAt      DateTime? @db.Timestamptz(3)
+  // Lifetime usage; only coordinated writes change these, never reset/restore.
+  mutationCount  Int      @default(0)
+  resetCount     Int      @default(0)
+  lastResetAt    DateTime? @db.Timestamptz(3)
 
   @@index([expiresAt])
 }

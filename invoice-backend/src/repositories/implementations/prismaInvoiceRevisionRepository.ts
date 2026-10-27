@@ -6,6 +6,10 @@ import type {
   StoredRevision,
 } from "@/repositories/InvoiceRevisionRepo";
 import { DatabaseConnection } from "@/database/prisma.database.connection";
+import type {
+  DbClient,
+  RepositoryDatabase,
+} from "@/database/database.connection";
 import type { InvoiceSnapshot } from "@/services/invoiceDiff";
 
 function toStored(row: {
@@ -36,18 +40,19 @@ function toStored(row: {
 
 @injectable()
 export class PrismaInvoiceRevisionRepository implements IInvoiceRevisionRepo {
-  protected prisma;
+  protected prisma: DbClient;
 
   constructor(
-    @inject(DatabaseConnection) databaseConnection: DatabaseConnection,
+    @inject(DatabaseConnection)
+    private readonly databaseConnection: RepositoryDatabase,
   ) {
-    this.prisma = databaseConnection.getDatabase();
+    this.prisma = databaseConnection.client;
   }
 
   async create(input: CreateRevisionInput): Promise<StoredRevision> {
     // Compute next revisionNumber inside a transaction so concurrent writes
     // can't produce duplicate numbers (protected by the unique index).
-    const row = await this.prisma.$transaction(async (tx) => {
+    const row = await this.databaseConnection.atomic(async (tx) => {
       const latest = await tx.invoiceRevision.findFirst({
         where: { invoiceId: input.invoiceId },
         orderBy: { revisionNumber: "desc" },

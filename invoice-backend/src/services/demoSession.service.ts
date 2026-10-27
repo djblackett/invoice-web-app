@@ -172,18 +172,20 @@ export async function resolveDemoSession(
 
 // Operator/service primitive only; no public cleanup route or scheduled worker.
 // Same lock as allocation; one bounded batch, entirely transactional.
+// Then each session's row lock (demoSessionWrite.ts order). SKIP LOCKED: a
+// session with an admitted write is left for a later batch, never deleted
+// underneath it, and cleanup never holds the global lock waiting on a write.
 export async function cleanupExpiredDemoSessions(
   prisma: PrismaClient,
 ): Promise<number> {
   return prisma.$transaction(
     async (tx) => {
       await lockWorkspaces(tx);
-      const now = await databaseNow(tx);
-      const sessions = await tx.demoSession.findMany({
-        where: { expiresAt: { lte: now } },
-        orderBy: { expiresAt: "asc" },
-        take: 10,
-      });
+      const sessions = await tx.$queryRaw<{ id: string; userId: string }[]>`
+        SELECT "id", "userId" FROM "DemoSession"
+        WHERE "expiresAt" <= clock_timestamp()
+        ORDER BY "expiresAt" ASC LIMIT 10
+        FOR UPDATE SKIP LOCKED`;
       for (const session of sessions) {
         if (!session.userId.startsWith(DEMO_SESSION_USER_PREFIX))
           throw new Error("Invalid demo ownership");
