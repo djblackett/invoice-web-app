@@ -32,7 +32,10 @@ import { toSnapshot } from "../../src/services/invoiceDiff";
 import {
   allocateDemoSession,
   cleanupExpiredDemoSessions,
+  cleanupExpiredDemoSessionsReport,
   resolveDemoSession,
+  DEMO_ALLOCATION_CLEANUP_BATCH,
+  DEMO_OPERATOR_CLEANUP_BATCH,
   DEMO_SESSION_CAPACITY,
   DEMO_SESSION_LIFETIME_MS,
 } from "../../src/services/demoSession.service";
@@ -135,8 +138,8 @@ async function snapshotDatabase() {
     gate: await prisma.demoAllocationState.findMany(),
   };
 }
-async function expire(userId: string) {
-  const expiresAt = new Date(Date.now() - 1000);
+async function expire(userId: string, agoMs = 1000) {
+  const expiresAt = new Date(Date.now() - agoMs);
   await prisma.demoSession.update({
     where: { userId },
     data: {
@@ -157,10 +160,13 @@ async function identity(credential: string) {
   if (!user) throw new Error("Session rejected");
   return user;
 }
-async function fillCapacity(count: number) {
+async function fillCapacity(count: number, { expired = true } = {}) {
   for (let i = 0; i < count; i++) {
     const id = `demo-session:${randomUUID()}`;
-    const expiresAt = new Date(Date.now() - 1000);
+    // Expired ones are distinct and ordered by creation (oldest first).
+    const expiresAt = new Date(
+      Date.now() + (expired ? -60_000 + i * 10 : 3_600_000),
+    );
     await prisma.user.create({
       data: {
         id,
@@ -177,6 +183,13 @@ async function fillCapacity(count: number) {
     });
   }
 }
+// Sessions without the cleanup marker, which the failure tests set on purpose.
+const withoutMarker = <T extends { sessions: Record<string, unknown>[] }>(
+  db: T,
+) => ({
+  ...db,
+  sessions: db.sessions.map(({ cleanupFailedAt: _marker, ...s }) => s),
+});
 
 beforeAll(async () => {
   const supplied = process.env["DATABASE_URL"];
@@ -604,12 +617,20 @@ describe("temporary demo sessions", () => {
     expect((await context(token)).user?.id).toBe(realUser.id);
   });
 
-  it("rejects invalid, expired, revoked and feature-disabled credentials without sliding expiry", async () => {
+  it("rejects invalid, expired, revoked and feature-disabled credentials with UNAUTHENTICATED, without sliding expiry or creating anything", async () => {
     const session = await allocateDemoSession(prisma);
     const user = await identity(session.credential);
     const before = await prisma.demoSession.findUniqueOrThrow({
       where: { userId: user.id },
     });
+    const unauthenticated = {
+      message: "Demo session has expired or is no longer valid",
+      extensions: { code: "UNAUTHENTICATED", http: { status: 401 } },
+    };
+    const rejected = async (token: string, ws: boolean) => {
+      await expect(context(token, ws)).rejects.toMatchObject(unauthenticated);
+    };
+    const worldBefore = await snapshotDatabase();
     for (const ws of [false, true]) {
       for (const bad of [
         "demo-session",
@@ -618,7 +639,7 @@ describe("temporary demo sessions", () => {
         session.credential + "x",
         session.credential.slice(0, -1),
       ]) {
-        expect((await context(bad, ws)).user).toBeNull();
+        await rejected(bad, ws);
       }
       expect((await context(session.credential, ws)).user?.id).toBe(user.id);
     }
@@ -629,23 +650,27 @@ describe("temporary demo sessions", () => {
       where: { userId: user.id },
       data: { revokedAt: new Date() },
     });
-    for (const ws of [false, true])
-      expect((await context(session.credential, ws)).user).toBeNull();
+    for (const ws of [false, true]) await rejected(session.credential, ws);
     await prisma.demoSession.update({
       where: { userId: user.id },
       data: { revokedAt: null },
     });
     await expire(user.id);
-    for (const ws of [false, true])
-      expect((await context(session.credential, ws)).user).toBeNull();
+    for (const ws of [false, true]) await rejected(session.credential, ws);
     const active = await allocateDemoSession(prisma);
     for (const flag of [undefined, "false", "TRUE", "1", ""]) {
       vi.stubEnv("DEMO_SESSIONS_ENABLED", flag);
-      expect((await context(active.credential)).user).toBeNull();
+      await rejected(active.credential, false);
       await expect(allocateDemoSession(prisma)).rejects.toMatchObject({
         code: "DISABLED",
       });
     }
+    vi.stubEnv("DEMO_SESSIONS_ENABLED", "true");
+    // Failed credentials never create a user, session, workspace or budget use.
+    // (The expired session was reclaimed by the later allocation.)
+    expect(await prisma.demoSession.count()).toBe(1);
+    expect(await prisma.user.count()).toBe(2);
+    expect(worldBefore.sessions).toHaveLength(1);
   });
 
   it("denies every unapproved GraphQL mutation, and every service mutation outside the coordinator, with zero database changes", async () => {
@@ -663,6 +688,7 @@ describe("temporary demo sessions", () => {
       "markAsPaid",
       "removeInvoice",
       "restoreInvoiceRevision",
+      "resetDemoSession",
     ];
     const names = Object.keys(getResolvers().Mutation);
     expect(names).toEqual(expect.arrayContaining(approved));
@@ -687,8 +713,9 @@ describe("temporary demo sessions", () => {
             ?.extensions?.["code"],
         ).toBe("FORBIDDEN");
       }
-    // The approved five are coordinated over HTTP only.
+    // The approved six are coordinated over HTTP only.
     for (const query of [
+      "mutation { resetDemoSession }",
       `mutation { editInvoice(id: "${invoice.id}", clientName: "Attack") { id } }`,
       `mutation { markAsPaid(id: "${invoice.id}") { id } }`,
       `mutation { removeInvoice(id: "${invoice.id}") { acknowledged } }`,
@@ -871,8 +898,8 @@ describe("temporary demo sessions", () => {
     ).toBe("USER");
   });
 
-  it("counts expired/revoked retained sessions and serializes concurrent attempts at capacity", async () => {
-    await fillCapacity(DEMO_SESSION_CAPACITY - 1);
+  it("counts live and revoked-but-unexpired retained sessions, and serializes concurrent attempts at capacity", async () => {
+    await fillCapacity(DEMO_SESSION_CAPACITY - 1, { expired: false });
     const results = await Promise.allSettled(
       Array.from({ length: 6 }, (_, i) =>
         allocateDemoSession(i % 2 ? secondClient : prisma),
@@ -885,9 +912,47 @@ describe("temporary demo sessions", () => {
         .every((r) => r.status === "rejected" && r.reason.code === "CAPACITY"),
     ).toBe(true);
     expect(await prisma.demoSession.count()).toBe(DEMO_SESSION_CAPACITY);
+    // Revocation alone never frees a slot: only expiry makes a workspace
+    // eligible for physical deletion.
     await prisma.demoSession.updateMany({ data: { revokedAt: new Date() } });
     const before = await snapshotDatabase();
     await expect(allocateDemoSession(secondClient)).rejects.toMatchObject({
+      code: "CAPACITY",
+    });
+    expect(await snapshotDatabase()).toEqual(before);
+  });
+
+  it("reclaims expired workspaces at allocation, so an all-expired full table never blocks a visitor", async () => {
+    await fillCapacity(DEMO_SESSION_CAPACITY);
+    const result = await allocateDemoSession(prisma);
+    expect(await resolveDemoSession(prisma, result.credential)).not.toBeNull();
+    // Exactly one bounded batch was reclaimed, then the new session added.
+    expect(await prisma.demoSession.count()).toBe(
+      DEMO_SESSION_CAPACITY - DEMO_ALLOCATION_CLEANUP_BATCH + 1,
+    );
+    expect(await prisma.user.count()).toBe(
+      DEMO_SESSION_CAPACITY - DEMO_ALLOCATION_CLEANUP_BATCH + 2, // + ordinary
+    );
+  });
+
+  it("keeps reclaimed space when an allocation is refused for rate limiting", async () => {
+    await fillCapacity(DEMO_SESSION_CAPACITY);
+    await prisma.demoAllocationState.update({
+      where: { id: 1 },
+      data: { tokens: 0, updatedAt: new Date() },
+    });
+    await expect(allocateDemoSession(prisma)).rejects.toMatchObject({
+      code: "RATE_LIMITED",
+    });
+    expect(await prisma.demoSession.count()).toBe(
+      DEMO_SESSION_CAPACITY - DEMO_ALLOCATION_CLEANUP_BATCH,
+    );
+  });
+
+  it("reports CAPACITY, evicting nothing, while no workspace has expired", async () => {
+    await fillCapacity(DEMO_SESSION_CAPACITY, { expired: false });
+    const before = await snapshotDatabase();
+    await expect(allocateDemoSession(prisma)).rejects.toMatchObject({
       code: "CAPACITY",
     });
     expect(await snapshotDatabase()).toEqual(before);
@@ -971,41 +1036,124 @@ describe("temporary demo sessions", () => {
     expect(await resolveDemoSession(prisma, expired.credential)).toBeNull();
   });
 
-  it("refuses cleanup that would alter a foreign revision author, with complete rollback", async () => {
-    const session = await allocateDemoSession(prisma);
-    const user = await identity(session.credential);
-    await expire(user.id);
+  it("leaves a workspace whose cleanup would alter a foreign revision author intact, marks it, and still reclaims the others", async () => {
+    const [damaged, healthy] = await Promise.all([
+      allocateDemoSession(prisma),
+      allocateDemoSession(prisma),
+    ]);
+    const damagedUser = await identity(damaged.credential);
+    const healthyUser = await identity(healthy.credential);
+    await expire(damagedUser.id);
+    await expire(healthyUser.id);
+    // Damaged candidate is the OLDEST, so it is tried first.
+    await expire(damagedUser.id, 60_000);
     await prisma.invoiceRevision.update({
       where: { id: "real-revision" },
-      data: { createdById: user.id },
+      data: { createdById: damagedUser.id },
     });
-    const before = await snapshotDatabase();
-    await expect(cleanupExpiredDemoSessions(prisma)).rejects.toThrow(
-      "foreign revision",
-    );
-    expect(await snapshotDatabase()).toEqual(before);
+    const before = withoutMarker(await snapshotDatabase());
+    expect(await cleanupExpiredDemoSessionsReport(prisma)).toEqual({
+      reclaimed: 1,
+      failed: 1,
+    });
+    const after = await snapshotDatabase();
+    // Only the healthy workspace went; the ordinary revision is untouched.
+    expect(await prisma.user.count({ where: { id: healthyUser.id } })).toBe(0);
+    expect(await prisma.user.count({ where: { id: damagedUser.id } })).toBe(1);
+    expect(
+      (
+        await prisma.invoiceRevision.findUniqueOrThrow({
+          where: { id: "real-revision" },
+        })
+      ).createdById,
+    ).toBe(damagedUser.id);
+    expect(
+      after.invoices.filter((i) => i.createdById === damagedUser.id),
+    ).toEqual(before.invoices.filter((i) => i.createdById === damagedUser.id));
+    const marked = await prisma.demoSession.findUniqueOrThrow({
+      where: { userId: damagedUser.id },
+    });
+    expect(marked.cleanupFailedAt).toBeInstanceOf(Date);
+    // A second pass retries only the damaged session, and fails the same way.
+    expect(await cleanupExpiredDemoSessionsReport(prisma)).toEqual({
+      reclaimed: 0,
+      failed: 1,
+    });
+    // Repaired, it is reclaimed.
+    await prisma.invoiceRevision.update({
+      where: { id: "real-revision" },
+      data: { createdById: realUser.id },
+    });
+    expect(await cleanupExpiredDemoSessions(prisma)).toBe(1);
   });
 
-  it("rolls back a late cleanup failure, preserving the entire expired workspace and capacity", async () => {
+  it("sorts a damaged workspace behind healthy ones, so many damaged sessions cannot starve cleanup", async () => {
+    await fillCapacity(DEMO_OPERATOR_CLEANUP_BATCH + 2);
+    const retained = await prisma.demoSession.findMany({
+      orderBy: { expiresAt: "asc" },
+    });
+    // The oldest ten failed before. Left to expiry order alone, they would
+    // fill this batch and shut the two healthy sessions out indefinitely.
+    const failedIds = retained.slice(0, DEMO_OPERATOR_CLEANUP_BATCH);
+    await prisma.demoSession.updateMany({
+      where: { id: { in: failedIds.map((x) => x.id) } },
+      data: { cleanupFailedAt: new Date() },
+    });
+    expect(await cleanupExpiredDemoSessionsReport(prisma)).toEqual({
+      reclaimed: DEMO_OPERATOR_CLEANUP_BATCH,
+      failed: 0,
+    });
+    const remaining = await prisma.demoSession.findMany({
+      select: { id: true, cleanupFailedAt: true },
+    });
+    expect(remaining).toHaveLength(2);
+    // Both healthy sessions went first; only previously failed ones remain.
+    expect(remaining.every((r) => r.cleanupFailedAt !== null)).toBe(true);
+  });
+
+  it("rolls back a late cleanup failure for that workspace only, preserving it and capacity", async () => {
     const session = await allocateDemoSession(prisma);
     const user = await identity(session.credential);
+    const other = await allocateDemoSession(prisma);
+    const otherUser = await identity(other.credential);
     await expire(user.id);
-    const before = await snapshotDatabase();
+    await expire(otherUser.id);
+    await expire(user.id, 60_000);
+    const before = withoutMarker(await snapshotDatabase());
     await prisma.$executeRawUnsafe(
-      `CREATE FUNCTION fail_temporary_cleanup() RETURNS trigger LANGUAGE plpgsql AS $$ BEGIN IF OLD."id" LIKE 'demo-session:%' THEN RAISE EXCEPTION 'injected cleanup failure'; END IF; RETURN OLD; END $$`,
+      `CREATE FUNCTION fail_temporary_cleanup() RETURNS trigger LANGUAGE plpgsql AS $$ BEGIN IF OLD."id" = '${user.id}' THEN RAISE EXCEPTION 'injected cleanup failure'; END IF; RETURN OLD; END $$`,
     );
     await prisma.$executeRawUnsafe(
       `CREATE TRIGGER fail_temporary_cleanup BEFORE DELETE ON "User" FOR EACH ROW EXECUTE FUNCTION fail_temporary_cleanup()`,
     );
     try {
-      await expect(cleanupExpiredDemoSessions(prisma)).rejects.toThrow();
+      expect(await cleanupExpiredDemoSessionsReport(prisma)).toEqual({
+        reclaimed: 1,
+        failed: 1,
+      });
     } finally {
       await prisma.$executeRawUnsafe(
         `DROP TRIGGER fail_temporary_cleanup ON "User"`,
       );
       await prisma.$executeRawUnsafe(`DROP FUNCTION fail_temporary_cleanup()`);
     }
-    expect(await snapshotDatabase()).toEqual(before);
+    const after = withoutMarker(await snapshotDatabase());
+    // The failed workspace is byte-for-byte intact (invoices, items, revisions,
+    // addresses); the other expired one is gone.
+    expect(after.invoices).toEqual(
+      before.invoices.filter((i) => i.createdById !== otherUser.id),
+    );
+    expect(after.revisions).toEqual(
+      before.revisions.filter(
+        (r) =>
+          !before.invoices.some(
+            (i) => i.id === r.invoiceId && i.createdById === otherUser.id,
+          ),
+      ),
+    );
+    expect(after.users.map((u) => u.id)).not.toContain(otherUser.id);
+    expect(after.users.map((u) => u.id)).toContain(user.id);
+    // Once the fault clears, the next pass reclaims it.
     expect(await cleanupExpiredDemoSessions(secondClient)).toBe(1);
   });
 
@@ -1017,9 +1165,6 @@ describe("temporary demo sessions", () => {
     });
     expect(await cleanupExpiredDemoSessions(prisma)).toBe(10);
     expect(await prisma.demoSession.count()).toBe(90);
-    await expect(allocateDemoSession(prisma)).rejects.toMatchObject({
-      code: "RATE_LIMITED",
-    });
     await prisma.demoAllocationState.update({
       where: { id: 1 },
       data: { tokens: 10 },
@@ -1029,10 +1174,20 @@ describe("temporary demo sessions", () => {
       allocateDemoSession(prisma),
     ]);
     expect(results[0]).toBe(10);
-    expect(await prisma.demoSession.count()).toBe(81);
+    // Whichever took the global lock first: 10 operator + 5 allocation sweep,
+    // plus the new session.
+    expect(await prisma.demoSession.count()).toBe(
+      90 - 10 - DEMO_ALLOCATION_CLEANUP_BATCH + 1,
+    );
     expect(
       await resolveDemoSession(prisma, results[1].credential),
     ).not.toBeNull();
+    // The operator bound cannot be lifted by the caller.
+    const expiredLeft = await prisma.demoSession.count({
+      where: { expiresAt: { lte: new Date() } },
+    });
+    expect(expiredLeft).toBeLessThan(DEMO_SESSION_CAPACITY);
+    expect(await cleanupExpiredDemoSessions(prisma, 10_000)).toBe(expiredLeft);
   });
 
   it("HTTP bootstrap is disabled by default, validates empty input, hides secrets from caches and applies per-IP throttling", async () => {

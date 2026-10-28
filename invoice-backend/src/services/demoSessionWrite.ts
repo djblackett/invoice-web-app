@@ -48,6 +48,8 @@ export class DemoSessionWriteError extends Error {
       | "RESET_ALLOWANCE"
       | "RESET_COOLDOWN"
       | "WORKSPACE_QUOTA",
+    /** Cooldown only: milliseconds until a reset is next allowed. */
+    public readonly retryAfterMs?: number,
   ) {
     super(`Demo session write: ${code}`);
   }
@@ -117,7 +119,7 @@ export async function runDemoSessionWrite<T>(
   parent: interfaces.Container,
   user: UserIdAndRole,
   kind: DemoWriteKind,
-  work: (scope: interfaces.Container) => Promise<T>,
+  work: (scope: interfaces.Container, tx: DbClient) => Promise<T>,
   operation?: DemoInvoiceOperation,
 ): Promise<T> {
   const sessionId = user.demoSessionId;
@@ -130,12 +132,14 @@ export async function runDemoSessionWrite<T>(
     if (kind === "reset") {
       if (session.resetCount >= DEMO_WORKSPACE_LIMITS.resets)
         throw new DemoSessionWriteError("RESET_ALLOWANCE");
-      if (
-        session.lastResetAt &&
-        session.now.getTime() - session.lastResetAt.getTime() <
-          DEMO_WORKSPACE_LIMITS.resetCooldownMs
-      )
-        throw new DemoSessionWriteError("RESET_COOLDOWN");
+      const sinceReset = session.lastResetAt
+        ? session.now.getTime() - session.lastResetAt.getTime()
+        : Infinity;
+      if (sinceReset < DEMO_WORKSPACE_LIMITS.resetCooldownMs)
+        throw new DemoSessionWriteError(
+          "RESET_COOLDOWN",
+          DEMO_WORKSPACE_LIMITS.resetCooldownMs - Math.max(0, sinceReset),
+        );
     }
 
     // The scope's identity and grant come from the locked row, not the request.
@@ -163,7 +167,7 @@ export async function runDemoSessionWrite<T>(
         .toConstantValue(grant.capability);
     let result: T;
     try {
-      result = await work(scope);
+      result = await work(scope, tx);
     } finally {
       grant?.revoke();
     }

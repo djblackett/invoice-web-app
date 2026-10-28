@@ -23,6 +23,7 @@ import type { IUserRepo } from "../repositories/userRepo";
 import type { PrismaClient } from "@prisma/client";
 import { resolveDemoSession } from "../services/demoSession.service";
 import {
+  DemoCredentialError,
   isReservedDemoUser,
   isTemporaryDemoToken,
 } from "../services/demoSessionPolicy";
@@ -106,6 +107,28 @@ export async function retrieveUserFromToken(
   }
 }
 
+/**
+ * A presented temporary-session credential either identifies a live session or
+ * fails with a DemoCredentialError. It is never downgraded to "no user" (which
+ * the resolvers report as an internal error) and never replaced by another
+ * identity. Ordinary and legacy-demo tokens keep their existing handling.
+ */
+async function resolveTemporaryUser(token: string): Promise<UserIdAndRole> {
+  let user: UserIdAndRole | null;
+  try {
+    user = await retrieveUserFromToken(token, options);
+  } catch (e) {
+    // Do not log the credential. The error may carry database details.
+    console.error(
+      "Temporary demo session lookup failed:",
+      e instanceof Error ? e.name : "unknown error",
+    );
+    throw new DemoCredentialError("SERVICE_UNAVAILABLE");
+  }
+  if (!user) throw new DemoCredentialError("UNAUTHENTICATED");
+  return user;
+}
+
 // Helper function to verify token and return payload
 async function verifyToken(
   token: string,
@@ -158,11 +181,13 @@ export async function createContext({
   }
 
   // Regular http requests
+  let temporary = false;
   try {
     const user = await getUserFromRequest(req);
     if (!user) {
       return { user: null, container };
     }
+    temporary = Boolean(user.demoSessionId);
 
     const childContainer = setupContainer(user);
     const services = getServices(childContainer);
@@ -197,8 +222,12 @@ export async function createContext({
       container: childContainer,
     };
   } catch (e: unknown) {
+    if (e instanceof DemoCredentialError) throw e;
     const error = e instanceof Error ? e : new Error(String(e));
     console.error("Error in createContext function:", error.message, error);
+    // A resolved temporary session whose context cannot be built is a service
+    // failure, not an anonymous request.
+    if (temporary) throw new DemoCredentialError("SERVICE_UNAVAILABLE");
     return { user: null, container };
   }
 }
@@ -216,6 +245,7 @@ async function getUserFromRequest(req: Request): Promise<UserIdAndRole | null> {
     return null;
   }
 
+  if (isTemporaryDemoToken(token)) return resolveTemporaryUser(token);
   return retrieveUserFromToken(token, options);
 }
 
@@ -290,8 +320,8 @@ async function getOrCreateDbUser(
     let dbUser = await userService.getUserByIdSafely(user.id);
 
     if (!dbUser) {
-      if (user.demoSessionId)
-        throw new Error("Demo workspace no longer exists");
+      // Cleanup removed the workspace after the credential was resolved.
+      if (user.demoSessionId) throw new DemoCredentialError("UNAUTHENTICATED");
       logger.info("User not found, creating user");
       dbUser = await userService.createUserWithAuth0({
         id: user.id,
@@ -327,7 +357,9 @@ async function createSubscriptionContext(connection: Context) {
   const token = connectionToken(connection.connectionParams);
   if (!token) return { user: null, container, connection };
   try {
-    const user = await retrieveUserFromToken(token, options);
+    const user = isTemporaryDemoToken(token)
+      ? await resolveTemporaryUser(token)
+      : await retrieveUserFromToken(token, options);
     if (!user) return { user: null, container, connection };
     const childContainer = setupContainer(user);
     return {
@@ -336,7 +368,8 @@ async function createSubscriptionContext(connection: Context) {
       container: childContainer,
       connection,
     };
-  } catch {
+  } catch (e) {
+    if (e instanceof DemoCredentialError) throw e;
     return { user: null, container, connection };
   }
 }

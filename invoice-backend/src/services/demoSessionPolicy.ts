@@ -15,6 +15,32 @@ export const DEMO_SESSION_TOKEN_PREFIX = "demo-session-v1.";
 export const demoSessionsEnabled = () =>
   process.env["DEMO_SESSIONS_ENABLED"] === "true";
 
+/**
+ * Why a request that presented a temporary-session credential cannot proceed.
+ * Stable codes for the browser lifecycle (Slice 4):
+ *  - UNAUTHENTICATED (401): the credential is expired, revoked, unknown,
+ *    malformed, or temporary sessions are switched off. Discard it. Nothing
+ *    says which, and nothing of the credential or database is exposed.
+ *  - SERVICE_UNAVAILABLE (503): the credential could not be checked (database
+ *    trouble). It may still be valid: keep it and retry later.
+ * Neither ever falls through to another identity or creates a session.
+ */
+export class DemoCredentialError extends GraphQLError {
+  constructor(kind: "UNAUTHENTICATED" | "SERVICE_UNAVAILABLE") {
+    super(
+      kind === "UNAUTHENTICATED"
+        ? "Demo session has expired or is no longer valid"
+        : "Demo sessions are temporarily unavailable; try again",
+      {
+        extensions: {
+          code: kind,
+          http: { status: kind === "UNAUTHENTICATED" ? 401 : 503 },
+        },
+      },
+    );
+  }
+}
+
 /** Every bearer token routed to temporary-session resolution. */
 export const isTemporaryDemoToken = (token: string) =>
   token.startsWith("demo-session");

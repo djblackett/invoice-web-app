@@ -111,6 +111,10 @@ model DemoSession {
   lastResetAt    DateTime? @db.Timestamptz(3)
   // Every admitted write attempt, including failed ones (never decremented).
   attemptCount   Int      @default(0)
+  // Set when cleanup of this expired workspace failed (Slice 3C). Such sessions
+  // sort after every never-failed candidate, so one damaged workspace cannot
+  // starve the rest. Never read for authorization.
+  cleanupFailedAt DateTime? @db.Timestamptz(3)
 
   @@index([expiresAt])
 }

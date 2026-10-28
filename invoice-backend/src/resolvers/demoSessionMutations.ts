@@ -7,6 +7,7 @@ import {
   NotFoundException,
   ValidationException,
 } from "../config/exception.config";
+import { resetDemoSession } from "../services/demoSessionReset";
 import type { InvoiceService } from "../services/invoice.service";
 import type { DemoInvoiceOperation } from "../services/demoSessionPolicy";
 import {
@@ -50,9 +51,15 @@ const WRITE_ERRORS: Record<
     message: "This change would exceed the demo workspace limits",
     quota: "workspace",
   },
-  // Reset is not an invoice operation; unreachable here until Slice 3C.
-  RESET_ALLOWANCE: { code: "FORBIDDEN", message: "Reset is not available" },
-  RESET_COOLDOWN: { code: "FORBIDDEN", message: "Reset is not available" },
+  RESET_ALLOWANCE: {
+    code: "QUOTA_EXCEEDED",
+    message: "This demo session has no resets remaining",
+    quota: "resets",
+  },
+  RESET_COOLDOWN: {
+    code: "RESET_COOLDOWN",
+    message: "Please wait before resetting this demo again",
+  },
 };
 
 /**
@@ -63,7 +70,13 @@ function toGraphQLError(error: unknown): GraphQLError {
   if (error instanceof DemoSessionWriteError) {
     const { code, message, quota } = WRITE_ERRORS[error.code];
     return new GraphQLError(message, {
-      extensions: { code, ...(quota ? { quota } : {}) },
+      extensions: {
+        code,
+        ...(quota ? { quota } : {}),
+        ...(error.retryAfterMs === undefined
+          ? {}
+          : { retryAfterSeconds: Math.ceil(error.retryAfterMs / 1000) }),
+      },
     });
   }
   if (error instanceof ValidationException)
@@ -114,9 +127,30 @@ function coordinated<O extends DemoInvoiceOperation, T>(
   };
 }
 
+async function resetOwnWorkspace(
+  _args: Args,
+  context: InjectedQueryContext,
+): Promise<boolean> {
+  const { user, container } = context;
+  if (!user || !container)
+    throw new GraphQLError("Demo session required", {
+      extensions: { code: "UNAUTHENTICATED" },
+    });
+  try {
+    return await resetDemoSession(
+      container.get<PrismaClient>(TYPES.PrismaClient),
+      container,
+      user,
+    );
+  } catch (error) {
+    throw toGraphQLError(error);
+  }
+}
+
 /**
  * The complete set of mutations a temporary session can perform, each one a
- * coordinated, quota-enforced write over HTTP. They never publish to the
+ * coordinated, quota-enforced write over HTTP: the five invoice operations
+ * and resetting the session's own workspace. They never publish to the
  * administrator `invoiceAdded` feed. Every other mutation stays denied.
  */
 export const temporarySessionMutations: ReadonlyMap<
@@ -126,6 +160,7 @@ export const temporarySessionMutations: ReadonlyMap<
   string,
   (args: Args, context: InjectedQueryContext) => Promise<unknown>
 >([
+  ["resetDemoSession", resetOwnWorkspace],
   [
     "addInvoice",
     coordinated(

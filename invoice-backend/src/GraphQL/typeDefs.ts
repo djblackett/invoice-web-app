@@ -185,6 +185,12 @@ const typeDefs = gql`
     "Restore the canonical shared demo workspace. Dedicated demo authentication only."
     resetDemoData: Boolean!
 
+    """
+    Restore the caller's own temporary workspace to the canonical sample invoices.
+    Temporary demo sessions only. Invoice IDs change: clients must discard cached invoices.
+    """
+    resetDemoSession: Boolean!
+
     addInvoice(
       clientAddress: ClientInfo
       clientEmail: String

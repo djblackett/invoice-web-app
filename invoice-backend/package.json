@@ -22,7 +22,8 @@
     "prisma-generate": "prisma generate",
     "typecheck": "tsc --noEmit",
     "check": "npm run typecheck && npm run lint && npm run test:unit && npm run build",
-    "migrate:deploy": "node scripts/migrate.cjs"
+    "migrate:deploy": "node scripts/migrate.cjs",
+    "demo:cleanup": "node scripts/cleanup-demo-sessions.cjs"
   },
   "author": "David Andrea",
   "license": "ISC",

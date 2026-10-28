@@ -5,6 +5,16 @@ import { ForbiddenException } from "../config/exception.config";
 export function getDemoResolvers() {
   return {
     Mutation: {
+      // Temporary sessions never reach this resolver: the mutation wrapper
+      // routes them to their coordinated handler by name. Everyone else,
+      // ordinary users, administrators and the shared demo user alike, is
+      // refused here.
+      resetDemoSession: () => {
+        throw new GraphQLError(
+          "Only temporary demo sessions can reset a demo workspace",
+          { extensions: { code: "FORBIDDEN" } },
+        );
+      },
       resetDemoData: async (
         _root: unknown,
         _args: unknown,
