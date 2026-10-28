@@ -67,6 +67,11 @@ const Retry = styled.button`
   &:hover {
     background: ${({ theme }) => theme.newButtonHover};
   }
+
+  &:disabled {
+    opacity: 0.6;
+    cursor: wait;
+  }
 `;
 
 export default function InvoiceContentStatus({
@@ -74,11 +79,16 @@ export default function InvoiceContentStatus({
   error = false,
   onRetry,
   retryLabel = "Retry",
+  retryDisabled = false,
+  detail,
 }: {
   message?: string;
   error?: boolean;
   onRetry?: () => void;
   retryLabel?: string;
+  retryDisabled?: boolean;
+  /** Replaces the default secondary line. */
+  detail?: string;
 }) {
   return (
     <InvoiceGrid>
@@ -97,12 +107,17 @@ export default function InvoiceContentStatus({
         <Message>
           {message}
           <small>
-            {error
-              ? "Please try again."
-              : "This can take a moment while the demo wakes up."}
+            {detail ??
+              (error
+                ? "Please try again."
+                : "This can take a moment while the demo wakes up.")}
           </small>
         </Message>
-        {error && onRetry && <Retry onClick={onRetry}>{retryLabel}</Retry>}
+        {error && onRetry && (
+          <Retry onClick={onRetry} disabled={retryDisabled}>
+            {retryLabel}
+          </Retry>
+        )}
       </PlaceholderRow>
       {!error &&
         Array.from({ length: 6 }, (_, index) => (

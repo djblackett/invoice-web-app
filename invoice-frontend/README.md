@@ -63,6 +63,14 @@ not runtime environment overrides. `VITE_DEMO_MODE` defaults to false.
 `DEV_HTTPS=false npm run dev`/`npm run preview` explicitly selects local HTTP;
 normal source development otherwise uses the package's mkcert files.
 
+`VITE_DEMO_SESSIONS` (default false, needs `VITE_DEMO_MODE=true`) switches the demo
+from the shared `demo-token` identity to a private temporary workspace per
+browser, created through the backend's `POST /demo/sessions`. The backend must
+independently set `DEMO_SESSIONS_ENABLED=true`. The credential is kept in
+`localStorage` under `invoice-web-app:demo-session:v1` (24-hour server lifetime),
+and temporary sessions never open a WebSocket. The GitHub Pages workflow does not
+set it. See `docs/audit/public-demo-slice-4a-visitor-session-integration.md`.
+
 ## Frontend quality gate
 
 After installing dependencies with the pinned Yarn version (`corepack yarn install --immutable`), run from this directory:

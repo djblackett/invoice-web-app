@@ -2,6 +2,7 @@ import { useEffect, useMemo, useState } from "react";
 import { createPortal } from "react-dom";
 import { useMutation, useQuery } from "@apollo/client";
 import { toast } from "react-toastify";
+import { useTemporarySession } from "@/features/auth/demoSession/TemporarySessionProvider";
 import {
   INVOICE_REVISIONS,
   INVOICE_REVISION_DIFF,
@@ -44,6 +45,7 @@ interface Props {
  * `RevisionDiffView`.
  */
 function RevisionHistoryPanel({ invoiceId, open, onClose }: Props) {
+  const temporary = useTemporarySession() !== null;
   const { data, loading, error, refetch } = useQuery<{
     invoiceRevisions: InvoiceRevision[];
   }>(INVOICE_REVISIONS, {
@@ -102,6 +104,8 @@ function RevisionHistoryPanel({ invoiceId, open, onClose }: Props) {
       },
       onError: (err) => {
         console.error(err);
+        // A temporary session's error link already explained what went wrong.
+        if (temporary) return;
         toast.error("Failed to restore revision");
       },
     },

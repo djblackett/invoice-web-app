@@ -8,6 +8,11 @@ export const VITE_REDIRECT_URI =
   window.location.origin + "/invoice-web-app/";
 
 export const isDemoMode = import.meta.env.VITE_DEMO_MODE === "true";
+// Temporary private workspaces (backend DEMO_SESSIONS_ENABLED) are a second,
+// independent opt-in on top of demo mode. Read live so tests can stub it.
+export const temporaryDemoSessionsEnabled = () =>
+  import.meta.env.VITE_DEMO_MODE === "true" &&
+  import.meta.env.VITE_DEMO_SESSIONS === "true";
 export const hasAuth0Config = Boolean(
   VITE_AUDIENCE && VITE_SCOPE && VITE_DOMAIN && VITE_CLIENT_ID,
 );

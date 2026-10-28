@@ -6,7 +6,7 @@ import tsconfigPaths from "vite-tsconfig-paths";
 export default defineConfig({
   base: "/invoice-web-app/",
   envDir: process.env.E2E_ARTIFACTS,
-  cacheDir: `${process.env.E2E_ARTIFACTS}/vite-${process.env.VITE_DEMO_MODE}`,
+  cacheDir: `${process.env.E2E_ARTIFACTS}/vite-${process.env.VITE_DEMO_MODE}-${process.env.VITE_DEMO_SESSIONS || "off"}`,
   plugins: [react(), tsconfigPaths()],
   server: { hmr: false },
 });

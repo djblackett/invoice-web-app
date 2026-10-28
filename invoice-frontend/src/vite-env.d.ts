@@ -8,4 +8,5 @@ interface ImportMetaEnv {
   readonly VITE_CLIENT_ID: string | undefined;
   readonly VITE_REDIRECT_URI: string | undefined;
   readonly VITE_DEMO_MODE: string | undefined;
+  readonly VITE_DEMO_SESSIONS: string | undefined;
 }

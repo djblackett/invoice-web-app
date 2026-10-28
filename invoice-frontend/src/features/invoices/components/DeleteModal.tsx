@@ -14,6 +14,7 @@ import { Description } from "../styles/FullInvoiceStyles.tsx";
 import { toast } from "react-toastify";
 import { ClickOutsideProvider } from "@shelf/react-outside-click";
 import { Invoice } from "@/features/invoices/types/invoiceTypes.ts";
+import { useTemporarySession } from "@/features/auth/demoSession/TemporarySessionProvider";
 
 export type DeleteModalProps = {
   isModalOpen: boolean;
@@ -28,6 +29,7 @@ function DeleteModal({
 }: DeleteModalProps) {
   const navigate = useNavigate();
   const { id } = useParams<{ id: string }>();
+  const temporary = useTemporarySession() !== null;
 
   const [deleteInvoice] = useMutation(REMOVE_INVOICE, {
     refetchQueries: [{ query: ALL_INVOICES }],
@@ -36,6 +38,8 @@ function DeleteModal({
     },
     onError: (error) => {
       console.error(error.graphQLErrors[0]);
+      // A temporary session's error link already explained what went wrong.
+      if (temporary) return;
       toast.error("An error occurred!", {
         autoClose: 3000,
         hideProgressBar: false,
@@ -64,7 +68,7 @@ function DeleteModal({
         <ModalContainer>
           <Confirm>Confirm Deletion</Confirm>
           <Description>
-            {`Are you sure you want to delete invoice #${invoice.id}? This action cannot
+            {`Are you sure you want to delete invoice #${invoice.id?.substring(0, 6)}? This action cannot
             be undone.`}
           </Description>
           <ButtonContainer>

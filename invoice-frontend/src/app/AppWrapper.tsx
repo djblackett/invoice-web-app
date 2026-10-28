@@ -1,7 +1,9 @@
 import { Auth0ProviderWrapper } from "@/features/auth/components/Auth0ProviderWrapper";
 import { DemoAuthProvider } from "@/features/auth/components/DemoAuthProvider";
 import { useDemoModeContext } from "@/features/shared/components/DemoModeProvider";
-import { HashRouter } from "react-router-dom";
+import { TemporarySessionProvider } from "@/features/auth/demoSession/TemporarySessionProvider";
+import { HashRouter, useNavigate } from "react-router-dom";
+import type { ReactNode } from "react";
 import App from "./App";
 
 import {
@@ -11,7 +13,26 @@ import {
   VITE_SCOPE,
   VITE_AUDIENCE,
   hasAuth0Config,
+  temporaryDemoSessionsEnabled,
 } from "@/config/config";
+
+// A new or reset workspace has new invoice IDs: go to the dashboard.
+const RoutedTemporarySessionProvider = ({
+  children,
+}: {
+  children: ReactNode;
+}) => {
+  const navigate = useNavigate();
+  return (
+    <TemporarySessionProvider
+      onWorkspaceChange={() => {
+        void navigate("/invoices", { replace: true });
+      }}
+    >
+      {children}
+    </TemporarySessionProvider>
+  );
+};
 
 const AppWrapper = () => {
   const { isDemoMode } = useDemoModeContext();
@@ -19,7 +40,13 @@ const AppWrapper = () => {
   return isDemoMode ? (
     <DemoAuthProvider>
       <HashRouter>
-        <App />
+        {temporaryDemoSessionsEnabled() ? (
+          <RoutedTemporarySessionProvider>
+            <App />
+          </RoutedTemporarySessionProvider>
+        ) : (
+          <App />
+        )}
       </HashRouter>
     </DemoAuthProvider>
   ) : hasAuth0Config ? (

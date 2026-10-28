@@ -4,7 +4,9 @@ const artifacts = process.env.E2E_ARTIFACTS || "test-results";
 export default defineConfig({
   testDir: "qa/tests",
   fullyParallel: false,
-  workers: 1, // All visitors intentionally share demoId. Never run these in parallel.
+  // The shared-demo suites share demoId; the temporary-session suites share one
+  // allocation bucket and one database they restart. Never run in parallel.
+  workers: 1,
   forbidOnly: !!process.env.CI,
   retries: 0,
   timeout: 45_000,
@@ -30,6 +32,7 @@ export default defineConfig({
         "session.spec.ts",
         "toast.spec.ts",
         "loading.spec.ts",
+        "sharedDemoUnchanged.spec.ts",
       ],
       use: {
         ...devices["Desktop Chrome"],
@@ -40,6 +43,32 @@ export default defineConfig({
       name: "chromium-mobile",
       testMatch: ["demo.spec.ts", "session.spec.ts"],
       use: { ...devices["Pixel 5"] },
+    },
+    {
+      name: "temporary-sessions",
+      testMatch: ["temporarySessions.spec.ts"],
+      use: {
+        ...devices["Desktop Chrome"],
+        viewport: { width: 1440, height: 1000 },
+        baseURL: process.env.E2E_SESSIONS_URL,
+      },
+    },
+    {
+      name: "temporary-sessions-mobile",
+      testMatch: ["temporarySessionsMobile.spec.ts"],
+      use: { ...devices["Pixel 5"], baseURL: process.env.E2E_SESSIONS_URL },
+    },
+    {
+      // Stops and restarts the sessions database, so it runs after every other
+      // sessions test and never alongside one.
+      name: "temporary-sessions-outage",
+      testMatch: ["temporarySessionsOutage.spec.ts"],
+      dependencies: ["temporary-sessions", "temporary-sessions-mobile"],
+      use: {
+        ...devices["Desktop Chrome"],
+        viewport: { width: 1440, height: 1000 },
+        baseURL: process.env.E2E_SESSIONS_URL,
+      },
     },
     {
       name: "demo-disabled",

@@ -1,4 +1,4 @@
-import React, { Suspense, useEffect, useState } from "react";
+import React, { Fragment, Suspense, useEffect, useState } from "react";
 import { ThemeProvider } from "styled-components";
 import { useRoutes } from "react-router-dom";
 import Header from "../features/shared/components/Header.tsx";
@@ -13,6 +13,7 @@ import {
 } from "@/features/shared/styles/AppStyles.tsx";
 import { LazyMotion } from "motion/react";
 import { DemoSessionBoundary } from "../features/auth/components/DemoSessionBoundary";
+import { useTemporarySession } from "../features/auth/demoSession/TemporarySessionProvider";
 
 import InvoiceDashboardPlaceholder from "@/features/invoices/components/InvoiceDashboardPlaceholder";
 
@@ -38,6 +39,7 @@ const loadFeatures = () =>
 function App() {
   const [theme, setTheme] = useState<"light" | "dark">("light");
   const client = useGraphQLClient();
+  const temporarySession = useTemporarySession();
 
   useEffect(() => {
     if (localStorage.getItem("theme") !== null) {
@@ -114,7 +116,7 @@ function App() {
         <GlobalStyles />
         <LazyMotion features={loadFeatures}>
           <DemoSessionBoundary>
-            {({ ready, error, retry }) => (
+            {({ ready, error, retry, recovery }) => (
               <>
                 <Main id="container" data-testid="container">
                   <Header
@@ -123,13 +125,19 @@ function App() {
                     demoReady={ready}
                   />
                   {ready ? (
-                    element
+                    // A reset or new workspace remounts every page, dropping
+                    // open forms and routes that name the old invoice IDs.
+                    <Fragment key={temporarySession?.workspace}>
+                      {element}
+                    </Fragment>
                   ) : (
-                    <InvoiceDashboardPlaceholder
-                      initializing
-                      error={error}
-                      onRetry={retry}
-                    />
+                    (recovery ?? (
+                      <InvoiceDashboardPlaceholder
+                        initializing
+                        error={error}
+                        onRetry={retry}
+                      />
+                    ))
                   )}
                 </Main>
                 <StyledToastContainer

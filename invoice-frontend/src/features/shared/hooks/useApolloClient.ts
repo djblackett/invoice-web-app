@@ -2,7 +2,9 @@ import { Kind, OperationTypeNode } from "graphql";
 import { useMemo } from "react";
 import {
   ApolloClient,
+  ApolloLink,
   InMemoryCache,
+  type NormalizedCacheObject,
   createHttpLink,
   split,
 } from "@apollo/client";
@@ -13,6 +15,9 @@ import { createClient } from "graphql-ws";
 import { getMainDefinition } from "@apollo/client/utilities";
 import { loadDevMessages, loadErrorMessages } from "@apollo/client/dev";
 import { useDemoModeContext } from "@/features/shared/components/DemoModeProvider";
+import { useTemporarySession } from "@/features/auth/demoSession/TemporarySessionProvider";
+import { getCredential } from "@/features/auth/demoSession/credentialStore";
+import { createSessionErrorLink } from "@/features/auth/demoSession/sessionErrorLink";
 
 const useGraphQLClient = () => {
   const VITE_BACKEND_URL = import.meta.env.VITE_BACKEND_URL || "";
@@ -28,6 +33,10 @@ const useGraphQLClient = () => {
 
   const { isDemoMode } = useDemoModeContext();
   const { getAccessTokenSilently, user } = useAuth();
+  const session = useTemporarySession();
+  const temporary = session !== null;
+  const identity = session?.identity;
+  const markExpired = session?.markExpired;
   // Memoize the Apollo Client to prevent unnecessary re-creations
   const client = useMemo(() => {
     // Authentication Link to attach the token to headers
@@ -44,7 +53,10 @@ const useGraphQLClient = () => {
           let token;
 
           // Demo mode does not require authentication
-          if (isDemoMode) {
+          if (temporary) {
+            // The private workspace's own credential, never the shared identity.
+            token = getCredential();
+          } else if (isDemoMode) {
             token = "demo-token";
           } else {
             token = await getAccessTokenSilently(options);
@@ -66,6 +78,27 @@ const useGraphQLClient = () => {
     const httpLink = createHttpLink({
       uri: VITE_BACKEND_URL,
     });
+
+    // Temporary sessions are HTTP only: the backend refuses their credential
+    // on the WebSocket transport, so no WebSocket link is even created.
+    if (temporary) {
+      const apollo: ApolloClient<NormalizedCacheObject> = new ApolloClient({
+        link: ApolloLink.from([
+          createSessionErrorLink({
+            onExpired: () => markExpired?.(),
+            // Known state, not a replay: the visitor decides what to do next.
+            onUnknownOutcome: () => {
+              void apollo.refetchQueries({ include: "active" }).catch(() => {});
+            },
+          }),
+          authLink.concat(httpLink),
+        ]),
+        // A new identity gets a new, empty cache.
+        cache: new InMemoryCache(),
+        connectToDevTools: process.env.NODE_ENV !== "production",
+      });
+      return apollo;
+    }
 
     const addressWithoutProtocol = VITE_BACKEND_URL.replace(/https?:\/\//, "");
 
@@ -125,7 +158,7 @@ const useGraphQLClient = () => {
       cache: new InMemoryCache(),
       connectToDevTools: process.env.NODE_ENV !== "production",
     });
-  }, [user, isDemoMode]);
+  }, [user, isDemoMode, temporary, identity, markExpired]);
   return client;
 };
 

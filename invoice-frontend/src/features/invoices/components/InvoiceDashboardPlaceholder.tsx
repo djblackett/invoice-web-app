@@ -6,10 +6,18 @@ export default function InvoiceDashboardPlaceholder({
   error = false,
   onRetry,
   initializing = false,
+  message,
+  detail,
+  retryLabel = "Retry Demo",
+  retryDisabled,
 }: {
   error?: boolean;
   onRetry?: () => void;
   initializing?: boolean;
+  message?: string;
+  detail?: string;
+  retryLabel?: string;
+  retryDisabled?: boolean;
 }) {
   return (
     <AllInvoicesContainer>
@@ -21,15 +29,18 @@ export default function InvoiceDashboardPlaceholder({
       />
       <InvoiceContentStatus
         message={
-          error
+          message ??
+          (error
             ? "Demo could not be initialized."
             : initializing
               ? "Preparing demo invoices…"
-              : "Loading invoices…"
+              : "Loading invoices…")
         }
+        detail={detail}
         error={error}
         onRetry={onRetry}
-        retryLabel="Retry Demo"
+        retryLabel={retryLabel}
+        retryDisabled={retryDisabled}
       />
     </AllInvoicesContainer>
   );

@@ -7,6 +7,8 @@ import DemoButton from "@/features/shared/components/buttons/DemoButton.tsx";
 import { ScreenReaderOnly } from "@/features/shared/styles/AppStyles.tsx";
 import Avatar from "./Avatar";
 import { useDemoModeContext } from "@/features/shared/components/DemoModeProvider";
+import { clearFormDrafts } from "@/features/auth/demoSession/credentialStore";
+import { useTemporarySession } from "@/features/auth/demoSession/TemporarySessionProvider";
 
 const HeaderContainer = styled.div`
   width: 100%;
@@ -233,9 +235,15 @@ function Header({ themeToggler, theme, demoReady = true }: HeaderProps) {
   const { logout, isAuthenticated } = useAuth();
   const location = useLocation();
   const { isDemoMode, setIsDemoMode } = useDemoModeContext();
+  const temporary = useTemporarySession() !== null;
 
   const logoutWithRedirect = () => {
-    if (isDemoMode) setIsDemoMode(false);
+    if (isDemoMode) {
+      // Leaving a private workspace takes its unsent drafts along. The
+      // credential stays, so re-entering the demo resumes the workspace.
+      if (temporary) clearFormDrafts();
+      setIsDemoMode(false);
+    }
     void logout({
       logoutParams: {
         returnTo: VITE_REDIRECT_URI,

@@ -39,7 +39,7 @@ type MarkPaidProps = {
 function MarkAsPaidButton({ invoice, editButtonRef }: MarkPaidProps) {
   const [markAsPaid] = useMutation(MARK_AS_PAID, {
     onError: (error) => {
-      console.error(error.graphQLErrors[0].message);
+      console.error(error.graphQLErrors[0]?.message ?? error.message);
     },
   });
 
@@ -50,7 +50,7 @@ function MarkAsPaidButton({ invoice, editButtonRef }: MarkPaidProps) {
           markAsPaidId: invoice.id,
         },
       });
-      if (response.data) {
+      if (response?.data) {
         toast.success("💸 Invoice paid!", {
           autoClose: 5000,
           hideProgressBar: false,

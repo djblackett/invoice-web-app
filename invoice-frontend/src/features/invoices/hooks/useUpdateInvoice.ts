@@ -18,15 +18,18 @@ export const useUpdateInvoice = () => {
       console.error(error);
     },
   });
+  /** Resolves true only when the server accepted the edit. */
   const handleUpdateInvoice = async (data: Invoice) => {
     try {
-      await updateInvoice({
+      const result = await updateInvoice({
         variables: {
           ...data,
         },
       });
+      return Boolean(result?.data);
     } catch (error) {
       console.error(error);
+      return false;
     }
   };
 

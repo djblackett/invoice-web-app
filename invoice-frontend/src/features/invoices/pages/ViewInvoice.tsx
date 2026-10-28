@@ -16,6 +16,7 @@ import React from "react";
 import { Button } from "@/features/shared/components/buttons/MarkAsPaidButton.tsx";
 
 import InvoiceContentStatus from "../components/InvoiceContentStatus";
+import { useTemporarySession } from "@/features/auth/demoSession/TemporarySessionProvider";
 
 const EditInvoice = React.lazy(() => import("./EditInvoice.tsx"));
 const DeleteModal = React.lazy(() => import("../components/DeleteModal.tsx"));
@@ -29,14 +30,14 @@ function ViewInvoice() {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isHistoryOpen, setIsHistoryOpen] = useState(false);
   const { id } = useParams();
+  const temporary = useTemporarySession() !== null;
 
-  const { data, loading, error } = useQuery<{ getInvoiceById: Invoice }>(
-    GET_INVOICE_BY_ID,
-    {
-      variables: { getInvoiceById: id },
-      fetchPolicy: "cache-and-network",
-    },
-  );
+  const { data, loading, error, refetch } = useQuery<{
+    getInvoiceById: Invoice;
+  }>(GET_INVOICE_BY_ID, {
+    variables: { getInvoiceById: id },
+    fetchPolicy: "cache-and-network",
+  });
 
   const invoice = data?.getInvoiceById as Invoice;
 
@@ -63,9 +64,19 @@ function ViewInvoice() {
           }}
         >
           Error: {error.message} <br />
-          Invoice may have been deleted <br />
+          Invoice may have been deleted
+          {temporary ? " or its workspace reset" : ""} <br />
         </p>
         <Button onClick={goBack}>Go back</Button>
+        {temporary && (
+          <Button
+            onClick={() => {
+              void refetch().catch(() => {});
+            }}
+          >
+            Retry
+          </Button>
+        )}
       </>
     );
   }

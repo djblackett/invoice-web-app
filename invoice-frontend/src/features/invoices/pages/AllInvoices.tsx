@@ -14,6 +14,7 @@ import {
   INVOICE_ADDED,
 } from "@/features/invoices/graphql/invoice.queries.ts";
 import { useDemoModeContext } from "@/features/shared/components/DemoModeProvider";
+import { DemoWorkspaceNotice } from "@/features/auth/demoSession/DemoWorkspaceNotice";
 
 const NewInvoice = React.lazy(() => import("./NewInvoice.tsx"));
 
@@ -58,6 +59,7 @@ function AllInvoices() {
               <NewInvoice />
             </Suspense>
           </NewInvoiceProvider>
+          <DemoWorkspaceNotice />
           <AllInvoicesView
             invoiceList={invoiceList}
             width={width}

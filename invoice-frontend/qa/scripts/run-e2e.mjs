@@ -14,6 +14,7 @@ const pgBin = process.env.PG_BIN || ""; // e.g. /usr/lib/postgresql/16/bin
 const pg = (name) => path.join(pgBin, name);
 const children = [];
 let clusterStarted = false;
+let sessionsClusterStarted = false;
 let cleaning = false;
 const env = {
   ...process.env,
@@ -28,6 +29,9 @@ const env = {
   VITE_SCOPE: "",
   VITE_REDIRECT_URI: "",
   VITE_DEMO_MODE: "true",
+  // Opt-ins are per stack below; never inherited from the caller's shell.
+  VITE_DEMO_SESSIONS: "",
+  DEMO_SESSIONS_ENABLED: "",
   E2E_ARTIFACTS: artifacts,
   DOTENV_CONFIG_PATH: path.join(artifacts, "absent.env"),
 };
@@ -101,8 +105,27 @@ async function cleanup() {
     );
     await once(stop, "exit");
   }
-  await rm(path.join(artifacts, "pgdata"), { recursive: true, force: true });
-  await rm(path.join(artifacts, "pgsocket"), { recursive: true, force: true });
+  if (sessionsClusterStarted) {
+    const stop = spawn(
+      pg("pg_ctl"),
+      [
+        "-D",
+        path.join(artifacts, "pgdata-sessions"),
+        "stop",
+        "-m",
+        "immediate",
+      ],
+      { stdio: "ignore" },
+    );
+    await once(stop, "exit");
+  }
+  for (const name of [
+    "pgdata",
+    "pgsocket",
+    "pgdata-sessions",
+    "pgsocket-sessions",
+  ])
+    await rm(path.join(artifacts, name), { recursive: true, force: true });
 }
 for (const signal of ["SIGINT", "SIGTERM"]) {
   process.once(signal, async () => {
@@ -150,6 +173,54 @@ try {
     frontend,
   );
   env.DATABASE_URL = `postgresql://postgres@127.0.0.1:${dbPort}/browser_e2e`;
+
+  // A separate cluster for temporary sessions, so one browser test can stop
+  // and restart a real database without touching any other suite. A non-UTC
+  // server timezone makes clock/timestamp mistakes show up here too.
+  const sessionsPort = await freePort();
+  await mkdir(path.join(artifacts, "pgsocket-sessions"));
+  await run(
+    pg("initdb"),
+    [
+      "-D",
+      path.join(artifacts, "pgdata-sessions"),
+      "-U",
+      "postgres",
+      "--auth=trust",
+      "--no-locale",
+      "--encoding=UTF8",
+    ],
+    frontend,
+  );
+  await run(
+    pg("pg_ctl"),
+    [
+      "-D",
+      path.join(artifacts, "pgdata-sessions"),
+      "-l",
+      path.join(artifacts, "postgres-sessions.log"),
+      "-o",
+      `-p ${sessionsPort} -k ${artifacts}/pgsocket-sessions -h 127.0.0.1 -c timezone=America/Halifax`,
+      "-w",
+      "start",
+    ],
+    frontend,
+  );
+  sessionsClusterStarted = true;
+  await run(
+    pg("createdb"),
+    [
+      "-h",
+      "127.0.0.1",
+      "-p",
+      String(sessionsPort),
+      "-U",
+      "postgres",
+      "sessions_e2e",
+    ],
+    frontend,
+  );
+  const sessionsDatabaseUrl = `postgresql://postgres@127.0.0.1:${sessionsPort}/sessions_e2e`;
   await run(
     process.execPath,
     ["node_modules/prisma/build/index.js", "generate"],
@@ -161,6 +232,14 @@ try {
     backend,
   );
   await run(process.execPath, ["prisma/seed.mjs"], backend);
+  const sessionsDb = { DATABASE_URL: sessionsDatabaseUrl };
+  await run(
+    process.execPath,
+    ["node_modules/prisma/build/index.js", "migrate", "deploy"],
+    backend,
+    sessionsDb,
+  );
+  await run(process.execPath, ["prisma/seed.mjs"], backend, sessionsDb);
   await run("npm", ["run", "build"], backend);
 
   if (process.env.E2E_BACKEND_REGRESSION === "true") {
@@ -199,27 +278,49 @@ try {
     );
   }
 
-  for (const enabled of [true, false]) {
+  // Three independent stacks. The shared-demo and disabled stacks run with
+  // temporary sessions OFF (the default), so their suites keep proving that
+  // nothing changed for them; only "sessions" opts in, on both sides.
+  const stacks = [
+    {
+      label: "demo",
+      backend: { DEMO_MODE: "true" },
+      ui: { VITE_DEMO_MODE: "true" },
+      vars: ["E2E_BASE_URL", "E2E_API_URL"],
+    },
+    {
+      label: "disabled",
+      backend: { DEMO_MODE: "false" },
+      ui: { VITE_DEMO_MODE: "false" },
+      vars: ["E2E_DISABLED_URL", "E2E_DISABLED_API_URL"],
+    },
+    {
+      label: "sessions",
+      backend: {
+        DEMO_MODE: "true",
+        DEMO_SESSIONS_ENABLED: "true",
+        DATABASE_URL: sessionsDatabaseUrl,
+      },
+      ui: { VITE_DEMO_MODE: "true", VITE_DEMO_SESSIONS: "true" },
+      vars: ["E2E_SESSIONS_URL", "E2E_SESSIONS_API_URL"],
+    },
+  ];
+  for (const { label, backend: backendEnv, ui: uiOverrides, vars } of stacks) {
     const apiPort = await freePort();
     const uiPort = await freePort();
     const apiURL = `http://127.0.0.1:${apiPort}`;
     const uiURL = `http://127.0.0.1:${uiPort}`;
-    const label = enabled ? "demo" : "disabled";
     const api = launch(
       process.execPath,
       ["dist/src/index.js"],
       backend,
-      {
-        DEMO_MODE: String(enabled),
-        PORT: String(apiPort),
-        CORS_ORIGIN: uiURL,
-      },
+      { ...backendEnv, PORT: String(apiPort), CORS_ORIGIN: uiURL },
       `backend-${label}`,
     );
     await ready(`${apiURL}/health`, api);
     const uiEnv = {
       NODE_ENV: "production",
-      VITE_DEMO_MODE: String(enabled),
+      ...uiOverrides,
       VITE_BACKEND_URL: apiURL,
     };
     const uiDist = path.join(artifacts, `dist-${label}`);
@@ -257,10 +358,15 @@ try {
       `frontend-${label}`,
     );
     await ready(`${uiURL}/invoice-web-app/`, ui);
-    env[enabled ? "E2E_BASE_URL" : "E2E_DISABLED_URL"] =
-      `${uiURL}/invoice-web-app/`;
-    env[enabled ? "E2E_API_URL" : "E2E_DISABLED_API_URL"] = apiURL;
+    env[vars[0]] = `${uiURL}/invoice-web-app/`;
+    env[vars[1]] = apiURL;
   }
+  // Facts for the outage/expiry tests, which act on the real sessions cluster.
+  env.E2E_PG_BIN = pgBin;
+  env.E2E_SESSIONS_PGDATA = path.join(artifacts, "pgdata-sessions");
+  env.E2E_SESSIONS_PG_PORT = String(sessionsPort);
+  env.E2E_SESSIONS_PG_LOG = path.join(artifacts, "postgres-sessions.log");
+  env.E2E_SESSIONS_PG_SOCKET = path.join(artifacts, "pgsocket-sessions");
   const args = process.argv.slice(2);
   await run(
     process.execPath,

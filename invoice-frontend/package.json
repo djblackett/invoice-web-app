@@ -7,6 +7,7 @@
   "scripts": {
     "dev": "vite",
     "demo": "cross-env VITE_DEMO_MODE=true vite",
+    "demo:sessions": "cross-env VITE_DEMO_MODE=true VITE_DEMO_SESSIONS=true vite",
     "coverage": "vitest run --coverage",
     "build": "vite build",
     "preview": "vite preview",

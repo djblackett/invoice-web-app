@@ -2,18 +2,57 @@ import { useEffect, useState, type ReactNode } from "react";
 import { useApolloClient } from "@apollo/client";
 import { useDemoModeContext } from "../../shared/components/DemoModeProvider";
 import { RESET_DEMO_DATA } from "../graphql/demo.mutations";
+import {
+  useTemporarySession,
+  type TemporarySession,
+} from "../demoSession/TemporarySessionProvider";
+import { TemporarySessionRecovery } from "../demoSession/TemporarySessionRecovery";
 
 type DemoSessionState = {
   ready: boolean;
   error: boolean;
   retry: () => void;
+  /** Temporary sessions: the screen to show instead of the routed content. */
+  recovery?: ReactNode;
 };
 
-export function DemoSessionBoundary({
-  children,
-}: {
+type BoundaryProps = {
   children: ReactNode | ((state: DemoSessionState) => ReactNode);
-}) {
+};
+
+export function DemoSessionBoundary({ children }: BoundaryProps) {
+  const temporary = useTemporarySession();
+  return temporary ? (
+    <TemporarySessionBoundary session={temporary}>
+      {children}
+    </TemporarySessionBoundary>
+  ) : (
+    <SharedDemoSessionBoundary>{children}</SharedDemoSessionBoundary>
+  );
+}
+
+// A private workspace is created or resumed by its provider; there is no
+// shared reset on entry, and the routed content waits only for the credential.
+function TemporarySessionBoundary({
+  session,
+  children,
+}: BoundaryProps & { session: TemporarySession }) {
+  const ready = session.phase === "ready";
+  const state: DemoSessionState = {
+    ready,
+    error: session.phase === "failed",
+    retry: () => {
+      void session.startNew();
+    },
+    recovery: ready ? undefined : (
+      <TemporarySessionRecovery session={session} />
+    ),
+  };
+  if (typeof children === "function") return children(state);
+  return ready ? children : state.recovery;
+}
+
+function SharedDemoSessionBoundary({ children }: BoundaryProps) {
   const client = useApolloClient();
   const { isDemoMode, demoEntryId, initializeDemo } = useDemoModeContext();
   const [ready, setReady] = useState<number | null>(null);

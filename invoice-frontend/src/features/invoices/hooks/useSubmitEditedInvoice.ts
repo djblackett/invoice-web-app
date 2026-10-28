@@ -34,7 +34,8 @@ export const useSubmitEditedInvoice = () => {
       newInvoice.status = "pending";
 
       try {
-        await handleUpdateInvoice(newInvoice);
+        // A refused or unconfirmed save keeps the edit form and its content.
+        if (!(await handleUpdateInvoice(newInvoice))) return;
         editInvoiceCache.clearCache();
         setIsCacheActive(false);
         setIsNewInvoiceOpen(false);

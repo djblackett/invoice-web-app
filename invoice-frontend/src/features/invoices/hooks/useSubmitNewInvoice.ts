@@ -54,7 +54,9 @@ export const useSubmitNewInvoice = () => {
       newInvoice.status = "pending";
 
       try {
-        await handleAddInvoice(newInvoice);
+        // A refused or unconfirmed save keeps the form and its content, so
+        // the visitor can fix or retry it; nothing is silently discarded.
+        if (!(await handleAddInvoice(newInvoice))) return;
 
         setIsCacheActive(false);
         handleFormReset();

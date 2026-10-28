@@ -53,6 +53,9 @@ export async function noOverflow(page: Page) {
 export async function createInvoice(
   page: Page,
   clientName = "Browser Test Client",
+  // Temporary workspaces use longer internal IDs; the visible number is the
+  // first six characters either way.
+  idPattern = /^[A-Z]{2}\d{4}$/,
 ) {
   await page.getByTestId("newInvoiceButton").click();
   await expect(page.getByText("Bill From", { exact: true })).toBeVisible();
@@ -94,7 +97,9 @@ export async function createInvoice(
   await page.getByRole("button", { name: "Save", exact: true }).click();
   const data = await result(await saved);
   const invoice = data.addInvoice;
-  expect(invoice.id).toMatch(/^[A-Z]{2}\d{4}$/);
+  expect(invoice.id).toMatch(idPattern);
+  const shortId = (invoice.id as string).slice(0, 6);
+  expect(shortId).toMatch(/^[A-Z]{2}\d{4}$/);
   expect(invoice.total).toBe(371);
   expect(invoice.status).toBe("pending");
   expect(invoice.paymentTerms).toBe(14);
@@ -103,9 +108,9 @@ export async function createInvoice(
   await expect(page.getByText("Bill From", { exact: true })).toBeHidden();
   await expect(cards(page)).toHaveCount(8);
   await expect(cards(page).filter({ hasText: clientName })).toContainText(
-    invoice.id,
+    shortId,
   );
-  await openInvoice(page, invoice.id);
+  await openInvoice(page, shortId);
   await expect(page.getByText(clientName, { exact: true })).toBeVisible();
   await expect(page.getByText("£ 371.00", { exact: true })).toBeVisible();
   return invoice.id as string;

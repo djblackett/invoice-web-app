@@ -109,7 +109,8 @@ export const useSubmitDraft = () => {
     newInvoice.status = "draft";
 
     try {
-      await handleAddInvoice(newInvoice);
+      // A refused or unconfirmed save keeps the form and its content.
+      if (!(await handleAddInvoice(newInvoice))) return;
 
       setIsCacheActive(false);
       handleFormReset();

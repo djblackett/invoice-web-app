@@ -10,15 +10,18 @@ export const useAddInvoice = () => {
       console.error(error);
     },
   });
+  /** Resolves true only when the server accepted the invoice. */
   const handleAddInvoice = async (data: Invoice) => {
     try {
-      await addInvoice({
+      const result = await addInvoice({
         variables: {
           ...data,
         },
       });
+      return Boolean(result?.data);
     } catch (error) {
       console.error(error);
+      return false;
     }
   };
 
